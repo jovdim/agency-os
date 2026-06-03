@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>how-it-works-01 — Photo-background cards with icon badges</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* how-it-works-01 — process / values intro section.
+       3-6 cards in a horizontal grid, each with a full-bleed photo
+       background + dark gradient overlay + primary-colored icon badge
+       at the top + eyebrow + description toward the bottom. Matches the
+       bagerexpress "How everything works together" section reference.
+
+       Rewrite 2026-05-19: description switched from richtext → plain
+       text. Why: cards must read identically across the grid (peer
+       feedback was that the eyebrow/description hierarchy is fixed
+       per-design, no per-word bold/italic editing makes sense for
+       these short labels). Killing richtext eliminates the whole
+       sanitizer + TipTap-wrapper pipeline that was producing
+       different DOM shapes for edited vs unedited cards. The renderer
+       now just sets el.textContent on description fields, so the
+       element's class survives untouched on every rebuild. */
+
+    .hiw-01 {
+      padding: 100px 24px;
+      background: var(--color-bg);
+    }
+
+    .hiw-01__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .hiw-01__title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      /* Default weight kept at 400 so the rich-text editor's Bold
+         control is the single source of truth for which words pop
+         in the title. (Description below is plain text so it
+         doesn't need the same dance.) */
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      text-align: center;
+      margin: 0 0 16px;
+      color: var(--color-text);
+    }
+
+    .hiw-01__subtitle {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--color-text) 65%, transparent);
+      text-align: center;
+      margin: 0 auto 56px;
+      max-width: 680px;
+    }
+    .hiw-01__subtitle:empty {
+      display: none;
+    }
+    .hiw-01__subtitle:empty ~ .hiw-01__grid {
+      margin-top: 56px;
+    }
+    /* TipTap wraps edited content in <p>. Same pattern as the
+       step-title and description below. */
+    .hiw-01__subtitle > p {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+
+    .hiw-01__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    /* Publish renderer wraps each repeater child in [data-sk-repeater-wrap].
+       Make those wrappers transparent so the cards remain direct grid
+       children — without this the wrappers become single rows and break
+       the grid template. */
+    .hiw-01__grid [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .hiw-01__card {
+      position: relative;
+      border-radius: 14px;
+      /* overflow: visible so the icon badge can notch out of the top
+         edge (half above, half inside). The gradient overlay below
+         still lives inside the card's box thanks to its inset:0 sizing. */
+      overflow: visible;
+      min-height: 420px;
+      background-color: #1c1917;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-clip: padding-box;
+      box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.22);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-top: 22px;
+    }
+    .hiw-01__card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.3);
+    }
+    /* Dark gradient overlay — clipped to the card's rounded corners. */
+    .hiw-01__card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.35) 0%,
+        rgba(0, 0, 0, 0.42) 40%,
+        rgba(0, 0, 0, 0.65) 75%,
+        rgba(0, 0, 0, 0.85) 100%
+      );
+      z-index: 1;
+    }
+
+    .hiw-01__content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      min-height: 420px;
+      padding: 40px 28px 36px;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .hiw-01__icon-badge {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+      box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.4);
+      z-index: 3;
+    }
+
+    .hiw-01__step-title {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.78);
+      margin: 0 0 16px;
+    }
+    .hiw-01__step-title:empty {
+      display: none;
+    }
+    /* TipTap wraps edited content in <p>. Same rule as
+       .hiw-01__description below — inherit font props, kill margin. */
+    .hiw-01__step-title > p {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+
+    /* Description container is a <div>, NOT a <p>. Reason: the
+       composer routes text/longtext/richtext fields through TipTap,
+       which always wraps content in <p>...</p>. The renderer then
+       does container.innerHTML = "<p>edited text</p>". If the
+       container were itself a <p>, HTML5 nesting rules would
+       auto-close it on the inner <p>, orphaning the inner text from
+       this class and killing the styling. <div> is fine to host a
+       <p> child. Peter caught the "edit + reorder breaks bold" bug
+       2026-05-19 — this is the root cause and the surgical fix. */
+    .hiw-01__description {
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      line-height: 1.35;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0 auto;
+      max-width: 30ch;
+    }
+    /* TipTap wraps content in <p>. Inherit font props from parent,
+       kill the default p margin so a single-paragraph description
+       isn't pushed off-center inside the card. */
+    .hiw-01__description > p {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+
+    @media (max-width: 1024px) {
+      .hiw-01__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 700px) {
+      .hiw-01 {
+        padding: 72px 20px;
+      }
+      .hiw-01__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .hiw-01__card,
+      .hiw-01__content {
+        min-height: 380px;
+      }
+      .hiw-01__content {
+        padding: 36px 24px 32px;
+      }
+      .hiw-01__icon-badge {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        top: -20px;
+      }
+      .hiw-01__step-title {
+        font-size: 0.88rem;
+        margin-bottom: 12px;
+      }
+      .hiw-01__description {
+        font-size: 1.35rem;
+        max-width: 26ch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: how-it-works-01</strong> &nbsp; · &nbsp; Photo-background cards with primary-colored icon badges. Process / values intro section. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:how-it-works:start -->
+<!--
+  TEMPLATE: how-it-works-01
+  CATEGORY: how-it-works (process / values / approach intro section
+            that sits between hero and the services grid).
+  LAYOUT:   Centered section title + optional subtitle on a light bg.
+            Below: a responsive grid of cards. Each card has a full-bleed
+            photo background with a dark gradient overlay for legibility,
+            a primary-colored icon badge anchored at top-center, and an
+            eyebrow + description anchored at the bottom-center.
+            Hover lifts the card 4px with a deeper shadow.
+  CONTENT:  Title, subtitle, 2-6 cards (default 3). Each card: bg image,
+            icon glyph (text), eyebrow text, description (PLAIN TEXT).
+  EDITABLE: title (text), subtitle (text), icon (text), eyebrow (text),
+            description (PLAIN TEXT — no formatting), step_image per card.
+  PAIRS WITH: any hero, sits naturally below as a "process intro" or
+            "values" section.
+  THEME:    Icon badge fill uses --color-primary. Section bg uses
+            --color-bg. Title + description use --font-heading.
+            Eyebrow uses --font-body for visual contrast.
+-->
+<section id="postup" class="hiw-01 fade-up">
+  <div class="hiw-01__inner">
+    <h2 class="hiw-01__title" data-field="hiw_title">Write your section heading here, for example "How we work" or "Our values"</h2>
+    <div class="hiw-01__subtitle" data-field="hiw_subtitle"></div>
+
+    <div class="hiw-01__grid">
+      <div data-repeat="hiw_steps" data-min="2" data-max="6" style="display:contents">
+
+        <article class="hiw-01__card" data-field="step_image" style="background-image: url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop')">
+          <div class="hiw-01__icon-badge">
+            <span data-field="step_icon">→</span>
+          </div>
+          <div class="hiw-01__content">
+            <div class="hiw-01__step-title" data-field="step_title">Name of the first value</div>
+            <div class="hiw-01__description" data-field="step_description">Write a short description of the first value or principle you work by here. 1 to 2 sentences about why it matters to the customer.</div>
+          </div>
+        </article>
+
+        <article class="hiw-01__card" data-field="step_image" style="background-image: url('https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=900&auto=format&fit=crop')">
+          <div class="hiw-01__icon-badge">
+            <span data-field="step_icon">≡</span>
+          </div>
+          <div class="hiw-01__content">
+            <div class="hiw-01__step-title" data-field="step_title">Name of the second value</div>
+            <div class="hiw-01__description" data-field="step_description">Write a short description of the second value here. Try a different angle, such as processes, results or your approach to the customer.</div>
+          </div>
+        </article>
+
+        <article class="hiw-01__card" data-field="step_image" style="background-image: url('https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=900&auto=format&fit=crop')">
+          <div class="hiw-01__icon-badge">
+            <span data-field="step_icon">✓</span>
+          </div>
+          <div class="hiw-01__content">
+            <div class="hiw-01__step-title" data-field="step_title">Name of the third value</div>
+            <div class="hiw-01__description" data-field="step_description">Write a short description of the third value here. A closing point, something that sums up your overall approach to work or quality.</div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:how-it-works:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below how-it-works-01 — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

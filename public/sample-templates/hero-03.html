@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-03 — Cinematic full-bleed (bottom-left text)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* hero-03: cinematic full-bleed photograph with text anchored bottom-
+       left. Different from hero-02 (which centers everything) — this is
+       the photography / fashion magazine layout. The image is the star;
+       the text is a caption underneath. Subtle bottom-only gradient so
+       the top of the photograph stays untouched. */
+    .hero-cinematic {
+      position: relative;
+      min-height: 88vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      color: var(--color-light);
+      overflow: hidden;
+    }
+    .hero-cinematic::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      /* Full-image darkening (was bottom-only). Mirrors hero-01 / hero-04
+         strength so any uploaded photo — bright OR dark — keeps the
+         text legible no matter where it sits in the frame. */
+      background: linear-gradient(135deg, rgba(12,10,9,0.78), rgba(28,25,23,0.62));
+      z-index: 1;
+    }
+    .hero-cinematic__inner {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 80px 24px 96px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-cinematic__text { max-width: 640px; }
+    .hero-cinematic__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin: 0 0 20px;
+    }
+    .hero-cinematic h1 {
+      color: var(--color-light);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px;
+      font-weight: 600;
+      max-width: 600px;
+    }
+    .hero-cinematic__lede {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--color-text-on-dark);
+      margin: 0 0 32px;
+      max-width: 480px;
+    }
+    /* Two-button CTA on a dark image: primary uses the themed
+       --color-primary, outline flips to white-on-dark (per the same
+       convention used in hero-01). The base .btn classes already
+       handle padding, transitions, and hover lift. */
+    .hero-cinematic__cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .hero-cinematic .btn-outline {
+      color: #fff;
+      border-color: #fff;
+      background: transparent;
+    }
+    .hero-cinematic .btn-outline:hover {
+      background: #fff;
+      color: var(--color-secondary);
+    }
+    @media (max-width: 800px) {
+      .hero-cinematic { min-height: 80vh; }
+      .hero-cinematic__inner { padding: 80px 24px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: hero-03</strong> &nbsp; · &nbsp; Full-bleed image, text anchored bottom-left, magazine-caption feel. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-03
+  LAYOUT:   Full-bleed background photograph. Text content anchored bottom-
+            left (eyebrow + headline + lede + 2 CTA buttons). Bottom-only
+            gradient overlay preserves the top of the image clean.
+  HEIGHT:   88vh desktop, 80vh mobile.
+  CONTENT:  1 background image + 3 text fields + 2 link fields.
+  EDITABLE: hero_bg, hero_eyebrow, hero_headline, hero_subheadline,
+            hero_cta_primary, hero_cta_secondary.
+  THEME:    Headline/lede colors are fixed-light (white-on-dark), driven by
+            the hardcoded gradient. Primary CTA uses var(--color-primary).
+            Outline CTA stays white-on-dark for legibility against the image.
+  USE FOR:  Restaurants, hotels, gardens, photographers, real estate, weddings —
+            anywhere a strong photograph carries the brand. Different from
+            hero-01 (centered): this is the editorial-photography layout.
+-->
+<section id="domov" class="hero-cinematic fade-up" data-field="hero_bg" style="background-image:url('https://placehold.co/2400x1400/3f3a35/e7e5e4?text=Hero+background+photograph&font=lato')">
+  <div class="hero-cinematic__inner">
+    <div class="hero-cinematic__text">
+      <p class="hero-cinematic__eyebrow" data-field="hero_eyebrow">Eyebrow — field / segment</p>
+      <h1 data-field="hero_headline">Write your main headline here, a short and convincing sentence about your company</h1>
+      <p class="hero-cinematic__lede" data-field="hero_subheadline" data-type="richtext">Write a subheading here, one sentence about what you do and what field you work in. Specific, but concise.</p>
+      <div class="hero-cinematic__cta">
+        <a class="btn btn-primary" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+        <a class="btn btn-outline" data-field="hero_cta_secondary" data-type="link" href="#kontakt">Contact</a>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the hero.</p>
+</div>
+
+</body>
+</html>

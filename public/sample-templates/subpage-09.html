@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-09 — FAQ accordion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-09 — FAQ accordion built on native <details>/<summary> (no
+       JS). A +/− toggle rotates on open. Adapted from the pilimestromy
+       FAQ section. */
+    .subpage-faq { background: var(--color-bg); padding: var(--section-padding, 80px 0); counter-reset: faq; }
+    .subpage-faq .head { max-width: 760px; margin: 0 auto 48px; text-align: center; }
+    .subpage-faq .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-body); font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 55%, var(--color-bg) 45%); margin-bottom: 16px;
+    }
+    .subpage-faq .eyebrow::before {
+      content: ""; display: block; width: 15px; height: 15px;
+      background: var(--color-primary); flex-shrink: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .subpage-faq .head h2 {
+      font-family: var(--font-heading); font-size: clamp(1.9rem, 3.2vw, 2.6rem); font-weight: 700;
+      line-height: 1.15; color: var(--color-text); margin: 0; position: relative; padding-bottom: 18px;
+    }
+    .subpage-faq .head h2::after { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 56px; height: 3px; background: var(--color-primary); border-radius: 2px; }
+
+    .subpage-faq .list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .subpage-faq details {
+      border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-bg);
+      transition: border-color var(--transition), box-shadow var(--transition); counter-increment: faq;
+    }
+    .subpage-faq details[open] { border-color: var(--color-primary); box-shadow: var(--shadow-md); }
+    .subpage-faq summary {
+      list-style: none; cursor: pointer; display: flex; align-items: center; gap: 18px; padding: 20px 24px;
+    }
+    .subpage-faq summary::-webkit-details-marker { display: none; }
+    .subpage-faq summary .n { font-size: 0.85rem; font-weight: 700; color: var(--color-primary); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .subpage-faq summary .n::before { content: counter(faq, decimal-leading-zero); }
+    .subpage-faq summary .q { flex: 1; font-size: 1.05rem; font-weight: 600; color: var(--color-text); line-height: 1.4; }
+    .subpage-faq summary .toggle {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary);
+      transition: transform var(--transition), background var(--transition);
+    }
+    .subpage-faq details[open] summary .toggle { transform: rotate(45deg); background: var(--color-primary); color: #fff; }
+    .subpage-faq summary .toggle svg { width: 18px; height: 18px; }
+    .subpage-faq .answer { padding: 0 24px 22px 24px; }
+    .subpage-faq .answer .inner { border-top: 1px solid var(--color-border); padding-top: 18px; margin-left: 38px; font-size: 1rem; line-height: 1.65; color: var(--color-text-light); }
+    .subpage-faq .answer .inner p { margin: 0 0 0.7em; }
+    .subpage-faq .answer .inner p:last-child { margin-bottom: 0; }
+    @media (max-width: 600px) {
+      .subpage-faq summary { padding: 16px 18px; gap: 12px; }
+      .subpage-faq .answer { padding: 0 18px 18px; }
+      .subpage-faq .answer .inner { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-09</strong> &nbsp; · &nbsp; FAQ accordion (native &lt;details&gt;, no JS). Add as many Q&amp;A as you need. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-09
+  LAYOUT:   Centered heading, then a stack of accordion items. Each item
+            is a native <details> with a numbered summary (auto) + a +/−
+            toggle that rotates on open.
+  CONTENT:  Eyebrow, heading, repeating Q&A items.
+  EDITABLE: eyebrow (text), heading (text), faqs repeater (question text,
+            answer richtext).
+  THEME:    --color-primary (accent, toggle), --color-border, --font-heading/body.
+  JS:       none — native <details> handles open/close.
+-->
+<section id="faq" class="subpage-faq">
+  <div class="head fade-up">
+    <span class="eyebrow" data-field="eyebrow">Questions and answers</span>
+    <h2 data-field="heading">Frequently asked questions</h2>
+  </div>
+  <div class="list fade-up">
+    <div data-repeat="faqs" data-min="1" data-max="99" style="display:contents">
+      <details data-item-id-source="question">
+        <summary>
+          <span class="n"></span>
+          <span class="q" data-field="question">Write your first question here?</span>
+          <span class="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </summary>
+        <div class="answer"><div class="inner" data-field="answer" data-type="richtext"><p>Write the answer to the first question here. Be specific and concise, answer exactly what the customer wants to know.</p></div></div>
+      </details>
+      <details>
+        <summary>
+          <span class="n"></span>
+          <span class="q" data-field="question">Write your second question here?</span>
+          <span class="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </summary>
+        <div class="answer"><div class="inner" data-field="answer" data-type="richtext"><p>Write the answer to the second question here.</p></div></div>
+      </details>
+      <details>
+        <summary>
+          <span class="n"></span>
+          <span class="q" data-field="question">Write your third question here?</span>
+          <span class="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </summary>
+        <div class="answer"><div class="inner" data-field="answer" data-type="richtext"><p>Write the answer to the third question here.</p></div></div>
+      </details>
+      <details>
+        <summary>
+          <span class="n"></span>
+          <span class="q" data-field="question">Write your fourth question here?</span>
+          <span class="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </summary>
+        <div class="answer"><div class="inner" data-field="answer" data-type="richtext"><p>Write the answer to the fourth question here.</p></div></div>
+      </details>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

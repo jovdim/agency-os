@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-05 — Polaroid stack + signed letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-05 — scrapbook-style story layout. Two photos on the left
+       arranged as overlapping polaroids at slight tilts (each with a
+       handwriting-font caption), and on the right a letter-style text
+       block with eyebrow + heading + 2-3 paragraphs.
+
+       The polaroid stack is constrained to a fixed aspect-ratio
+       container so both polaroids sit inside the grid column instead
+       of escaping into the letter column. Tilts are subtle (-3deg /
+       +4deg) so the section reads as "scrapbook," not "wedding album."
+
+       Different from about-01 / 02 / 03 (clean splits with one
+       portrait), about-04 (centered intro + wide landscape photo),
+       and about-08 (split + checklist + photo). The polaroid + letter
+       feel is unique in the catalog — warm, personal, owner-led. */
+
+    .about-05 {
+      padding: 96px 24px;
+      background: var(--color-bg-alt);
+    }
+    .about-05__inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    /* ── LEFT: Polaroid stack ── */
+    .about-05__photos {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      aspect-ratio: 4/5;
+    }
+    .about-05__polaroid {
+      background: #fff;
+      padding: 10px 10px 30px;
+      box-shadow: 0 18px 36px -14px rgba(0, 0, 0, 0.25);
+      border-radius: 4px;
+      position: absolute;
+      width: 78%;
+    }
+    .about-05__polaroid img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+      border-radius: 2px;
+    }
+    .about-05__polaroid-caption {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 6px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: #44403c;
+      text-align: center;
+    }
+    /* Foreground polaroid — front, tilted left, anchored bottom-left */
+    .about-05__polaroid--1 {
+      left: 0;
+      bottom: 0;
+      transform: rotate(-3deg);
+      z-index: 2;
+    }
+    /* Background polaroid — peeks out top-right, tilted right */
+    .about-05__polaroid--2 {
+      right: 0;
+      top: 0;
+      transform: rotate(4deg);
+      z-index: 1;
+    }
+
+    /* ── RIGHT: Letter ── */
+    .about-05__letter {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    .about-05__headline {
+      font-family: var(--font-heading);
+      font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+      line-height: 1.2;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 14px 0 24px;
+    }
+    .about-05__headline > p { margin: 0; font: inherit; color: inherit; }
+    /* Body is a <div> (not <p>) so TipTap's <p> wrap nests cleanly.
+       Same rationale used in about-01 / hiw-01. */
+    .about-05__body {
+      font-size: 1.02rem;
+      line-height: 1.75;
+      color: var(--color-text-light);
+    }
+    .about-05__body > p { margin: 0 0 14px; }
+    .about-05__body > p:last-child { margin-bottom: 0; }
+
+    @media (max-width: 800px) {
+      .about-05 { padding: 72px 16px; }
+      .about-05__inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .about-05__photos {
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-05</strong> &nbsp; · &nbsp; Polaroid stack + signed letter (scrapbook / owner-led feel). &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-05
+  LAYOUT:   2-col split on a tinted bg-alt panel. LEFT: 2 overlapping
+            polaroid photos at slight tilts, each with a handwriting-
+            font caption below the image. RIGHT: a letter-style text
+            block (eyebrow + heading + 2-3 paragraph body). Mobile:
+            stacks (polaroids on top, letter below).
+  CONTENT:  eyebrow + headline + body (richtext) + 2 images + 2 photo
+            captions.
+  EDITABLE: 7 fields — about_eyebrow + about_headline (text) +
+            about_body (richtext) + about_image + about_image_2 +
+            about_caption_1 + about_caption_2.
+            Shares about_eyebrow / about_headline / about_body /
+            about_image keys with about-01 / 02 / 03 / 04 — swap is
+            mostly loss-free; the second polaroid + 2 captions reset.
+  THEME:    Section bg = --color-bg-alt for the tinted panel. Polaroid
+            cards are forced white (#fff) regardless of theme so the
+            scrapbook feel survives dark mode. Caption uses the Caveat
+            handwriting font (loaded with the page). Body + headline
+            track theme colors normally.
+  USE FOR:  Owner-led service businesses with a "personal touch"
+            brand — family firms, restorers, photographers, makers.
+            Replaces the photo grid with a curated 2-photo stack that
+            reads as carefully chosen rather than "stock library
+            assortment." Different from about-01 / 02 / 03 (clean
+            single-photo splits) and about-04 (centered + landscape
+            photo).
+-->
+<section id="o-nas" class="about-05 fade-up" data-field-order="about_eyebrow,about_headline,about_body,about_image,about_caption_1,about_image_2,about_caption_2">
+  <div class="about-05__inner">
+
+    <div class="about-05__photos">
+      <div class="about-05__polaroid about-05__polaroid--2">
+        <img data-field="about_image_2" src="https://placehold.co/600x750/8a7d6e/f5f3ee?text=Photo+2&font=lato" alt="" loading="lazy">
+        <div class="about-05__polaroid-caption" data-field="about_caption_2">The team today</div>
+      </div>
+      <div class="about-05__polaroid about-05__polaroid--1">
+        <img data-field="about_image" src="https://placehold.co/600x750/57534e/e7e5e4?text=Photo+1&font=lato" alt="" loading="lazy">
+        <div class="about-05__polaroid-caption" data-field="about_caption_1">The early days, 2014</div>
+      </div>
+    </div>
+
+    <div class="about-05__letter">
+      <span class="eyebrow" data-field="about_eyebrow">A letter from the founder</span>
+      <h2 class="about-05__headline" data-field="about_headline">Dear customer</h2>
+      <div class="about-05__body" data-field="about_body" data-type="richtext"><p>thank you for taking a moment to read a few words about us. We started twelve years ago in Poprad with one van and one rule: every job is handed over in person.</p><p>Today we are a team of six and that rule still holds. We do not work with anonymous clients and we do not chase the lowest price. We aim for work we can stand behind even five years from now.</p></div>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

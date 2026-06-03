@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-08 — Pricing split card (CTA + trust list)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-08 — pricing / offer split card. A dark rounded card with a
+       soft accent glow: left = badge + heading + body + two CTAs; right =
+       a "what's in it" trust panel. Adapted from the pilimestromy pricing
+       section. */
+    .subpage-pricing { background: var(--color-bg-alt); padding: var(--section-padding, 80px 0); }
+    .subpage-pricing .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+    .subpage-pricing .card {
+      position: relative; overflow: hidden; border-radius: 24px;
+      background: var(--color-secondary, #1c1917); color: var(--color-text-on-dark, #e7e5e4);
+      box-shadow: var(--shadow-lg);
+    }
+    .subpage-pricing .glow {
+      position: absolute; width: 320px; height: 320px; border-radius: 999px;
+      background: color-mix(in srgb, var(--color-primary) 28%, transparent); filter: blur(60px); pointer-events: none;
+    }
+    .subpage-pricing .glow.a { top: -120px; right: -100px; }
+    .subpage-pricing .glow.b { bottom: -140px; left: -120px; opacity: 0.6; }
+    .subpage-pricing .inner {
+      position: relative; display: grid; grid-template-columns: 7fr 5fr; gap: 48px;
+      padding: 48px; align-items: center;
+    }
+    .subpage-pricing .badge {
+      display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 7px 16px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent); color: var(--color-primary);
+    }
+    .subpage-pricing h2 {
+      font-family: var(--font-heading); font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 700;
+      line-height: 1.12; letter-spacing: -0.02em; color: #fff; margin: 20px 0 0;
+    }
+    .subpage-pricing .body { margin: 18px 0 0; font-size: 1.05rem; line-height: 1.65; color: rgba(255,255,255,0.82); }
+    .subpage-pricing .body p { margin: 0 0 0.8em; }
+    .subpage-pricing .body p:last-child { margin-bottom: 0; }
+    .subpage-pricing .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 0; }
+    .subpage-pricing .cta {
+      display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+      padding: 13px 26px; font-family: var(--font-body); font-size: 0.98rem; font-weight: 600;
+      text-decoration: none; transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .subpage-pricing .cta-primary { background: var(--color-primary); color: #fff; }
+    .subpage-pricing .cta-primary:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .subpage-pricing .cta-secondary { border: 1px solid rgba(255,255,255,0.28); color: #fff; }
+    .subpage-pricing .cta-secondary:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 12%, transparent); }
+
+    .subpage-pricing .trust {
+      border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 26px;
+    }
+    .subpage-pricing .trust .cap { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-primary); margin: 0 0 18px; }
+    .subpage-pricing .trust ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+    .subpage-pricing .trust li { display: flex; align-items: center; gap: 14px; font-size: 1rem; font-weight: 600; color: rgba(255,255,255,0.92); }
+    .subpage-pricing .trust li .ic {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--color-primary) 22%, transparent); color: var(--color-primary);
+    }
+    .subpage-pricing .trust li .ic svg { width: 20px; height: 20px; }
+
+    @media (max-width: 860px) {
+      .subpage-pricing .inner { grid-template-columns: 1fr; gap: 32px; padding: 36px 28px; }
+      .subpage-pricing .wrap { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-08</strong> &nbsp; · &nbsp; Dark pricing/offer card — badge + heading + body + two CTAs, with a trust-list panel. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-08
+  LAYOUT:   A dark rounded card with accent glows. Left: badge, heading,
+            body, two CTA buttons. Right: a trust panel with a caption and
+            a checklist. Stacks on mobile.
+  CONTENT:  Badge, heading, body, primary + secondary CTA, trust caption,
+            and a repeating trust list.
+  EDITABLE: badge (text), heading (text), body (richtext), cta_primary
+            (link), cta_secondary (link), trust_caption (text), trust
+            repeater (each: label text).
+  THEME:    --color-secondary (card), --color-primary (badge, CTA, icons),
+            --font-heading/body.
+  JS:       none.
+-->
+<section id="cena" class="subpage-pricing">
+  <div class="wrap fade-up">
+    <div class="card">
+      <span class="glow a"></span>
+      <span class="glow b"></span>
+      <div class="inner">
+        <div>
+          <span class="badge" data-field="badge">Pricing</span>
+          <h2 data-field="heading">Free site visit and quote</h2>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write here how you set the price and what affects it. Emphasize that both the site visit and the quote are without obligation.</p>
+          </div>
+          <div class="ctas">
+            <a class="cta cta-primary" data-field="cta_primary" data-type="link" href="#kontakt">Request a quote</a>
+            <a class="cta cta-secondary" data-field="cta_secondary" data-type="link" href="#kontakt">Write to us</a>
+          </div>
+        </div>
+        <div class="trust">
+          <p class="cap" data-field="trust_caption">What's included</p>
+          <ul data-repeat="trust" data-min="1" data-max="20">
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span data-field="label">Free site visit</span>
+            </li>
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span data-field="label">Fixed price based on the visit</span>
+            </li>
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span data-field="label">No-obligation quote</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

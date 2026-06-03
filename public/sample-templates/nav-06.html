@@ -1,0 +1,427 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nav-06 — Bold uppercase bar (glass)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* nav-06 — bold uppercase navbar with frosted-glass surface.
+       Glass pair of nav-05. Same letter-spaced uppercase typography +
+       animated accent underline, but the bar itself is translucent so
+       hero shows through.
+
+       position: fixed (not sticky) so the hero starts at the top of
+       the page and flows up under the nav — necessary for the glass
+       effect to have something to blur. */
+
+    .site-nav.nav-bold-bar-glass {
+      /* Glass tint follows the user's nav color via color-mix —
+         preserves the original 0.65 translucency. Falls back to white
+         if the var isn't set. */
+      background: color-mix(in srgb, var(--color-nav-bg, #ffffff) 65%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0;
+    }
+
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-bold-bar-glass {
+        background: color-mix(in srgb, var(--color-nav-bg, #ffffff) 92%, transparent);
+      }
+    }
+
+    .site-nav.nav-bold-bar-glass .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 18px 32px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    /* Logo — canonical pattern (matches nav-01): fix HEIGHT, let WIDTH
+       follow the logo's natural aspect ratio. No max-width cap — full
+       logo always renders at its true aspect ratio. */
+    .site-nav.nav-bold-bar-glass .logo {
+      display: inline-flex;
+      align-items: center;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .site-nav.nav-bold-bar-glass .logo img {
+      height: 100%;
+      width: auto;
+      display: block;
+    }
+    @media (max-width: 800px) {
+      .site-nav.nav-bold-bar-glass .logo { height: 40px; }
+    }
+
+    .site-nav.nav-bold-bar-glass .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+      margin: 0 0 0 auto;
+      padding: 0;
+      font-family: var(--font-heading);
+    }
+
+    /* Same uppercase + letter-spacing as nav-05 — that's the shared
+       personality between this pair. Glass surface is the only thing
+       that differs. */
+    /* Top-level nav links only — `> li > a` and `> [data-repeat] > li > a`
+       mirror base CSS's pattern (template-base.css:445) so this rule does
+       NOT reach into `.dropdown a` (which is a deeper descendant of
+       `.nav-links` and would otherwise inherit the no-horizontal-padding
+       and the animated underline ::after, leaving dropdown items flush-left
+       with a stray underline animation that doesn't belong on submenu items). */
+    .site-nav.nav-bold-bar-glass .nav-links > li > a:not(.nav-cta),
+    .site-nav.nav-bold-bar-glass .nav-links > [data-repeat] > li > a:not(.nav-cta) {
+      position: relative;
+      color: var(--color-nav-text, var(--color-text));
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 0;
+      transition: color 0.2s ease;
+    }
+    .site-nav.nav-bold-bar-glass .nav-links > li > a:not(.nav-cta)::after,
+    .site-nav.nav-bold-bar-glass .nav-links > [data-repeat] > li > a:not(.nav-cta)::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: var(--color-primary);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.25s ease;
+    }
+    .site-nav.nav-bold-bar-glass .nav-links > li > a:not(.nav-cta):hover::after,
+    .site-nav.nav-bold-bar-glass .nav-links > [data-repeat] > li > a:not(.nav-cta):hover::after {
+      transform: scaleX(1);
+    }
+
+    .site-nav.nav-bold-bar-glass .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+    .site-nav.nav-bold-bar-glass .nav-cta:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown — frosted to match the parent bar. Anchored to the
+       .site-nav wrapper (no position:relative on .has-dropdown) so
+       centering matches nav-01. */
+    .site-nav.nav-bold-bar-glass .has-dropdown .dropdown {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    .site-nav.nav-bold-bar-glass .has-dropdown .dropdown a {
+      text-transform: none;
+      letter-spacing: 0.02em;
+      font-size: 0.9rem;
+    }
+    .site-nav.nav-bold-bar-glass .has-dropdown .dropdown a::after { content: none; }
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-bold-bar-glass .has-dropdown .dropdown {
+        background: rgba(255, 255, 255, 0.97);
+      }
+    }
+
+    /* ── Mobile (< 900px) ──
+       Mirror of nav-05's mobile but on the glass surface. The animated
+       underline pseudo from desktop is killed and the dropdown chevron
+       explicitly restored — otherwise nav-06's desktop ::after wins
+       over the base chevron and breaks the dropdown trigger visually. */
+    @media (max-width: 900px) {
+      .site-nav.nav-bold-bar-glass .nav-inner { padding: 14px 20px; gap: 0; }
+      .site-nav.nav-bold-bar-glass .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: color-mix(in srgb, var(--color-nav-bg, #ffffff) 85%, transparent);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        padding: 4px 0 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      @supports not (backdrop-filter: blur(1px)) {
+        .site-nav.nav-bold-bar-glass .nav-links {
+          background: color-mix(in srgb, var(--color-nav-bg, #ffffff) 97%, transparent);
+        }
+      }
+      .site-nav.nav-bold-bar-glass .nav-links.open { display: flex; }
+      .site-nav.nav-bold-bar-glass .nav-links li { width: 100%; }
+      .site-nav.nav-bold-bar-glass .nav-links > li > a:not(.nav-cta),
+      .site-nav.nav-bold-bar-glass .nav-links > [data-repeat] > li > a:not(.nav-cta) {
+        display: block;
+        padding: 14px 24px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-align: center;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--color-text);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      /* Kill the animated underline pseudo on mobile (same fix as nav-05). */
+      .site-nav.nav-bold-bar-glass .nav-links > li > a:not(.nav-cta)::after,
+      .site-nav.nav-bold-bar-glass .nav-links > [data-repeat] > li > a:not(.nav-cta)::after {
+        content: none;
+      }
+      /* Restore the dropdown chevron explicitly. */
+      .site-nav.nav-bold-bar-glass .has-dropdown > a::after {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        background: transparent;
+        transform: translateY(-2px) rotate(45deg);
+        margin-left: 8px;
+        transition: transform 0.2s ease;
+        position: static;
+      }
+      .site-nav.nav-bold-bar-glass .has-dropdown.open > a::after {
+        transform: translateY(1px) rotate(225deg);
+      }
+      .site-nav.nav-bold-bar-glass .nav-links > li:nth-last-child(2) > a:not(.nav-cta) {
+        border-bottom: none;
+      }
+      .site-nav.nav-bold-bar-glass .nav-cta {
+        margin: 16px 20px 0;
+        text-align: center;
+        width: calc(100% - 40px);
+        padding: 14px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+      .site-nav.nav-bold-bar-glass .hamburger { display: flex; margin-left: auto; }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-bold-bar-glass .hamburger { display: none; }
+    }
+  
+    /* ── Dropdown indicator + reveal — single-list menu schema ──
+       Every cloned <li> structurally carries an empty .dropdown ul, so
+       chevrons + reveals are driven by :has(> .dropdown > li). Reveal
+       flips opacity/visibility/transform (base hides via those, not
+       display), or the popover stays invisible regardless of hover. */
+    .site-nav.nav-bold-bar-glass .nav-links > li:has(> .dropdown > li) > a::after {
+      content: "";
+      display: inline-block;
+      /* Explicitly reset the absolute positioning + background that the
+         animated-underline ::after rule (same selector specificity) sets
+         — without these resets the chevron inherits position:absolute +
+         bottom:0 and renders as a downward triangle UNDER the text
+         instead of inline-next-to it. */
+      position: static;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      background: transparent;
+      width: 0; height: 0;
+      margin-left: 6px;
+      vertical-align: middle;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid currentColor;
+      transform: translateY(-1px);
+      transition: none;
+    }
+    .site-nav.nav-bold-bar-glass .nav-links > li > .dropdown:not(:has(> li)) {
+      display: none !important;
+    }
+    @media (hover: hover) and (min-width: 901px) {
+      .site-nav.nav-bold-bar-glass .nav-links > li:hover > .dropdown:has(> li),
+      .site-nav.nav-bold-bar-glass .nav-links > li:focus-within > .dropdown:has(> li) {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+    }
+    @media (max-width: 900px) {
+      .site-nav.nav-bold-bar-glass .nav-links > li.open > a::after {
+        transform: translateY(-1px) rotate(180deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: nav-06</strong> &nbsp; · &nbsp; Bold uppercase navbar (glass version). Same caps + underline as nav-05, frosted surface. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:nav:start -->
+<!--
+  TEMPLATE: nav-06
+  LAYOUT:   Same as nav-05 (standard horizontal bar with bold uppercase
+            typography + animated accent underline) BUT with a frosted-
+            glass surface. Pairs with nav-05 as the "bold uppercase"
+            GLASS half. position: fixed so the hero shows through.
+  CONTENT:  Logo image, 5 main links, 4 service items in dropdown,
+            phone CTA. Schema identical to nav-01.
+  EDITABLE: 1 image + 10 link-type fields.
+  MOBILE:   < 900px collapses to hamburger; menu drops as a frosted
+            panel matching the bar.
+-->
+<nav id="top" class="site-nav nav-bold-bar-glass" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+
+    <a href="/" class="logo" aria-label="Home">
+      <img data-field="nav_logo" src="https://placehold.co/360x88/e5e7eb/6b7280?text=LOGO&amp;font=lato" alt="Logo">
+    </a>
+
+    <ul class="nav-links" id="nav-links-list" data-repeat="nav_links" data-min="1" data-max="12">
+      <li><a data-field="label" data-type="link" href="#domov">Home</a></li>
+      <li><a data-field="label" data-type="link" href="#o-nas">About</a></li>
+      <li>
+        <a data-field="label" data-type="link" href="#sluzby" aria-haspopup="true" aria-expanded="false">Services</a>
+        <ul class="dropdown" aria-label="Service list" data-repeat="dropdown_items" data-min="0" data-max="10">
+          <li><a data-field="label" data-type="link" href="#sluzba-1">Service 1</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-2">Service 2</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-3">Service 3</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-4">Service 4</a></li>
+        </ul>
+      </li>
+      <li><a data-field="label" data-type="link" href="#galeria">Gallery</a></li>
+      <li><a data-field="label" data-type="link" href="#kontakt">Contact</a></li>
+    </ul>
+
+    <!-- Phone CTA: label + tel: href both editable -->
+    <!-- Socials: FB + IG. Each is a link field with hide/restore
+         via the composer's hidden_fields toggle. After the hamburger
+         in DOM so desktop reads "[Logo] [Menu] [CTA] [FB] [IG]" and
+         mobile reads "[Logo] ... [Hamburger] [FB] [IG]". -->
+    <!-- Right-edge action cluster — socials + phone CTA + hamburger
+         packed into one tight horizontal group on the right edge of
+         the navbar. `.nav-actions` base rule lives in
+         public/template-base.css. -->
+    <div class="nav-actions">
+      <div class="nav-socials">
+            <a class="nav-social" data-field="nav_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+            </a>
+            <a class="nav-social" data-field="nav_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          </div>
+          <a class="nav-cta" data-field="nav_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+      
+      
+          <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="nav-links-list">
+            <span></span><span></span><span></span>
+          </button>
+    </div>
+
+
+  </div>
+
+  <script>
+    (function () {
+      var nav = document.currentScript.closest('.site-nav') || document.querySelector('.site-nav.nav-bold-bar-glass');
+      if (!nav || nav.dataset.skInit) return;
+      nav.dataset.skInit = '1';
+
+      var hamburger = nav.querySelector('.hamburger');
+      var links = nav.querySelector('.nav-links');
+      if (hamburger && links) {
+        hamburger.addEventListener('click', function () {
+          var open = links.classList.toggle('open');
+          hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+
+      // 2. Dropdown triggers — structural detection. Any .nav-links > li
+      //    whose > .dropdown carries at least one <li> is a trigger.
+      //    preventDefault always; toggle on mobile only.
+      nav.querySelectorAll('.nav-links > li > a').forEach(function (a) {
+        var li = a.parentElement;
+        if (!li) return;
+        var dd = li.querySelector(':scope > .dropdown > li');
+        if (!dd) return;
+        a.addEventListener('click', function (e) {
+          // Mobile: toggle dropdown + preventDefault. Desktop: let the
+          // click navigate to the trigger's href (e.g. #sluzby) — the
+          // hover already opens the dropdown. (Peter 2026-05-15 v4)
+          if (window.innerWidth <= 900) {
+            e.preventDefault();
+            var open = li.classList.toggle('open');
+            a.setAttribute('aria-expanded', open ? 'true' : 'false');
+          }
+        });
+      });
+
+      // 3. Auto-close on link tap (mobile) — picking any real link
+      //    collapses the menu so the page can scroll to the target.
+      //    Triggers (Services etc.) skipped so they keep their toggle
+      //    behavior. (Peter 2026-05-15 v3)
+      if (links) {
+        links.addEventListener('click', function (e) {
+          if (window.innerWidth > 900) return;
+          if (!links.classList.contains('open')) return;
+          var a = e.target && e.target.closest ? e.target.closest('a') : null;
+          if (!a || !links.contains(a)) return;
+          var parent = a.parentElement;
+          if (parent && parent.matches('.nav-links > li') &&
+              parent.querySelector(':scope > .dropdown > li')) {
+            return;
+          }
+          links.classList.remove('open');
+          if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+          nav.querySelectorAll('.nav-links > li.open').forEach(function (openLi) {
+            openLi.classList.remove('open');
+            var openA = openLi.querySelector(':scope > a');
+            if (openA) openA.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+    })();
+  </script>
+</nav>
+<!-- SECTION:nav:end -->
+
+<!-- Spacer (preview-only, stripped on upload) -->
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:600px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">This grey block simulates page content below the nav.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+
+
+</body></html>

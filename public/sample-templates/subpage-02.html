@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-02 — Breadcrumb + intro (text + image card)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-02 — breadcrumb trail + intro block (eyebrow, heading,
+       body) with an image card on the right that has accent corner
+       brackets. Faithful port of the pilimestromy service-page intro. */
+    .subpage-intro { background: var(--color-bg); padding: 28px 0 64px; }
+    .subpage-intro .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    /* Breadcrumb — links separated by CSS chevrons; empty crumbs hide
+       themselves and their separator. The current page (last) renders in
+       the accent color and is not a link. */
+    .subpage-intro .crumbs {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 0;
+      font-family: var(--font-body); font-size: 0.875rem;
+      color: var(--color-text-light); margin: 0 0 44px;
+    }
+    .subpage-intro .crumbs > * { display: inline-flex; align-items: center; }
+    .subpage-intro .crumbs > *:empty { display: none; }
+    .subpage-intro .crumbs a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    .subpage-intro .crumbs a:hover { color: var(--color-primary); }
+    /* Chevron before every crumb except the first visible one. */
+    .subpage-intro .crumbs > * + *::before {
+      content: ""; display: inline-block; width: 5px; height: 5px;
+      border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor;
+      transform: rotate(45deg); opacity: 0.4; margin: 0 12px;
+    }
+    .subpage-intro .crumb-current { color: var(--color-primary); font-weight: 500; }
+
+    .subpage-intro .grid {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: center;
+    }
+
+    /* Eyebrow with the source's signature pentagon marker. */
+    .subpage-intro .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-body); font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 55%, var(--color-bg) 45%);
+      margin-bottom: 18px;
+    }
+    .subpage-intro .eyebrow::before {
+      content: ""; display: block; width: 15px; height: 15px;
+      background: var(--color-primary); flex-shrink: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .subpage-intro h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.9rem, 3.4vw, 2.75rem); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em; color: var(--color-text); margin: 0;
+    }
+    .subpage-intro .accent-line {
+      display: block; width: 48px; height: 3px; background: var(--color-primary);
+      border-radius: 2px; margin: 22px 0 0;
+    }
+    .subpage-intro .body { margin: 28px 0 0; font-size: 1.05rem; line-height: 1.7; color: var(--color-text); }
+    .subpage-intro .body p { margin: 0 0 1em; }
+    .subpage-intro .body p:last-child { margin-bottom: 0; }
+    /* Second paragraph reads as a slightly heavier "kicker" like the source. */
+    .subpage-intro .body p + p { font-weight: 500; color: var(--color-text); }
+
+    /* Image card with accent corner brackets (top-left + bottom-right). */
+    .subpage-intro .card { position: relative; }
+    .subpage-intro .card img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      border-radius: 16px; box-shadow: var(--shadow-lg);
+    }
+    .subpage-intro .card::before,
+    .subpage-intro .card::after {
+      content: ""; position: absolute; width: 80px; height: 80px; pointer-events: none;
+    }
+    .subpage-intro .card::before {
+      top: -12px; left: -12px;
+      border-top: 3px solid var(--color-primary); border-left: 3px solid var(--color-primary);
+      border-top-left-radius: 16px;
+    }
+    .subpage-intro .card::after {
+      bottom: -12px; right: -12px;
+      border-bottom: 3px solid var(--color-primary); border-right: 3px solid var(--color-primary);
+      border-bottom-right-radius: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .subpage-intro .grid { grid-template-columns: 1fr; gap: 44px; }
+      .subpage-intro .wrap { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-02</strong> &nbsp; · &nbsp; Breadcrumb + intro block — eyebrow, heading, body, accent-bracket image card. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-02
+  LAYOUT:   Breadcrumb trail, then a 2-column intro — eyebrow + heading +
+            body on the left, image card with accent corner brackets on
+            the right. Collapses to one column on mobile.
+  CONTENT:  Breadcrumb (home link, parent link, current label), eyebrow,
+            heading, body paragraphs, image.
+  EDITABLE: crumb_home (link), crumb_parent (link), crumb_current (text),
+            eyebrow (text), heading (text), body (richtext), image (image).
+  THEME:    --color-primary (accent line, brackets, current crumb, eyebrow
+            marker), --color-bg, --font-heading/body.
+  JS:       none.
+-->
+<section id="uvod-detail" class="subpage-intro">
+  <div class="wrap fade-up">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a class="crumb" data-field="crumb_home" data-type="link" href="/">Home</a>
+      <a class="crumb" data-field="crumb_parent" data-type="link" href="/#sluzby">Services</a>
+      <span class="crumb-current" data-field="crumb_current">Title of this page</span>
+    </nav>
+
+    <div class="grid">
+      <div>
+        <span class="eyebrow" data-field="eyebrow">Introduction</span>
+        <h2 data-field="heading">A short introduction to this service</h2>
+        <span class="accent-line"></span>
+        <div class="body" data-field="body" data-type="richtext">
+          <p>Write your introductory paragraph here. Explain what it is about, who the service is for and what problem it solves. Feel free to use two or three paragraphs.</p>
+          <p>The second paragraph can mention your service area or what sets you apart from others.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Photo&font=lato" alt="" width="900" height="675" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

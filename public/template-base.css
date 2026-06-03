@@ -1,0 +1,1008 @@
+/* Shared stylesheet for previewing templates standalone.
+   Includes the same :root variables and base styles every assembled site uses,
+   plus styles for every section type. Open any template-XX.html in a browser
+   and it will render correctly using this stylesheet. */
+
+/* ── Image rendering quality ──
+   When the browser scales an image (hero bg upscaled to fit a wider
+   viewport, gallery image shrunk into a thumbnail tile, OR the
+   composer iframe transformed with transform:scale for zoom), the
+   default sampler is "fast bilinear" which produces visible softness.
+   `high-quality` opts into the browser's better-quality bicubic/lanczos
+   sampler — modern Chrome / Firefox / Safari all honor it.
+   `-webkit-optimize-contrast` is the Safari fallback; harmless on
+   Chrome (no-op). Applies to both `<img>` and `background-image` since
+   it's a universal property. Worth the trade-off: imperceptible
+   render-time cost, noticeably sharper photos under any scale. */
+img,
+[style*="background-image"] {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+}
+
+:root {
+  /* ── USER THEME (4 colors controllable from the composer) ────────────── */
+  --color-primary: #d97f33;
+  --color-secondary: #1c1917;
+  --color-text: #292524;
+  --color-bg: #ffffff;
+  /* Navbar background — default white matches the historical solid-nav
+     bg AND the rgba(255,255,255,X) base of every glass nav variant, so
+     navs render identically until the user explicitly picks a color in
+     the Theme panel. Solid navs use this directly; glass navs tint it
+     via color-mix while preserving their existing translucency. */
+  --color-nav-bg: #ffffff;
+
+  /* ── DERIVED tokens — automatically track the user's 4 choices.
+        Templates reference these so a single Text change cascades to muted
+        text, dark-style headings, off-bg surfaces, borders, etc. ─────── */
+  --color-dark: var(--color-text);
+  --color-accent: var(--color-primary);
+  --color-text-light: color-mix(in srgb, var(--color-text) 60%, var(--color-bg) 40%);
+  --color-bg-alt: color-mix(in srgb, var(--color-bg) 92%, var(--color-text) 8%);
+  --color-border: color-mix(in srgb, var(--color-bg) 80%, var(--color-text) 20%);
+
+  /* ── FIXED neutrals — used only on dark sections (hero with image bg,
+        footer/section-dark) where the user's Text color may not be readable.
+        Deliberately not theme-driven so contrast stays guaranteed. ──── */
+  --color-light: #faf7f2;
+  --color-text-on-dark: #e7e5e4;
+
+  /* Typography */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Layout */
+  --max-width: 1200px;
+  --section-padding: 80px 0;
+  --border-radius: 6px;
+  --transition: 0.3s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(12, 10, 9, 0.06);
+  --shadow-md: 0 4px 12px rgba(12, 10, 9, 0.08);
+  --shadow-lg: 0 12px 32px rgba(12, 10, 9, 0.12);
+}
+
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--color-primary); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--color-secondary); }
+
+/* "Fill section" override — applied by the composer when a user toggles
+   the fill icon on a text/longtext/richtext field. Breaks the element
+   out of every ancestor's centered container via the negative-margin
+   viewport trick: paragraph spans from left viewport edge to right
+   viewport edge regardless of parent max-width.
+   Pass 3 of the renderer (parser.ts + render-browser.ts) sets
+   `data-fill="true"` on the matching [data-field] when
+   section.field_styles[key].fill === true. Removing the attribute
+   reverts to the field's natural layout.
+   `!important` is needed to beat per-template width / max-width rules.
+   `box-sizing: border-box` ensures padding doesn't push the element
+   past 100vw and trigger a horizontal scrollbar. Mobile padding keeps
+   text from gluing to the viewport edges (uncomfortable to read);
+   desktop bumps it up so prose has breathing room on full-bleed bands. */
+[data-field][data-fill="true"] {
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  box-sizing: border-box !important;
+}
+@media (min-width: 768px) {
+  [data-field][data-fill="true"] {
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+  }
+}
+
+/* ── Repeater-wrapper compat for nav links ────────────────────────────────
+   The publish renderer wraps each `[data-repeat]` child in a
+   `<div data-sk-repeater-wrap>` (composer marker absent from source
+   templates). Per-nav selectors like
+   `.site-nav.X .nav-links > [data-repeat] > li > a` then fail because the
+   `<li>` is no longer a direct child of `[data-repeat]`. Repeater items
+   (Home, About, etc.) fall through to the global `a` rule above and pick
+   up the theme primary color, while direct children (Services dropdown
+   trigger) get their nav styling correctly.
+
+   This catch-all keeps menu link COLOR neutral across all nav variants
+   regardless of wrapper insertion. Per-variant typography (uppercase,
+   letter-spacing, font-size) is still patched in each nav's own CSS. */
+.site-nav .nav-links > [data-repeat] > [data-sk-repeater-wrap] > li > a:not(.nav-cta) {
+  color: var(--color-nav-text, var(--color-text));
+}
+.site-nav .nav-links > [data-repeat] > [data-sk-repeater-wrap] > li > a:not(.nav-cta):hover {
+  color: var(--color-primary);
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-dark);
+  line-height: 1.2;
+  margin: 0 0 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
+h2 { font-size: clamp(1.625rem, 3.5vw, 2.25rem); }
+h3 { font-size: 1.25rem; }
+/* Paragraph gap — tightened from 16px to 10px so a single Enter press
+   in a richtext field produces a natural-feeling break instead of a
+   double-line gap. Templates that need wider spacing (CTA bands, hero
+   leads, etc.) override on their specific element. */
+p { margin: 0 0 10px; }
+
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+section { padding: var(--section-padding); }
+.section-alt { background: var(--color-bg-alt); }
+.section-dark { background: var(--color-secondary); color: var(--color-text-on-dark); }
+.section-dark h1, .section-dark h2, .section-dark h3 { color: var(--color-light); }
+
+/* === BUTTONS === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  transition: all var(--transition);
+  cursor: pointer;
+  border: 2px solid transparent;
+  text-align: center;
+}
+.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-primary:hover { background: var(--color-secondary); color: #fff; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-outline { background: transparent; color: var(--color-secondary); border-color: var(--color-secondary); }
+.btn-outline:hover { background: var(--color-secondary); color: #fff; }
+
+/* === EYEBROW === */
+.eyebrow {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+  font-family: var(--font-heading);
+}
+
+/* Global eyebrow accent underline — small horizontal line in the brand
+   primary color, centered UNDER the eyebrow text. Catches every eyebrow
+   regardless of which CSS class wraps it (`.eyebrow`, `.hero-cinematic__eyebrow`,
+   `.hero-editorial__eyebrow`, `.about-07 .eyebrow`, etc.) by targeting the
+   semantic `data-field` attribute that ends with `_eyebrow` on every
+   editable eyebrow placeholder.
+
+   `display: inline-flex` + `flex-direction: column` makes the eyebrow size
+   to its text width (not the full container row), and `align-items: center`
+   centers the ::after underline RELATIVE TO THE EYEBROW TEXT — so the line
+   lands under the text whether the eyebrow itself is centered (hero-01,
+   hero-04, about-07) or left-aligned (hero-02, hero-03, hero-06, about-01).
+
+   Adds ~12px of vertical space inside each eyebrow (10px gap + 2px line)
+   on top of the eyebrow's existing margin-bottom — pushes the headline
+   below it down accordingly. Intentional. */
+[data-field$="_eyebrow"],
+[data-field="eyebrow"] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+[data-field$="_eyebrow"]::after,
+[data-field="eyebrow"]::after {
+  content: "";
+  width: 32px;
+  height: 2px;
+  background: var(--color-primary);
+  margin-top: 10px;
+}
+
+/* === SECTION HEADERS === */
+.section-head { text-align: center; max-width: 760px; margin: 0 auto 56px; }
+.section-head p { color: var(--color-text-light); font-size: 1.05rem; }
+
+/* === HERO === */
+.hero {
+  position: relative;
+  /* Full viewport height so the hero ALWAYS fills the screen above the
+     fold, regardless of which nav template is in use. Previously 78vh
+     left ~22vh of viewport at the bottom showing the next section
+     bleeding in, which made the hero feel compressed especially after
+     navs switched to position: fixed (so the hero no longer starts
+     below the nav's vertical footprint).
+
+     Side effect: nav (fixed) overlaps the top ~80px of the hero. Hero
+     content (headline + buttons) is centered vertically so it sits
+     well clear of the nav band — the only thing the nav covers is the
+     decorative top of the background image. */
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  color: var(--color-light);
+  display: flex;
+  align-items: center;
+  padding: 100px 0;
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(12,10,9,0.78), rgba(28,25,23,0.62));
+  z-index: 1;
+}
+.hero-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+.hero h1 {
+  color: var(--color-light);
+  max-width: 820px;
+  margin-bottom: 20px;
+  /* Override the global h1 clamp(2rem, 5vw, 3.25rem). Mobile floor
+     at 1.3rem (~21px) keeps 9-word Slovak headlines to 3-4 lines.
+     Tuned 4× now (Peter 2026-05-20): 1.05rem too small, 1.6rem too
+     small vs lede, 1.85rem too big, settling at 1.3-1.5rem. */
+  font-size: clamp(1.3rem, 4.5vw, 3.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+@media (max-width: 480px) {
+  .hero h1 {
+    /* 1.5rem (24px) — comfortable mobile hero, clearly larger than
+       the lede (1rem) without overwhelming the viewport. */
+    font-size: 1.5rem !important;
+    line-height: 1.2;
+    max-width: 100%;
+  }
+  /* Lede stays small so title:lede ratio reads as a hero hierarchy. */
+  .hero .lede {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+}
+.hero .lede { font-size: 1.2rem; max-width: 680px; color: var(--color-text-on-dark); margin-bottom: 32px; line-height: 1.55; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+
+/* Hero variant 2: split (image right, text left) */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  min-height: 70vh;
+  align-items: center;
+  padding: 80px 0;
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.hero-split h1 { color: var(--color-dark); }
+.hero-split .lede { color: var(--color-text-light); margin-bottom: 32px; font-size: 1.15rem; }
+.hero-split img { width: 100%; aspect-ratio: 5/4; object-fit: cover; border-radius: var(--border-radius); box-shadow: var(--shadow-lg); }
+@media (max-width: 800px) {
+  .hero-split { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* === SERVICES === */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.service-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+.service-card:hover { transform: translateY(-4px); border-color: var(--color-primary); box-shadow: var(--shadow-lg); }
+.service-card img { width: 100%; height: 220px; object-fit: cover; }
+.service-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+.service-card h3 { margin-bottom: 10px; }
+.service-card p { color: var(--color-text-light); font-size: 0.95rem; flex: 1; margin-bottom: 16px; }
+.service-card .read-more {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 600; color: var(--color-primary);
+  font-size: 0.92rem; font-family: var(--font-heading);
+}
+.service-card .read-more::after { content: "→"; transition: transform var(--transition); }
+.service-card:hover .read-more::after { transform: translateX(4px); }
+
+/* Services variant 2: zigzag rows */
+.services-zigzag .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  margin-bottom: 80px;
+}
+.services-zigzag .row:last-child { margin-bottom: 0; }
+.services-zigzag .row img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--border-radius); }
+@media (min-width: 768px) {
+  .services-zigzag .row.image-right > div:first-child { order: 2; }
+  .services-zigzag .row.image-right > div:last-child { order: 1; }
+}
+@media (max-width: 800px) {
+  .services-zigzag .row { grid-template-columns: 1fr; gap: 32px; margin-bottom: 56px; }
+}
+
+/* === ABOUT === */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.split img { width: 100%; border-radius: var(--border-radius); aspect-ratio: 4/3; object-fit: cover; }
+.split h2 { margin-bottom: 20px; }
+.split-text p { color: var(--color-text-light); font-size: 1rem; }
+@media (max-width: 800px) { .split { grid-template-columns: 1fr; gap: 32px; } }
+
+.feature-list { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 14px; }
+.feature-list li { display: flex; gap: 12px; align-items: flex-start; }
+.feature-list li::before {
+  content: ""; flex-shrink: 0; width: 22px; height: 22px;
+  margin-top: 2px; border-radius: 50%;
+  background: var(--color-primary);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+  background-size: 14px 14px; background-position: center; background-repeat: no-repeat;
+}
+
+/* === REVIEWS === */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.review-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+.review-stars { color: var(--color-accent); margin-bottom: 14px; font-size: 1.1rem; letter-spacing: 2px; }
+.review-text { color: var(--color-text); font-size: 0.95rem; flex: 1; margin-bottom: 18px; line-height: 1.7; }
+.review-author { font-family: var(--font-heading); font-weight: 600; color: var(--color-dark); }
+.review-source { font-size: 0.8rem; color: var(--color-text-light); margin-top: 4px; }
+
+/* === FAQ === */
+.faq { max-width: 800px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--color-border); }
+.faq-question {
+  width: 100%; text-align: left; padding: 22px 0;
+  font-family: var(--font-heading); font-weight: 600; font-size: 1.05rem;
+  color: var(--color-secondary);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; background: transparent;
+}
+.faq-question::after {
+  content: "";
+  flex-shrink: 0;
+  width: 12px; height: 12px;
+  border-right: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--transition);
+}
+.faq-question[aria-expanded="true"]::after { transform: translateY(2px) rotate(225deg); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height var(--transition); }
+.faq-answer-inner { padding: 0 0 22px; color: var(--color-text-light); }
+.faq-item.is-open .faq-answer { max-height: 500px; }
+
+/* === GALLERY === */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.gallery-grid figure { margin: 0; overflow: hidden; border-radius: var(--border-radius); aspect-ratio: 4/3; }
+.gallery-grid img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition); }
+.gallery-grid figure:hover img { transform: scale(1.05); }
+
+/* === CTA BAND === */
+.cta-band {
+  background: var(--color-primary);
+  color: #fff;
+  text-align: center;
+  padding: 64px 0;
+}
+.cta-band h2 { color: #fff; margin-bottom: 12px; }
+.cta-band p { color: rgba(255,255,255,0.92); margin-bottom: 28px; max-width: 640px; margin-left: auto; margin-right: auto; }
+.cta-band .btn-primary { background: var(--color-secondary); }
+.cta-band .btn-primary:hover { background: var(--color-dark); }
+
+/* === CONTACT === */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+@media (max-width: 800px) { .contact-grid { grid-template-columns: 1fr; gap: 32px; } }
+.contact-info-block { margin-bottom: 24px; }
+.contact-info-block h3 {
+  /* "Phone" / "Email" labels — small uppercase, normal text color. */
+  font-size: 0.85rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--color-text); margin-bottom: 6px;
+  opacity: 0.7;
+}
+.contact-info-block p, .contact-info-block a {
+  /* Phone number / email value — normal text color so it follows the
+     theme. Was previously --color-secondary (fixed dark). */
+  font-size: 1.15rem; color: var(--color-text); font-weight: 500; margin: 0;
+}
+.contact-info-block a:hover { color: var(--color-primary); }
+
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 6px; color: var(--color-text); }
+.form-group input, .form-group textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: var(--font-body); font-size: 1rem;
+  color: var(--color-text); background: var(--color-bg);
+  transition: border-color var(--transition);
+}
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--color-primary); }
+.form-group textarea { resize: vertical; min-height: 130px; }
+.form-consent { margin: 18px 0 24px; font-size: 0.92rem; color: var(--color-text-light); }
+.form-consent label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.form-consent input { margin-top: 4px; flex-shrink: 0; }
+.form-consent a { color: var(--color-primary); text-decoration: underline; }
+form button[type="submit"] {
+  background: var(--color-primary); color: #fff;
+  padding: 14px 32px; border-radius: var(--border-radius);
+  font-weight: 600; font-family: var(--font-heading); font-size: 1rem;
+  transition: var(--transition);
+}
+form button[type="submit"]:hover { background: var(--color-secondary); transform: translateY(-2px); }
+
+/* === FOOTER === */
+.site-footer {
+  background: var(--color-secondary);
+  color: var(--color-text-on-dark);
+  padding: 64px 0 24px;
+  font-size: 0.95rem;
+}
+.footer-grid {
+  max-width: var(--max-width);
+  margin: 0 auto; padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+@media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+@media (max-width: 500px) { .footer-grid { grid-template-columns: 1fr; } }
+.footer-grid h4 { color: var(--color-light); font-size: 0.95rem; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; }
+.footer-grid ul { list-style: none; padding: 0; margin: 0; }
+.footer-grid li { margin-bottom: 8px; }
+.footer-grid a { color: var(--color-text-on-dark); }
+.footer-grid a:hover { color: var(--color-primary); }
+.footer-grid p { color: var(--color-text-on-dark); margin-bottom: 8px; }
+.footer-bottom {
+  max-width: var(--max-width); margin: 40px auto 0;
+  padding: 24px 24px 0;
+  border-top: 1px solid rgba(231,229,228,0.15);
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  gap: 16px; font-size: 0.85rem; color: var(--color-text-light);
+}
+.footer-bottom a { color: var(--color-text-light); }
+.footer-bottom a:hover { color: var(--color-primary); }
+
+/* === NAVIGATION === */
+.site-nav {
+  /* position: fixed (not sticky) so the nav is taken OUT of document
+     flow entirely. The first section below (typically a hero) then
+     starts at the very top of the page and flows UP UNDER the nav.
+     Consequences:
+       1. Hero / first section always gets the full viewport height
+          regardless of how tall the nav is.
+       2. Solid navs (nav-01, nav-05) render over the top of the hero —
+          a clean horizontal band covering the topmost ~80px of hero
+          image. Hero focal point is centered so this is fine.
+       3. Glass navs (nav-02, nav-04, nav-06) show the hero through
+          the nav itself, which is the whole point of the glass effect.
+       4. Floating pill navs (nav-03, nav-04) keep their margin from
+          the page edges with the hero visible around AND through.
+     All 6 navs override or extend this rule for their specific layout
+     needs, but the base behavior is now uniform across the set. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* z-index 1000 leaves headroom over `.fade-up` transformed sections
+     below (transforms create stacking contexts that can otherwise paint
+     over the dropdown / mobile menu when extended downward). */
+  z-index: 1000;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.nav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.nav-inner .logo { display: flex; align-items: center; }
+.nav-inner .logo img { height: 40px; width: auto; display: block; }
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+.nav-links > li,
+.nav-links > [data-repeat] > li { position: relative; }
+/*
+  Navbar links — selector also matches links inside [data-repeat]
+  wrappers. The composer renders nav templates with
+  `<div data-repeat="nav_links_before" style="display:contents"><li>…</li></div>`
+  so the children flow into the <ul> visually but the DOM parent of the
+  <li> is the wrapper <div>, not the <ul.nav-links>. The original
+  `.nav-links > li > a` selector with the strict child combinator only
+  matched the SINGLE direct-child <li> (the Services dropdown trigger),
+  while every other link (Home, About, Gallery, Contact) fell through
+  to the global `a { color: var(--color-primary) }` rule and turned
+  primary on every theme dice roll. Adding the wrapper-aware variant
+  catches those too.
+
+  Static + hover both stay on Text — only the brand-colored CTA button
+  (.nav-cta) and accents elsewhere on the site track the primary.
+*/
+.nav-links > li > a,
+.nav-links > [data-repeat] > li > a {
+  color: var(--color-nav-text, var(--color-text));
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  transition: opacity var(--transition);
+}
+.nav-links > li > a:hover,
+.nav-links > [data-repeat] > li > a:hover { opacity: 0.6; }
+/* Active page — the publish renderer stamps aria-current="page" on the
+   nav link pointing at the page being viewed (see render.ts
+   qualifyCrossPageAnchors). Make it visually distinct so visitors know
+   where they are. Full opacity + bolder weight, scoped to the nav so it
+   never bleeds into content links. */
+.site-nav a[aria-current="page"],
+.nav-links a[aria-current="page"] {
+  font-weight: 700;
+  opacity: 1;
+}
+/* ...but NOT dropdown service links. The active-page stamp lands on ANY
+   nav anchor whose href targets the current page — including dropdown
+   items like "/#sluzba" when you're on the page that holds the services
+   section — which would render the whole Services list bold. The
+   active-page indicator is a TOP-LEVEL nav cue only, so pin dropdown
+   items back to their normal weight. Higher specificity than the bold
+   rule above so it always wins. */
+.site-nav .dropdown a[aria-current="page"] {
+  font-weight: 500;
+}
+/* Establish .has-dropdown as the positioning anchor for its child
+   .dropdown. Without this, .dropdown's position:absolute resolves to
+   the nearest positioned ancestor (the navbar wrapper itself, which
+   is full width). Centering against the navbar makes the dropdown
+   land under whatever element happens to sit at the navbar's
+   horizontal center — usually NOT the Services trigger. Anchoring to
+   the <li> instead makes "centered" mean "centered on the trigger
+   text," which is what users expect. */
+.has-dropdown {
+  position: relative;
+}
+.has-dropdown > a::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  margin-left: 4px;
+  transition: transform var(--transition);
+}
+/* Hover/focus-within only when there's a real pointer AND the desktop layout is active.
+   Below 900px the .open class is the sole source of truth (set by the template's tap handler). */
+@media (hover: hover) and (min-width: 901px) {
+  .has-dropdown:hover > a::after,
+  .has-dropdown:focus-within > a::after {
+    transform: translateY(1px) rotate(225deg);
+  }
+}
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  /* Center the dropdown horizontally under its trigger. The earlier
+     `left: -16px` had the dropdown stick out to the left of the
+     trigger, which looked off-balance on bar navs where the Services
+     item sits in the middle (the dropdown extended left over neighboring
+     items and looked "shifted away from where the cursor is").
+     left:50% + transform:translateX(-50%) is the standard "anchor on
+     center" trick — works regardless of trigger width or dropdown
+     content length. */
+  left: 50%;
+  /* Inline fallback to solid white in case a theme override leaves
+     --color-bg transparent — otherwise the hero would bleed through. */
+  background: var(--color-bg, #ffffff);
+  border: 1px solid var(--color-border);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  min-width: 220px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  /* Combined transform — translateX(-50%) centers, translateY(6px) is
+     the closed-state offset for the slide-up entrance. Hover/focus
+     state below keeps the X transform and resets Y to 0. */
+  transform: translateX(-50%) translateY(6px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 1001;
+}
+/* Hover bridge — invisible 4px strip above the dropdown that fills the
+   gap between the trigger and the dropdown surface. Without it, the
+   user's cursor crosses a hover-dead-zone while moving from "Services"
+   down to a service item, and the dropdown closes mid-traverse. The
+   ::before is a descendant of .dropdown, which itself is a descendant
+   of .has-dropdown — so when the cursor sits on this strip, the parent
+   .has-dropdown still satisfies :hover and the dropdown stays open. */
+.dropdown::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: transparent;
+  pointer-events: auto;
+}
+@media (hover: hover) and (min-width: 901px) {
+  .has-dropdown:hover > .dropdown,
+  .has-dropdown:focus-within > .dropdown {
+    opacity: 1;
+    visibility: visible;
+    /* Keep translateX(-50%) for the centering anchor; only reset the
+       Y offset so the slide-up entrance lands flush under the trigger. */
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+}
+.dropdown li { margin: 0; padding: 0; }
+.dropdown a {
+  display: block;
+  padding: 10px 18px;
+  color: var(--color-nav-text, var(--color-text));
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+}
+.dropdown a:hover {
+  /* Same rule as the parent nav links: dropdown items hold their text
+     color across primary changes. Background swap to bg-alt is enough
+     hover feedback on its own — no need to also pull the text into the
+     primary brand color. */
+  background: var(--color-bg-alt);
+  color: var(--color-nav-text, var(--color-text));
+}
+.nav-cta {
+  /* Navbar's call-to-action button — same brand color as every other button
+     on the site (Primary). Hover transitions to Secondary as a subtle visual
+     feedback. */
+  background: var(--color-primary);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background var(--transition);
+}
+.nav-cta:hover { background: var(--color-secondary); color: #fff; }
+.hamburger {
+  display: none;
+  width: 40px; height: 40px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+}
+.hamburger span {
+  display: block;
+  width: 24px; height: 2px;
+  /* mix-blend-mode: difference guarantees the bars are visible on
+     ANY navbar background. With background:#fff + difference, the
+     bars render as the inverse of whatever's behind: black on white
+     navs, white on dark navs, and a contrasting mid-tone on
+     anything in between. This sidesteps the theming gap where
+     `--color-text` is body-wide and ends up matching a custom
+     dark `--color-nav-bg`, which made the hamburger invisible on
+     dark navbars (Peter 2026-05-13). */
+  background: #fff;
+  mix-blend-mode: difference;
+  transition: var(--transition);
+}
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 900px) {
+  .nav-links {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    /* Inline fallback so the hero never bleeds through the open menu. */
+    background: var(--color-bg, #ffffff);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 16px 24px;
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    z-index: 1001;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.18s ease-out,
+      transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0.22s;
+    /* Long menus (many top-level links + an expanded Sluzby dropdown
+       with 8-10 services) used to overflow past the viewport bottom
+       with no way to reach the hidden items — `position: absolute`
+       takes the menu out of the document flow, so the page can't
+       scroll to reveal it. Capping at ~80vh and letting the menu
+       itself scroll keeps every item reachable on small screens
+       regardless of how many links + dropdown items the client adds.
+       `overscroll-behavior: contain` prevents scroll-chaining: when
+       the user reaches the bottom of the menu, the page underneath
+       doesn't start scrolling too. (Peter 2026-05-15 v3) */
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 0.18s ease-out,
+      transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0s;
+  }
+  /* Mirror of the desktop selector — also catch links wrapped by
+     [data-repeat] so the mobile collapsed menu styles every item, not
+     just the single Services trigger. See the comment above the desktop
+     rule for the underlying display:contents wrapper explanation. */
+  .nav-links > li,
+  .nav-links > [data-repeat] > li { width: 100%; }
+  .nav-links > li > a,
+  .nav-links > [data-repeat] > li > a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+    /* Long single-word service titles or stacked phrases used to
+       overflow the navbar — `white-space: normal` + `word-break:
+       break-word` lets long names wrap inside the column. (Peter
+       2026-05-15 v3) */
+    white-space: normal;
+    word-break: break-word;
+  }
+  .has-dropdown > a::after {
+    margin-left: 0;
+    transform: rotate(45deg);
+  }
+  .has-dropdown.open > a::after {
+    transform: rotate(225deg);
+  }
+  /* Mobile dropdown: animated reveal instead of the old
+     `display: none/block` snap (Peter 2026-05-15 v3). `max-height`
+     transitions smoothly from 0 to a generous ceiling (800px covers
+     8-10 services with rich labels). Opacity + padding ease in
+     alongside so the items don't pop into existence. The legacy
+     `.has-dropdown.open` selector + the newer `li.open` selector both
+     trip the same reveal so per-template overrides can use whichever
+     they emit. */
+  .dropdown {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    min-width: 0;
+    padding: 0 0 0 16px;
+    opacity: 0;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    max-height: 0;
+    overflow: hidden;
+    transition:
+      max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.2s ease-out,
+      padding 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .has-dropdown.open > .dropdown,
+  .nav-links > li.open > .dropdown {
+    max-height: 800px;
+    opacity: 1;
+    padding: 4px 0 8px 16px;
+  }
+  .dropdown a {
+    padding: 10px 0;
+    font-size: 0.92rem;
+    border-bottom: none;
+    /* Same wrap rule as top-level links — long service names stay
+       inside the column width. */
+    white-space: normal;
+    word-break: break-word;
+  }
+  .nav-cta { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* === NAV ACTIONS CLUSTER ===
+   Peter 2026-05-13: every navbar wraps its socials + phone CTA +
+   hamburger in a single `<div class="nav-actions">` cluster on the
+   right edge. Without this wrapper those three elements were direct
+   flex children of `.nav-inner` (or grid children in nav-07), so the
+   parent's 24px gap (or grid auto-placement) spread them across the
+   bar as scattered items rather than one tight action area. The
+   wrapper gives the cluster its own 10px internal gap so the icons
+   visually touch the CTA, while the parent flex/grid keeps the whole
+   cluster cleanly separated from the menu. Mobile tightens the
+   internal gap so `[FB] [IG] [🍔]` reads as one group close to the
+   right edge. */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+/* Zero out the legacy `.nav-socials { margin-left: 6px }` once the
+   socials live inside `.nav-actions` — the cluster's own gap handles
+   spacing now, and the inherited margin-left would shift FB off the
+   cluster's left edge. */
+.nav-actions > .nav-socials {
+  margin-left: 0;
+}
+@media (max-width: 900px) {
+  .nav-actions { gap: 6px; }
+}
+
+/* === NAV SOCIALS ===
+   Peter 2026-05-13: every navbar carries Facebook + Instagram icons,
+   individually hide-able via the composer's hidden_fields toggle.
+   DOM placement: inside `.nav-actions` (alongside the phone CTA and
+   hamburger) so the three render as one tight cluster on the right
+   edge — see the .nav-actions block above. */
+.nav-socials {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.nav-social {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease, transform 0.2s ease;
+}
+.nav-social:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-nav-bg, #fff);
+  transform: translateY(-1px);
+}
+.nav-social svg {
+  width: 15px;
+  height: 15px;
+}
+@media (max-width: 800px) {
+  .nav-social {
+    width: 30px;
+    height: 30px;
+  }
+  .nav-social svg { width: 13px; height: 13px; }
+  .nav-socials {
+    gap: 6px;
+    margin-left: 4px;
+    /* DOM order is `<Menu> <Socials> <CTA> <Hamburger>`. With Menu
+       and CTA hidden on mobile, the natural visible order becomes
+       `Logo · FB · IG · 🍔` — socials BEFORE the hamburger, which is
+       Peter's latest spec. No `order:` flip needed. */
+  }
+}
+
+/* === SCROLL ANIMATIONS === */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.fade-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-up, .fade-left, .fade-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* === Preview-only chrome (visible only in standalone preview, not in production) === */
+.preview-banner {
+  background: #fffbeb;
+  border-bottom: 2px dashed #d97f33;
+  padding: 12px 24px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #57534e;
+  text-align: center;
+}
+.preview-banner strong { color: #d97f33; font-family: var(--font-heading); }
+.preview-banner a { color: #d97f33; }

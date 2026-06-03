@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-06 — Photo-card reveal (hover expands overlay)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* reviews-06: portrait photo cards in a 3-up grid. At rest each
+       card shows just the photo with stars + author at the bottom
+       (text-shadow for legibility, no dark gradient bar). On hover, a
+       FLOATING dark card materializes around the content — auto-height
+       so it hugs the stars + author + text snugly, no dead space above.
+
+       Architecture: one container (.review-card__floating) holds ALL
+       the content (stars, author, text). At rest its background is
+       transparent so the content appears to float directly on the
+       photo. On hover the background fades to warm dark gray, the
+       review text expands into view, and the floating card naturally
+       grows to fit the added text via `height: auto`.
+
+       The 5-star rating is hardcoded (★★★★★) — every screenshot Peter
+       shared had 5 stars. Swap for a per-item field if variable
+       ratings are ever needed. */
+    .reviews-06 {
+      padding: 96px 24px;
+      background: var(--color-bg);
+      font-family: var(--font-body);
+    }
+    .reviews-06__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .reviews-06__head {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .reviews-06__heading {
+      font-family: var(--font-heading);
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      color: var(--color-dark);
+      margin: 0;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .reviews-06__accent {
+      width: 72px;
+      height: 4px;
+      background: var(--color-primary);
+      border-radius: 2px;
+      margin: 20px auto 26px;
+    }
+    .reviews-06__subheadline {
+      max-width: 640px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+    }
+
+    /* ── Grid ── */
+    .reviews-06__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* ── Card ── */
+    .reviews-06 .review-card {
+      position: relative;
+      /* 4/5 = 1.25× width. Wider/shorter than the previous 7/10
+         (1.43×) — closer to a balanced portrait, matching the
+         proportion Peter sketched in the latest reference. */
+      aspect-ratio: 4 / 5;
+      border-radius: 14px;
+      overflow: hidden;
+      isolation: isolate;
+      background: #1c1917;
+    }
+    .reviews-06 .review-card__photo {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      /* Real CSS filter on the photo data — not just a darkening
+         overlay. brightness < 1 darkens, saturate < 1 mutes color
+         vibrancy, contrast > 1 keeps detail crisp. The combo gives
+         the photo a "designed / treated" look so it reads as part
+         of the section instead of a raw upload. */
+      filter: brightness(0.82) saturate(0.82) contrast(1.05);
+      transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+    }
+    /* Warm tint pseudo-element — layered on TOP of the filter to
+       add a unifying color cast AND make rest-state text legible on
+       bright photos (sky, white walls). Uniform opacity across the
+       whole photo (no gradient = no "bottom border" effect Peter
+       called out previously). Combined with the layered text-shadow
+       on stars + author, this is enough that the rest text stays
+       readable no matter what's behind it. */
+    .reviews-06 .review-card__photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(42, 38, 35, 0.28);
+      pointer-events: none;
+    }
+    .reviews-06 .review-card:hover .review-card__photo {
+      transform: scale(1.04);
+    }
+
+    /* ── Floating card ──
+       The content container, doubling as the hover-state dark
+       overlay. Sits 14px from the photo card's left/right/bottom
+       edges, all four corners rounded. At rest its background is
+       transparent — stars + author appear to float on the photo
+       directly. On hover the background fades to warm dark gray,
+       and the review text expands into view, growing the card
+       naturally because `height: auto` follows the content. */
+    .reviews-06 .review-card__floating {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      padding: 18px 22px;
+      border-radius: 14px;
+      background: transparent;
+      color: #fff;
+      z-index: 2;
+      transition: background 380ms cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 380ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reviews-06 .review-card:hover .review-card__floating {
+      /* Warm dark gray matching Peter's reference, RGB ≈ #2a2624. */
+      background: rgba(42, 38, 35, 0.95);
+      padding: 22px 24px;
+    }
+    .reviews-06 .review-card__stars {
+      display: block;
+      color: var(--color-primary);
+      letter-spacing: 4px;
+      font-size: 0.9rem;
+      line-height: 1;
+      margin: 0 0 10px;
+      /* Triple-layered text shadow so stars stay legible on ANY
+         photo background — even bright skies or yellow equipment.
+         Tight black outline + a midweight shadow + a soft halo.
+         Removed on hover where the dark floating card backdrop
+         provides plenty of contrast on its own. */
+      text-shadow:
+        0 0 1px rgba(0, 0, 0, 0.95),
+        0 1px 3px rgba(0, 0, 0, 0.85),
+        0 2px 12px rgba(0, 0, 0, 0.6);
+      transition: font-size 280ms ease, letter-spacing 280ms ease,
+                  text-shadow 280ms ease;
+    }
+    .reviews-06 .review-card:hover .review-card__stars {
+      font-size: 1.05rem;
+      letter-spacing: 5px;
+      text-shadow: none;
+    }
+    .reviews-06 .review-card__author {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: #fff;
+      margin: 0;
+      font-size: 1.3rem;
+      line-height: 1.2;
+      /* Same triple-layer recipe as stars — stronger because the
+         author name is bigger and pops more, so any "halo" effect
+         is more visible. */
+      text-shadow:
+        0 0 1px rgba(0, 0, 0, 0.95),
+        0 1px 3px rgba(0, 0, 0, 0.9),
+        0 2px 14px rgba(0, 0, 0, 0.65);
+      transition: font-size 280ms ease, text-shadow 280ms ease;
+    }
+    .reviews-06 .review-card:hover .review-card__author {
+      font-size: 1.55rem;
+      text-shadow: none;
+    }
+    /* Review text wrapper — collapses to zero height at rest, expands
+       on hover. The PARENT .review-card__floating's `height: auto`
+       follows this growth, so the dark card naturally hugs the new
+       content size. 240px cap keeps very long reviews from breaking
+       out — they'll just scroll inside the card. */
+    .reviews-06 .review-card__text-wrap {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 380ms cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 280ms ease 80ms,
+                  margin-top 380ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reviews-06 .review-card:hover .review-card__text-wrap {
+      max-height: 240px;
+      opacity: 1;
+      margin-top: 14px;
+    }
+    .reviews-06 .review-card__text-wrap p {
+      margin: 0;
+      font-size: 0.96rem;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.93);
+    }
+
+    /* ── Touch devices ──
+       hover doesn't exist — show the expanded state always so the
+       review text isn't unreachable on phones / tablets. */
+    @media (hover: none) {
+      .reviews-06 .review-card__floating {
+        background: rgba(42, 38, 35, 0.95);
+        padding: 22px 24px;
+      }
+      .reviews-06 .review-card__stars {
+        font-size: 1.05rem;
+        letter-spacing: 5px;
+        text-shadow: none;
+      }
+      .reviews-06 .review-card__author {
+        font-size: 1.55rem;
+        text-shadow: none;
+      }
+      .reviews-06 .review-card__text-wrap {
+        max-height: 240px;
+        opacity: 1;
+        margin-top: 14px;
+      }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .reviews-06 { padding: 72px 20px; }
+      .reviews-06__head { margin-bottom: 40px; }
+      .reviews-06__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+    @media (max-width: 600px) {
+      .reviews-06__grid {
+        grid-template-columns: 1fr;
+      }
+      .reviews-06 .review-card {
+        /* Full-width portrait at 7/10 takes the entire viewport
+           height on phones — feels like dead scroll. 5/6 is still
+           portrait but doesn't dominate. */
+        aspect-ratio: 5 / 6;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: reviews-06</strong> &nbsp; · &nbsp; Portrait photo cards — hover reveals review text under a dark overlay. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-06
+  LAYOUT:   3-up portrait photo cards (7/10 aspect). Each card is a
+            full-bleed background image. At rest, stars + author name
+            float at the bottom of the photo with a drop-shadow for
+            legibility — no dark bar / gradient. On hover, a warm
+            dark floating card materializes around the content with
+            a 14px margin on all sides, the text expands into view,
+            and the card auto-sizes (`height: auto`) to hug the
+            content snugly. Touch devices show the expanded state.
+  CONTENT:  reviews_headline + reviews_subheadline (centered head) +
+            reviews_items repeater (3..6 default 3). Each item =
+            { image, author, text }. Star rating is hardcoded 5/5
+            across all cards — swap the literal "★★★★★" for a field
+            if variable ratings are ever needed.
+  EDITABLE: 2 top-level fields + 1 repeater (reviews_items, 3..6
+            default 3, with image + author + text per item).
+  THEME:    Section bg = --color-bg. Heading = --color-dark. Accent
+            line + star color = --color-primary. Overlay = warm dark
+            gray (rgba(42,38,35,.95)). Subheadline = --color-text-light.
+  USE FOR:  Service trades / construction / outdoor work where the
+            photo of the actual job is half the proof. Different from
+            reviews-01 (plain 3-up), reviews-02 (motion 5-up),
+            reviews-03 (banded), reviews-04 (split), reviews-05
+            (numbered grid).
+-->
+<section id="recenzie" class="reviews-06 fade-up">
+  <div class="reviews-06__inner">
+    <div class="reviews-06__head">
+      <h2 class="reviews-06__heading" data-field="reviews_headline">Reviews</h2>
+      <div class="reviews-06__accent" aria-hidden="true"></div>
+      <p class="reviews-06__subheadline" data-field="reviews_subheadline">Write a short subheadline here, 1 to 2 sentences about what customers value most in your work (quality, approach, fair prices, reliability).</p>
+    </div>
+
+    <div class="reviews-06__grid" data-repeat="reviews_items" data-min="3" data-max="6">
+      <article class="review-card" data-item-id-source="author">
+        <div class="review-card__photo" data-field="image" data-type="image" style="background-image: url('https://placehold.co/600x1000/57534e/e7e5e4?text=Fotka+pr%C3%A1ce+1&font=lato')"></div>
+        <div class="review-card__floating">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <h3 class="review-card__author" data-field="author">Customer first and last name</h3>
+          <div class="review-card__text-wrap">
+            <p data-field="text" data-type="richtext">Write a short review from a satisfied customer here. 2 to 3 sentences about what they liked about your service, highlight quality, communication, or a fair price.</p>
+          </div>
+        </div>
+      </article>
+      <article class="review-card" data-item-id-source="author">
+        <div class="review-card__photo" data-field="image" data-type="image" style="background-image: url('https://placehold.co/600x1000/3f3a35/e7e5e4?text=Fotka+pr%C3%A1ce+2&font=lato')"></div>
+        <div class="review-card__floating">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <h3 class="review-card__author" data-field="author">Customer first and last name</h3>
+          <div class="review-card__text-wrap">
+            <p data-field="text" data-type="richtext">Write the second review here. Try using a different angle, for example delivery speed, the team's professional approach, or meeting the agreed deadline.</p>
+          </div>
+        </div>
+      </article>
+      <article class="review-card" data-item-id-source="author">
+        <div class="review-card__photo" data-field="image" data-type="image" style="background-image: url('https://placehold.co/600x1000/4a4540/e7e5e4?text=Fotka+pr%C3%A1ce+3&font=lato')"></div>
+        <div class="review-card__floating">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <h3 class="review-card__author" data-field="author">Customer first and last name</h3>
+          <div class="review-card__text-wrap">
+            <p data-field="text" data-type="richtext">Write the third review here. The customer should briefly describe their experience, what they ordered, how the cooperation went, and whether they would recommend you to others.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

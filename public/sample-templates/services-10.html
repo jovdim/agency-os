@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-10 — Zigzag rows with dark cards, offset accent + L-corner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-10 — modeled on a "Our services" block.
+       Distinctive design language:
+         - Light gray section bg with a decorative dotted radial
+           pattern on the left side (purely decorative, no field).
+         - Centered eyebrow + 2-tone heading + subtitle, with a
+           gray-primary-gray segmented underline accent.
+         - Each service row: image + DARK card with an offset
+           primary-color block peeking from behind. Zigzag layout
+           alternates per row.
+         - First service has an L-corner accent above its card.
+         - Card title carries a square primary-color bullet + 2-tone
+           text. Vertical primary-color line accent on the right side
+           of the card.
+         - "Learn more" CTA centered below each card. */
+    .services-10 {
+      background: var(--color-bg-alt, #F5F5F5);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Decorative dotted pattern (left side of section). Purely
+       visual — no field, no operator interaction. Pointer-events
+       off so it never interferes with clicks on cards behind it. */
+    .services-10 .services-dots {
+      position: absolute;
+      top: 230px;
+      left: 24px;
+      width: 240px;
+      height: 360px;
+      background-image: radial-gradient(circle, color-mix(in srgb, var(--color-text) 18%, transparent) 1.4px, transparent 1.6px);
+      background-size: 18px 18px;
+      opacity: 0.6;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Section header — centered, with the segmented underline. */
+    .services-10 .section-head {
+      padding: 80px 24px 0;
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .services-10 .section-head .eyebrow:empty { display: none; }
+    .services-10 .services-headline {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+      line-height: 1.2;
+      color: var(--color-text);
+      margin: 0 0 14px;
+    }
+    .services-10 .services-headline-accent { color: var(--color-primary); }
+    .services-10 .services-subtitle {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-text-light);
+      margin: 0 auto 18px;
+    }
+    /* Underline accent: short gray bar + short primary bar + short
+       gray bar, all inline. Reads as a subtle "section delimiter". */
+    .services-10 .services-underline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 4px;
+    }
+    .services-10 .services-underline span {
+      display: inline-block;
+      height: 5px;
+    }
+    .services-10 .services-underline .bar-gray {
+      width: 55px;
+      background: color-mix(in srgb, var(--color-text) 18%, transparent);
+    }
+    .services-10 .services-underline .bar-accent {
+      width: 40px;
+      background: var(--color-primary);
+    }
+
+    /* Rows wrapper. We rely on the repeater so authors can add/
+       remove/reorder; the zigzag alternation runs by position via
+       :nth-of-type on the row wrappers. */
+    .services-10 .services-list {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Each service block: image + card grid. Mobile: stacks; desktop:
+       2-col with alternating image/card sides. */
+    .services-10 .service-block {
+      position: relative;
+      margin-top: 64px;
+    }
+    .services-10 .service-block:first-of-type,
+    .services-10 [data-sk-repeater-wrap]:first-of-type .service-block {
+      margin-top: 24px;
+    }
+
+    .services-10 .service-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    @media (min-width: 1024px) {
+      .services-10 .service-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0;
+      }
+      /* Zigzag — even rows reverse image/card columns. Two-rule
+         set so both the iframe (display:contents flattens repeater)
+         and the published HTML (data-sk-repeater-wrap pattern)
+         produce the same alternation. */
+      .services-10 .service-block:nth-of-type(even) .service-image-col,
+      .services-10 [data-sk-repeater-wrap]:nth-of-type(even) .service-image-col { order: 2; }
+      .services-10 .service-block:nth-of-type(even) .service-card-col,
+      .services-10 [data-sk-repeater-wrap]:nth-of-type(even) .service-card-col { order: 1; }
+    }
+
+    .services-10 .service-image-col img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 4/3;
+    }
+
+    .services-10 .service-card-col {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Card wrap holds the card and the offset primary-color block. */
+    .services-10 .service-card-wrap {
+      position: relative;
+      width: 100%;
+    }
+    @media (min-width: 1024px) {
+      .services-10 .service-grid { align-items: stretch; }
+      .services-10 .service-card-wrap { height: 90%; }
+      .services-10 .service-card {
+        height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+    /* Default (odd rows): card on the LEFT of image → offset block
+       sits BOTTOM-RIGHT. Even rows: card on the RIGHT of image →
+       mirror so offset sits BOTTOM-LEFT. */
+    .services-10 .service-card-bg {
+      position: absolute;
+      top: 14px;
+      left: 0;
+      right: -14px;
+      bottom: -14px;
+      background: var(--color-primary);
+      z-index: 0;
+    }
+    .services-10 .service-block:nth-of-type(even) .service-card-bg,
+    .services-10 [data-sk-repeater-wrap]:nth-of-type(even) .service-card-bg {
+      top: 14px;
+      left: -14px;
+      right: 0;
+      bottom: -14px;
+    }
+    @media (max-width: 1023px) {
+      .services-10 .service-card-bg,
+      .services-10 .service-block:nth-of-type(even) .service-card-bg,
+      .services-10 [data-sk-repeater-wrap]:nth-of-type(even) .service-card-bg {
+        top: 8px;
+        left: 8px;
+        right: -8px;
+        bottom: -8px;
+      }
+    }
+
+    .services-10 .service-card {
+      position: relative;
+      z-index: 1;
+      background: var(--color-text, #1F2024);
+      color: #ffffff;
+      padding: 72px 48px 72px 40px;
+      width: 100%;
+      overflow: hidden;
+    }
+    @media (max-width: 640px) {
+      .services-10 .service-card { padding: 36px 32px 36px 24px; }
+    }
+
+    .services-10 .service-card-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+      line-height: 1.25;
+      margin: 0 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #ffffff;
+    }
+    .services-10 .service-card-bullet {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--color-primary);
+      flex-shrink: 0;
+    }
+    /* 2-tone title — main word white, accent word in a softer
+       primary-color tint (color-mix lightens for legibility on the
+       dark card). */
+    .services-10 .service-card-title-accent {
+      color: color-mix(in srgb, var(--color-primary) 70%, #ffffff 30%);
+    }
+
+    .services-10 .service-card-desc {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.88);
+      margin: 0;
+    }
+    .services-10 .service-card-desc :last-child { margin-bottom: 0; }
+
+    /* Vertical primary-color line on the right side of the card. */
+    .services-10 .service-card-line {
+      position: absolute;
+      top: 26%;
+      bottom: 26%;
+      right: 22px;
+      width: 3px;
+      background: var(--color-primary);
+    }
+
+    .services-10 .service-cta-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 48px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-10</strong> &nbsp; · &nbsp; Zigzag service rows with dark cards offset by primary-color blocks. Decorative dotted pattern, L-corner accent on first card, centered "Learn more" per row. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-10
+  LAYOUT:   Section with light gray bg + decorative dotted pattern on
+            the left. Centered header (eyebrow + 2-tone heading +
+            subtitle + segmented underline). Below, alternating
+            zigzag rows: each is image + dark card. The card has an
+            offset primary-color block peeking from behind, a square
+            bullet + 2-tone title, body text, and a vertical primary
+            line accent. First service has an L-corner accent above.
+            "Learn more" CTA centered below each row.
+  CONTENT:  Header: eyebrow + 2 heading parts + subtitle.
+            Per service: image + 2 title parts + description + link.
+  EDITABLE: Header 4 + per-item 5 fields × N services (1..99).
+  THEME:    Primary color drives the bullets, accent words, offset
+            block, vertical line, L-corner, and underline accent.
+            Card body uses --color-text (dark) by default — themes
+            with very-dark primary may want to consider readability.
+  USE FOR:  Service-driven sites that want a distinctive, decorative
+            services section with strong color identity — well-suited
+            to brands with a single bold accent color and a desire to
+            stand out from generic 3-card grids.
+-->
+<section id="sluzby" class="services-10">
+  <div class="services-dots" aria-hidden="true"></div>
+
+  <div class="section-head fade-up">
+    <span class="eyebrow" data-field="services_eyebrow"></span>
+    <h2 class="services-headline">
+      <span data-field="services_headline_main">Our</span>
+      <span class="services-headline-accent" data-field="services_headline_accent">services</span>
+    </h2>
+    <p class="services-subtitle" data-field="services_subtitle">Expert solutions for every construction need</p>
+    <div class="services-underline" aria-hidden="true">
+      <span class="bar-gray"></span>
+      <span class="bar-accent"></span>
+      <span class="bar-gray"></span>
+    </div>
+  </div>
+
+  <!--
+    Services repeater: authors add/remove rows from the composer
+    (1..99). Per-item fields: image + title (main + accent) +
+    description + CTA link. Title's `title_main` drives the
+    auto-derived per-item anchor id so other sections / nav
+    dropdowns can link to a specific service.
+
+    Four default rows so a fresh section out-of-the-box already
+    looks like a real services block (matches the reference)
+    instead of the lonely-single-card layout the operator would have
+    to manually flesh out.
+  -->
+  <div class="services-list">
+    <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+      <div class="service-block fade-up" data-item-id-source="title_main">
+        <div class="service-grid">
+          <div class="service-image-col hover-zoom">
+            <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Facade+insulation&font=lato" alt="" width="900" height="675" loading="lazy">
+          </div>
+          <div class="service-card-col">
+            <div class="service-card-wrap">
+              <div class="service-card-bg" aria-hidden="true"></div>
+              <div class="service-card">
+                <h3 class="service-card-title">
+                  <span class="service-card-bullet" aria-hidden="true"></span>
+                  <span>
+                    <span data-field="title_main">Facade</span>
+                    <span class="service-card-title-accent" data-field="title_accent">insulation</span>
+                  </span>
+                </h3>
+                <div class="service-card-desc" data-field="description" data-type="richtext"><p>Write a description of the service here. 2 to 3 sentences about what you do within this service and what result the client gets. Mention specific materials or techniques you use.</p></div>
+                <span class="service-card-line" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="service-cta-row">
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </div>
+      <div class="service-block fade-up" data-item-id-source="title_main">
+        <div class="service-grid">
+          <div class="service-image-col hover-zoom">
+            <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Decorative+plasters&font=lato" alt="" width="900" height="675" loading="lazy">
+          </div>
+          <div class="service-card-col">
+            <div class="service-card-wrap">
+              <div class="service-card-bg" aria-hidden="true"></div>
+              <div class="service-card">
+                <h3 class="service-card-title">
+                  <span class="service-card-bullet" aria-hidden="true"></span>
+                  <span>
+                    <span data-field="title_main">Decorative</span>
+                    <span class="service-card-title-accent" data-field="title_accent">plasters</span>
+                  </span>
+                </h3>
+                <div class="service-card-desc" data-field="description" data-type="richtext"><p>Write a description of the second service here. Describe the types of plaster you offer and what visual effect the client gets on their facade or interior.</p></div>
+                <span class="service-card-line" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="service-cta-row">
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </div>
+      <div class="service-block fade-up" data-item-id-source="title_main">
+        <div class="service-grid">
+          <div class="service-image-col hover-zoom">
+            <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Window+fitting&font=lato" alt="" width="900" height="675" loading="lazy">
+          </div>
+          <div class="service-card-col">
+            <div class="service-card-wrap">
+              <div class="service-card-bg" aria-hidden="true"></div>
+              <div class="service-card">
+                <h3 class="service-card-title">
+                  <span class="service-card-bullet" aria-hidden="true"></span>
+                  <span>
+                    <span data-field="title_main">Window and</span>
+                    <span class="service-card-title-accent" data-field="title_accent">door fitting</span>
+                  </span>
+                </h3>
+                <div class="service-card-desc" data-field="description" data-type="richtext"><p>Write a description of the third service here. What windows and doors you fit, whether you handle the full replacement including measuring and removal of the old units.</p></div>
+                <span class="service-card-line" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="service-cta-row">
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </div>
+      <div class="service-block fade-up" data-item-id-source="title_main">
+        <div class="service-grid">
+          <div class="service-image-col hover-zoom">
+            <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Construction+work&font=lato" alt="" width="900" height="675" loading="lazy">
+          </div>
+          <div class="service-card-col">
+            <div class="service-card-wrap">
+              <div class="service-card-bg" aria-hidden="true"></div>
+              <div class="service-card">
+                <h3 class="service-card-title">
+                  <span class="service-card-bullet" aria-hidden="true"></span>
+                  <span>
+                    <span data-field="title_main">Construction</span>
+                    <span class="service-card-title-accent" data-field="title_accent">work</span>
+                  </span>
+                </h3>
+                <div class="service-card-desc" data-field="description" data-type="richtext"><p>Write a description of the fourth service here. What construction work you do, for whom and what the scope is, from a small renovation to a large project.</p></div>
+                <span class="service-card-line" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="service-cta-row">
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Real page content below.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

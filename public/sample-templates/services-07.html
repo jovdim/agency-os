@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-07 — Equipment / product showcase with spec bullets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* services-07: equipment / machinery showcase. Each item is a
+       two-column card — bullet specs list on the LEFT, photo on the
+       RIGHT. Designed for sites where the client owns specific
+       machines or products and wants to itemize them with technical
+       specs (load capacity, weight, year, etc.) plus a photo of the
+       actual unit.
+
+       Layout choice — image always on the RIGHT (not alternating):
+       a spec list is structural, the eye reads top-to-bottom on the
+       left, image is supporting evidence on the right. Same rhythm
+       for every item makes the section read as a coherent catalogue
+       rather than a marketing zigzag. Different from services-01
+       (zigzag for soft service descriptions).
+
+       Repeater (equipment_items, 2..12) so the client can list their
+       full fleet. Each item = name + specs (richtext for the bullet
+       list) + image. */
+
+    .services-07 {
+      padding: 96px 0;
+      background: var(--color-bg);
+    }
+    .services-07 .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .services-07 .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 56px;
+    }
+
+    .services-07__list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    /* Repeater-wrap defense (display:contents flattens the wrapper
+       so each .services-07__item is a direct flex child of the list).
+       Pattern carried from gallery-04 / reviews-03 / services-06. */
+    .services-07__list > [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .services-07__item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 28px;
+      background: var(--color-bg-alt);
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .services-07__item:hover {
+      border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+      box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.18);
+    }
+
+    .services-07__body {
+      min-width: 0;
+    }
+    .services-07__name {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 18px;
+      letter-spacing: -0.01em;
+    }
+    /* Specs list — accepts richtext so the client can structure it as
+       <ul><li>spec 1</li><li>spec 2</li></ul>. Default content shows
+       the expected pattern. Custom styling so bullets read as
+       technical specs (compact, monospace-ish numbers tabular). */
+    .services-07__specs {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+    .services-07__specs ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .services-07__specs ul li {
+      padding: 6px 0 6px 22px;
+      position: relative;
+      font-variant-numeric: tabular-nums;
+    }
+    .services-07__specs ul li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 12px;
+      height: 2px;
+      background: var(--color-primary);
+    }
+    .services-07__specs p {
+      margin: 0 0 8px;
+    }
+
+    .services-07__image {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .services-07__item {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .services-07__image {
+        aspect-ratio: 16 / 10;
+        order: -1; /* photo on top on mobile so user sees machine first */
+      }
+    }
+    @media (max-width: 700px) {
+      .services-07 { padding: 64px 0; }
+      .services-07__item {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      .services-07__list { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: services-07</strong> &nbsp; · &nbsp; Equipment / machinery showcase. Each item = name + bullet specs (richtext) + photo. Image always on the right. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-07
+  LAYOUT:   Vertical stack of equipment cards. Each card is a 2-column
+            grid: bullet specs list on the LEFT, equipment photo on the
+            RIGHT. Same image-right pattern for every item (not
+            alternating like services-01 zigzag) so the section reads
+            as a coherent technical catalogue.
+  CONTENT:  eyebrow + headline + equipment_items repeater (2..12).
+            Each item = { name, specs (richtext), image }.
+  EDITABLE: 2 top-level + repeater. Specs field is richtext so the
+            client can write a proper <ul><li> list with technical
+            specs (year, weight, capacity, fuel type, etc.) and the
+            renderer respects the structure.
+  THEME:    Card bg = --color-bg-alt (subtle off-white that reads as
+            a panel against --color-bg). Border + hover border use
+            --color-primary at low opacity for accent. Spec bullet
+            markers are short --color-primary dashes (not dots — more
+            technical / catalogue feel).
+  USE FOR:  Construction / industrial / agricultural / fleet sites
+            where the client wants to enumerate their equipment with
+            specs. Replaces services-04 (image grid cards) when the
+            focus is technical specifications rather than soft
+            service descriptions. Pairs with services-01 (zigzag
+            services) on the same page — services explain WHAT,
+            this template shows WITH WHAT.
+-->
+<section id="sluzby" class="services-07 fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="services_eyebrow">Our machines</span>
+      <h2 data-field="services_headline">Our construction machinery</h2>
+    </div>
+
+    <!--
+      Equipment repeater. Defaults are GENERIC placeholders — sales
+      replaces each item's name + spec list with the real machine /
+      product / service the client has. Layout structure (image +
+      name + bullet list) stays the same regardless of what gets
+      filled in.
+    -->
+    <div class="services-07__list" data-repeat="equipment_items" data-min="2" data-max="99">
+      <article class="services-07__item" data-item-id-source="name">
+        <div class="services-07__body">
+          <h3 class="services-07__name" data-field="name">First machine / product name</h3>
+          <div class="services-07__specs" data-field="specs" data-type="richtext"><ul><li>Write the first parameter here (e.g. year of manufacture)</li><li>Write the second parameter here (e.g. weight)</li><li>Write the third parameter here</li><li>Write the fourth parameter here</li><li>Short note about a benefit</li></ul></div>
+        </div>
+        <img class="services-07__image" data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+1&amp;font=lato" alt="" loading="lazy">
+      </article>
+
+      <article class="services-07__item">
+        <div class="services-07__body">
+          <h3 class="services-07__name" data-field="name">Second machine / product name</h3>
+          <div class="services-07__specs" data-field="specs" data-type="richtext"><ul><li>Write the first parameter here</li><li>Write the second parameter here</li><li>Write the third parameter here</li><li>Write the fourth parameter here</li></ul></div>
+        </div>
+        <img class="services-07__image" data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+2&amp;font=lato" alt="" loading="lazy">
+      </article>
+
+      <article class="services-07__item">
+        <div class="services-07__body">
+          <h3 class="services-07__name" data-field="name">Third machine / product name</h3>
+          <div class="services-07__specs" data-field="specs" data-type="richtext"><ul><li>Write the first parameter here</li><li>Write the second parameter here</li><li>Write the third parameter here</li><li>Short note, what purpose it is suited for</li></ul></div>
+        </div>
+        <img class="services-07__image" data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+3&amp;font=lato" alt="" loading="lazy">
+      </article>
+
+      <article class="services-07__item">
+        <div class="services-07__body">
+          <h3 class="services-07__name" data-field="name">Fourth machine / product name</h3>
+          <div class="services-07__specs" data-field="specs" data-type="richtext"><ul><li>Write the first parameter here</li><li>Write the second parameter here</li><li>Write the third parameter here</li><li>Write the fourth parameter here</li></ul></div>
+        </div>
+        <img class="services-07__image" data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+4&amp;font=lato" alt="" loading="lazy">
+      </article>
+
+      <article class="services-07__item">
+        <div class="services-07__body">
+          <h3 class="services-07__name" data-field="name">Fifth machine / product name</h3>
+          <div class="services-07__specs" data-field="specs" data-type="richtext"><ul><li>Write the first parameter here</li><li>Write the second parameter here</li><li>Write the third parameter here</li><li>Write the fourth parameter here</li></ul></div>
+        </div>
+        <img class="services-07__image" data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+5&amp;font=lato" alt="" loading="lazy">
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below.</p>
+</div>
+
+
+
+</body></html>

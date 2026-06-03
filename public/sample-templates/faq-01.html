@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>faq-01 — Accordion FAQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: faq-01</strong> &nbsp; · &nbsp; Accordion FAQ. Click question to expand. JS lives inside the section so it ships with the template. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:faq:start -->
+<!--
+  TEMPLATE: faq-01
+  LAYOUT:   Centered narrow column, accordion-style. Click question to expand answer.
+  CONTENT:  eyebrow + headline + 5 fixed FAQ pairs.
+  EDITABLE: 12 fields — 2 text (eyebrow + headline) + 5 text (questions) + 5 longtext (answers)
+  THEME:    Heading uses var(--color-text); questions use var(--color-secondary);
+            answers use var(--color-text-light); chevron toggle uses currentColor.
+  JS:       Self-contained IIFE inside section markers. Toggles aria-expanded + .is-open class.
+-->
+<section id="otazky" class="fade-up">
+  <div class="container">
+
+    <div class="section-head">
+      <span class="eyebrow" data-field="faq_eyebrow">Frequently asked questions</span>
+      <h2 data-field="faq_headline">The questions we get asked most often</h2>
+    </div>
+
+    <div class="faq">
+
+      <div class="faq-item is-open">
+        <button class="faq-question" aria-expanded="true" data-field="faq_1_question">Write here the first question your customers ask most often?</button>
+        <div class="faq-answer" style="max-height:500px"><div class="faq-answer-inner" data-field="faq_1_answer" data-type="richtext">Write the answer to the first question here. Be specific, state what the customer gets, when, and under what conditions. Two to three sentences are enough.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-field="faq_2_question">Write the second question here?</button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-field="faq_2_answer" data-type="richtext">Write the answer to the second question here. Answer directly and avoid marketing language. The customer wants to know a specific piece of information.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-field="faq_3_question">Write the third question here?</button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-field="faq_3_answer" data-type="richtext">Write the answer to the third question here. If the answer is more complex, use three to four sentences. Do not write long paragraphs, stay concise.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-field="faq_4_question">Write the fourth question here?</button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-field="faq_4_answer" data-type="richtext">Write the answer to the fourth question here. Try to anticipate what the customer will want to know after the first three questions and answer that.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false" data-field="faq_5_question">Write the fifth question here?</button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-field="faq_5_answer" data-type="richtext">Write the answer to the fifth question here. The last question should address doubts, for example price, guarantee, or process.</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('#faq');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+      section.querySelectorAll('.faq-question').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var item = btn.closest('.faq-item');
+          var open = item.classList.toggle('is-open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          var ans = btn.nextElementSibling;
+          if (ans) ans.style.maxHeight = open ? ans.scrollHeight + 'px' : '0';
+        });
+      });
+    })();
+  </script>
+</section>
+<!-- SECTION:faq:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

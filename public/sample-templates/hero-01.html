@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-01 — Centered hero with full-bleed background</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* hero-01: centered variant of the standard .hero. The base .hero class
+       already handles the dark gradient overlay, padding and min-height. */
+    .hero-01 { text-align: center; }
+    .hero-01 .hero-inner { max-width: 820px; margin: 0 auto; }
+    .hero-01 h1 {
+      margin-left: auto;
+      margin-right: auto;
+      /* Mobile sweet spot 1.5rem (24px). Matches template-base.css
+         after the 2026-05-20 tuning round. */
+      font-size: clamp(1.3rem, 4.5vw, 3.5rem);
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+    }
+    .hero-01 .lede { margin-left: auto; margin-right: auto; }
+    .hero-01 .hero-cta { justify-content: center; }
+    /* Outline CTA on a dark hero background — flip the .btn-outline colors
+       to white. White-on-dark is a neutral choice (per authoring guide). */
+    .hero-01 .btn-outline { color: #fff; border-color: #fff; }
+    .hero-01 .btn-outline:hover { background: #fff; color: var(--color-secondary); }
+
+    @media (max-width: 480px) {
+      .hero-01 h1 {
+        /* 1.5rem (24px) — matches template-base.css after the
+           "1.85rem too big" feedback. */
+        font-size: 1.5rem !important;
+        line-height: 1.2;
+        max-width: 100%;
+      }
+      .hero-01 .hero-inner {
+        max-width: 100%;
+        padding: 0 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: hero-01</strong> &nbsp; · &nbsp; Full-bleed background image with dark overlay. Headline, lede, and 2 CTAs centered horizontally. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-01
+  LAYOUT:   Full-bleed background image + dark overlay. All content centered.
+  HEIGHT:   78vh min (from base .hero class)
+  CONTENT:  background image, headline, sub-headline (lede), 2 CTAs (label + URL each)
+  EDITABLE: 1 image + 1 text + 1 longtext + 2 link-type fields (5 fields total)
+  THEME:    Headline/lede colors are fixed-light (white-on-dark), driven by base CSS.
+            CTA primary uses var(--color-primary). CTA secondary stays white-on-dark.
+-->
+<section id="domov" class="hero hero-01 fade-up" data-field="hero_bg" style="background-image:url('https://placehold.co/1920x900/57534e/e7e5e4?text=Hero+background+image&font=lato')">
+  <div class="hero-inner">
+    <h1 data-field="hero_headline">Write your main headline here</h1>
+    <p class="lede" data-field="hero_subheadline" data-type="richtext">Write a short description of your company or service here. At most 2 to 3 sentences that grab the visitor's attention and clearly explain what you do.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+      <a class="btn btn-outline" data-field="hero_cta_secondary" data-type="link" href="#kontakt">Secondary action</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<!-- Spacer (preview-only, stripped on upload — only what's between SECTION markers ships) -->
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">This grey block simulates page content below the hero.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

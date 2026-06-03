@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-05 — Dark-overlay hero with full-bleed background image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* hero-05: full-bleed background image with a dark gradient overlay
+       so white text reads against ANY photo. Pairs naturally with
+       nav-07 (the navbar starts transparent over this hero and switches
+       to solid when the user scrolls past). The gradient is slightly
+       darker at the top (where the navbar sits) and at the bottom
+       (where the CTAs sit) so both regions guarantee text legibility
+       regardless of photo brightness.
+
+       Layout: vertical center stack — eyebrow → headline → lead →
+       CTAs row. Centered on desktop, can be flush-left if the photo's
+       focal point benefits from it (toggle via CSS class). */
+
+    .hero-overlay {
+      position: relative;
+      /* Tall-but-capped clamp. Floor 720px so the hero always feels
+         like a hero (not a strip) even on short laptop viewports.
+         88vh on typical desktops. Ceiling 1040px so the hero stays
+         proportional on ultrawide monitors. */
+      min-height: clamp(720px, 88vh, 1040px);
+      display: flex;
+      /* Content anchored to the BOTTOM but lifted by generous
+         padding-bottom on .hero-overlay__inner so it sits in the
+         LOWER THIRD of the frame (~60% from top). Photo dominates
+         the upper 55%, text + CTAs occupy the lower 40% with
+         breathing room from the hero's bottom edge. */
+      align-items: flex-end;
+      justify-content: flex-start;
+      overflow: hidden;
+      color: #fff;
+      /* The background image lives in an ::before pseudo so we can
+         layer the gradient overlay cleanly via ::after. data-field on
+         the bg-image element is on this .hero-overlay itself —
+         applyContentOverrides detects the background-image inline
+         style and updates the URL there. */
+      background-color: #1c1917;
+    }
+    /* Photo layer — set via the inline style="background-image: url(...)"
+       so applyContentOverrides can swap it via data-field on the
+       parent .hero-overlay. The ::before mirrors the parent's bg
+       full-bleed. */
+    .hero-overlay::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: inherit;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+    /* Gradient overlay — uniformly strong across the whole photo.
+       Previous tune used a lighter middle (0.4) which washed out text
+       on bright photos. Now matches hero-01 / hero-03 / hero-04
+       strength so the headline reads against ANY uploaded photo. */
+    .hero-overlay::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.72) 0%,
+          rgba(0, 0, 0, 0.62) 50%,
+          rgba(0, 0, 0, 0.78) 100%
+        );
+      z-index: 1;
+    }
+
+    .hero-overlay__inner {
+      position: relative;
+      z-index: 2;
+      /* Wide cap so the headline can grow to nearly full viewport width
+         on big screens (matches the bagerexpress reference where the
+         headline spans ~80% of a 1920px display). On ultrawide monitors
+         the cap stops it from becoming unreadably long. */
+      max-width: 1700px;
+      /* padding-bottom is the LIFT — with align-items: flex-end the
+         content's distance from the hero's bottom edge equals this
+         padding. clamp(80px, 12vh, 160px) scales with the viewport
+         (~130px on a 1080p screen) so on any size the content lands
+         in the lower-third of the photo rather than flush at the
+         bottom. Side + top padding kept generous for left flush. */
+      padding: 40px 32px clamp(80px, 12vh, 160px) 80px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .hero-overlay__headline {
+      font-family: var(--font-heading);
+      /* Smaller scale than the original 2.2–3.8rem range — matches the
+         bagerexpress live where the headline reads as a confident lead,
+         not a billboard. The thick per-line underline + white-on-photo
+         contrast already give it weight; we don't need monster font-size
+         on top. Ceiling at 2.6rem keeps the 3-line wrap rhythm on
+         wide screens. */
+      font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+      /* Default weight is regular (400) — the headline reads big on its
+         own thanks to the size + underline + white-on-photo contrast.
+         The field is a richtext editor so the author can wrap individual
+         words in <strong>/<em> for selective emphasis (matches the
+         bagerexpress reference where only key phrases are bolded). */
+      font-weight: 400;
+      line-height: 1.35; /* roomier line so the underline doesn't crowd the next line */
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      margin: 0 0 32px;
+      /* No max-width — let the headline fill the .hero-overlay__inner
+         container so it spans the full visible content width. */
+      /* Thick white underline on each visual line of the headline —
+         CSS draws the underline per wrapped line automatically. */
+      text-decoration: underline;
+      text-decoration-color: #ffffff;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 12px;
+      text-decoration-skip-ink: none; /* keep the line continuous through descenders */
+    }
+
+    /* Subheading — a soft caption sitting under the headline. Authored
+       as a single string (e.g. service list with " • " separators, or
+       a one-line tagline). Body font + regular weight so it reads
+       clean and doesn't compete with the headline for emphasis. */
+    .hero-overlay__subheading {
+      font-family: var(--font-body);
+      font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+      font-weight: 400;
+      letter-spacing: 0;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.5;
+      margin: 0 0 36px;
+      max-width: 900px;
+    }
+    .hero-overlay__subheading:empty { display: none; }
+
+    .hero-overlay__cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .hero-overlay__cta-row .btn {
+      padding: 14px 28px;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      /* Medium weight (500) instead of semibold (600) — matches the
+         lighter, cleaner button text on the bagerexpress live mobile. */
+      font-weight: 500;
+      text-decoration: none;
+      transition: filter 0.15s ease, transform 0.15s ease, background 0.15s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    /* Primary CTA in this template = WHITE button with dark text
+       (the "Call us" pattern, high contrast against
+       the photo, reads as the dominant action). */
+    .hero-overlay__cta-row .btn-white {
+      background: #ffffff;
+      color: #1c1917;
+    }
+    .hero-overlay__cta-row .btn-white:hover {
+      background: #f1f1f1;
+      transform: translateY(-2px);
+    }
+    /* Secondary CTA = primary-colored (orange in bagerexpress's case)
+       so it picks up the theme dice. */
+    .hero-overlay__cta-row .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .hero-overlay__cta-row .btn-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+    /* Legacy outline button kept for backwards compat if anyone
+       hand-edits to use it. */
+    .hero-overlay__cta-row .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+    }
+    .hero-overlay__cta-row .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 900px) {
+      .hero-overlay {
+        /* Same tall-but-capped pattern. Floor 620px so even on a short
+           phone the hero feels like a proper hero. 85vh on typical
+           devices. Ceiling 820px so very tall phones don't get an
+           absurdly stretched hero. */
+        min-height: clamp(620px, 85vh, 820px);
+        align-items: flex-end;
+      }
+      .hero-overlay__inner {
+        /* Mobile lifts content less aggressively — vertical real
+           estate is precious on phones. clamp(60px, 9vh, 100px) puts
+           the content in the lower portion of the photo with visible
+           breathing room from the bottom edge. */
+        padding: 32px 24px clamp(60px, 9vh, 100px);
+        max-width: 100%;
+      }
+      .hero-overlay__headline {
+        /* Mobile headline scale (2026-05-19 Peter): the 22-30px range
+           Peter approved earlier read too quiet on real phones — the
+           hero felt under-anchored even with the underline + photo
+           contrast. Bumped to 30-38px so the headline carries the
+           hero on a 375-414px screen the way it does on desktop, and
+           still wraps to a sensible 3-5 lines for typical 6-10-word
+           headlines. Underline thickened to 2.5px so it reads
+           proportional to the larger glyphs. */
+        font-size: clamp(1.85rem, 6.5vw, 2.4rem);
+        line-height: 1.25;
+        text-decoration-thickness: 2.5px;
+        text-underline-offset: 9px;
+        margin-bottom: 20px;
+      }
+      .hero-overlay__subheading {
+        font-size: 0.98rem;
+        margin-bottom: 22px;
+      }
+      /* Buttons sit SIDE BY SIDE on mobile (was stacked vertically).
+         Wrap to a second row if the device is exceptionally narrow.
+         Each button sizes to its content with comfortable padding —
+         no `align-items: stretch` so they don't expand to fill width. */
+      .hero-overlay__cta-row {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+      .hero-overlay__cta-row .btn {
+        padding: 13px 26px;
+        flex: 0 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: hero-05</strong> &nbsp; · &nbsp; Full-bleed background image with dark gradient overlay. Pairs with nav-07 (scroll-aware navbar). White text reads against any photo. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-05
+  LAYOUT:   Full-bleed (100vw × 100vh) background image with dark
+            gradient overlay. White text vertically centered. Eyebrow
+            with accent underline → big headline → lede paragraph →
+            two CTAs (primary + outline). Scroll-down arrow at the
+            bottom. Pairs with nav-07 — the navbar starts transparent
+            over this hero and gets solid background once scrolled past.
+  CONTENT:  Background image, headline (richtext), subheading, 2 CTAs.
+  EDITABLE: 5 fields total — 1 image (bg), 1 richtext, 1 text, 2 link.
+  THEME:    Background image is editable. The gradient overlay is fixed
+            (tuned for legibility on any photo). Headline always white.
+            Eyebrow + primary CTA use --color-primary so the accent
+            tracks the theme dice.
+  USE FOR:  Service-driven sites where the work itself (a machine on
+            site, a finished build, a team in action) makes the hero —
+            the photo IS the message. Lets the client put their best
+            project shot front-and-center without designing a layout.
+-->
+<section id="domov" class="hero-overlay" data-field="hero_bg_image" style="background-image: url('https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=1920&auto=format&fit=crop')">
+  <div class="hero-overlay__inner fade-up">
+    <h1 class="hero-overlay__headline" data-field="hero_headline" data-type="richtext">Write the main hero headline here, a clear description of your services together with your region. Add a short phrase about what sets you apart (speed, quality, professionalism).</h1>
+    <p class="hero-overlay__subheading" data-field="hero_subheading">Service 1 • Service 2 • Service 3 • Service 4 • Service 5 • Service 6</p>
+    <div class="hero-overlay__cta-row">
+      <!-- Primary CTA — WHITE pill (visually dominant on a dark hero
+           photo). Structurally a CTA button, NOT a phone field: the
+           composer surfaces it as a regular "label + URL" link so
+           sales can edit BOTH the word ("Call us") and the href
+           (a phone number, but could also be a section anchor or
+           any URL). The default href includes the `tel:` prefix so
+           dialability works out of the box — composer's
+           HrefAutocomplete passes `tel:` URLs through unmodified.
+           Matches the live layout: white "Call us" is
+           the primary action against the dark hero photo, orange
+           "Learn more" is the secondary. -->
+      <a class="btn btn-white" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+      <a class="btn btn-primary" data-field="hero_cta_secondary" data-type="link" href="#o-nas">Learn more</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below the hero — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

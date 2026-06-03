@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-03 — Single-card infinite carousel with peek</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* reviews-03: single-card focus carousel with INFINITE loop. One card
+       is centered at any time; prev + next cards peek symmetrically at
+       the left + right edges. Manual navigation only — left/right arrow
+       buttons + touch swipe.
+
+       Infinite loop trick: at runtime, clone the LAST item and prepend
+       it, clone the FIRST item and append it. The track sits at the real
+       first item's position by default. When the user clicks "next" past
+       the last real item, the track animates SMOOTHLY into the clone-of-
+       first position. Once the animation finishes, JS silently snaps the
+       track to the real first item's position with the transition disabled
+       — visually identical, no jump. Same trick in reverse for prev.
+
+       Composer iframe: skip cloning + skip carousel JS entirely. The
+       items flow as a simple horizontal scrollable row so the composer
+       user can scroll to + click any card for editing without fighting
+       the carousel state machine. Same `window !== window.parent`
+       iframe-detection pattern as the marquee. */
+    .reviews-03 {
+      overflow: hidden;
+    }
+    .reviews-03__rail {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      --reviews-03-card-w: clamp(280px, 60vw, 520px);
+      --reviews-03-gap: 32px;
+    }
+    .reviews-03__viewport {
+      overflow: hidden;
+      width: 100%;
+    }
+    .reviews-03__track {
+      display: flex;
+      gap: var(--reviews-03-gap);
+      transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+      will-change: transform;
+    }
+    /* JS sets this class while silently snapping back from a clone to a
+       real item — disables the transition so the snap is invisible. */
+    .reviews-03__track.is-snap {
+      transition: none;
+    }
+    /* Card-width sizing on the DIRECT flex children of the track.
+       The universal selector covers BOTH cases:
+         - Composer preview: track > .reviews-03__card (no wrapper)
+         - Published live: track > [data-sk-repeater-wrap] > card
+           (publish renderer auto-wraps every [data-repeat] child in a
+           <div data-sk-repeater-wrap> — see memory
+           feedback_nth_of_type_repeater_wrap.md). Without this rule,
+           the wrapper defaults to `flex: 0 1 auto` and shrinks the
+           card to ~150-200px on live, while the composer renders fine.
+       Same fix pattern as services-01 + testimonials-01. */
+    .reviews-03__track > * {
+      flex: 0 0 var(--reviews-03-card-w);
+    }
+    .reviews-03__card {
+      flex: 0 0 var(--reviews-03-card-w);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.4s ease;
+    }
+    /* When the wrapper IS present (published path), make the card fill
+       its wrapper so the visual reads correctly. Height 100% so all
+       cards have equal height regardless of text length. */
+    [data-sk-repeater-wrap] > .reviews-03__card {
+      width: 100%;
+      height: 100%;
+    }
+    /* In live carousel mode, dim the non-centered cards slightly so the
+       active one feels more present. JS sets `is-active` on the centered
+       child of .reviews-03__track — in preview that's the .reviews-03__card,
+       in published that's the [data-sk-repeater-wrap]. Both selectors
+       cover the dimming + active state. */
+    .reviews-03.is-live .reviews-03__card,
+    .reviews-03.is-live [data-sk-repeater-wrap] > .reviews-03__card {
+      opacity: 0.45;
+    }
+    .reviews-03.is-live .reviews-03__card.is-active,
+    .reviews-03.is-live [data-sk-repeater-wrap].is-active > .reviews-03__card {
+      opacity: 1;
+    }
+    /* Iframe (composer) fallback: horizontal scrollable row, no JS, no
+       opacity dimming, no transform — every card is fully editable as
+       soon as the user scrolls it into view. */
+    .reviews-03.is-iframe .reviews-03__viewport {
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .reviews-03.is-iframe .reviews-03__track {
+      transform: none !important;
+      transition: none;
+    }
+    .reviews-03__stars {
+      display: inline-flex;
+      gap: 2px;
+      color: #f5b400;
+      margin-bottom: 18px;
+    }
+    .reviews-03__stars svg { width: 18px; height: 18px; fill: currentColor; }
+    .reviews-03__text {
+      font-family: var(--font-heading);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      line-height: 1.55;
+      letter-spacing: -0.005em;
+      color: var(--color-text);
+      font-weight: 500;
+      margin: 0 0 28px;
+      flex: 1;
+    }
+    .reviews-03__meta {
+      padding-top: 20px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+    }
+    .reviews-03__name {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 1rem;
+    }
+    .reviews-03__source {
+      color: var(--color-text-light);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    /* Google review badge — see reviews-01 for the pattern explanation. */
+    .google-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .google-badge__logo {
+      display: block;
+      height: auto;
+      width: auto;
+      max-height: 28px;
+      max-width: 160px;
+    }
+    .google-badge__link {
+      position: absolute;
+      inset: 0;
+      text-indent: -9999px;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .google-badge__link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    /* Arrow buttons — circles at vertical center of the rail. NEVER
+       disabled (the carousel is infinite, both directions always work). */
+    .reviews-03__btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+      box-shadow: var(--shadow-sm);
+      z-index: 2;
+    }
+    .reviews-03__btn:hover {
+      background: var(--color-secondary);
+      border-color: var(--color-secondary);
+      color: #fff;
+      transform: translateY(-50%) scale(1.05);
+    }
+    .reviews-03__btn svg { width: 22px; height: 22px; }
+    .reviews-03__btn--prev { left: -8px; }
+    .reviews-03__btn--next { right: -8px; }
+    @media (max-width: 700px) {
+      .reviews-03__btn--prev { left: 4px; }
+      .reviews-03__btn--next { right: 4px; }
+      .reviews-03__btn { width: 40px; height: 40px; }
+      .reviews-03__btn svg { width: 18px; height: 18px; }
+      .reviews-03__card { padding: 28px 24px; }
+    }
+    /* In iframe mode hide the arrow buttons — the composer user uses the
+       horizontal scroll instead. */
+    .reviews-03.is-iframe .reviews-03__btn { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: reviews-03</strong> &nbsp; · &nbsp; Single-card carousel with infinite loop. Arrows never disable — wrap around to the other end seamlessly via clone-at-edges trick. Composer iframe: simple horizontal scroll. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-03
+  LAYOUT:   Single-card focus carousel with INFINITE loop. Active card
+            centered, prev + next cards peek symmetrically at the edges.
+            Manual navigation: left/right arrow buttons + touch swipe.
+            Loop trick: clone last → prepend, clone first → append.
+            JS animates smoothly into the clone position then silently
+            snaps to the real item once the transition ends — visually
+            seamless, no visible reset.
+
+            Composer iframe: skip cloning + carousel JS entirely; show
+            items as a horizontal scrollable row so the editor can scroll
+            and click any card without fighting carousel state.
+  CONTENT:  eyebrow + headline + reviews_items repeater.
+            Each item = { text, author, source }. (Date removed 2026-05-11.)
+  EDITABLE: 2 top-level fields + 1 repeater (reviews_items, 2..12 default 4).
+  THEME:    Card bg = --color-bg, border = --color-border. Stars fixed
+            gold (#f5b400). Quote in heading font + --color-text. Author
+            --color-secondary. Source --color-text-light. Arrow buttons
+            hover to --color-secondary. Non-active cards dimmed to 45%
+            opacity in live mode (the active one pops).
+  USE FOR:  When you want each review to feel like an individual moment
+            but still imply a long list of happy clients (the loop never
+            ends, suggesting "endless feedback"). Different from reviews-02
+            (auto-marquee, multiple cards moving) and reviews-04 (vertical
+            stack, all visible at once).
+-->
+<section id="recenzie" class="reviews-03 section-alt fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">What our clients say about us</h2>
+    </div>
+  </div>
+
+  <div class="reviews-03__rail">
+    <button class="reviews-03__btn reviews-03__btn--prev" type="button" aria-label="Previous review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div class="reviews-03__viewport">
+      <div class="reviews-03__track" data-repeat="reviews_items" data-min="2" data-max="12">
+        <article class="reviews-03__card" data-item-id-source="author">
+          <div class="reviews-03__stars" aria-label="5 out of 5 stars">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          </div>
+          <p class="reviews-03__text" data-field="text" data-type="richtext">Write the first review here, feel free to make it longer, the layout gives the text room. A specific customer experience works best.</p>
+          <div class="reviews-03__meta">
+            <span class="reviews-03__name" data-field="author">Author name</span>
+            <div class="google-badge">
+              <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+              <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+            </div>
+          </div>
+        </article>
+        <article class="reviews-03__card">
+          <div class="reviews-03__stars" aria-label="5 out of 5 stars">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          </div>
+          <p class="reviews-03__text" data-field="text" data-type="richtext">Write the second review here. Choose reviews that cover different types of cooperation or aspects.</p>
+          <div class="reviews-03__meta">
+            <span class="reviews-03__name" data-field="author">Author name</span>
+            <div class="google-badge">
+              <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+              <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+            </div>
+          </div>
+        </article>
+        <article class="reviews-03__card">
+          <div class="reviews-03__stars" aria-label="5 out of 5 stars">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          </div>
+          <p class="reviews-03__text" data-field="text" data-type="richtext">Write the third review here. A specific case fits well here, such as non-standard conditions or a long-term partnership.</p>
+          <div class="reviews-03__meta">
+            <span class="reviews-03__name" data-field="author">Author name</span>
+            <div class="google-badge">
+              <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+              <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+            </div>
+          </div>
+        </article>
+        <article class="reviews-03__card">
+          <div class="reviews-03__stars" aria-label="5 out of 5 stars">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          </div>
+          <p class="reviews-03__text" data-field="text" data-type="richtext">Write the fourth review here. Short and to the point, or longer with context, both work well in this layout.</p>
+          <div class="reviews-03__meta">
+            <span class="reviews-03__name" data-field="author">Author name</span>
+            <div class="google-badge">
+              <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+              <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <button class="reviews-03__btn reviews-03__btn--next" type="button" aria-label="Next review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('.reviews-03');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      // Composer iframe: stay static, items get a horizontal scrollbar.
+      // Skip cloning + carousel state machine entirely so the editor can
+      // freely click into any item to edit.
+      if (window !== window.parent) {
+        section.classList.add('is-iframe');
+        return;
+      }
+
+      section.classList.add('is-live');
+
+      var rail = section.querySelector('.reviews-03__rail');
+      var viewport = section.querySelector('.reviews-03__viewport');
+      var track = section.querySelector('.reviews-03__track');
+      var prevBtn = section.querySelector('.reviews-03__btn--prev');
+      var nextBtn = section.querySelector('.reviews-03__btn--next');
+      if (!viewport || !track || !prevBtn || !nextBtn) return;
+
+      var realItems = Array.from(track.children);
+      if (realItems.length === 0) return;
+      var realCount = realItems.length;
+
+      // ── Setup clones for infinite loop ─────────────────────────────
+      // Clone last item, prepend (so users scrolling LEFT from the first
+      // real item see the LAST one before silent snap).
+      // Clone first item, append (so users scrolling RIGHT from the last
+      // real item see the FIRST one before silent snap).
+      // Strip data-field on clones so the inline editor doesn't try to
+      // edit them — only originals are the source of truth.
+      function makeClone(node) {
+        var clone = node.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.querySelectorAll('[data-field]').forEach(function (el) {
+          el.removeAttribute('data-field');
+        });
+        return clone;
+      }
+      track.insertBefore(makeClone(realItems[realCount - 1]), realItems[0]);
+      track.appendChild(makeClone(realItems[0]));
+
+      // Internal index points to the item currently centered. Real items
+      // live at indices [1 .. realCount]. Index 0 = clone-of-last,
+      // Index (realCount + 1) = clone-of-first.
+      var index = 1;
+      var transitioning = false;
+
+      function getStep() {
+        // Card width + gap, measured from layout so it stays correct as
+        // the responsive --reviews-03-card-w changes.
+        var first = track.children[0];
+        if (!first) return 0;
+        var cardW = first.getBoundingClientRect().width;
+        var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0') || 0;
+        return cardW + gap;
+      }
+
+      function getCenterOffset() {
+        // Where the active card's LEFT edge needs to sit so the card is
+        // centered in the viewport.
+        var first = track.children[0];
+        if (!first) return 0;
+        var cardW = first.getBoundingClientRect().width;
+        return (viewport.clientWidth - cardW) / 2;
+      }
+
+      function applyTransform(animated) {
+        var step = getStep();
+        var offset = getCenterOffset();
+        var x = offset - index * step;
+        if (!animated) {
+          track.classList.add('is-snap');
+          // Force reflow so the next transform respects the disabled
+          // transition before we re-enable it.
+          track.style.transform = 'translate3d(' + x + 'px, 0, 0)';
+          // eslint-disable-next-line no-unused-expressions
+          track.offsetHeight;
+          track.classList.remove('is-snap');
+        } else {
+          track.style.transform = 'translate3d(' + x + 'px, 0, 0)';
+        }
+        updateActiveCard();
+      }
+
+      function updateActiveCard() {
+        // Mark the centered card as active (drives the opacity dimming on
+        // the others). Use index (which already accounts for the prepended
+        // clone) to find the correct child.
+        Array.from(track.children).forEach(function (el, i) {
+          el.classList.toggle('is-active', i === index);
+        });
+      }
+
+      function go(delta) {
+        if (transitioning) return;
+        transitioning = true;
+        index += delta;
+        applyTransform(true);
+      }
+
+      // After the smooth animation finishes, check if we landed on a
+      // clone — if so, silently snap to the matching real item.
+      track.addEventListener('transitionend', function (e) {
+        if (e.propertyName !== 'transform') return;
+        if (index === 0) {
+          // Landed on the prepended clone-of-last. Snap to the real last
+          // item (same visual position, no animation).
+          index = realCount;
+          applyTransform(false);
+        } else if (index === realCount + 1) {
+          // Landed on the appended clone-of-first. Snap to the real first.
+          index = 1;
+          applyTransform(false);
+        }
+        transitioning = false;
+      });
+
+      prevBtn.addEventListener('click', function () { go(-1); });
+      nextBtn.addEventListener('click', function () { go(1); });
+
+      // Keyboard support — left/right arrows when the rail has focus.
+      rail.tabIndex = 0;
+      rail.setAttribute('role', 'group');
+      rail.setAttribute('aria-roledescription', 'carousel');
+      rail.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      });
+
+      // Touch swipe — track horizontal drag, fire prev/next on threshold.
+      var touchStartX = 0;
+      var touchActive = false;
+      viewport.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+        touchActive = true;
+      }, { passive: true });
+      viewport.addEventListener('touchend', function (e) {
+        if (!touchActive) return;
+        touchActive = false;
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+      }, { passive: true });
+
+      // Initial position — center on the first real item (which is at
+      // index 1 since clone-of-last was prepended at index 0).
+      applyTransform(false);
+
+      // Re-apply on resize (card width clamps responsively, so the step
+      // and centering offset both change).
+      var resizeRaf = 0;
+      window.addEventListener('resize', function () {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(function () { applyTransform(false); });
+      });
+    })();
+  </script>
+</section>
+<!-- SECTION:reviews:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the reviews.</p>
+</div>
+
+
+
+</body></html>

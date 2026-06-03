@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-06 — Cinematic full-bleed photo with text overlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-06 — full-bleed atmospheric photo with text overlaid
+       directly on it. Reference vibes: Patagonia story pages, A24 film
+       posters, architecture-firm landing sections. The photo IS the
+       section — there's no card, no split, no portrait beside text.
+
+       Section breaks out of the page container via the negative-margin
+       viewport trick so the photo reaches the screen edges on every
+       viewport. A bottom-up dark gradient guarantees text legibility
+       regardless of the photo's actual content (a busy workshop shot
+       still reads).
+
+       Different from about-01 / 02 / 03 (clean portrait splits),
+       about-04 (centered intro + landscape photo BELOW), about-05
+       (scrapbook polaroid letter), and about-07 (split + checklist
+       + photo). This is the dramatic / atmospheric option in the
+       catalog. */
+
+    .about-06 {
+      position: relative;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      min-height: 640px;
+      display: flex;
+      align-items: flex-end;
+      background-color: #1c1917;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #f5f3ee;
+      overflow: hidden;
+    }
+    /* Bottom-up dark gradient — locks text contrast even on noisy /
+       bright photos. Darkened 2026-05-29 (text was hard to read on
+       light photos): top no longer near-clear, bottom hits 0.94 alpha
+       so the headline + body always sit on solid dark. */
+    .about-06::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      /* Above the photo (z-index:1), below the text (z-index:3). Without
+         this the .about-06__bg photo div painted OVER the gradient (both
+         absolute → DOM order wins), so the overlay did nothing and the
+         text sat directly on the bright photo. This is the real fix. */
+      z-index: 2;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.5) 0%,
+        rgba(0, 0, 0, 0.62) 45%,
+        rgba(0, 0, 0, 0.85) 100%
+      );
+    }
+    .about-06__inner {
+      position: relative;
+      z-index: 3;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 48px 88px;
+    }
+    /* Eyebrow — primary-colored, underlined, uppercase tracking. */
+    .about-06__eyebrow {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--color-primary);
+      margin-bottom: 28px;
+    }
+    .about-06__headline {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0 0 28px;
+      max-width: 720px;
+    }
+    .about-06__headline > p { margin: 0; font: inherit; color: inherit; }
+    /* Body is a <div> (not <p>) so TipTap's <p> wrap nests cleanly.
+       Same rationale used in hiw-01 / about-01 / about-04 / about-05. */
+    .about-06__body {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: rgba(245, 243, 238, 0.88);
+      max-width: 540px;
+      margin: 0 0 36px;
+    }
+    .about-06__body > p { margin: 0 0 14px; }
+    .about-06__body > p:last-child { margin-bottom: 0; }
+
+    .about-06__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.98rem;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .about-06__cta:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+    }
+    .about-06__cta::after {
+      content: "→";
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 800px) {
+      .about-06 { min-height: 560px; }
+      .about-06__inner { padding: 0 24px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-06</strong> &nbsp; · &nbsp; Full-bleed cinematic photo with bold text overlay. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-06
+  LAYOUT:   Full-bleed section breaking out of the page container.
+            A large atmospheric photo fills the entire section as a
+            background image, with a bottom-up dark gradient overlay
+            for text legibility. Eyebrow + bold headline + short body
+            + single CTA sit anchored to the bottom-left of the
+            section above the gradient. Mobile: same layout, just
+            tighter padding.
+  CONTENT:  eyebrow + headline + body (richtext) + image (used as
+            full-bleed background) + 1 CTA.
+  EDITABLE: 5 fields — about_eyebrow + about_headline (text) +
+            about_body (richtext) + about_image (image, applied as
+            background-image on the .about-06__bg div) + about_cta_1
+            (link).
+            Shares about_eyebrow / about_headline / about_body /
+            about_image keys with about-01 / 02 / 03 / 04 / 05 —
+            cross-swap loss-free for the core text + image.
+  THEME:    Section bg falls back to #1c1917 if the image fails to
+            load. Eyebrow uses --color-primary. CTA uses --color-primary.
+            Body / headline are forced light (#ffffff and #f5f3ee)
+            regardless of theme — the gradient guarantees dark
+            backdrop so light text is the only safe choice.
+  USE FOR:  Bold / atmospheric brand voice — when the client has a
+            strong photo (workshop, finished build, team at work) and
+            wants a film-poster impact rather than the warmer
+            editorial tones of about-01 through 05.
+-->
+<section id="o-nas" class="about-06 fade-up" data-field-order="about_image,about_eyebrow,about_headline,about_body,about_cta_1">
+  <div class="about-06__bg" data-field="about_image" style="position:absolute;inset:0;z-index:1;background-image:url('https://placehold.co/2400x1200/57534e/e7e5e4?text=Cinematic+photo&font=lato');background-size:cover;background-position:center;background-repeat:no-repeat"></div>
+  <div class="about-06__inner">
+    <span class="about-06__eyebrow" data-field="about_eyebrow">About us</span>
+    <h2 class="about-06__headline" data-field="about_headline">We do work we can stand behind even five years from now.</h2>
+    <div class="about-06__body" data-field="about_body" data-type="richtext"><p>We are a team of six in Poprad. We work with iron, wood and concrete for family homes and smaller companies across the whole region. No subcontractors, no rush, no excuses.</p></div>
+    <a class="about-06__cta" data-field="about_cta_1" data-type="link" href="#kontakt">Get in touch</a>
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

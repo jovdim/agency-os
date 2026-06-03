@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-01 — 3-card review grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    .reviews-01 .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 24px;
+    }
+    .reviews-01 .review-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex; flex-direction: column;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .reviews-01 .review-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+    }
+    .reviews-01 .stars { display: inline-flex; gap: 2px; color: #f5b400; margin-bottom: 14px; }
+    .reviews-01 .stars svg { width: 16px; height: 16px; fill: currentColor; }
+    .reviews-01 .review-text {
+      color: var(--color-text);
+      font-size: 0.97rem;
+      line-height: 1.7;
+      margin: 0 0 22px;
+      flex: 1;
+    }
+    .reviews-01 .meta {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 12px; padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .reviews-01 .author-block .name {
+      display: block;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 0.95rem;
+    }
+    .reviews-01 .source {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--color-text-light);
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .reviews-01 .source svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* Google review badge — real logo image + a transparent anchor
+       overlay that the user fills with the specific review's URL via
+       the composer. Clicking anywhere on the logo opens the Google
+       review page in a new tab (proof that the review is genuine).
+       Layout trick: position:relative wrapper + position:absolute
+       anchor with text-indent off-screen, so any text the renderer
+       writes to the anchor (link-field side-effect) stays invisible
+       and the <img> remains the visible content. */
+    .google-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .google-badge__logo {
+      display: block;
+      height: auto;
+      width: auto;
+      max-height: 28px;
+      max-width: 160px;
+    }
+    .google-badge__link {
+      position: absolute;
+      inset: 0;
+      text-indent: -9999px;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .google-badge__link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: reviews-01</strong> &nbsp; · &nbsp; 3-card review grid: 5 stars + text + author + date + source label. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-01
+  LAYOUT:   3 cards desktop (auto-fit grid), 1 column on mobile.
+  CONTENT:  eyebrow + headline, then 3 reviews with text + author + source.
+            Date field removed 2026-05-11 (Peter — "X months ago" reads
+            stale on a static portfolio site; same removal applied across
+            every reviews template).
+  EDITABLE: 11 fields — 2 text (eyebrow, headline) + 3 longtext (texts) + 6 text (3×author, 3×source)
+  THEME:    Card bg = var(--color-bg). Hover border = var(--color-primary). Author = var(--color-secondary).
+            Star color is #f5b400 (gold) — kept fixed since stars have a universal color expectation.
+-->
+<section id="recenzie" class="reviews-01 section-alt fade-up">
+  <div class="container">
+
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">Write the reviews section heading here</h2>
+    </div>
+
+    <div class="reviews-grid">
+
+      <article class="review-card">
+        <div class="stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="review-text" data-field="reviews_1_text" data-type="richtext">Write the text of the first review here. A specific customer experience works best: what was done, how the cooperation went, and what positively surprised the customer in the end.</p>
+        <div class="meta">
+          <div class="author-block">
+            <span class="name" data-field="reviews_1_author">Author name</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="reviews_1_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="review-card">
+        <div class="stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="review-text" data-field="reviews_2_text" data-type="richtext">Write the text of the second review here. Choose reviews that cover different types of jobs or different aspects of the cooperation, such as price, speed, and quality.</p>
+        <div class="meta">
+          <div class="author-block">
+            <span class="name" data-field="reviews_2_author">Author name</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="reviews_2_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="review-card">
+        <div class="stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="review-text" data-field="reviews_3_text" data-type="richtext">Write the text of the third review here. The third review is well suited to a specific case, such as non-standard conditions, an exceptional situation, or a long-term partnership.</p>
+        <div class="meta">
+          <div class="author-block">
+            <span class="name" data-field="reviews_3_author">Author name</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="reviews_3_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

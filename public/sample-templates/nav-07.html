@@ -1,0 +1,797 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nav-07 — Scroll-aware navbar (transparent over hero, solid after scroll)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* nav-07 — scroll-aware navbar. Starts transparent over the hero
+       (so a dark hero image shows through, white text reads clean).
+       After the user scrolls past the hero, the bar switches to a
+       solid surface using --color-nav-bg.
+
+       Implementation:
+         - At top of page: `.site-nav.nav-scroll` has no extra class →
+           transparent bg + white text + white logo filter.
+         - After scrolling >120px OR past the hero sentinel: JS adds
+           `.is-scrolled` → bar gets nav-bg color, text/links/logo
+           flip to the page-text color.
+         - In the composer iframe: JS forces `.is-scrolled` on
+           regardless of scroll position so the editor doesn't see
+           a transparent navbar over a blank gray background. */
+
+    .site-nav.nav-scroll {
+      /* Override base CSS: transparent over hero by default. */
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition:
+        background 0.3s ease,
+        border-bottom-color 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+    .site-nav.nav-scroll.is-scrolled {
+      background: var(--color-nav-bg, #ffffff);
+      border-bottom-color: color-mix(in srgb, var(--color-text) 12%, transparent);
+      box-shadow: 0 4px 18px -10px rgba(0, 0, 0, 0.18);
+    }
+
+    .site-nav.nav-scroll .nav-inner {
+      /* Wide centered container so on a 1920px display the logo sits
+         ~160px from each viewport edge, and on laptops (≤1648px) it
+         fills the viewport with just 24px breathing room. Matches the
+         bagerexpress reference width. */
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+      /* 3-column grid: logo left | centered links | CTA right.
+         Grid (not flex) so the centered links cluster doesn't shift
+         when the logo or CTA changes width. */
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+    }
+
+    /* Logo — fix-height + auto-width canonical pattern. No max-width
+       cap so the full logo renders at any aspect ratio. Bumped to 56px
+       to match the taller navbar. */
+    .site-nav.nav-scroll .logo {
+      display: inline-flex;
+      align-items: center;
+      height: 56px;
+      flex-shrink: 0;
+      grid-column: 1;
+    }
+    .site-nav.nav-scroll .logo img {
+      height: 100%;
+      width: auto;
+      display: block;
+      /* No color filter — the uploaded logo shows in its real colors
+         (yellow icon + white text on transparent for bagerexpress).
+         Logos used in this template should be authored for a dark
+         surface (light text + colored accents). */
+    }
+
+    /* Top-level link cluster — centered in the middle grid column. */
+    .site-nav.nav-scroll .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-heading);
+      grid-column: 2;
+      justify-self: center;
+    }
+    .site-nav.nav-scroll .nav-links > li > a:not(.nav-cta),
+    .site-nav.nav-scroll .nav-links > [data-repeat] > li > a:not(.nav-cta) {
+      /* White in both scroll states by default — this template assumes a
+         dark navbar surface (bagerexpress-style). The Navbar-text theme
+         control can override it via --color-nav-text. */
+      color: var(--color-nav-text, #ffffff);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .site-nav.nav-scroll .nav-links > li > a:not(.nav-cta):hover,
+    .site-nav.nav-scroll .nav-links > [data-repeat] > li > a:not(.nav-cta):hover {
+      color: var(--color-primary);
+    }
+
+    /* Right-edge action cluster — owns grid column 3 and packs
+       socials + CTA + hamburger into a single tight horizontal group.
+       Without this wrapper, .nav-socials and .hamburger have no
+       grid-column assignment → auto-placement spawns a new row,
+       which is what made the socials stack vertically above the CTA.
+       gap: 10px keeps the icons visually grouped (not a 24px grid gap). */
+    .site-nav.nav-scroll .nav-actions {
+      grid-column: 3;
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* CTA — primary-coloured pill, sits inside .nav-actions.
+       Looks identical in both scroll states (it's the primary action,
+       should always pop regardless of background). */
+    .site-nav.nav-scroll .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 14px 26px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+    .site-nav.nav-scroll .nav-cta:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown caret + dropdown surface.
+       Each nav_links item gets `.has-dropdown` (set on the template
+       <li>) and an inner `<ul class="dropdown">` repeater. When the
+       user fills in sub-items in the composer, the dropdown appears.
+       When they leave it empty, the rules below hide the caret and
+       the (empty) dropdown panel — so the item renders as a plain
+       link. Truly dynamic: any number of dropdowns + any number of
+       sub-items, no hardcoded slot limit. */
+    .site-nav.nav-scroll .has-dropdown {
+      position: relative;
+    }
+    /* NULL the template-base.css unconditional `.has-dropdown > a::after`
+       paint. The renderer always clones items from the first nav_links
+       child (which carries `class="has-dropdown"`), so EVERY rendered
+       item inherits the class — including items the author left without
+       sub-items. template-base.css paints a chevron on every
+       `.has-dropdown > a` with no `:has()` guard, so without this reset
+       items 2-N show a permanent caret. nav-07's own conditional rules
+       below (`:has(.dropdown li)` / `:has(> .dropdown > li)`) re-add the
+       caret only when sub-items actually exist. */
+    .site-nav.nav-scroll .has-dropdown > a::after {
+      content: none;
+    }
+    /* Hide entirely if the label itself is empty (user wiped it). */
+    .site-nav.nav-scroll .has-dropdown:has(> a:empty) {
+      display: none;
+    }
+    /* Hide the empty dropdown panel (no sub-items added) so it doesn't
+       float as a blank rectangle on hover. Use :has() to detect any
+       descendant <li> inside the dropdown — works whether the publish
+       renderer wraps items in [data-sk-repeater-wrap] or not. */
+    .site-nav.nav-scroll .has-dropdown:not(:has(.dropdown li)) > .dropdown {
+      display: none;
+    }
+    /* (The triangular caret + show/hide rules live in the "single-list
+       menu schema" block further down — same approach as nav-05/06 so
+       the icon and animation match the other zluxy navbars.) */
+    .site-nav.nav-scroll .dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 220px;
+      /* Same dark surface as the navbar itself. */
+      background: var(--color-nav-bg, #1c1917);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.45);
+      padding: 8px 0;
+      list-style: none;
+      margin: 0;
+      /* Smoother reveal: fade + drop + subtle scale, easing curve
+         matched to Apple/Vercel/Linear (cubic-bezier 0.16,1,0.3,1 =
+         ease-out-expo). 260ms feels luxurious without being slow.
+         transform-origin top center so the scale grows downward from
+         the trigger. Peter 2026-05-20: "the dropdown should animate
+         smoothly." */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px) scale(0.96);
+      transform-origin: top center;
+      transition:
+        opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0s linear 0.26s;
+      z-index: 1001;
+    }
+    @media (hover: hover) and (min-width: 901px) {
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown,
+      .site-nav.nav-scroll .has-dropdown:focus-within > .dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+        transition:
+          opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+          visibility 0s linear 0s;
+      }
+    }
+    /* Stagger the individual dropdown rows in from the top so the
+       reveal feels alive, not slabby. Each row fades + drops slightly
+       on a tiny delay relative to its index. */
+    .site-nav.nav-scroll .dropdown > li,
+    .site-nav.nav-scroll .dropdown > [data-sk-repeater-wrap] > li {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition:
+        opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (hover: hover) and (min-width: 901px) {
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li,
+      .site-nav.nav-scroll .has-dropdown:focus-within > .dropdown > li,
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap] > li,
+      .site-nav.nav-scroll .has-dropdown:focus-within > .dropdown > [data-sk-repeater-wrap] > li {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li:nth-child(1),
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap]:nth-child(1) > li { transition-delay: 0.03s; }
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li:nth-child(2),
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap]:nth-child(2) > li { transition-delay: 0.06s; }
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li:nth-child(3),
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap]:nth-child(3) > li { transition-delay: 0.09s; }
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li:nth-child(4),
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap]:nth-child(4) > li { transition-delay: 0.12s; }
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > li:nth-child(n+5),
+      .site-nav.nav-scroll .has-dropdown:hover > .dropdown > [data-sk-repeater-wrap]:nth-child(n+5) > li { transition-delay: 0.15s; }
+    }
+    .site-nav.nav-scroll .dropdown a {
+      display: block;
+      padding: 10px 18px;
+      color: var(--color-nav-text, #ffffff);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .site-nav.nav-scroll .dropdown a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--color-primary);
+    }
+
+    /* Hamburger (mobile) — white outline over hero, dark when scrolled. */
+    .site-nav.nav-scroll .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+    }
+    .site-nav.nav-scroll .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+    .site-nav.nav-scroll .hamburger[aria-expanded="true"] span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .site-nav.nav-scroll .hamburger[aria-expanded="true"] span:nth-child(2) {
+      opacity: 0;
+    }
+    .site-nav.nav-scroll .hamburger[aria-expanded="true"] span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ─────────────── MOBILE — FULL-SCREEN TAKEOVER ───────────────
+       Hamburger opens a full-screen dark overlay (matches the
+       bagerexpress reference). Layout:
+         • Logo stays top-left (bar stays above the overlay via z-index)
+         • X close button top-right inside a 1px outlined square
+         • Menu items right-aligned, UPPERCASE, bold, white
+         • Dropdowns inline-expand with caret rotation
+         • Orange phone CTA pill at the bottom-right (shuttled in by JS)
+         • Socials hidden while overlay open
+    */
+    @media (max-width: 900px) {
+      .site-nav.nav-scroll .nav-inner { padding: 12px 20px; gap: 0; }
+      .site-nav.nav-scroll .logo { height: 40px; }
+      .site-nav.nav-scroll .nav-actions { gap: 6px; }
+      .site-nav.nav-scroll .hamburger { display: flex; }
+
+      /* Bar always sits on top of the overlay (logo + hamburger stay
+         visible against the dark surface). 9999 on the bar itself
+         clears page content. Individual bar children (logo, hamburger)
+         get an even higher z-index below — without that, they're at
+         default z-index 0 inside .site-nav's stacking context, so the
+         overlay (z-index 9998 in same context) paints over them. */
+      .site-nav.nav-scroll { z-index: 9999; }
+      .site-nav.nav-scroll .logo {
+        position: relative;
+        z-index: 10001;
+      }
+
+      /* The CTA only renders while the overlay is open (the JS moves
+         it into .nav-links). Hidden everywhere else on mobile. */
+      .site-nav.nav-scroll .nav-actions .nav-cta { display: none; }
+
+      /* Overlay surface. Drops from the top of the viewport, fills the
+         full width, and is 80vh tall (so a sliver of page content peeks
+         out at the bottom — confirms the overlay is a temporary mode,
+         not a full-page replacement). The navbar's logo + hamburger
+         stay visible on top via z-index. nav-bg = dark for bagerexpress.
+         Explicit width: 100vw + left: 0 belt-and-suspenders so any
+         inherited width/max-width from base CSS can't make the overlay
+         render at half-width. !important on width because some publish
+         contexts have legacy width rules with higher specificity. */
+      .site-nav.nav-scroll .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 60vh;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        /* `safe center` keeps the menu items vertically centered when
+           there's room, but falls back to top-aligned when content
+           overflows so the user can scroll down to reach hidden items.
+           Without `safe`, browsers center the content even when
+           overflowing — the TOP gets clipped and the user can't
+           scroll past the centered viewport. (Peter 2026-05-15 v4 —
+           saw this with 2 Services menus x 5 services each.) */
+        justify-content: safe center;
+        /* Tight 8px row gap so the menu reads as a compact list, not
+           a loose stack. Bottom padding 48px keeps the CTA off the
+           overlay's bottom edge. */
+        gap: 8px;
+        margin: 0;
+        padding: 76px 28px 48px;
+        background: var(--color-nav-bg, #1c1917);
+        list-style: none;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: none;
+        transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+        z-index: 9998;
+        /* Long menus (multiple Services triggers with many services
+           each) overflow the 60vh overlay — let the menu itself
+           scroll instead of clipping items off the bottom edge.
+           `overscroll-behavior: contain` prevents scroll-chaining
+           into the page underneath when the user reaches either end.
+           (Peter 2026-05-15 v4) */
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+      .site-nav.nav-scroll .nav-links.open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 0.25s ease;
+      }
+
+      /* Right-aligned bold uppercase menu items — matches the
+         bagerexpress reference. */
+      .site-nav.nav-scroll .nav-links > li,
+      .site-nav.nav-scroll .nav-links > [data-repeat] > li {
+        width: auto;
+        text-align: right;
+      }
+      .site-nav.nav-scroll .nav-links > li > a:not(.nav-cta),
+      .site-nav.nav-scroll .nav-links > [data-repeat] > li > a:not(.nav-cta) {
+        display: inline-block;
+        /* Standard small text — Peter wanted smaller and tighter than
+           the previous 0.95rem. 0.8rem is the typical body-small size
+           used elsewhere in the templates. Padding trimmed to 2px so
+           the row gap (8px from .nav-links) does the spacing work. */
+        padding: 2px 0;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #ffffff;
+        border-bottom: 0;
+        text-align: right;
+      }
+
+      /* Hamburger → plain X (no outlined box). Three bars transform
+         into an X via the base hamburger animation rules. z-index
+         keeps it above the overlay so the user can always tap close. */
+      .site-nav.nav-scroll .hamburger {
+        position: relative;
+        z-index: 10001;
+      }
+
+      /* Phone CTA pill — only visible while it lives inside
+         .nav-links (the JS appends it as the last child on open).
+         Right-aligned to align with the menu items above. Sized to
+         feel like a deliberate action below the menu, not a banner. */
+      .site-nav.nav-scroll .nav-links > .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 8px;
+        padding: 10px 22px;
+        background: var(--color-primary);
+        color: #fff;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        align-self: flex-end;
+      }
+
+      /* Socials hide while the overlay is open (matches screenshot —
+         only logo + menu + CTA visible during takeover). Uses :has()
+         so when .nav-links.open exists anywhere in the nav, socials
+         on the bar are hidden. */
+      .site-nav.nav-scroll:has(.nav-links.open) .nav-actions .nav-socials {
+        display: none;
+      }
+
+      /* Mobile dropdown inline expand — animated reveal (max-height +
+         opacity slide instead of the old display: none/block snap).
+         Peter 2026-05-15 v4: previously the services appeared
+         instantly; now they cascade down smoothly. */
+      .site-nav.nav-scroll .has-dropdown > .dropdown {
+        position: static;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        visibility: visible;
+        transform: none;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        min-width: 0;
+        margin: 0;
+        list-style: none;
+        transition:
+          max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
+          opacity 0.2s ease-out,
+          padding 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .site-nav.nav-scroll .has-dropdown.open > .dropdown,
+      .site-nav.nav-scroll .nav-links > li.open > .dropdown {
+        /* 600px covers 5-8 services with comfortable padding. Goes
+           higher than necessary so we never clip — overflow inside
+           the overlay handles the scroll. */
+        max-height: 600px;
+        opacity: 1;
+        padding: 8px 0 0;
+      }
+      /* Restore opacity on dropdown <li> items when the parent opens.
+         The desktop block above sets every .dropdown > li to opacity:0
+         (for the stagger-in reveal on hover) and the matching
+         opacity:1 rule is gated behind `(hover: hover) and
+         (min-width: 901px)`. Without this mobile companion the items
+         stay transparent inside the open dropdown — container
+         expands, text is invisible. (Peter 2026-05-22.) */
+      .site-nav.nav-scroll .has-dropdown.open > .dropdown > li,
+      .site-nav.nav-scroll .nav-links > li.open > .dropdown > li,
+      .site-nav.nav-scroll .has-dropdown.open > .dropdown > [data-sk-repeater-wrap] > li,
+      .site-nav.nav-scroll .nav-links > li.open > .dropdown > [data-sk-repeater-wrap] > li {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .site-nav.nav-scroll .dropdown li {
+        text-align: right;
+      }
+      .site-nav.nav-scroll .dropdown a {
+        display: inline-block;
+        text-align: right;
+        font-size: 0.85rem;
+        padding: 6px 0;
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-scroll .hamburger { display: none; }
+    }
+  
+    /* ── Dropdown indicator + reveal — single-list menu schema ──
+       Every cloned <li> structurally carries an empty .dropdown ul, so
+       chevrons + reveals are driven by :has(> .dropdown > li). Reveal
+       flips opacity/visibility/transform (base hides via those, not
+       display), or the popover stays invisible regardless of hover.
+       Triangle caret matches nav-05 / nav-06 so all zluxy navbars
+       share one chevron language.
+
+       IMPORTANT: every diamond-chevron property from template-base.css
+       (`border-right`, `border-bottom`, `width`, `height`, `transform`)
+       is RESET below. Without explicit overrides the leftover
+       border-bottom: 1.5px from the base rule paints a stub edge under
+       the triangle, and the base hover rule's `rotate(225deg)` wins
+       over our 180° flip — both make the caret still look diamond-y
+       instead of a clean triangle. */
+    .site-nav.nav-scroll .nav-links > li:has(> .dropdown > li) > a::after {
+      content: "";
+      display: inline-block;
+      /* Reset diamond geometry from template-base.css */
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid currentColor;
+      border-bottom: 0;            /* kill base's 1.5px stub */
+      margin-left: 6px;
+      vertical-align: middle;
+      transform: translateY(-1px); /* kill base's translateY(-2px) rotate(45deg) */
+      /* Smooth flip on hover (desktop) + tap (mobile). Without this the
+         180° rotation snaps instead of animating. Matches nav-05/06's
+         feel after their click-to-open rotation was added. */
+      transition: transform 0.2s ease;
+    }
+    .site-nav.nav-scroll .nav-links > li > .dropdown:not(:has(> li)) {
+      display: none !important;
+    }
+    /* NOTE: desktop hover reveal lives in the earlier `.has-dropdown:hover
+       > .dropdown` block above (clean translateY(0) drop-down). A duplicate
+       block used to live here that overrode with `translateX(-50%)
+       translateY(0)` — since the base dropdown state is `translateY(-4px)`
+       with no translateX, the transition animated the dropdown sliding
+       50% of its own width to the LEFT as it opened (the "right to left"
+       slide). It also added a chevron-flip on hover. Both are intentionally
+       removed: hover keeps the caret static and the dropdown just drops
+       straight down like every other nav template. */
+    @media (max-width: 900px) {
+      .site-nav.nav-scroll .nav-links > li.open > a::after {
+        transform: translateY(-1px) rotate(180deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: nav-07</strong> &nbsp; · &nbsp; Scroll-aware navbar. Transparent over the hero (white text, white logo via filter), switches to solid --color-nav-bg with dark text when scrolled past 120px. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:nav:start -->
+<!--
+  TEMPLATE: nav-07
+  LAYOUT:   Standard sticky navbar (logo left, links + CTA right) with
+            SCROLL-AWARE styling. Starts transparent over the hero so a
+            dark hero image shows through. Once the user scrolls more
+            than 120px (or past the hero sentinel), JS toggles
+            `.is-scrolled` and the bar becomes a solid surface using
+            --color-nav-bg (white by default, themable). Smooth 0.3s
+            transitions on bg + border + logo filter so the change
+            reads as polished rather than abrupt.
+  CONTENT:  Logo image, 5 main links, 4 service items in dropdown,
+            phone CTA. Schema identical to nav-01/05.
+  EDITABLE: 1 image + 10 link-type fields.
+  THEME:    Two visual states. Over-hero: transparent bg, white text +
+            logo (via brightness(0) invert(1)). Scrolled: --color-nav-bg
+            bg, --color-text text, logo at natural colors. CTA stays in
+            --color-primary in BOTH states (always the loudest element).
+  MOBILE:   < 900px → hamburger. Hamburger lines flip color with the
+            scroll state. Menu dropdown uses solid --color-nav-bg
+            regardless of scroll position (it's a flyout, not the
+            bar itself).
+  COMPOSER: Inside the iframe, the script forces `.is-scrolled` on
+            regardless of scroll position. Without this, the editor
+            would see a transparent navbar with white text over a blank
+            gray background — unreadable + visually misleading.
+-->
+<nav id="top" class="site-nav nav-scroll" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+
+    <a href="/" class="logo" aria-label="Home">
+      <img data-field="nav_logo" src="https://placehold.co/360x88/e5e7eb/6b7280?text=LOGO&amp;font=lato" alt="Logo">
+    </a>
+
+    <!--
+      Dynamic nav: nav_links is a flat repeater. Each item has a label
+      AND an optional dropdown_items sub-repeater. Items with 0
+      sub-items render as plain links (CSS hides the caret + the empty
+      dropdown panel). Items with N sub-items render as a dropdown
+      with those N items. User can add/remove any number of items, and
+      for each item add/remove any number of sub-items. Templating
+      contract: `class="has-dropdown"` must live on the template <li>
+      so every cloned item gets it — CSS keys off it to position the
+      dropdown, conditionally show the caret, etc.
+    -->
+    <!-- Items 2-N: plain <li><a></li> — NO `has-dropdown` class and NO
+         inner <ul data-repeat="dropdown_items">. Mirrors nav-05's pattern:
+         only the first item carries the dropdown structure, so extract-
+         ItemValues writes `dropdown_items: []` per item 2-N at parse
+         time (missing-nested-container branch). The renderer's clones
+         all inherit item 1's <ul>, but per-item overrides keep items
+         2-5 with empty dropdown_items → CSS guard `:has(> .dropdown > li)`
+         doesn't match → no caret. -->
+    <ul class="nav-links" id="nav-links-list" data-repeat="nav_links" data-min="1" data-max="12">
+      <li><a data-field="label" data-type="link" href="#domov">Home</a></li>
+      <li><a data-field="label" data-type="link" href="#o-nas">About</a></li>
+      <li class="has-dropdown">
+        <a data-field="label" data-type="link" href="#sluzby" aria-haspopup="true" aria-expanded="false">Our services</a>
+        <ul class="dropdown" aria-label="Sub-menu" data-repeat="dropdown_items" data-min="0" data-max="10">
+          <li><a data-field="label" data-type="link" href="#sluzba-1">Item 1</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-2">Item 2</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-3">Item 3</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-4">Item 4</a></li>
+        </ul>
+      </li>
+      <li><a data-field="label" data-type="link" href="#galeria">Gallery</a></li>
+      <li><a data-field="label" data-type="link" href="#kontakt">Contact</a></li>
+    </ul>
+
+    <!-- Right-edge action cluster — packs socials + phone CTA +
+         hamburger into one grid cell so they read as a single
+         visual group. Without this wrapper, .nav-socials and the
+         .hamburger had no grid-column assignment and CSS Grid
+         auto-placed them on a new row, stacking vertically above
+         the CTA. Desktop visible order: [FB] [IG] [CTA] (hamburger
+         hidden). Mobile visible order: [FB] [IG] [🍔] (CTA hidden). -->
+    <div class="nav-actions">
+      <!-- Socials: FB + IG. Each is a link field with hide/restore
+           via the composer's hidden_fields toggle. -->
+      <div class="nav-socials">
+        <a class="nav-social" data-field="nav_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+        </a>
+        <a class="nav-social" data-field="nav_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+
+      <!-- Phone CTA. Author convention: `href` holds the plain dialable
+           number (no `tel:` prefix). The renderer detects the `*phone*`
+           field key and emits `tel:+1 (555) 000-0000` on output. -->
+      <a class="nav-cta" data-field="nav_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+
+      <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="nav-links-list">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      var nav = document.currentScript.closest('.site-nav') || document.querySelector('.site-nav.nav-scroll');
+      if (!nav || nav.dataset.skInit) return;
+      nav.dataset.skInit = '1';
+
+      // ── Composer iframe: force "scrolled" state so the editor
+      // doesn't see a transparent navbar over blank gray. The composer
+      // shows sections in isolation, not under a hero, so there's no
+      // dark surface for the transparent variant to read against.
+      if (window !== window.parent) {
+        nav.classList.add('is-scrolled');
+      } else {
+        // ── Live page: toggle .is-scrolled based on scroll position.
+        // Threshold of 120px works for most heroes (anything taller
+        // than the navbar itself triggers the swap as soon as the user
+        // scrolls meaningfully). Uses rAF throttling so we never do
+        // more than 1 DOM read per frame.
+        var ticking = false;
+        var SCROLL_THRESHOLD = 120;
+        function updateScrollState() {
+          var scrolled = window.scrollY > SCROLL_THRESHOLD;
+          nav.classList.toggle('is-scrolled', scrolled);
+          ticking = false;
+        }
+        window.addEventListener('scroll', function () {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(updateScrollState);
+          }
+        }, { passive: true });
+        // Initial sync — in case the page loads at a non-zero scroll
+        // position (browser scroll restoration after refresh).
+        updateScrollState();
+      }
+
+      // ── Hamburger toggle (mobile) + CTA shuttle
+      //
+      // The phone CTA lives inside .nav-actions on the bar (desktop
+      // visible, mobile hidden by CSS). When the mobile overlay opens,
+      // we APPEND the CTA element to .nav-links so it renders as the
+      // last item in the takeover — matches the bagerexpress reference
+      // (orange pill at the bottom-right of the overlay). On close,
+      // the CTA moves back to .nav-actions so desktop renders the bar
+      // CTA as usual. Same DOM node either way → no data sync needed,
+      // and the renderer's `data-field="nav_phone"` patch still works
+      // regardless of where the element sits.
+      //
+      // Auto-close on link tap so the overlay doesn't linger when the
+      // user picks a section.
+      var hamburger = nav.querySelector('.hamburger');
+      var links = nav.querySelector('.nav-links');
+      var actions = nav.querySelector('.nav-actions');
+      var cta = nav.querySelector('.nav-cta');
+
+      function setOverlay(open) {
+        links.classList.toggle('open', open);
+        hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (cta) {
+          if (open) {
+            // Append CTA as the last child of the overlay menu
+            links.appendChild(cta);
+          } else if (actions) {
+            // Return CTA to its bar position, just before the hamburger
+            actions.insertBefore(cta, hamburger);
+          }
+        }
+        // On close, also collapse any expanded Services dropdown so the
+        // next open starts from a clean state. (Peter 2026-05-15 v3 —
+        // previously a re-opened menu showed the dropdown pre-expanded
+        // from the last session, which felt stuck.)
+        if (!open) {
+          nav.querySelectorAll('.nav-links > li.open').forEach(function (openLi) {
+            openLi.classList.remove('open');
+            var openA = openLi.querySelector(':scope > a');
+            if (openA) openA.setAttribute('aria-expanded', 'false');
+          });
+        }
+      }
+
+      if (hamburger && links) {
+        hamburger.addEventListener('click', function () {
+          setOverlay(!links.classList.contains('open'));
+        });
+      }
+
+      // Auto-close on link tap (only on mobile when overlay is open)
+      links && links.addEventListener('click', function (e) {
+        var target = e.target;
+        if (!target || target.tagName !== 'A') return;
+        // Don't close on a dropdown TRIGGER tap (handled below) —
+        // only on actual link picks.
+        var li = target.parentElement;
+        if (li && li.querySelector(':scope > .dropdown > li')) return;
+        if (window.innerWidth <= 900 && links.classList.contains('open')) {
+          setOverlay(false);
+        }
+      });
+
+      // ── Dropdown tap-to-open on mobile (desktop uses hover)
+      // 2. Dropdown triggers — structural detection. Any .nav-links > li
+      //    whose > .dropdown carries at least one <li> is a trigger.
+      //    preventDefault always; toggle on mobile only.
+      nav.querySelectorAll('.nav-links > li > a').forEach(function (a) {
+        var li = a.parentElement;
+        if (!li) return;
+        var dd = li.querySelector(':scope > .dropdown > li');
+        if (!dd) return;
+        a.addEventListener('click', function (e) {
+          // Mobile: toggle dropdown + preventDefault. Desktop: let the
+          // click navigate to the trigger's href (e.g. #sluzby) — the
+          // hover already opens the dropdown. (Peter 2026-05-15 v4)
+          if (window.innerWidth <= 900) {
+            e.preventDefault();
+            var open = li.classList.toggle('open');
+            a.setAttribute('aria-expanded', open ? 'true' : 'false');
+          }
+        });
+      });
+    })();
+  </script>
+</nav>
+<!-- SECTION:nav:end -->
+
+<!-- Spacer to demonstrate the scroll effect — preview-only, stripped on upload -->
+<div style="position:relative;height:600px;background:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url('https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=1600&amp;auto=format&amp;fit=crop') center/cover no-repeat;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:600">
+  Hero placeholder (scroll down)
+</div>
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:600px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Scroll-trigger zone</p>
+  <p style="margin:0;font-size:0.9rem">Navbar should now be solid with dark text.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+
+
+</body></html>

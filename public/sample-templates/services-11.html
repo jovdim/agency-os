@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-11 — Alternating slabs: tall image flush against dark/primary card with numbered counter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-11 — alternating service slabs. Each
+       service is a 2-column block where a TALL image sits FLUSH next
+       to a colored card (slightly shorter than the image, so the
+       image overflows top + bottom visually). Card backgrounds
+       alternate dark / primary per row, image side alternates left /
+       right per row. Each card has:
+         - A small "01" / "02" / ... auto-counter with a horizontal
+           line accent (no manual numbering field).
+         - Service title (text)
+         - Body paragraph (richtext)
+         - Optional 2-column bullets list — each bullet has an icon,
+           label, and short description.
+
+       Defaults: 4 services × 4 bullets each so a fresh insertion
+       reads as a fully-formed services block (matches the reference). */
+    .services-11 {
+      background: var(--color-bg);
+      padding: 80px 0;
+      counter-reset: services-11-counter;
+    }
+    .services-11 .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .services-11 .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 56px;
+    }
+    .services-11 .section-head .eyebrow:empty { display: none; }
+    .services-11 .services-headline {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.2;
+      color: var(--color-text);
+      margin: 0 0 14px;
+    }
+    .services-11 .services-headline-accent { color: var(--color-primary); }
+    .services-11 .services-lead {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+
+    /* Slabs list — generous vertical spacing between slabs so each
+       reads as its own block, not a tight stack. */
+    .services-11 .slabs {
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+    @media (min-width: 1024px) {
+      .services-11 .slabs { gap: 112px; }
+    }
+
+    .services-11 .slab {
+      counter-increment: services-11-counter;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: end;
+      gap: 0;
+    }
+    @media (min-width: 1024px) {
+      .services-11 .slab {
+        grid-template-columns: 1fr 1fr;
+        align-items: end;
+      }
+    }
+
+    /* Image column — taller than card on desktop so it overflows
+       top + bottom of the card, giving the slab its signature look.
+       Mobile keeps it as a normal aspect-ratio image above the card. */
+    .services-11 .slab-image {
+      position: relative;
+      aspect-ratio: 5/4;
+      overflow: hidden;
+    }
+    @media (min-width: 1024px) {
+      .services-11 .slab-image {
+        aspect-ratio: auto;
+        height: 640px;
+      }
+    }
+    .services-11 .slab-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Card column — colored block with number + title + body + bullets.
+       Slightly shorter than image on desktop (520px) so image bleeds
+       past top + bottom. */
+    .services-11 .slab-card {
+      position: relative;
+      color: #ffffff;
+      padding: 64px 32px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    @media (min-width: 1024px) {
+      .services-11 .slab-card {
+        min-height: 520px;
+        padding: 56px 56px 48px;
+      }
+    }
+
+    /* Background alternation — odd rows DARK, even rows PRIMARY.
+       Two-rule set (source iframe + published HTML) — see services-01
+       for the [data-sk-repeater-wrap] rationale. */
+    .services-11 .slab:nth-of-type(odd) .slab-card,
+    .services-11 [data-sk-repeater-wrap]:nth-of-type(odd) .slab-card {
+      background: var(--color-text, #1F2024);
+    }
+    .services-11 .slab:nth-of-type(even) .slab-card,
+    .services-11 [data-sk-repeater-wrap]:nth-of-type(even) .slab-card {
+      background: var(--color-primary);
+    }
+
+    /* Image-side alternation on desktop only — odd rows: image LEFT,
+       card RIGHT. Even rows: image RIGHT, card LEFT. Mobile stacks
+       image always on top of card. */
+    @media (min-width: 1024px) {
+      .services-11 .slab:nth-of-type(odd) .slab-image,
+      .services-11 [data-sk-repeater-wrap]:nth-of-type(odd) .slab-image { order: 1; }
+      .services-11 .slab:nth-of-type(odd) .slab-card,
+      .services-11 [data-sk-repeater-wrap]:nth-of-type(odd) .slab-card { order: 2; }
+      .services-11 .slab:nth-of-type(even) .slab-image,
+      .services-11 [data-sk-repeater-wrap]:nth-of-type(even) .slab-image { order: 2; }
+      .services-11 .slab:nth-of-type(even) .slab-card,
+      .services-11 [data-sk-repeater-wrap]:nth-of-type(even) .slab-card { order: 1; }
+    }
+
+    /* Number — auto-counter "01", "02", … with a horizontal line
+       to the left. Counter is generated via CSS so the operator
+       can't break it by editing a text field. Position absolute
+       in the top-left of the card so it doesn't push content. */
+    .services-11 .slab-card::before {
+      content: "0" counter(services-11-counter);
+      position: absolute;
+      top: 26px;
+      left: 32px;
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .services-11 .slab:nth-of-type(odd) .slab-card::before,
+    .services-11 [data-sk-repeater-wrap]:nth-of-type(odd) .slab-card::before {
+      color: color-mix(in srgb, var(--color-primary) 60%, #ffffff 40%);
+    }
+    @media (min-width: 1024px) {
+      .services-11 .slab-card::before {
+        left: 56px;
+      }
+    }
+
+    .services-11 .slab-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(1.5rem, 2.4vw, 2rem);
+      line-height: 1.25;
+      margin: 32px 0 16px;
+      color: #ffffff;
+    }
+    .services-11 .slab-body {
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.78);
+      margin: 0 0 32px;
+    }
+    .services-11 .slab-body :last-child { margin-bottom: 0; }
+
+    /* Bullets — 2-column grid (1 col on mobile). Each bullet has an
+       icon image (left), then label + body stacked. */
+    .services-11 .slab-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px 32px;
+    }
+    @media (min-width: 640px) {
+      .services-11 .slab-bullets { grid-template-columns: 1fr 1fr; }
+    }
+    .services-11 .slab-bullet {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .services-11 .slab-bullet-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      transition: transform 0.4s cubic-bezier(0.16, 0.84, 0.34, 1);
+    }
+    .services-11 .slab-bullet:hover .slab-bullet-icon {
+      transform: translateY(-3px) scale(1.08);
+    }
+    .services-11 .slab-bullet-label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin: 0 0 6px;
+    }
+    .services-11 .slab-bullet-body {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.72);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-11</strong> &nbsp; · &nbsp; Alternating service slabs. Tall image flush against dark/primary card with auto-numbered counter + 2-col bullets with icons. Image-side and card color alternate per row. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-11
+  LAYOUT:   Centered header (eyebrow + 2-tone heading + lead). Below:
+            stack of service slabs (default 4). Each slab is 2-col on
+            desktop, stacks on mobile. Per slab: tall image flush
+            against a colored card. Cards alternate dark / primary
+            per row. Image side alternates left / right per row.
+            Auto-counter "01", "02", ... appears top-left of each
+            card via CSS counter — no manual numbering.
+  CONTENT:  Header: eyebrow + 2 heading parts + lead.
+            Per service: image + title + body + nested bullets
+            sub-repeater (1..6 bullets, each with icon + label + body).
+  EDITABLE: Header 4 + per-service 3 + per-bullet 3 fields.
+            Default: 4 services × 4 bullets each.
+  THEME:    Primary color drives the even-row card background +
+            accent word in heading + odd-row number color. Dark color
+            (--color-text) drives odd-row card background. All card
+            text white at 100% / 78% / 72% opacities.
+  USE FOR:  Service-driven sites that want a strong editorial
+            services block — the alternating dark/primary color
+            statement reads as confident, the auto-numbered counter
+            adds visual rhythm, and the 2-col bullets per service let
+            the operator highlight specific deliverables / benefits
+            without bloating the body copy.
+-->
+<section id="sluzby" class="services-11">
+  <div class="container">
+    <div class="section-head fade-up">
+      <span class="eyebrow" data-field="services_eyebrow">Our services</span>
+      <h2 class="services-headline">
+        <span data-field="services_headline_main">What do</span>
+        <span class="services-headline-accent" data-field="services_headline_accent">we offer?</span>
+      </h2>
+      <p class="services-lead" data-field="services_lead">Our company offers a wide range of professional services for homes and commercial buildings. We are here to ensure your safety, comfort and efficiency through quality tailored solutions.</p>
+    </div>
+
+    <!-- Services repeater: 1..99 slabs. Per-item: image + title +
+         body + nested bullets sub-repeater. -->
+    <div class="slabs">
+      <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+        <article class="slab fade-up" data-item-id-source="title">
+          <div class="slab-image">
+            <img data-field="image" src="https://placehold.co/900x720/d6d3d1/57534e?text=Service+1&font=lato" alt="" width="900" height="720" loading="lazy">
+          </div>
+          <div class="slab-card">
+            <h3 class="slab-title" data-field="title">Electrical installations for homes</h3>
+            <div class="slab-body" data-field="body" data-type="richtext"><p>Write a description of the service here. 2 to 3 sentences about what you do within this service and what result the client gets.</p></div>
+            <ul class="slab-bullets" data-repeat="bullets" data-min="1" data-max="6">
+              <li class="slab-bullet">
+                <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                <div>
+                  <p class="slab-bullet-label" data-field="label">Safety</p>
+                  <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                </div>
+              </li>
+              <li class="slab-bullet">
+                <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                <div>
+                  <p class="slab-bullet-label" data-field="label">Reliability</p>
+                  <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                </div>
+              </li>
+              <li class="slab-bullet">
+                <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                <div>
+                  <p class="slab-bullet-label" data-field="label">Quality</p>
+                  <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                </div>
+              </li>
+              <li class="slab-bullet">
+                <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                <div>
+                  <p class="slab-bullet-label" data-field="label">Warranty</p>
+                  <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </article>
+        <article class="slab fade-up" data-item-id-source="title">
+          <div class="slab-image">
+            <img data-field="image" src="https://placehold.co/900x720/d6d3d1/57534e?text=Service+2&font=lato" alt="" width="900" height="720" loading="lazy">
+          </div>
+          <div class="slab-card">
+            <h3 class="slab-title" data-field="title">Electrical installations for businesses</h3>
+            <div class="slab-body" data-field="body" data-type="richtext"><p>Write a description of the second service here. Describe the scope of work, who it is for and what the process is from agreement to handover.</p></div>
+            <ul class="slab-bullets" data-repeat="bullets" data-min="1" data-max="6">
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Fast completion</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Certified work</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Documentation</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Warranty service</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+            </ul>
+          </div>
+        </article>
+        <article class="slab fade-up" data-item-id-source="title">
+          <div class="slab-image">
+            <img data-field="image" src="https://placehold.co/900x720/d6d3d1/57534e?text=Service+3&font=lato" alt="" width="900" height="720" loading="lazy">
+          </div>
+          <div class="slab-card">
+            <h3 class="slab-title" data-field="title">Inspections and service</h3>
+            <div class="slab-body" data-field="body" data-type="richtext"><p>Write a description of the third service here. What type of inspections you do, how they are carried out and what document the client receives.</p></div>
+            <ul class="slab-bullets" data-repeat="bullets" data-min="1" data-max="6">
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Regularity</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Prevention</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Documentation</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Expertise</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+            </ul>
+          </div>
+        </article>
+        <article class="slab fade-up" data-item-id-source="title">
+          <div class="slab-image">
+            <img data-field="image" src="https://placehold.co/900x720/d6d3d1/57534e?text=Service+4&font=lato" alt="" width="900" height="720" loading="lazy">
+          </div>
+          <div class="slab-card">
+            <h3 class="slab-title" data-field="title">Emergency repairs 24/7</h3>
+            <div class="slab-body" data-field="body" data-type="richtext"><p>Write a description of the fourth service here. When you are available, how fast you arrive and what types of faults you handle right away.</p></div>
+            <ul class="slab-bullets" data-repeat="bullets" data-min="1" data-max="6">
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Round the clock availability</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Fast arrival</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Safety solution</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+                <li class="slab-bullet">
+                  <img class="slab-bullet-icon" data-field="icon" src="https://placehold.co/96x96/ffffff/57534e?text=★&font=lato" alt="" width="48" height="48" loading="lazy">
+                  <div>
+                    <p class="slab-bullet-label" data-field="label">Transparent price</p>
+                    <p class="slab-bullet-body" data-field="body">Short description of the benefit, 1 to 2 sentences.</p>
+                  </div>
+                </li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-01 — Page hero (photo + title over dark overlay)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-01 — full-bleed PAGE HERO for inner / service-detail pages.
+       Faithful port of the pilimestromy service-page hero: photo
+       background + heavy dark overlay, left-aligned eyebrow → H1 → lead.
+       Generous top padding so it reads as a real page header sitting
+       under the site navbar; short enough that the content below stays
+       near the fold. */
+
+    .subpage-hero {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--color-secondary, #1c1917);
+      color: #ffffff;
+    }
+    /* Photo layer — a real <img> so the image field swaps cleanly. */
+    .subpage-hero__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    /* Dark overlay — flat 65% wash like the source (bg-ink-900/65), with a
+       touch more weight at the bottom so the lead paragraph stays legible
+       on any uploaded photo. */
+    .subpage-hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        to bottom,
+        rgba(20, 18, 16, 0.6) 0%,
+        rgba(20, 18, 16, 0.66) 55%,
+        rgba(20, 18, 16, 0.78) 100%
+      );
+    }
+    .subpage-hero__inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: var(--max-width, 1200px);
+      margin: 0 auto;
+      padding: 88px 32px 36px;
+    }
+    .subpage-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-body, sans-serif);
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-primary, #16a34a);
+      margin: 0 0 20px;
+    }
+    /* Pentagon "arrow" marker before the eyebrow text — the source's
+       signature eyebrow tag. */
+    .subpage-hero__eyebrow::before {
+      content: "";
+      display: block;
+      width: 15px;
+      height: 15px;
+      background: var(--color-primary, #16a34a);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+      flex-shrink: 0;
+    }
+    .subpage-hero__eyebrow:empty { display: none; }
+    .subpage-hero__title {
+      font-family: var(--font-heading, sans-serif);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin: 0;
+      max-width: 22ch;
+      text-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
+    }
+    .subpage-hero__sub {
+      font-family: var(--font-body, sans-serif);
+      font-size: clamp(1rem, 1.4vw, 1.18rem);
+      font-weight: 400;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 24px 0 0;
+      max-width: 60ch;
+    }
+    .subpage-hero__sub:empty { display: none; }
+    .subpage-hero__sub p { margin: 0 0 0.6em; }
+    .subpage-hero__sub p:last-child { margin-bottom: 0; }
+
+    @media (max-width: 768px) {
+      .subpage-hero__inner { padding: 76px 20px 30px; }
+      .subpage-hero__title { font-size: clamp(1.7rem, 7vw, 2.3rem); max-width: none; }
+      .subpage-hero__sub { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'Inter',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: subpage-01</strong> &nbsp; · &nbsp; Subpage page hero — full-bleed photo, dark overlay, eyebrow + H1 + lead. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-01
+  LAYOUT:   Full-bleed page hero — photo background, dark overlay,
+            left-aligned eyebrow → H1 → lead paragraph. Generous top
+            padding so it reads as a real page header under the navbar.
+  CONTENT:  Background photo, eyebrow label, H1 title, lead paragraph.
+  EDITABLE: 4 fields — 1 image, 2 text (eyebrow, title), 1 richtext (sub).
+  THEME:    --color-secondary (fallback bg), --color-primary (eyebrow +
+            pentagon marker), --font-heading, --font-body. White text.
+  USE FOR:  The top of any subpage — service detail, About us, regional
+            landing pages, blog headers.
+  JS:       none.
+-->
+<section id="uvod" class="subpage-hero">
+  <img
+    class="subpage-hero__photo"
+    data-field="image"
+    src="https://placehold.co/1920x1080/1c1917/57534e?text=Background+photo"
+    alt=""
+    loading="eager"
+    decoding="async"
+  />
+  <div class="subpage-hero__overlay"></div>
+  <div class="subpage-hero__inner fade-up">
+    <span class="subpage-hero__eyebrow" data-field="eyebrow">Our service</span>
+    <h1 class="subpage-hero__title" data-field="title">Service or subpage title</h1>
+    <p class="subpage-hero__sub" data-field="sub" data-type="richtext">
+      A short introductory description of this page. One or two sentences that
+      tell the visitor right away what it is about and why it matters to them.
+    </p>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

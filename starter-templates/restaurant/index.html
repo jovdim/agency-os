@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{navigation.logo_text}} — Restaurant</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container nav-container">
+        <a href="#" class="logo">{{navigation.logo_text}}</a>
+        <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+        <div class="nav-links">
+          <!-- repeater:navigation.links -->
+          <a href="{{url}}">{{label}}</a>
+          <!-- /repeater:navigation.links -->
+        </div>
+        <!-- if:navigation.cta_text -->
+        <a href="{{navigation.cta_url}}" class="btn btn-primary nav-cta"
+          >{{navigation.cta_text}}</a
+        >
+        <!-- /if:navigation.cta_text -->
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section
+      class="hero"
+      style="background-image: url('{{hero.background_image}}')"
+    >
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <p class="hero-tag">{{hero.tagline}}</p>
+        <h1>{{hero.heading}}</h1>
+        <p class="hero-sub">{{hero.subheading}}</p>
+        <!-- if:hero.cta_text -->
+        <a href="{{hero.cta_url}}" class="btn btn-primary btn-lg"
+          >{{hero.cta_text}}</a
+        >
+        <!-- /if:hero.cta_text -->
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section about" id="about">
+      <div class="container about-grid">
+        <div class="about-text">
+          <h2>{{about.heading}}</h2>
+          <p>{{about.description}}</p>
+          <div class="about-details">
+            <!-- if:about.chef_name -->
+            <p class="chef"><strong>Head Chef:</strong> {{about.chef_name}}</p>
+            <!-- /if:about.chef_name -->
+            <!-- if:about.years_experience -->
+            <p class="exp">
+              <strong>Serving since:</strong> {{about.years_experience}}
+            </p>
+            <!-- /if:about.years_experience -->
+          </div>
+        </div>
+        <!-- if:about.image -->
+        <div class="about-image">
+          <img src="{{about.image}}" alt="Our restaurant" />
+        </div>
+        <!-- /if:about.image -->
+      </div>
+    </section>
+
+    <!-- Menu / Services -->
+    <section class="section menu" id="menu">
+      <div class="container">
+        <div class="section-header">
+          <h2>{{services_grid.heading}}</h2>
+          <!-- if:services_grid.subheading -->
+          <p>{{services_grid.subheading}}</p>
+          <!-- /if:services_grid.subheading -->
+        </div>
+        <div class="menu-grid">
+          <!-- repeater:services_grid.services -->
+          <div class="menu-item">
+            <div class="menu-item-info">
+              <h3>{{title}}</h3>
+              <p>{{description}}</p>
+            </div>
+            <!-- if:price -->
+            <span class="menu-price">{{price}}</span>
+            <!-- /if:price -->
+          </div>
+          <!-- /repeater:services_grid.services -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section gallery" id="gallery">
+      <div class="container">
+        <div class="section-header">
+          <h2>{{gallery.heading}}</h2>
+        </div>
+        <div class="gallery-grid">
+          <!-- repeater:gallery.images -->
+          <div class="gallery-item">
+            <img src="{{url}}" alt="{{alt}}" loading="lazy" />
+          </div>
+          <!-- /repeater:gallery.images -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section testimonials" id="reviews">
+      <div class="container">
+        <div class="section-header">
+          <h2>{{testimonials.heading}}</h2>
+        </div>
+        <div class="testimonials-grid">
+          <!-- repeater:testimonials.testimonials -->
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="quote">&ldquo;{{quote}}&rdquo;</p>
+            <p class="author">
+              <strong>{{author}}</strong><br /><span>{{role}}</span>
+            </p>
+          </div>
+          <!-- /repeater:testimonials.testimonials -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <div class="section-header">
+          <h2>{{contact.heading}}</h2>
+          <!-- if:contact.subheading -->
+          <p>{{contact.subheading}}</p>
+          <!-- /if:contact.subheading -->
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info">
+            <!-- if:contact.address -->
+            <div class="contact-item">📍 {{contact.address}}</div>
+            <!-- /if:contact.address -->
+            <!-- if:contact.phone -->
+            <div class="contact-item">
+              📞 <a href="tel:{{contact.phone}}">{{contact.phone}}</a>
+            </div>
+            <!-- /if:contact.phone -->
+            <!-- if:contact.email -->
+            <div class="contact-item">
+              ✉️ <a href="mailto:{{contact.email}}">{{contact.email}}</a>
+            </div>
+            <!-- /if:contact.email -->
+            <!-- if:contact.hours -->
+            <div class="contact-item">🕐 {{contact.hours}}</div>
+            <!-- /if:contact.hours -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container footer-content">
+        <p class="footer-company">{{footer.company_name}}</p>
+        <p class="footer-copy">{{footer.copyright}}</p>
+        <div class="footer-social">
+          <!-- if:footer.facebook_url -->
+          <a href="{{footer.facebook_url}}" target="_blank" rel="noopener"
+            >Facebook</a
+          >
+          <!-- /if:footer.facebook_url -->
+          <!-- if:footer.instagram_url -->
+          <a href="{{footer.instagram_url}}" target="_blank" rel="noopener"
+            >Instagram</a
+          >
+          <!-- /if:footer.instagram_url -->
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

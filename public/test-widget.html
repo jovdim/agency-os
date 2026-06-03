@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maliar Matiáš — Widget Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; color: #333; }
+    nav { background: #2c3e50; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 56px; }
+    body { padding-top: 56px; }
+    nav a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 14px; }
+    .hero { background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=1200&q=80') center/cover; color: #fff; padding: 80px 24px; text-align: center; }
+    .hero h1 { font-size: 36px; margin-bottom: 12px; }
+    .hero p { font-size: 18px; opacity: .85; }
+    .section { padding: 60px 24px; max-width: 800px; margin: 0 auto; }
+    .section h2 { font-size: 24px; margin-bottom: 16px; color: #2c3e50; }
+    .section p { color: #666; line-height: 1.7; }
+    footer { background: #2c3e50; color: rgba(255,255,255,.6); padding: 24px; text-align: center; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <strong>Maliar Matiáš</strong>
+    <div>
+      <a href="#">Domov</a>
+      <a href="#">Služby</a>
+      <a href="#">Galéria</a>
+      <a href="#">Kontakt</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Profesionálne Maliarske Práce</h1>
+    <p>Maľovanie interiérov, štukové omietky, vysprávky stien v Prešove a okolí</p>
+  </div>
+
+  <div class="section">
+    <h2>O nás</h2>
+    <p>Sme tím skúsených maliarov s viac ako 15-ročnou praxou. Ponúkame komplexné maliarske služby pre domácnosti aj firmy v Prešovskom kraji. Kvalita, spoľahlivosť a čistota práce sú pre nás na prvom mieste.</p>
+  </div>
+
+  <div class="section">
+    <h2>Naše služby</h2>
+    <p>Maľovanie bytov a domov, kancelárskych priestorov, dekoratívne techniky, štukové omietky, vysprávky a opravy stien, stropov a fasád. Bezplatná konzultácia a cenová ponuka.</p>
+  </div>
+
+  <!-- Contact Form Section -->
+  <div class="section" style="background:#f8f9fa;max-width:100%;padding:60px 24px;">
+    <div style="max-width:600px;margin:0 auto;">
+      <h2 style="text-align:center;margin-bottom:24px;">Kontakt</h2>
+      <form id="contact-form" novalidate style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <label for="cf-name" style="display:block;font-size:13px;color:#666;margin-bottom:4px;">Meno</label>
+          <input type="text" id="cf-name" name="name" required placeholder="Ján Novák" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label for="cf-email" style="display:block;font-size:13px;color:#666;margin-bottom:4px;">Email</label>
+            <input type="email" id="cf-email" name="email" required placeholder="jan@example.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;" />
+          </div>
+          <div>
+            <label for="cf-phone" style="display:block;font-size:13px;color:#666;margin-bottom:4px;">Telefón</label>
+            <input type="tel" id="cf-phone" name="phone" placeholder="0900 000 000" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;" />
+          </div>
+        </div>
+        <div>
+          <label for="cf-message" style="display:block;font-size:13px;color:#666;margin-bottom:4px;">Správa</label>
+          <textarea id="cf-message" name="message" rows="4" required placeholder="Popíšte, čo potrebujete..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;"></textarea>
+        </div>
+        <button type="submit" style="background:#2c3e50;color:#fff;border:none;padding:12px;border-radius:6px;font-size:15px;cursor:pointer;font-weight:500;">Odoslať</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Maliar Matiáš. Všetky práva vyhradené.
+  </footer>
+
+  <!-- Mock fetch to simulate proposal API -->
+  <script>
+    var originalFetch = window.fetch;
+    window.fetch = function(url) {
+      if (typeof url === "string" && url.indexOf("/data") !== -1) {
+        return Promise.resolve({
+          json: function() {
+            return Promise.resolve({
+              active: true,
+              activePrice: 199,
+              discountPrice: 199,
+              basePrice: 299,
+              discountExpiresAt: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(),
+              discountActive: true,
+              contactPerson: "Miloš Bakaľár",
+              companyName: "Balkar, s. r. o.",
+              town: "Hanušovce nad Topľou",
+              qrImageDataUrl: null,
+              variableSymbol: "1242709221",
+              iban: "SK1309000000005221380177",
+              beneficiary: "Shark Media Consulting s. r. o.",
+              magicLoginUrl: "#magic-link-preview",
+            });
+          }
+        });
+      }
+      if (typeof url === "string" && url.indexOf("/proposals/") !== -1) {
+        return Promise.resolve({ json: function() { return Promise.resolve({}); } });
+      }
+      return originalFetch.apply(this, arguments);
+    };
+  </script>
+  <script src="/proposal-widget.js?slug=test-preview"></script>
+  <script src="/contact-handler.js" data-email="lorem77098@gmail.com"></script>
+</body>
+</html>

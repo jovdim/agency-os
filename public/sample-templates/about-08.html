@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-08 — Image with L-shape accent + 2-tone headline + bold closing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* about-08 — modeled on the Visage SK "Who we are" block. Image on
+       left with an L-shape offset accent block behind it (peeks from
+       bottom-left). Copy on right: small square-bullet eyebrow,
+       2-tone heading (neutral word + primary-color accent word), body
+       paragraph, bold closing line. Mobile collapses to image-on-top
+       so the eyebrow + heading lead the eye like on the live site. */
+    /* Soft gray panel (theme-aware: page bg mixed with 8% text) so this
+       About block separates from the white section that follows it,
+       instead of the two white bands blurring into one. Same alt
+       background its sibling Visage templates (gallery-07) use. */
+    .about-08 { background: var(--color-bg-alt); }
+    .about-08 .split {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .about-08 .split {
+        grid-template-columns: 1fr;
+        gap: 56px;
+      }
+    }
+
+    /* Image column — wrap holds the image + an absolutely-positioned
+       primary-color accent block. The block is offset DOWN+LEFT from
+       the image so it peeks past the bottom-left corner, forming a
+       big L-shape (visible on the LEFT side and BOTTOM, hidden on
+       TOP and RIGHT where the image covers it). Offsets are large
+       enough to read as a deliberate design statement, not a hairline
+       border — matches the Visage SK reference. */
+    .about-08 .about-image-wrap {
+      position: relative;
+      display: block;
+      isolation: isolate;
+    }
+    .about-08 .about-image-wrap img {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+    .about-08 .about-image-wrap::before {
+      content: '';
+      position: absolute;
+      /* Orange peeks past LEFT edge by 28px and BOTTOM edge by 28px.
+         The TOP / RIGHT pull-ins (8%) keep the orange tucked behind
+         the image there so the L reads cleanly on bottom-left only,
+         not a full surrounding frame. */
+      top: 8%;
+      left: -28px;
+      right: 8%;
+      bottom: -28px;
+      background: var(--color-primary);
+      z-index: 0;
+    }
+    @media (max-width: 640px) {
+      /* Smaller offsets on mobile so the L doesn't crowd the column
+         edge on narrow viewports. */
+      .about-08 .about-image-wrap::before {
+        top: 6%;
+        left: -16px;
+        right: 6%;
+        bottom: -16px;
+      }
+    }
+
+    /* Eyebrow — small caps with a primary-colored square bullet on
+       the LEFT of the text, all left-aligned.
+
+       Overrides for the global `[data-field$="_eyebrow"]` rule in
+       template-base.css that would otherwise make the eyebrow
+       inline-flex + column + centered, AND auto-append a horizontal
+       underline via ::after. We want a horizontal bullet-then-text
+       layout with no underline (the Visage reference uses just the
+       bullet + text, no underline). */
+    .about-08 .about-eyebrow {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 18px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    /* Suppress the global eyebrow underline — we don't want it on
+       this template (the square bullet IS the only accent). */
+    .about-08 .about-eyebrow::after {
+      display: none !important;
+    }
+    .about-08 .about-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--color-primary);
+      flex-shrink: 0;
+    }
+    /* Hide the entire eyebrow row (bullet + text) when the operator
+       has cleared the field. Without this rule the square bullet
+       still renders via ::before on an empty <p>, leaving an
+       orphaned square hanging above the heading. With `display:none`
+       on the :empty parent, the ::before is suppressed too. The
+       composer's hide-field toggle removes the element from the DOM
+       entirely (separate mechanism) — this rule covers the "operator
+       just deleted the text" path. */
+    .about-08 .about-eyebrow:empty {
+      display: none;
+    }
+
+    /* Heading — 2-tone: first word neutral, second word primary.
+       Both are separate fields so operators can edit each part
+       independently in the composer. */
+    .about-08 .about-headline {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      line-height: 1.1;
+      color: var(--color-text);
+      margin: 0 0 28px;
+    }
+    .about-08 .about-headline-accent {
+      color: var(--color-primary);
+    }
+
+    /* Body — softer text, comfortable line-height */
+    .about-08 .about-body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0 0 20px;
+    }
+    .about-08 .about-body :last-child { margin-bottom: 0; }
+
+    /* Closing line — bold and slightly larger so it reads as a soft
+       call-to-action ending. Optional: empty = hidden. */
+    .about-08 .about-closing {
+      font-family: var(--font-body);
+      font-size: 1.06rem;
+      line-height: 1.6;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+    }
+    .about-08 .about-closing:empty { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: about-08</strong> &nbsp; · &nbsp; Two-column About: image on left with an L-shape primary-color accent, copy on right with eyebrow + 2-tone heading + body + bold closing line. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-08
+  LAYOUT:   2-column. Image left (with L-shape primary-color offset
+            block peeking past the bottom-left). Copy on right: small
+            square-bullet eyebrow, 2-tone heading (neutral word +
+            primary-color accent word), body paragraph, bold closing
+            line. Mobile collapses to image-on-top.
+  CONTENT:  image + eyebrow + 2 heading parts + body + closing line
+  EDITABLE: 6 fields — 1 image + 4 text + 1 richtext
+  THEME:    Primary color drives the eyebrow text, square bullet, L-shape
+            image accent, and the accent word in the heading. Section sits
+            on the soft gray --color-bg-alt panel so it reads distinct from
+            an adjacent white section. Other colors inherit from theme
+            variables (--color-text, --color-text-light).
+  USE FOR:  Sites that want a slightly more decorative "Who we are" block
+            with a strong color statement — well-suited to brands with
+            a single bold accent color (orange, red, green) where the
+            L-shape accent reinforces brand presence.
+-->
+<section id="o-nas" class="about-08 section-pad fade-up" data-field-order="about_image,about_eyebrow,about_headline_main,about_headline_accent,about_body,about_closing">
+  <div class="container">
+    <div class="split">
+      <div class="about-image-wrap">
+        <img data-field="about_image" src="https://placehold.co/900x675/57534e/e7e5e4?text=About+us&font=lato" alt="" width="900" height="675" loading="lazy">
+      </div>
+      <div>
+        <p class="about-eyebrow" data-field="about_eyebrow">Who we are</p>
+        <h2 class="about-headline">
+          <span data-field="about_headline_main">About</span>
+          <span class="about-headline-accent" data-field="about_headline_accent">Us</span>
+        </h2>
+        <div class="about-body" data-field="about_body" data-type="richtext"><p>Write a paragraph about your company here. Who you are, what you specialize in, what projects you handle. 4 to 6 sentences that capture your expertise and values. Mention specific brands or materials you work with so the reader understands the level of quality.</p></div>
+        <p class="about-closing" data-field="about_closing">Join us on the journey to creating the space of your dreams!</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Real page content below.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

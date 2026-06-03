@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <rect x="0" y="10" width="40" height="40" rx="6" fill="#1B5E20"/>
+  <text x="20" y="38" font-family="'Inter', Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle" fill="#ffffff">P</text>
+  <text x="50" y="32" font-family="'Inter', Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Ploty Bránky</text>
+  <text x="50" y="48" font-family="'Roboto', Arial, sans-serif" font-size="8" font-weight="500" fill="#a3a3a3" letter-spacing="0.12em">OPLOTENIE A BRÁNY</text>
+</svg>

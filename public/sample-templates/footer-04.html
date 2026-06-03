@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-04 — Editorial "let's collaborate" magazine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* footer-04: editorial "let's collaborate" magazine layout, dark
+       theme. Big oversized heading takes the whole upper area as a
+       final brand statement / CTA, with a single primary button below.
+       Contact details (phone + email + address) sit in a small column
+       on the right of the heading. The bottom row stays minimal:
+       copyright + legal link + agency credit. Dark --color-secondary
+       panel matching footer-01's tone (per Peter — all new footers
+       share footer-01's dark theme).
+
+       Made for studios, agencies, design-led brands where the footer
+       doubles as a "before-you-leave" pull. */
+    .footer-editorial {
+      background: var(--color-secondary);
+      padding: 96px 0 36px;
+      color: var(--color-text-on-dark);
+      font-family: var(--font-body);
+    }
+    .footer-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .footer-editorial__top {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: 56px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .footer-editorial__head {
+      max-width: 760px;
+    }
+    .footer-editorial h2 {
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin: 0 0 32px;
+      color: var(--color-light);
+      font-weight: 600;
+    }
+    /* CTA button on dark panel — primary-color pill so it pops against
+       the dark backdrop. Hover inverts to light surface with secondary
+       text (mirror of cta-02's button hover convention). The base
+       --color-dark fill from the light-theme draft would have been
+       invisible against --color-secondary. */
+    .footer-editorial__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 28px;
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: var(--border-radius);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition);
+    }
+    .footer-editorial__cta:hover {
+      background: var(--color-light);
+      color: var(--color-secondary);
+    }
+    .footer-editorial__cta::after {
+      content: "→";
+      transition: transform 0.2s ease;
+    }
+    .footer-editorial__cta:hover::after {
+      transform: translateX(4px);
+    }
+    .footer-editorial__contact {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-self: end;
+    }
+    .footer-editorial__label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin: 0 0 6px;
+    }
+    .footer-editorial__value {
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      line-height: 1.5;
+      color: var(--color-light);
+      margin: 0;
+    }
+    .footer-editorial__value a {
+      color: var(--color-light);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .footer-editorial__value a:hover {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .footer-editorial__legal {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.55);
+      margin: 6px 0 0;
+    }
+    .footer-editorial__legal span { display: block; }
+    /* Socials (FB + IG via hidden_fields toggle) — sits in the
+       left CTA column under the button. */
+    .footer-editorial__socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .footer-editorial__social {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-editorial__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-editorial__social svg { width: 16px; height: 16px; }
+
+    .footer-editorial__bottom {
+      padding-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-editorial__bottom p { margin: 0; }
+    .footer-editorial__bottom a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-editorial__bottom a:hover {
+      color: var(--color-primary);
+    }
+    @media (max-width: 800px) {
+      .footer-editorial { padding: 72px 0 28px; }
+      .footer-editorial__top {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .footer-editorial__contact { align-self: start; }
+    }
+    @media (max-width: 480px) {
+      .footer-editorial__bottom {
+        flex-direction: column;
+        text-align: left;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: footer-04</strong> &nbsp; · &nbsp; Editorial magazine — oversized heading + primary CTA on the left, compact contact details on the right. Light theme. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-04
+  LAYOUT:   2-column editorial split. Left (60%): oversized display heading +
+            single primary CTA button below. Right (40%): compact contact
+            details (phone, email, address) bottom-aligned. Below: hairline
+            divider, then copyright + agency credit row. Mobile (≤800px):
+            stacks linearly.
+  CONTENT:  oversized heading + CTA button + phone + email + address +
+            copyright + agency credit.
+  EDITABLE: 9 fields — footer_heading + footer_cta (link) + footer_phone (link) +
+            footer_email (link) + footer_address + footer_ico + footer_dic +
+            footer_copyright + agency_credit (link).
+  THEME:    Section bg = --color-bg. Heading = --color-dark, contact labels =
+            --color-text-light. CTA button = --color-dark bg with light text;
+            hover swaps to --color-primary.
+  USE FOR:  Studios, agencies, design-led brands where the footer doubles as
+            a "before-you-leave" pull — the oversized heading does the work
+            of a full CTA section. Different from footer-01 (heavy 4-col),
+            footer-02 (centered), footer-03 (compact 2-col), footer-05
+            (dark phone CTA).
+-->
+<footer id="paticka" class="footer-editorial fade-up">
+  <div class="footer-editorial__inner">
+    <div class="footer-editorial__top">
+      <div class="footer-editorial__head">
+        <h2 data-field="footer_heading">Let's build something you'll be proud of.</h2>
+        <a class="footer-editorial__cta" data-field="footer_cta" data-type="link" href="#kontakt">Start a conversation</a>
+        <div class="footer-editorial__socials">
+          <a class="footer-editorial__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+          </a>
+          <a class="footer-editorial__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-editorial__contact">
+        <div>
+          <span class="footer-editorial__label">Phone</span>
+          <p class="footer-editorial__value">
+            <a data-field="footer_phone" data-type="link" href="">+1 (555) 000-0000</a>
+          </p>
+        </div>
+        <div>
+          <span class="footer-editorial__label">Email</span>
+          <p class="footer-editorial__value">
+            <a data-field="footer_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+          </p>
+        </div>
+        <div>
+          <span class="footer-editorial__label">Address</span>
+          <p class="footer-editorial__value" data-field="footer_address">1 Main Street, 010 01 City</p>
+          <p class="footer-editorial__legal">
+            <span data-field="footer_ico">Company No.: xxxxxxxx</span>
+            <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-editorial__bottom">
+      <p data-field="footer_copyright">© 2026 Your Company. All rights reserved.</p>
+      <p><a data-field="footer_privacy_link" data-type="link" href="privacy.html">Privacy policy</a></p>
+      <p>Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+    </div>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+</body>
+</html>

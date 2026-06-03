@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-13 — Numbered zigzag service rows (watermark number + image badge)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-13 — numbered zigzag rows ported from a
+       Services section. A centered header, then alternating image/text
+       rows. Each row leads with a big faint number watermark + thin rule,
+       then the title, a short accent section-line, the description and two
+       CTAs. The matching photo carries a small brand number badge.
+
+       Image side + band tint alternate by POSITION via :nth-of-type — no
+       per-item class needed — with dual selectors so it works both in the
+       composer iframe (display:contents repeater) and in published HTML
+       (each item wrapped in [data-sk-repeater-wrap]). Same approach as
+       services-01. */
+    .services-13 { padding: 0; background: var(--color-bg); counter-reset: svc; }
+
+    .services-13 .section-head {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      max-width: 760px; margin: 0 auto; padding: 88px 24px 8px;
+    }
+    .services-13 .eyebrow {
+      display: inline-flex; flex-direction: row; align-items: center; gap: 12px;
+      text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.75rem;
+      font-weight: 600; color: var(--color-text-light); margin: 0 0 18px;
+    }
+    .services-13 .eyebrow::after { display: none; }
+    .services-13 .eyebrow::before {
+      content: ""; width: 16px; height: 16px; flex-shrink: 0;
+      background: var(--color-primary);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .services-13 .section-head h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin: 0; }
+    .services-13 .section-head .section-line {
+      display: block; width: 48px; height: 3px; border-radius: 99px;
+      background: var(--color-primary); margin: 20px auto 0;
+    }
+    .services-13 .section-head p { color: var(--color-text-light); font-size: 1.05rem; margin: 20px 0 0; }
+
+    .services-13 .row-band { counter-increment: svc; }
+    .services-13 .row-band:nth-of-type(even),
+    .services-13 [data-sk-repeater-wrap]:nth-of-type(even) .row-band { background: var(--color-bg-alt); }
+
+    .services-13 .row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+      max-width: var(--max-width); margin: 0 auto; padding: 72px 24px;
+    }
+    /* Zigzag: odd rows (1,3,5) put the IMAGE on the RIGHT. Authored order
+       stays text → image so the composer field panel reads naturally. */
+    @media (min-width: 768px) {
+      .services-13 .row-band:nth-of-type(odd) .row > .svc13-text,
+      .services-13 [data-sk-repeater-wrap]:nth-of-type(odd) .row-band .row > .svc13-text { order: 1; }
+      .services-13 .row-band:nth-of-type(odd) .row > .svc13-media,
+      .services-13 [data-sk-repeater-wrap]:nth-of-type(odd) .row-band .row > .svc13-media { order: 2; }
+      .services-13 .row-band:nth-of-type(even) .row > .svc13-text,
+      .services-13 [data-sk-repeater-wrap]:nth-of-type(even) .row-band .row > .svc13-text { order: 2; }
+      .services-13 .row-band:nth-of-type(even) .row > .svc13-media,
+      .services-13 [data-sk-repeater-wrap]:nth-of-type(even) .row-band .row > .svc13-media { order: 1; }
+    }
+    @media (max-width: 800px) { .services-13 .row { grid-template-columns: 1fr; gap: 32px; padding: 56px 24px; } }
+
+    /* Text column — number watermark + rule, title, section-line, body, CTAs. */
+    .svc13-numrow { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+    .svc13-num { font-size: clamp(56px, 7vw, 80px); font-weight: 800; line-height: 1; color: color-mix(in srgb, var(--color-primary) 18%, transparent); font-family: var(--font-heading); user-select: none; }
+    .svc13-num::before { content: counter(svc, decimal-leading-zero); }
+    .svc13-numrow .svc13-hr { flex: 1; height: 1px; background: var(--color-border); }
+    .svc13-text h3 { font-size: clamp(1.4rem, 2.4vw, 2rem); margin: 8px 0 0; line-height: 1.2; }
+    .svc13-text .section-line { display: block; width: 48px; height: 3px; border-radius: 99px; background: var(--color-primary); margin: 18px 0; }
+    .svc13-text p { color: var(--color-text-light); font-size: 1.05rem; line-height: 1.7; margin: 0 0 24px; max-width: 34rem; }
+    .svc13-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+    /* Pill buttons with inline icons: green "Call us" (phone, dials the
+       brand number) + outline "More information" (arrow). */
+    .svc13-cta .btn { border-radius: 999px; }
+    .svc13-cta .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* Media column — photo + brand number badge. */
+    .svc13-media { position: relative; }
+    .svc13-media img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; box-shadow: var(--shadow-md); }
+    .svc13-badge {
+      position: absolute; top: -16px; left: -16px;
+      width: 56px; height: 56px; border-radius: 14px;
+      background: var(--color-primary); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: 1.15rem;
+      font-family: var(--font-heading);
+      box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--color-primary) 55%, transparent);
+    }
+    .svc13-badge::before { content: counter(svc, decimal-leading-zero); }
+    @media (max-width: 800px) { .svc13-badge { top: -14px; left: 12px; width: 46px; height: 46px; font-size: 1rem; } }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-13</strong> &nbsp; · &nbsp; Numbered zigzag rows. Big watermark number + section-line + 2 CTAs; photo with brand number badge. Alternates image side per row. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-13
+  LAYOUT:   Centered header, then full-width alternating-band rows (1..99
+            via repeater). Each row is 2-col text+image; image side + band
+            tint alternate by position (:nth-of-type, dual selectors for
+            composer + published wrap). Mobile collapses to text-over-image.
+  CONTENT:  eyebrow + headline + subheadline (header), then service items
+            (image + title + description + 2 CTAs each). Auto numbers via
+            CSS counter (watermark + image badge).
+  EDITABLE: 2 text + 1 longtext (header) + repeater of
+            {image, title, description, cta_primary(link), cta_more(link)}.
+  THEME:    Bands use var(--color-bg) / var(--color-bg-alt). Numbers, badge,
+            section-line all use var(--color-primary). Each row-band carries
+            data-item-id-source="title" so the renderer stamps an anchor id
+            from the service title (navbar Services dropdown links to it).
+-->
+<section id="sluzby" class="services-13 fade-up">
+
+  <div class="section-head">
+    <span class="eyebrow" data-field="services_eyebrow">Our services</span>
+    <h2 data-field="services_headline">Services</h2>
+    <span class="section-line" aria-hidden="true"></span>
+    <p data-field="services_subheadline" data-type="richtext">Complete arboriculture services in your region. Rope tree cutting, high risk felling, work in demanding terrain and a free site survey.</p>
+  </div>
+
+  <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+
+    <div class="row-band" data-item-id-source="title">
+      <article class="row">
+        <div class="svc13-text">
+          <div class="svc13-numrow"><span class="svc13-num" aria-hidden="true"></span><span class="svc13-hr" aria-hidden="true"></span></div>
+          <h3 data-field="title">Rope tree cutting</h3>
+          <span class="section-line" aria-hidden="true"></span>
+          <p data-field="description" data-type="richtext">Safe and precise tree cutting using tree climbing rope techniques.</p>
+          <div class="svc13-cta">
+            <a class="btn btn-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call us</a>
+            <a class="btn btn-outline" data-field="cta_more" data-type="link" href="#kontakt">More information<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="svc13-media">
+          <span class="svc13-badge" aria-hidden="true"></span>
+          <img data-field="image" src="https://placehold.co/960x600/2f3e30/e7e5e4?text=Service+1&font=lato" alt="" loading="lazy">
+        </div>
+      </article>
+    </div>
+
+    <div class="row-band" data-item-id-source="title">
+      <article class="row">
+        <div class="svc13-text">
+          <div class="svc13-numrow"><span class="svc13-num" aria-hidden="true"></span><span class="svc13-hr" aria-hidden="true"></span></div>
+          <h3 data-field="title">High risk tree felling</h3>
+          <span class="section-line" aria-hidden="true"></span>
+          <p data-field="description" data-type="richtext">Removal of trees located in close proximity to buildings, power lines or other obstacles.</p>
+          <div class="svc13-cta">
+            <a class="btn btn-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call us</a>
+            <a class="btn btn-outline" data-field="cta_more" data-type="link" href="#kontakt">More information<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="svc13-media">
+          <span class="svc13-badge" aria-hidden="true"></span>
+          <img data-field="image" src="https://placehold.co/960x600/3a3a3a/e7e5e4?text=Service+2&font=lato" alt="" loading="lazy">
+        </div>
+      </article>
+    </div>
+
+    <div class="row-band" data-item-id-source="title">
+      <article class="row">
+        <div class="svc13-text">
+          <div class="svc13-numrow"><span class="svc13-num" aria-hidden="true"></span><span class="svc13-hr" aria-hidden="true"></span></div>
+          <h3 data-field="title">Tree cutting in hard to reach places</h3>
+          <span class="section-line" aria-hidden="true"></span>
+          <p data-field="description" data-type="richtext">Specialized tree felling in steep, inaccessible or demanding terrain.</p>
+          <div class="svc13-cta">
+            <a class="btn btn-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call us</a>
+            <a class="btn btn-outline" data-field="cta_more" data-type="link" href="#kontakt">More information<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="svc13-media">
+          <span class="svc13-badge" aria-hidden="true"></span>
+          <img data-field="image" src="https://placehold.co/960x600/2f3e30/e7e5e4?text=Service+3&font=lato" alt="" loading="lazy">
+        </div>
+      </article>
+    </div>
+
+    <div class="row-band" data-item-id-source="title">
+      <article class="row">
+        <div class="svc13-text">
+          <div class="svc13-numrow"><span class="svc13-num" aria-hidden="true"></span><span class="svc13-hr" aria-hidden="true"></span></div>
+          <h3 data-field="title">Free site survey</h3>
+          <span class="section-line" aria-hidden="true"></span>
+          <p data-field="description" data-type="richtext">A no obligation tree inspection and determination of the optimal approach.</p>
+          <div class="svc13-cta">
+            <a class="btn btn-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call us</a>
+            <a class="btn btn-outline" data-field="cta_more" data-type="link" href="#kontakt">More information<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="svc13-media">
+          <span class="svc13-badge" aria-hidden="true"></span>
+          <img data-field="image" src="https://placehold.co/960x600/3a3a3a/e7e5e4?text=Service+4&font=lato" alt="" loading="lazy">
+        </div>
+      </article>
+    </div>
+
+    <div class="row-band" data-item-id-source="title">
+      <article class="row">
+        <div class="svc13-text">
+          <div class="svc13-numrow"><span class="svc13-num" aria-hidden="true"></span><span class="svc13-hr" aria-hidden="true"></span></div>
+          <h3 data-field="title">Timber harvesting</h3>
+          <span class="section-line" aria-hidden="true"></span>
+          <p data-field="description" data-type="richtext">Timber harvesting includes the safe cutting and processing of trees in hard to reach places.</p>
+          <div class="svc13-cta">
+            <a class="btn btn-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call us</a>
+            <a class="btn btn-outline" data-field="cta_more" data-type="link" href="#kontakt">More information<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="svc13-media">
+          <span class="svc13-badge" aria-hidden="true"></span>
+          <img data-field="image" src="https://placehold.co/960x600/2f3e30/e7e5e4?text=Service+5&font=lato" alt="" loading="lazy">
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

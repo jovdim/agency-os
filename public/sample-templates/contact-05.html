@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact-05 — Four-channel cards + contact form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* contact-05: four-channel cards + contact form. Phone, email,
+       address, and hours each get their own equal-weight card in a 4-col
+       grid (collapses to 2-col tablet, 1-col phone). Each card has a
+       small uppercase label, the value rendered in the heading font for
+       weight, and a thin primary accent line on hover. Below the cards,
+       a centered compact contact form gives visitors a written channel
+       alongside the four direct channels above.
+
+       Same 8-field info schema as contact-03 — clients can swap freely
+       between the two variants without losing the info side. The visual
+       personality is different: contact-03 is centered with
+       phone-prominent + secondary row; contact-05 gives all 4 channels
+       equal weight in a card grid. */
+    .contact-05 {
+      padding: 120px 24px;
+      background: var(--color-bg);
+    }
+    .contact-05__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+    .contact-05__head {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 56px;
+    }
+    .contact-05 h2 {
+      font-size: clamp(1.75rem, 3.5vw, 2.4rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--color-dark);
+      margin: 0 0 16px;
+      font-weight: 600;
+    }
+    .contact-05__intro {
+      color: var(--color-text-light);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .contact-05__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .contact-05__card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 32px 24px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .contact-05__card:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-05__label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 14px;
+    }
+    .contact-05__value {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      line-height: 1.4;
+      letter-spacing: -0.005em;
+      color: var(--color-dark);
+      font-weight: 600;
+      margin: 0;
+    }
+    .contact-05__value a {
+      color: var(--color-dark);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .contact-05__value a:hover {
+      color: var(--color-primary);
+    }
+    .contact-05__value--soft {
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    /* Contact form — compact white card below the 4-channel grid. Same
+       structural pattern as contact-04 (form-only template) so the
+       catalog feels consistent. */
+    .contact-05__form-wrap {
+      max-width: 640px;
+      margin: 64px auto 0;
+    }
+    .contact-05__form-head {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .contact-05__form-headline {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 0 0 8px;
+    }
+    .contact-05__form-sub {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+    .contact-05__form {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-05__form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .contact-05__form .form-group {
+      margin-bottom: 14px;
+    }
+    .contact-05__form label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--color-text);
+      margin-bottom: 6px;
+    }
+    .contact-05__form input,
+    .contact-05__form textarea {
+      width: 100%;
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      color: var(--color-text);
+      transition: border-color var(--transition);
+    }
+    .contact-05__form input:focus,
+    .contact-05__form textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+    .contact-05__form textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .contact-05__consent {
+      margin: 8px 0 20px;
+    }
+    .contact-05__consent label {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      letter-spacing: 0;
+      color: var(--color-text-light);
+      font-weight: 400;
+      text-transform: none;
+      margin: 0;
+    }
+    .contact-05__consent input[type="checkbox"] {
+      width: auto;
+      margin: 4px 0 0 0;
+      flex-shrink: 0;
+    }
+    .contact-05__consent a {
+      color: var(--color-primary);
+      text-decoration: underline;
+    }
+    .contact-05__form button[type="submit"] {
+      width: 100%;
+      padding: 14px 24px;
+    }
+    @media (max-width: 1000px) {
+      .contact-05__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .contact-05 { padding: 80px 16px; }
+      .contact-05__grid { grid-template-columns: 1fr; }
+      .contact-05__form { padding: 24px 20px; }
+      .contact-05__form .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: contact-05</strong> &nbsp; · &nbsp; 4-channel cards grid + compact contact form. Form id is <code>contact-form</code>. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:contact:start -->
+<!--
+  TEMPLATE: contact-05
+  LAYOUT:   Centered intro on top + 3-column grid of equal-weight contact
+            channel cards (Phone / Email / Address) + a centered compact
+            contact form below. Each card: small uppercase label + value
+            in heading font for weight; primary-colored border on hover
+            with subtle lift. Mobile: cards collapse to 2 columns
+            (≤1000px) then 1 column (≤540px).
+  CONTENT:  eyebrow + headline + intro + phone (link) + email (link) +
+            2-line address + form headline / sub / submit.
+  EDITABLE: 10 fields — contact_eyebrow + contact_headline + contact_intro
+            (longtext) + contact_phone (link) + contact_email (link) +
+            contact_address_street + contact_address_city
+            + contact_form_headline + contact_form_sub + contact_form_submit.
+            Info side (first 7) shares the same schema as contact-03.
+  FORM:     id="contact-form" REQUIRED so the global contact-handler.js
+            picks it up. Field names: name, email, phone, message,
+            gdpr_consent (do not rename).
+  THEME:    Section bg = --color-bg. Card border = --color-border, hover
+            = --color-primary. Label = --color-text-light, value =
+            --color-dark in heading font. Form card = --color-bg with
+            shadow-sm. Eyebrow underline applied globally by base CSS.
+  USE FOR:  Multi-channel businesses where every channel is equally valid
+            (phone / email / walk-in / scheduled) and a written form is
+            also offered. Less hierarchical than contact-03
+            (phone-prominent + form). Different from contact-01 / 02
+            (dark info column + form) and contact-04 (form-only).
+-->
+<section id="kontakt" class="contact-05 section-alt fade-up">
+  <div class="contact-05__inner">
+    <div class="contact-05__head">
+      <span class="eyebrow" data-field="contact_eyebrow">Contact</span>
+      <h2 data-field="contact_headline">Reach us the way that suits you best</h2>
+      <p class="contact-05__intro" data-field="contact_intro" data-type="richtext">We call, we write, or we meet in person. Choose what works best for you, we respond within 24 hours.</p>
+    </div>
+
+    <div class="contact-05__grid">
+      <div class="contact-05__card">
+        <span class="contact-05__label">Phone</span>
+        <p class="contact-05__value">
+          <a data-field="contact_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+        </p>
+      </div>
+      <div class="contact-05__card">
+        <span class="contact-05__label">Email</span>
+        <p class="contact-05__value">
+          <a data-field="contact_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+        </p>
+      </div>
+      <div class="contact-05__card">
+        <span class="contact-05__label">Address</span>
+        <p class="contact-05__value contact-05__value--soft">
+          <span data-field="contact_address">Street and number, ZIP City</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="contact-05__form-wrap">
+      <div class="contact-05__form-head">
+        <h3 class="contact-05__form-headline" data-field="contact_form_headline">Or write to us</h3>
+        <p class="contact-05__form-sub" data-field="contact_form_sub">We will get back to you within 24 hours on working days.</p>
+      </div>
+
+      <!-- onsubmit="return false" blocks native browser submission so the
+           URL never leaks ?name=…&phone=… query params if our handler
+           doesn't attach in time. contact-handler.js still works — it
+           adds its own listener + calls preventDefault + POSTs. -->
+      <form id="contact-form" class="contact-05__form" novalidate aria-label="Contact form" onsubmit="return false">
+        <!-- Form recipient (composer-only carriers — never visible). See
+             contact-01 for the full convention; renderer Pass 6 reads
+             these and stamps data-sk-form-recipient on this <form>. -->
+        <span data-field="form_recipient_email" data-group="form_settings" hidden></span>
+        <span data-field="form_enabled" data-type="boolean" data-group="form_settings" hidden>true</span>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf5-name">Name *</label>
+            <input type="text" id="cf5-name" name="name" required autocomplete="name" aria-required="true">
+          </div>
+          <div class="form-group">
+            <label for="cf5-phone">Phone *</label>
+            <input type="tel" id="cf5-phone" name="phone" required autocomplete="tel" aria-required="true">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cf5-email">Email *</label>
+          <input type="email" id="cf5-email" name="email" required autocomplete="email" aria-required="true">
+        </div>
+        <div class="form-group">
+          <label for="cf5-message">Message *</label>
+          <textarea id="cf5-message" name="message" rows="4" required aria-required="true" placeholder="Briefly describe what you need."></textarea>
+        </div>
+        <div class="contact-05__consent">
+          <label>
+            <input type="checkbox" name="gdpr_consent" required aria-required="true">
+            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">processing of personal data</a> *</span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary" data-field="contact_form_submit">Send message</button>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- SECTION:contact:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the contact section.</p>
+</div>
+
+</body>
+</html>

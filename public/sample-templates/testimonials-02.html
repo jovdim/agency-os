@@ -1,0 +1,368 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>testimonials-02 — Editorial slider (one quote at a time)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* testimonials-02: editorial single-quote slider. One big quote at a
+       time, navigated with chevrons + dot indicators below. No avatars, no
+       stars, no card chrome — just the quote set at large size, a thin
+       divider, and the attribution. The viewport clips a horizontal track
+       that translates by 100% per slide. Transform-only animation (no
+       layout work mid-swipe), CSS handles the easing.
+
+       JS is self-contained and resilient: it counts whatever number of
+       slides the renderer emitted, builds dots dynamically, and works the
+       same whether there's 1 testimonial or 8. */
+    .testimonials-slider {
+      padding: 120px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      overflow: hidden; /* belt-and-suspenders against off-screen track sliver */
+    }
+    .testimonials-slider__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .testimonials-slider__head {
+      max-width: 640px;
+      margin: 0 auto 64px;
+      text-align: center;
+    }
+    .testimonials-slider__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 16px;
+    }
+    .testimonials-slider h2 {
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+
+    /* Viewport: fixed-width window that hides everything off-axis. The
+       inline track is wider than the viewport (one slide-width per slide)
+       and translates X to expose the active slide. */
+    .testimonials-slider__viewport {
+      max-width: 820px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+    }
+    .testimonials-slider__track {
+      display: flex;
+      align-items: stretch;
+      transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+    .testimonials-slider__slide {
+      flex: 0 0 100%;
+      min-width: 100%;
+      padding: 0 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* The quote is the showpiece — large, refined, headline-grade weight.
+       Slightly tighter line-height than body so it reads as a single block
+       even when long. Opening glyph sits above as a quiet typographic
+       anchor; never decorative, never colored. */
+    .testimonials-slider__glyph {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--color-text-light);
+      opacity: 0.35;
+      margin: 0 0 24px;
+      user-select: none;
+      pointer-events: none;
+    }
+    .testimonials-slider__quote {
+      font-family: var(--font-heading);
+      font-weight: 500;
+      font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+      line-height: 1.45;
+      color: var(--color-dark);
+      margin: 0 0 36px;
+      letter-spacing: -0.01em;
+      max-width: 640px;
+    }
+    .testimonials-slider__divider {
+      width: 32px;
+      height: 1px;
+      background: var(--color-border);
+      margin: 0 auto 22px;
+      border: 0;
+    }
+    .testimonials-slider__name {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text);
+      margin: 0 0 4px;
+    }
+    .testimonials-slider__role {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+
+    /* Controls live in a single horizontal row below the viewport.
+       Chevron buttons are minimal — just an arrow glyph in a 40px touch
+       target with a hairline border. Disabled state at the edges of the
+       carousel is subdued, never hidden, so the affordance stays present.
+       Dots sit between the two buttons; the active one fills with --color-dark. */
+    .testimonials-slider__controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .testimonials-slider__btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-dark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    .testimonials-slider__btn:hover:not([disabled]) {
+      border-color: var(--color-dark);
+      background: var(--color-dark);
+      color: var(--color-bg);
+    }
+    .testimonials-slider__btn[disabled] {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .testimonials-slider__dots {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .testimonials-slider__dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-border);
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .testimonials-slider__dot:hover {
+      background: var(--color-text-light);
+    }
+    .testimonials-slider__dot[aria-current="true"] {
+      background: var(--color-dark);
+      transform: scale(1.25);
+    }
+
+    /* Single-testimonial guard: when the renderer emitted just one slide,
+       JS hides the controls row entirely (set via .is-single class). */
+    .testimonials-slider.is-single .testimonials-slider__controls {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .testimonials-slider { padding: 80px 0; }
+      .testimonials-slider__head { margin-bottom: 40px; }
+      .testimonials-slider__slide { padding: 0 8px; }
+      .testimonials-slider__glyph { font-size: 2.4rem; margin-bottom: 18px; }
+      .testimonials-slider__quote { margin-bottom: 28px; }
+      .testimonials-slider__controls { margin-top: 40px; gap: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .testimonials-slider__track { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: testimonials-02</strong> &nbsp; · &nbsp; Editorial single-quote slider — chevrons + dots, one testimonial visible at a time, no avatars. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:testimonials:start -->
+<!--
+  TEMPLATE: testimonials-02
+  LAYOUT:   Centered editorial slider. One quote visible at a time inside a
+            fixed-width viewport (820px max). Below the viewport: prev/next
+            chevron buttons + dot indicators in a single horizontal row.
+            Header (eyebrow + heading) is centered above the viewport.
+  CONTENT:  2 header fields (eyebrow + heading) + 1 repeater (testimonials,
+            1..8 items, 3 by default). Each item = { quote, author_name,
+            author_role }. No subheadline — the variant intentionally keeps
+            the head minimal so the slider is the focal point.
+  EDITABLE: 2 top-level text fields + repeater of 3 fields per item.
+  THEME:    Section bg = --color-bg. Quote = --color-dark, role = --color-text-light.
+            Chevron borders + dots = --color-border. Active dot + chevron hover
+            fill = --color-dark.
+  JS:       Self-contained IIFE inside the section markers. Counts slides at
+            init time, generates dots, wires prev/next, updates aria-current
+            on the active dot, disables prev/next at the ends of the carousel.
+            Sets .is-single on the section root when only one testimonial
+            exists so the whole controls row collapses.
+  USE FOR:  When social proof should feel curated (1 voice at a time)
+            instead of surveyed (a grid). Pairs well with single-product
+            and service-business landing pages.
+-->
+<section id="referencie" class="testimonials-slider fade-up">
+  <div class="testimonials-slider__inner">
+
+    <div class="testimonials-slider__head">
+      <p class="testimonials-slider__eyebrow" data-field="ts2_eyebrow">Testimonials</p>
+      <h2 data-field="ts2_heading">What our clients say about us</h2>
+    </div>
+
+    <div class="testimonials-slider__viewport">
+      <!--
+        Slider repeater. Each child is a single slide (an <article>). The
+        track translates X by `index * 100%` to expose one slide at a time.
+        Min 1 / max 8 — past 8 the dots row gets crowded and the editorial
+        feel breaks down.
+      -->
+      <div class="testimonials-slider__track" data-repeat="testimonials" data-min="1" data-max="8">
+        <article class="testimonials-slider__slide" data-item-id-source="author_name">
+          <p class="testimonials-slider__glyph" aria-hidden="true">“</p>
+          <p class="testimonials-slider__quote" data-field="quote" data-type="richtext">Write the first customer quote here. Try 1 to 2 sentences about how the collaboration went, deadlines, communication, quality of the result.</p>
+          <hr class="testimonials-slider__divider">
+          <p class="testimonials-slider__name" data-field="author_name">Customer first and last name</p>
+          <p class="testimonials-slider__role" data-field="author_role">Position, Company name</p>
+        </article>
+        <article class="testimonials-slider__slide">
+          <p class="testimonials-slider__glyph" aria-hidden="true">“</p>
+          <p class="testimonials-slider__quote" data-field="quote" data-type="richtext">Write the second quote here. Try using a different angle, for example the team's approach, a tailored solution, or the reliability of the collaboration within the agreed deadline.</p>
+          <hr class="testimonials-slider__divider">
+          <p class="testimonials-slider__name" data-field="author_name">Customer first and last name</p>
+          <p class="testimonials-slider__role" data-field="author_role">Position, Company name</p>
+        </article>
+        <article class="testimonials-slider__slide">
+          <p class="testimonials-slider__glyph" aria-hidden="true">“</p>
+          <p class="testimonials-slider__quote" data-field="quote" data-type="richtext">Write the third quote here. A short, concise sentence about professionalism, the result, or why the customer would recommend you to others.</p>
+          <hr class="testimonials-slider__divider">
+          <p class="testimonials-slider__name" data-field="author_name">Customer first and last name</p>
+          <p class="testimonials-slider__role" data-field="author_role">Position, Company name</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="testimonials-slider__controls">
+      <button type="button" class="testimonials-slider__btn" data-prev="" aria-label="Previous">←</button>
+      <div class="testimonials-slider__dots" role="tablist" aria-label="Select testimonial"></div>
+      <button type="button" class="testimonials-slider__btn" data-next="" aria-label="Next">→</button>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      // Bind to the closest ancestor section so multiple sliders on a page
+      // each get their own state. dataset.skInit guards against double-init
+      // when the script tag re-executes (composer hot-reloads, prerender).
+      var section = document.currentScript.closest('section');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      var track = section.querySelector('.testimonials-slider__track');
+      var slides = track ? track.querySelectorAll('.testimonials-slider__slide') : [];
+      var prevBtn = section.querySelector('[data-prev]');
+      var nextBtn = section.querySelector('[data-next]');
+      var dotsHost = section.querySelector('.testimonials-slider__dots');
+      if (!track || slides.length === 0 || !prevBtn || !nextBtn || !dotsHost) return;
+
+      // Single-slide case: hide controls row entirely. The .is-single class
+      // collapses display via the section CSS — keeps the slide centered
+      // and avoids a lonely chevron row that does nothing.
+      if (slides.length === 1) {
+        section.classList.add('is-single');
+        return;
+      }
+
+      var index = 0;
+
+      // Build one dot per slide. Each dot is a button so it's keyboard-
+      // focusable; aria-current marks the active one for assistive tech.
+      var dots = [];
+      for (var i = 0; i < slides.length; i++) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'testimonials-slider__dot';
+        dot.setAttribute('aria-label', 'Testimonial ' + (i + 1));
+        dot.dataset.index = String(i);
+        dotsHost.appendChild(dot);
+        dots.push(dot);
+      }
+
+      function update() {
+        track.style.transform = 'translateX(-' + (index * 100) + '%)';
+        for (var i = 0; i < dots.length; i++) {
+          if (i === index) dots[i].setAttribute('aria-current', 'true');
+          else dots[i].removeAttribute('aria-current');
+        }
+        // Edge-disable prev/next so the affordance stays honest — no
+        // wraparound (Peter prefers calm, predictable interactions).
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+      }
+
+      prevBtn.addEventListener('click', function () {
+        if (index > 0) { index--; update(); }
+      });
+      nextBtn.addEventListener('click', function () {
+        if (index < slides.length - 1) { index++; update(); }
+      });
+      dotsHost.addEventListener('click', function (e) {
+        var btn = e.target.closest('.testimonials-slider__dot');
+        if (!btn) return;
+        var i = parseInt(btn.dataset.index, 10);
+        if (Number.isFinite(i) && i !== index) { index = i; update(); }
+      });
+
+      // Keyboard nav: arrow keys when the slider region has focus within.
+      section.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft' && index > 0) { index--; update(); e.preventDefault(); }
+        else if (e.key === 'ArrowRight' && index < slides.length - 1) { index++; update(); e.preventDefault(); }
+      });
+
+      update();
+    })();
+  </script>
+</section>
+<!-- SECTION:testimonials:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the testimonials section.</p>
+</div>
+
+
+
+</body></html>

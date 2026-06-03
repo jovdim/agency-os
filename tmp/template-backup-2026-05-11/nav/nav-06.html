@@ -1,0 +1,74 @@
+<!--
+  TEMPLATE: nav-06
+  LAYOUT:   Same as nav-05 (standard horizontal bar with bold uppercase
+            typography + animated accent underline) BUT with a frosted-
+            glass surface. Pairs with nav-05 as the "bold uppercase"
+            GLASS half. position: fixed so the hero shows through.
+  CONTENT:  Logo image, 5 main links, 4 service items in dropdown,
+            phone CTA. Schema identical to nav-01.
+  EDITABLE: 1 image + 10 link-type fields.
+  MOBILE:   < 900px collapses to hamburger; menu drops as a frosted
+            panel matching the bar.
+-->
+<nav id="top" class="site-nav nav-bold-bar-glass" role="navigation" aria-label="Hlavná navigácia">
+  <div class="nav-inner">
+
+    <a href="/" class="logo" aria-label="Domov">
+      <img data-field="nav_logo" src="https://placehold.co/360x88/e5e7eb/6b7280?text=LOGO&font=lato" alt="Logo">
+    </a>
+
+    <ul class="nav-links" id="nav-links-list">
+      <div data-repeat="nav_links_before" data-min="0" data-max="5" style="display:contents">
+        <li><a data-field="label" data-type="link" href="#hero">Domov</a></li>
+        <li><a data-field="label" data-type="link" href="#about">O nás</a></li>
+      </div>
+      <li class="has-dropdown">
+        <a data-field="nav_link_services" data-type="link" href="#services" aria-haspopup="true" aria-expanded="false">Služby</a>
+        <ul class="dropdown" aria-label="Zoznam služieb" data-repeat="nav_services_dropdown" data-min="0" data-max="10">
+          <li><a data-field="label" data-type="link" href="#service-1">Služba 1</a></li>
+          <li><a data-field="label" data-type="link" href="#service-2">Služba 2</a></li>
+          <li><a data-field="label" data-type="link" href="#service-3">Služba 3</a></li>
+          <li><a data-field="label" data-type="link" href="#service-4">Služba 4</a></li>
+        </ul>
+      </li>
+      <div data-repeat="nav_links_after" data-min="0" data-max="5" style="display:contents">
+        <li><a data-field="label" data-type="link" href="#gallery">Galéria</a></li>
+        <li><a data-field="label" data-type="link" href="#contact">Kontakt</a></li>
+      </div>
+      <li><a class="nav-cta" data-field="nav_phone" data-type="link" href="tel:+421900000000">0900 000 000</a></li>
+    </ul>
+
+    <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="nav-links-list">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <script>
+    (function () {
+      var nav = document.currentScript.closest('.site-nav') || document.querySelector('.site-nav.nav-bold-bar-glass');
+      if (!nav || nav.dataset.skInit) return;
+      nav.dataset.skInit = '1';
+
+      var hamburger = nav.querySelector('.hamburger');
+      var links = nav.querySelector('.nav-links');
+      if (hamburger && links) {
+        hamburger.addEventListener('click', function () {
+          var open = links.classList.toggle('open');
+          hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+
+      nav.querySelectorAll('.has-dropdown > a').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (window.innerWidth <= 900) {
+            var li = a.parentElement;
+            var open = li.classList.toggle('open');
+            a.setAttribute('aria-expanded', open ? 'true' : 'false');
+          }
+        });
+      });
+    })();
+  </script>
+</nav>

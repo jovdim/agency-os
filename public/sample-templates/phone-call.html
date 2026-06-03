@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>phone-call — Floating phone-call button</title>
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* phone-call: floating phone-call button. Bottom-right circle that's
+       a tel: link — tap to call directly on mobile, opens default phone
+       handler on desktop.
+
+       DYNAMIC stacking: sits at the very bottom (24px) if WhatsApp is
+       NOT present, or directly above WhatsApp (88px) if it is. JS at
+       init reads the page for `.widget-whatsapp` and computes the
+       offset. Scroll-top always stacks above whatever's here.
+       Per Peter 2026-05-11 — phone shouldn't sit at 88 if there's no
+       WhatsApp at 24 below it (would leave a visible gap to the page
+       edge that reads as "this button is floating in the wrong place").
+
+       Uses the theme's --color-primary so the button tracks the user's
+       brand accent (different from whatsapp.html which uses fixed
+       WhatsApp green — phone calls don't have a globally recognised
+       color). */
+    /* SIZE / POSITION (Peter 2026-05-11):
+       Anchored bottom-RIGHT and shrunk to 40px (was 56px) to match
+       widget-whatsapp / widget-scrolltop's compact scale. JS at init
+       bumps `bottom` to 72px if WhatsApp is also present so phone sits
+       directly above it. Cookie bar (the only LEFT widget) lives on
+       the opposite corner. */
+    .widget-phone {
+      position: fixed;
+      bottom: 24px; /* default — JS bumps to 72 if WhatsApp is present */
+      right: 24px;
+      z-index: 9989;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .widget-phone:hover {
+      background: var(--color-secondary);
+      transform: scale(1.08);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      color: #fff;
+    }
+    .widget-phone svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @media (max-width: 600px) {
+      .widget-phone {
+        bottom: 16px; /* default — JS bumps to 64 if WhatsApp is present */
+        right: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: phone-call</strong> &nbsp; · &nbsp; Floating phone-call button bottom-right. tel: link — tap to dial. Stacks above WhatsApp if present. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:600px;background:var(--color-bg-alt);padding:40px 24px;text-align:center;color:#57534e">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Floating widget preview</p>
+  <p style="margin:0;font-size:0.9rem">The phone button sits fixed in the bottom-right of the viewport →</p>
+</div>
+
+<!-- SECTION:widgets:start -->
+<!--
+  TEMPLATE: phone-call
+  LAYOUT:   Fixed-position circular button anchored bottom-right of the
+            viewport. JS-driven dynamic position based on whether WhatsApp
+            is also present in the composition.
+  CONTENT:  Primary-colored circle with a phone receiver glyph. The link
+            href is the only configurable bit — paste your phone number
+            as plain digits (no `tel:` prefix). The renderer auto-adds
+            the `tel:` URI scheme on output (see parser.ts looksLikePhone
+            / buildPhoneHref). Composer also shows a phone-style single
+            input — same UX as the nav/footer phone fields.
+  EDITABLE: 1 field — widget_phone_url (link). Type the dial number as
+            "07911234567" or "+447911234567". Renderer outputs
+            <a href="tel:+447911234567"> regardless of which format you
+            type. On mobile, tapping opens the dialer with the number
+            prefilled; on desktop, opens the default phone handler.
+  THEME:    Background = --color-primary (theme-tracking — phone-call
+            doesn't have a universal color so we let the user's brand
+            accent shine). Hover swaps to --color-secondary. Drop shadow
+            for lift.
+  POSITION: Dynamic — JS reads the page and pins phone to:
+              · No WhatsApp present  → bottom 24px (16px mobile)
+              · WhatsApp present     → bottom 72px (64px mobile)
+            Scroll-top widget stacks above whatever phone settles at.
+            Anchored RIGHT — cookie bar is the only LEFT-side widget,
+            so the right column houses every floating circle.
+  USE FOR:  Service trades where the phone is the primary channel —
+            plumbers, electricians, gardeners. Pair with whatsapp for
+            businesses that want both channels available.
+-->
+<a id="widget-phone" class="widget-phone" data-field="widget_phone_url" data-type="link" href="tel:+15550000000" aria-label="Call us">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+</a>
+
+<script>
+  (function () {
+    var btn = document.getElementById('widget-phone');
+    if (!btn || btn.dataset.skInit) return;
+    btn.dataset.skInit = '1';
+
+    // Dynamic positioning: bumped above WhatsApp when present, else sits
+    // at the bottom by itself. Slot height = 48px (40px button + 8px gap)
+    // matches scroll-top's math so all three widgets stack cleanly.
+    function reposition() {
+      var isMobile =
+        window.matchMedia &&
+        window.matchMedia('(max-width: 600px)').matches;
+      var base = isMobile ? 16 : 24;
+      var slot = 48;
+      var hasWhatsapp = !!document.querySelector('.widget-whatsapp');
+      btn.style.bottom = base + (hasWhatsapp ? slot : 0) + 'px';
+    }
+    reposition();
+    // Re-check after a tick — sibling widgets might mount AFTER us if
+    // the composer renders sections in a different order. Two short
+    // retries catch most race conditions.
+    setTimeout(reposition, 50);
+    setTimeout(reposition, 250);
+    window.addEventListener('resize', reposition);
+  })();
+</script>
+<!-- SECTION:widgets:end -->
+
+</body>
+</html>

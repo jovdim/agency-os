@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cookie-bar — Compact bottom-left cookie consent card</title>
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* cookie-bar: compact consent card. Pinned to BOTTOM-LEFT corner
+       (NOT a full-width strip) so it doesn't dominate the viewport on
+       mobile. Max-width 320px desktop, calc(100vw - 32px) capped on
+       mobile so the card never grows beyond the screen edge. Per Peter
+       2026-05-11 — earlier full-width version ate ~half the mobile
+       viewport and made the page unusable until dismissed.
+
+       Sits at the same bottom-left as widget-whatsapp / widget-phone /
+       widget-scrolltop with a higher z-index (9991 vs 9988-9990), so
+       when the cookie bar is showing it temporarily covers any floating
+       widgets in that corner. After dismiss, the widgets reappear.
+       That's the standard cookie-bar UX — brief visual blocker, then
+       gone forever.
+
+       Why localStorage and not a cookie: ironic but practical — using a
+       cookie to remember "user consented to cookies" creates a chicken-
+       and-egg problem under strict GDPR readings. Functional storage
+       (localStorage with a single key, no tracking, no PII) is generally
+       considered "strictly necessary" and exempt from consent. */
+    .widget-cookie {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      max-width: 320px;
+      width: calc(100vw - 32px);
+      z-index: 9991;
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+      padding: 14px 16px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+      transform: translateY(8px);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .widget-cookie.is-visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .widget-cookie.is-dismissed {
+      display: none;
+    }
+    .widget-cookie__text {
+      margin: 0 0 12px;
+    }
+    .widget-cookie__text a {
+      color: var(--color-light);
+      text-decoration: underline;
+    }
+    .widget-cookie__text a:hover {
+      color: var(--color-primary);
+    }
+    /* Button — compact pill, fits the small card. NOT full-width — that
+       made the card feel oversized. Inline-block at natural width keeps
+       the card looking like a notification toast, not a panel. */
+    .widget-cookie__btn {
+      display: inline-block;
+      background: var(--color-primary);
+      color: #fff;
+      border: 0;
+      padding: 7px 16px;
+      border-radius: 4px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .widget-cookie__btn:hover {
+      background: var(--color-light);
+      color: var(--color-secondary);
+    }
+    @media (max-width: 600px) {
+      .widget-cookie {
+        bottom: 12px;
+        left: 12px;
+        max-width: calc(100vw - 24px);
+        padding: 12px 14px;
+        font-size: 0.78rem;
+      }
+      .widget-cookie__btn {
+        font-size: 0.78rem;
+        padding: 7px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: cookie-bar</strong> &nbsp; · &nbsp; Compact consent card, bottom-left, max 320px wide. Click Accept to dismiss — state saved to localStorage. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:800px;background:var(--color-bg-alt);padding:40px 24px;text-align:center;color:#57534e">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Cookie card preview</p>
+  <p style="margin:0;font-size:0.9rem">The card appears at the bottom-left on first load. Click Accept to dismiss — state persists across reloads via localStorage.</p>
+</div>
+
+<!-- SECTION:widgets:start -->
+<!--
+  TEMPLATE: cookie-bar
+  LAYOUT:   Compact card pinned to BOTTOM-LEFT (max 320px wide desktop,
+            capped at viewport width minus padding on mobile). Consent
+            text on top, small Accept button below. NOT full-width —
+            stays in the corner like a notification toast so the rest
+            of the page is reachable. Hidden after Accept clicked + on
+            subsequent visits.
+  CONTENT:  Short consent message (with optional privacy-policy link
+            inside the text — paste an <a> in the rich text or edit the
+            default href) + Accept button label.
+  EDITABLE: 3 fields — widget_cookie_text (longtext, supports inline
+            markup) + widget_cookie_button (text, accept button label) +
+            widget_cookie_privacy (link, the privacy policy link inside
+            the message).
+  THEME:    Card bg = --color-secondary (dark theme-tracking). Text =
+            --color-text-on-dark. Inline links = --color-light, hover
+            --color-primary. Accept button = --color-primary, hover
+            inverts to --color-light bg / --color-secondary text. Drop
+            shadow for lift off the page content below.
+  PERSISTENCE: After click Accept, sets localStorage key 'sk_cookie_ack'
+            to a timestamp. Bar checks this on mount — if set, stays
+            hidden. To re-show in dev, run `localStorage.removeItem(
+            'sk_cookie_ack')` in the browser console.
+  USE FOR:  Sites that need a basic GDPR consent affordance for analytics
+            cookies. NOT a full consent management platform — for sites
+            that need granular per-vendor opt-ins (Google Analytics,
+            Facebook Pixel, etc.), integrate a third-party CMP instead.
+-->
+<aside id="widget-cookie" class="widget-cookie" role="dialog" aria-label="Cookie consent" aria-live="polite">
+  <p class="widget-cookie__text" data-field="widget_cookie_text">
+    We use cookies for a better experience. <a data-field="widget_cookie_privacy" data-type="link" href="privacy.html">More</a>.
+  </p>
+  <button class="widget-cookie__btn" type="button" data-field="widget_cookie_button">I agree</button>
+</aside>
+
+<script>
+  (function () {
+    var bar = document.getElementById('widget-cookie');
+    if (!bar || bar.dataset.skInit) return;
+    bar.dataset.skInit = '1';
+
+    // Inside the composer iframe (window !== window.parent) — keep the
+    // bar visible-but-static so the editor can see what they're styling
+    // without it triggering localStorage reads or the dismiss flow on
+    // every reload. Same iframe-detect pattern as gallery-01's lightbox.
+    if (window !== window.parent) {
+      bar.classList.add('is-visible');
+      return;
+    }
+
+    var STORAGE_KEY = 'sk_cookie_ack';
+
+    // Already acknowledged: hide immediately, never show. Wrapped in
+    // try/catch because localStorage can throw in private browsing or
+    // when the user has disabled storage (Safari quota = 0 in private).
+    try {
+      if (localStorage.getItem(STORAGE_KEY)) {
+        bar.classList.add('is-dismissed');
+        return;
+      }
+    } catch (_) {
+      // Storage unavailable — show the bar but don't try to persist.
+    }
+
+    // Reveal after a short delay so it slides in nicely + doesn't fight
+    // initial page paint. requestAnimationFrame ensures the transition
+    // class change runs in a separate frame from the initial mount.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        bar.classList.add('is-visible');
+      });
+    });
+
+    var btn = bar.querySelector('.widget-cookie__btn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        try {
+          localStorage.setItem(STORAGE_KEY, String(Date.now()));
+        } catch (_) {}
+        bar.classList.remove('is-visible');
+        // Wait for the fade-out before hiding fully so the user sees
+        // the bar transition out smoothly.
+        setTimeout(function () {
+          bar.classList.add('is-dismissed');
+        }, 250);
+      });
+    }
+  })();
+</script>
+<!-- SECTION:widgets:end -->
+
+</body>
+</html>

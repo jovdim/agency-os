@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-04 — What's included (stat panel + checklist)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-04 — "What's included": sticky left column (eyebrow,
+       heading, lead, dark stat panel) + a right-hand checklist of items
+       with icon chips and numbers. Faithful port of the pilimestromy
+       "What's included" section. */
+    .subpage-included { background: var(--color-bg); padding: 64px 0; }
+    .subpage-included .wrap {
+      max-width: 1100px; margin: 0 auto; padding: 0 32px;
+      display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: start;
+    }
+    .subpage-included .left { position: sticky; top: 96px; }
+    .subpage-included .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-body); font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 55%, var(--color-bg) 45%);
+    }
+    .subpage-included .eyebrow::before {
+      content: ""; display: block; width: 15px; height: 15px;
+      background: var(--color-primary); flex-shrink: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .subpage-included h2 {
+      font-family: var(--font-heading); font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+      color: var(--color-text); margin: 16px 0 0;
+    }
+    .subpage-included .accent-line { display: block; width: 48px; height: 3px; background: var(--color-primary); border-radius: 2px; margin: 20px 0 0; }
+    .subpage-included .lead { margin: 24px 0 0; font-size: 1.02rem; line-height: 1.7; color: var(--color-text); }
+    .subpage-included .lead p { margin: 0 0 1em; } .subpage-included .lead p:last-child { margin: 0; }
+
+    /* Dark stat panel with radial accent glow. */
+    .subpage-included .stat {
+      position: relative; overflow: hidden; margin-top: 32px;
+      background: var(--color-secondary, #1c1917); color: var(--color-light, #faf7f2);
+      border-radius: 18px; padding: 26px 28px;
+    }
+    .subpage-included .stat::before {
+      content: ""; position: absolute; top: -48px; right: -48px;
+      width: 160px; height: 160px; border-radius: 999px;
+      background: color-mix(in srgb, var(--color-primary) 25%, transparent);
+      filter: blur(40px); pointer-events: none;
+    }
+    .subpage-included .stat-inner { position: relative; display: flex; align-items: center; gap: 20px; }
+    .subpage-included .stat-num {
+      display: grid; place-items: center; flex-shrink: 0;
+      width: 64px; height: 64px; border-radius: 14px;
+      background: var(--color-primary); color: #ffffff;
+      font-family: var(--font-heading); font-weight: 900; font-size: 1.6rem;
+    }
+    .subpage-included .stat-caption {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); margin: 0;
+    }
+    .subpage-included .stat-label { font-size: 1rem; font-weight: 600; line-height: 1.35; margin: 4px 0 0; color: var(--color-light, #faf7f2); }
+
+    /* Checklist */
+    .subpage-included ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; counter-reset: incl; }
+    .subpage-included li {
+      display: flex; align-items: flex-start; gap: 20px;
+      background: color-mix(in srgb, var(--color-bg-alt) 60%, var(--color-bg) 40%);
+      border: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
+      border-radius: 14px; padding: 20px 22px; transition: all var(--transition); counter-increment: incl;
+    }
+    .subpage-included li:hover { background: var(--color-bg-alt); border-color: color-mix(in srgb, var(--color-primary) 40%, transparent); }
+    .subpage-included .ico {
+      display: grid; place-items: center; flex-shrink: 0;
+      width: 44px; height: 44px; border-radius: 10px;
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      color: var(--color-primary); transition: all var(--transition);
+    }
+    .subpage-included li:hover .ico { background: var(--color-primary); color: #ffffff; }
+    /* Per-row icon, driven by POSITION (not the cloned inline SVG). The
+       repeater duplicates row 1's markup onto every row, so a single inline
+       icon would repeat. We hide that SVG and paint a mask-image keyed by
+       nth-of-type instead, cycling the same set the reference uses
+       (eye, file-text, hard-hat, link-2, axe, sparkles, shield-check).
+       Dual selectors cover composer (flattened li) + published
+       ([data-sk-repeater-wrap]). currentColor → tile color, so it flips to
+       white on hover automatically. */
+    .subpage-included .ico svg { display: none; }
+    /* Default icon (fallback for rows beyond the 7 mapped below) declared
+       on .ico — NOT on ::before — so the per-row nth-of-type overrides
+       below (also on .ico, higher specificity) win and the pseudo-element
+       inherits the chosen --ic. */
+    .subpage-included .ico {
+      --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E");
+    }
+    .subpage-included .ico::before {
+      content: ""; width: 20px; height: 20px; background-color: currentColor;
+      -webkit-mask: var(--ic) center / contain no-repeat;
+      mask: var(--ic) center / contain no-repeat;
+    }
+    .subpage-included li:nth-of-type(1) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(1) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(2) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(2) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z'/%3E%3Cpath d='M14 2v7h7'/%3E%3Cpath d='M8 13h8'/%3E%3Cpath d='M8 17h8'/%3E%3Cpath d='M8 9h2'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(3) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(3) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z'/%3E%3Cpath d='M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5'/%3E%3Cpath d='M4 15v-3a6 6 0 0 1 6-6'/%3E%3Cpath d='M14 6a6 6 0 0 1 6 6v3'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(4) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(4) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 17H7A5 5 0 0 1 7 7h2'/%3E%3Cpath d='M15 7h2a5 5 0 1 1 0 10h-2'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(5) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(5) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9'/%3E%3Cpath d='M15 13 9 7l4-4 6 6h3a8 8 0 0 1-7 7z'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(6) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(6) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z'/%3E%3C/svg%3E"); }
+    .subpage-included li:nth-of-type(7) .ico, .subpage-included [data-sk-repeater-wrap]:nth-of-type(7) .ico { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+    .subpage-included .li-text { flex: 1; min-width: 0; padding-top: 2px; font-size: 1rem; font-weight: 600; line-height: 1.4; color: var(--color-text); }
+    .subpage-included .li-num { flex-shrink: 0; font-size: 0.85rem; font-weight: 700; color: color-mix(in srgb, var(--color-text) 18%, transparent); font-variant-numeric: tabular-nums; padding-top: 6px; }
+    .subpage-included .li-num::before { content: counter(incl, decimal-leading-zero); }
+
+    @media (max-width: 900px) {
+      .subpage-included .wrap { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
+      .subpage-included .left { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-04</strong> &nbsp; · &nbsp; "What's included" — sticky heading + dark stat panel + icon checklist. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-04
+  LAYOUT:   2-column. Left (sticky): eyebrow, heading, accent rule, lead,
+            and a dark stat panel (big count + caption + label). Right: a
+            checklist of included items, each with a check chip + number.
+  CONTENT:  eyebrow, heading, lead, stat_number, stat_caption, stat_label,
+            and an "items" repeater of plain text lines.
+  EDITABLE: eyebrow (text), heading (text), lead (richtext), stat_number,
+            stat_caption, stat_label (text), items repeater (item text).
+  THEME:    --color-primary (accent, chips), --color-secondary (stat
+            panel), --color-bg / --color-bg-alt, --font-heading/body.
+  JS:       none — numbers via CSS counters.
+-->
+<section id="co-je-v-cene" class="subpage-included">
+  <div class="wrap">
+    <div class="left fade-up">
+      <span class="eyebrow" data-field="eyebrow">Service value</span>
+      <h2 data-field="heading">What's included</h2>
+      <span class="accent-line"></span>
+      <div class="lead" data-field="lead" data-type="richtext">
+        <p>No hidden items. Everything you need for the safe and complete delivery of the work is part of one agreed price.</p>
+      </div>
+      <div class="stat">
+        <div class="stat-inner">
+          <span class="stat-num" data-field="stat_number">7</span>
+          <div>
+            <p class="stat-caption" data-field="stat_caption">Things included</p>
+            <p class="stat-label" data-field="stat_label">Everything from the site visit to the cleanup</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="fade-up">
+      <div data-repeat="items" data-min="1" data-max="20" style="display:contents">
+        <li data-item-id-source="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">On-site assessment of the tree and surroundings at your place</span><span class="li-num"></span></li>
+        <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">A fixed-price quote based on the on-site assessment</span><span class="li-num"></span></li>
+        <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">Complete professional equipment and materials</span><span class="li-num"></span></li>
+        <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">On-site processing and cutting of the material</span><span class="li-num"></span></li>
+        <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">Rough cleanup of the work area</span><span class="li-num"></span></li>
+        <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span class="li-text" data-field="item">Liability insurance for damage during the work</span><span class="li-num"></span></li>
+      </div>
+    </ul>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

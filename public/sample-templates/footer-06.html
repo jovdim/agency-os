@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-06 — Two-column dark footer with newsletter signup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* footer-06: two-column dark footer.
+
+       LEFT column: logo + contact info list (phone, email, address)
+         each with a circular outlined icon, then a short business
+         description, then a legal line with Company No. + Tax ID.
+       RIGHT column: newsletter signup with heading + email input +
+         submit button, then a social-icon row (Facebook + Instagram).
+       BOTTOM bar: copyright on left, agency credit on right.
+
+       Designed to match a real deployed footer Peter pointed at
+       (bagerexpress.sk). Dark bg + amber accent button = strong
+       trade / construction vibe. Newsletter form is visual only —
+       hookup to an actual subscribe handler is out of scope here;
+       the form's `action` is `#` so submit reloads the page until
+       the site owner wires a real endpoint.
+
+       Why fixed Facebook + Instagram slots instead of a socials
+       repeater: each platform needs its own SVG (Twitter ≠ FB ≠
+       LinkedIn icon), so a "type platform name as a string" repeater
+       gets fragile fast. Two hardcoded slots cover the common case;
+       add more fields later if a client uses TikTok / YouTube. */
+    .footer-06 {
+      background: #1a1714;
+      padding: 72px 24px 0;
+      color: var(--color-text-on-dark);
+      font-family: var(--font-body);
+    }
+    .footer-06__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-06__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      padding-bottom: 56px;
+    }
+
+    /* ── Left column ── */
+    .footer-06__brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .footer-06__logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .footer-06__contact {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .footer-06__contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .footer-06__contact-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-text-on-dark);
+    }
+    .footer-06__contact-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+    .footer-06__contact-text {
+      font-size: 0.98rem;
+      line-height: 1.4;
+      color: var(--color-text-on-dark);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-06__contact-text:hover {
+      color: var(--color-primary);
+    }
+
+    .footer-06__description {
+      margin: 28px 0 18px;
+      font-size: 0.86rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.55);
+      max-width: 520px;
+    }
+    .footer-06__legal {
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.42);
+    }
+    .footer-06__legal span + span::before {
+      content: '·';
+      margin: 0 8px;
+      opacity: 0.6;
+    }
+
+    /* ── Right column ── */
+    .footer-06__newsletter-heading {
+      font-family: var(--font-heading);
+      font-size: clamp(1.5rem, 2.4vw, 2rem);
+      font-weight: 600;
+      color: var(--color-text-on-dark);
+      margin: 0 0 22px;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+    .footer-06__newsletter-form {
+      display: flex;
+      gap: 10px;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+    .footer-06__newsletter-input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--color-text-on-dark);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .footer-06__newsletter-input::placeholder {
+      color: rgba(255, 255, 255, 0.38);
+    }
+    .footer-06__newsletter-input:focus {
+      border-color: var(--color-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .footer-06__newsletter-button {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 8px;
+      background: var(--color-primary);
+      /* White label sits better on the amber bg than dark text —
+         reads with more contrast and matches Peter's spec. */
+      color: #fff;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+    .footer-06__newsletter-button:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .footer-06__socials {
+      display: flex;
+      gap: 14px;
+    }
+    /* Circular outlined buttons — matches the contact-icon style on
+       the left column for visual consistency, but with the SVG glyph
+       in --color-primary so the social icons feel branded instead of
+       floating loose. On hover, the whole circle fills with primary
+       and the icon flips to dark — reads as a proper button press. */
+    .footer-06__social {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-06__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-06__social svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ── Bottom bar ── */
+    .footer-06__bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 22px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .footer-06__bottom a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-06__bottom a:hover {
+      color: var(--color-primary);
+    }
+    .footer-06__bottom p { margin: 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .footer-06 { padding: 56px 20px 0; }
+      .footer-06__grid {
+        grid-template-columns: 1fr;
+        gap: 44px;
+        padding-bottom: 36px;
+      }
+    }
+    @media (max-width: 600px) {
+      .footer-06__newsletter-form {
+        flex-direction: column;
+      }
+      .footer-06__newsletter-button {
+        justify-content: center;
+      }
+      .footer-06__bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: footer-06</strong> &nbsp; · &nbsp; Two-column dark footer with newsletter signup, contact icons, and social links. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-06
+  LAYOUT:   Two-column dark footer.
+            LEFT  — logo + contact list (phone/email/address with
+                    circular outlined icons) + description + legal
+                    line (Company No. + Tax ID).
+            RIGHT — newsletter heading + email input + amber CTA
+                    button, then Facebook + Instagram social icons.
+            BOTTOM bar — copyright on left, agency credit on right.
+            Mobile (≤900px): single column. Sub-600px: form stacks.
+  CONTENT:  logo + 3 contact link/text fields + description +
+            company_name + Company No. + Tax ID + newsletter heading + newsletter
+            button (link) + 2 social link slots + copyright +
+            agency credit.
+  EDITABLE: 12 fields — footer_logo (image), footer_phone (link, tel:),
+            footer_email (link, mailto:), footer_address, footer_description,
+            footer_company_name, footer_ico, footer_dic,
+            footer_newsletter_heading, footer_newsletter_button (link),
+            footer_facebook (link), footer_instagram (link),
+            footer_copyright, agency_credit (link).
+  THEME:    Section bg = solid dark warm (#1a1714). Headings + text
+            = --color-text-on-dark. Muted body = white-at-opacity.
+            CTA button + accent + hover color = --color-primary.
+  USE FOR:  Trade / construction / outdoor service businesses that
+            want a strong dark "before-you-leave" CTA via a newsletter
+            signup, with full contact info kept visible. Different
+            from footer-01 (heavy 4-col), footer-02 (centered),
+            footer-03 (split 2-col compact), footer-04 (editorial
+            magazine), footer-05 (dark phone-prominent).
+-->
+<footer id="paticka" class="footer-06 fade-up">
+  <div class="footer-06__inner">
+    <div class="footer-06__grid">
+
+      <!-- LEFT: brand + contact + legal -->
+      <div class="footer-06__left">
+        <div class="footer-06__brand">
+          <img class="footer-06__logo" data-field="footer_logo" src="https://placehold.co/200x56/e7e5e4/1c1917?text=LOGO&font=lato" alt="Logo">
+        </div>
+
+        <ul class="footer-06__contact">
+          <li class="footer-06__contact-item">
+            <span class="footer-06__contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </span>
+            <a class="footer-06__contact-text" data-field="footer_phone" data-type="link" href="">0xxx xxx xxx</a>
+          </li>
+          <li class="footer-06__contact-item">
+            <span class="footer-06__contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <a class="footer-06__contact-text" data-field="footer_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+          </li>
+          <li class="footer-06__contact-item">
+            <span class="footer-06__contact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </span>
+            <span class="footer-06__contact-text" data-field="footer_address">City, United Kingdom</span>
+          </li>
+        </ul>
+
+        <p class="footer-06__description" data-field="footer_description">Write a short description of your company here, what you do, where you operate, and what makes you different. Two or three sentences at most, so it stays light and easy to read.</p>
+
+        <p class="footer-06__legal">
+          <span data-field="footer_company_name">Your Company Ltd.</span>
+          <span data-field="footer_ico">Company No.: xxxxxxxx</span>
+          <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
+        </p>
+      </div>
+
+      <!-- RIGHT: newsletter + socials -->
+      <div class="footer-06__right">
+        <h3 class="footer-06__newsletter-heading" data-field="footer_newsletter_heading">Get the latest news</h3>
+        <form class="footer-06__newsletter-form" action="#" method="post">
+          <input class="footer-06__newsletter-input" type="email" name="email" placeholder="Your email" aria-label="Your email">
+          <a class="footer-06__newsletter-button" data-field="footer_newsletter_button" data-type="link" href="#newsletter">Submit</a>
+        </form>
+
+        <div class="footer-06__socials">
+          <a class="footer-06__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
+            </svg>
+          </a>
+          <a class="footer-06__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-06__bottom">
+      <p data-field="footer_copyright">© 2026 Your Company. All rights reserved.</p>
+      <p>Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+    </div>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-02 — Collage (1 featured tile + smaller surroundings)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-02: asymmetric collage. The FIRST image in the repeater is
+       the "featured" tile — it spans 2 columns × 2 rows, anchoring the
+       composition. Every subsequent image is a 1x1 tile and flows into
+       the remaining cells of the 3-column grid. Total of 6 default tiles
+       fills exactly 3 rows; client can add up to 18 and they auto-flow
+       into new rows below.
+
+       Same lightbox as gallery-01 (click to fullscreen, arrows / Esc /
+       swipe, self-disables in iframe so the composer's click-to-replace
+       still works). Same 4-field schema as gallery-01 / gallery-03 so
+       clients can swap freely between them with no data loss. */
+    .gallery-02 .gallery-collage {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: minmax(180px, 1fr);
+      gap: 14px;
+    }
+    /* Publish renderer wraps every repeater item in <div data-sk-repeater-wrap>.
+       Make the wrapper transparent to layout (display: contents) so the
+       <figure> inside still participates in the parent's grid. Without
+       this the wrappers become the grid items and the figures collapse
+       into invisible content boxes. */
+    .gallery-02 .gallery-collage [data-sk-repeater-wrap] {
+      display: contents;
+    }
+    .gallery-02 .gallery-collage figure {
+      margin: 0;
+      overflow: hidden;
+      /* Square corners — Peter's preference 2026-05-14. Lightbox keeps
+         its 6px radius (separate rule below). */
+      border-radius: 0;
+      cursor: zoom-in;
+      position: relative;
+      background: var(--color-bg-alt);
+    }
+    /* Featured tile — first child of the repeater. Spans 2 cols × 2 rows.
+       Dual selector so the rule applies in BOTH the composer preview
+       (figures are direct children — `figure:first-child` matches) and
+       the published HTML (figures live inside [data-sk-repeater-wrap]
+       — we target the FIRST wrapper's nested figure). Without this,
+       the published gallery had every tile at 1×1 because :first-child
+       was the wrapper div, not the figure. */
+    .gallery-02 .gallery-collage > figure:first-child,
+    .gallery-02 .gallery-collage > [data-sk-repeater-wrap]:first-child > figure {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .gallery-02 .gallery-collage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition);
+    }
+    .gallery-02 .gallery-collage figure:hover img {
+      transform: scale(1.04);
+    }
+    .gallery-02 .gallery-collage figure::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background var(--transition);
+      pointer-events: none;
+    }
+    .gallery-02 .gallery-collage figure:hover::after {
+      background: rgba(0,0,0,0.18);
+    }
+    .gallery-02 .gallery-collage figure:focus-visible {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+    @media (max-width: 768px) {
+      /* Mobile: collapse to a simple 2-col equal-tile grid; the asymmetric
+         featured-spanning layout falls apart on narrow screens. */
+      .gallery-02 .gallery-collage {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(160px, 1fr);
+        gap: 10px;
+      }
+      /* Featured tile on mobile = full-width row (span 2 cols, 1 row).
+         Same dual-selector trick so the rule lands in both preview and
+         published HTML. */
+      .gallery-02 .gallery-collage > figure:first-child,
+      .gallery-02 .gallery-collage > [data-sk-repeater-wrap]:first-child > figure {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
+    }
+
+    /* Lightbox overlay — frosted-glass backdrop (modern lightbox look,
+       not solid black) + full-screen stage + smooth cross-fade between
+       images. Matches gallery-01 + gallery-03 so clients get the same
+       viewer behavior whichever gallery they pick. */
+    .lb-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .lb-backdrop.is-open { display: flex; opacity: 1; }
+    body.lb-locked { overflow: hidden; }
+    /* Stage fills the whole viewport. Image uses object-fit:contain so
+       portrait + landscape both render at max size on any device. */
+    .lb-image-wrap { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .lb-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      /* Slide transition: show() toggles transform + opacity around
+         the src swap so the new image enters from one side and the
+         old image exits the other. */
+      opacity: 1;
+      transform: translateX(0);
+      transition: transform 0.32s ease, opacity 0.32s ease;
+    }
+    /* z-index: 2 elevates buttons + counter ABOVE the 100vw × 100vh
+       image-wrap so clicks register on them. Without this, the wrap
+       (later in DOM, no z-index) covers them and clicks slip through
+       to the wrap → close handler fires → lightbox closes. */
+    .lb-btn { position: absolute; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); color: #fff; display: grid; place-items: center; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; backdrop-filter: blur(6px); border: 0; z-index: 2; }
+    .lb-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.05); }
+    .lb-btn svg { width: 22px; height: 22px; }
+    .lb-close { top: 20px; right: 20px; }
+    .lb-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+    .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
+    .lb-prev:hover { transform: translateY(-50%) scale(1.05); }
+    .lb-next:hover { transform: translateY(-50%) scale(1.05); }
+    .lb-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.85); font-size: 0.88rem; font-family: var(--font-heading); font-weight: 500; background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(6px); z-index: 2; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-02</strong> &nbsp; · &nbsp; Asymmetric collage — first image is a 2×2 featured tile, others are 1×1. Lightbox + click-to-replace iframe handling same as gallery-01. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-02
+  LAYOUT:   3-col asymmetric grid. First image is featured (2×2 span,
+            anchors the composition), every subsequent image is 1×1 and
+            flows into remaining cells. 6 default tiles fills exactly 3
+            rows. Mobile collapses to a 2-col equal-tile grid (the
+            asymmetric featured-spanning layout doesn't read on narrow
+            screens — the featured tile becomes a single full-width row).
+  CONTENT:  eyebrow, headline, subheadline + images repeater (default 6).
+  EDITABLE: 4 schema fields — eyebrow + headline + subheadline + images
+            repeater. Each image item = { image }. Same 4-field schema as
+            gallery-01 / gallery-03 — clients can swap freely between
+            them with zero data loss.
+  LIGHTBOX: Click tile opens fullscreen viewer (←/→/Esc, swipe, backdrop
+            close). Self-disables when running inside an iframe (CRM
+            editor) so click-to-replace in the inline editor isn't
+            intercepted.
+  THEME:    Focus outline + hover scale animation respect var(--color-primary).
+            Tile backgrounds and overlays use neutral grays, not theme-driven.
+  USE FOR:  Portfolios where one signature project deserves more weight
+            than the others — interior design hero shots, restaurant
+            signature dish, architecture project hero, photography studio's
+            best image.
+-->
+<section id="galeria" class="gallery-02 fade-up" data-gallery>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Gallery</span>
+      <h2 data-field="gallery_headline">Write your gallery headline here</h2>
+      <p data-field="gallery_subheadline">Write a short description below the headline here. The first image is featured (2×2 tile), ideal for your main project. The other images fill the remaining cells of the composition.</p>
+    </div>
+    <div class="gallery-collage" data-repeat="gallery_images" data-min="1" data-max="999">
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/1600x1200/c4bdb1/57534e?text=Featured+image+(2x2)&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/d6d3d1/57534e?text=Image+2&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/d6d3d1/57534e?text=Image+3&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/d6d3d1/57534e?text=Image+4&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/d6d3d1/57534e?text=Image+5&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/d6d3d1/57534e?text=Image+6&font=lato" alt="" loading="lazy"></figure>
+    </div>
+  </div>
+
+  <!-- Lightbox overlay (lives inside the section so it travels with the template) -->
+  <div class="lb-backdrop" role="dialog" aria-modal="true" aria-label="Photo gallery" hidden>
+    <button class="lb-btn lb-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Previous image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="lb-image-wrap"><img class="lb-image" alt=""></div>
+    <button class="lb-btn lb-next" type="button" aria-label="Next image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="lb-counter"><span class="lb-current">1</span> / <span class="lb-total">6</span></div>
+  </div>
+
+  <script>
+    (function () {
+      // Skip lightbox setup when running inside an iframe (CRM editor / composer preview).
+      // The CRM owns image clicks for click-to-replace.
+      if (window !== window.parent) return;
+
+      var section = document.currentScript.closest('section') || document.querySelector('.gallery-02');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      var grid = section.querySelector('.gallery-collage');
+      var lb = section.querySelector('.lb-backdrop');
+      if (!grid || !lb) return;
+
+      // .fade-up keeps a transform set even after .visible, which makes
+      // the section a containing block for any position:fixed descendant —
+      // the backdrop would be sized to the section, not the viewport.
+      // Reparent to <body> to escape. Idempotent.
+      if (lb.parentElement !== document.body) {
+        document.body.appendChild(lb);
+      }
+
+      var figures = Array.from(grid.querySelectorAll('figure'));
+      if (!figures.length) return;
+
+      var lbImg = lb.querySelector('.lb-image');
+      var lbCurrent = lb.querySelector('.lb-current');
+      var lbTotal = lb.querySelector('.lb-total');
+      var closeBtn = lb.querySelector('.lb-close');
+      var prevBtn = lb.querySelector('.lb-prev');
+      var nextBtn = lb.querySelector('.lb-next');
+
+      var currentIdx = 0;
+      var lastFocused = null;
+
+      lbTotal.textContent = figures.length;
+
+      // Slide transition between images. dir = 1 (NEXT) means motion
+      // goes left-to-right: old image slides off to the RIGHT, new
+      // enters from the LEFT. dir = -1 (PREV) is the reverse. dir = 0
+      // (first open) skips slide-out and just fades in centered.
+      function show(idx, dir) {
+        currentIdx = (idx + figures.length) % figures.length;
+        var fig = figures[currentIdx];
+        var img = fig.querySelector('img');
+        var d = dir || 0;
+        // NEXT: old slides LEFT, new enters from RIGHT (standard).
+        var outX = d > 0 ? '-40%' : d < 0 ? '40%' : '0';
+        var inStartX = d > 0 ? '40%' : d < 0 ? '-40%' : '0';
+
+        function swap() {
+          lbImg.src = img.src;
+          lbImg.alt = img.alt || '';
+          lbCurrent.textContent = currentIdx + 1;
+          // Jump to start position with NO transition so it doesn't
+          // animate from the old position.
+          lbImg.style.transition = 'none';
+          lbImg.style.transform = 'translateX(' + inStartX + ')';
+          lbImg.style.opacity = '0';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              // Restore transition (empty string falls back to CSS) +
+              // animate to center.
+              lbImg.style.transition = '';
+              lbImg.style.transform = 'translateX(0)';
+              lbImg.style.opacity = '1';
+            });
+          });
+        }
+
+        // First show on open: no prior image, just fade in centered.
+        if (!lbImg.src || d === 0) {
+          swap();
+        } else {
+          // Slide current out + wait for transition before swap.
+          lbImg.style.transform = 'translateX(' + outX + ')';
+          lbImg.style.opacity = '0';
+          setTimeout(swap, 320);
+        }
+      }
+      function open(idx) {
+        lastFocused = document.activeElement;
+        show(idx);
+        lb.hidden = false;
+        requestAnimationFrame(function () { lb.classList.add('is-open'); });
+        document.body.classList.add('lb-locked');
+        closeBtn.focus();
+      }
+      function close() {
+        lb.classList.remove('is-open');
+        document.body.classList.remove('lb-locked');
+        setTimeout(function () { lb.hidden = true; lbImg.src = ''; }, 250);
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      figures.forEach(function (fig, i) {
+        fig.addEventListener('click', function () { open(i); });
+        fig.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); }
+        });
+      });
+      closeBtn.addEventListener('click', close);
+      // Direction: 1 = NEXT, -1 = PREV. show() reads this to slide the
+      // old image off in one direction and the new one in from the other.
+      prevBtn.addEventListener('click', function () { show(currentIdx - 1, -1); });
+      nextBtn.addEventListener('click', function () { show(currentIdx + 1, 1); });
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb || e.target.classList.contains('lb-image-wrap')) close();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(currentIdx - 1, -1);
+        else if (e.key === 'ArrowRight') show(currentIdx + 1, 1);
+      });
+      var touchStartX = 0;
+      lb.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          var step = dx < 0 ? 1 : -1;
+          show(currentIdx + step, step);
+        }
+      }, { passive: true });
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the gallery.</p>
+</div>
+
+</body>
+</html>

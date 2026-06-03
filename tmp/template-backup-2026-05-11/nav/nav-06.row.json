@@ -1,0 +1,129 @@
+{
+  "id": "da6cb560-d0b1-4be1-9f84-e6a1fa2ef9f3",
+  "category": "nav",
+  "name": "nav-06",
+  "html_path": "nav/nav-06.html",
+  "css_path": "nav/nav-06.css",
+  "preview_image": null,
+  "placeholder_schema": {
+    "nav_logo": {
+      "type": "image",
+      "order": 3,
+      "default_src": "https://placehold.co/360x88/e5e7eb/6b7280?text=LOGO&font=lato"
+    },
+    "nav_phone": {
+      "type": "link",
+      "order": 5,
+      "default": "0900 000 000",
+      "default_href": "tel:+421900000000"
+    },
+    "nav_links_after": {
+      "max": 5,
+      "min": 1,
+      "type": "repeater",
+      "order": 2,
+      "item_schema": {
+        "label": {
+          "type": "link",
+          "order": 0,
+          "default": "Galéria",
+          "default_href": "#gallery"
+        }
+      },
+      "default_items": [
+        {
+          "label": {
+            "href": "#gallery",
+            "label": "Galéria"
+          }
+        },
+        {
+          "label": {
+            "href": "#contact",
+            "label": "Kontakt"
+          }
+        }
+      ]
+    },
+    "nav_links_before": {
+      "max": 5,
+      "min": 1,
+      "type": "repeater",
+      "order": 0,
+      "item_schema": {
+        "label": {
+          "type": "link",
+          "order": 0,
+          "default": "Domov",
+          "default_href": "#hero"
+        }
+      },
+      "default_items": [
+        {
+          "label": {
+            "href": "#hero",
+            "label": "Domov"
+          }
+        },
+        {
+          "label": {
+            "href": "#about",
+            "label": "O nás"
+          }
+        }
+      ]
+    },
+    "nav_link_services": {
+      "type": "link",
+      "order": 4,
+      "default": "Služby",
+      "default_href": "#services"
+    },
+    "nav_services_dropdown": {
+      "max": 10,
+      "min": 1,
+      "type": "repeater",
+      "order": 1,
+      "item_schema": {
+        "label": {
+          "type": "link",
+          "order": 0,
+          "default": "Služba 1",
+          "default_href": "#service-1"
+        }
+      },
+      "default_items": [
+        {
+          "label": {
+            "href": "#service-1",
+            "label": "Služba 1"
+          }
+        },
+        {
+          "label": {
+            "href": "#service-2",
+            "label": "Služba 2"
+          }
+        },
+        {
+          "label": {
+            "href": "#service-3",
+            "label": "Služba 3"
+          }
+        },
+        {
+          "label": {
+            "href": "#service-4",
+            "label": "Služba 4"
+          }
+        }
+      ]
+    }
+  },
+  "tags": [],
+  "industry_hints": [],
+  "is_published": true,
+  "version": 2,
+  "created_at": "2026-05-11T03:15:31.532699+00:00",
+  "updated_at": "2026-05-11T04:18:48.685538+00:00"
+}

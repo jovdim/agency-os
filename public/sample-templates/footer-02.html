@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-02 — Centered brand identity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* footer-02: centered modern, dark theme. Logo on top, short tagline
+       beneath, a thin divider, then a single horizontal row of utility
+       links, and finally the copyright + agency credit row pinned to the
+       bottom. Dark --color-secondary panel matching footer-01's tone (per
+       Peter — all new footers should share footer-01's dark theme even
+       though their layouts differ).
+
+       Replaces the earlier "minimal one-line" footer-02 (deleted same
+       day per Peter — too thin to feel like a real footer). */
+    .footer-centered {
+      background: var(--color-secondary);
+      padding: 64px 24px 36px;
+      text-align: center;
+      color: var(--color-text-on-dark);
+      font-family: var(--font-body);
+    }
+    .footer-centered__inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .footer-centered__logo {
+      height: 44px;
+      width: auto;
+      max-width: 220px;
+      object-fit: contain;
+      margin: 0 auto 18px;
+      display: block;
+    }
+    .footer-centered__tagline {
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: var(--color-text-on-dark);
+      opacity: 0.75;
+      margin: 0 0 36px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .footer-centered__links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .footer-centered__links a {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-light);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 2px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .footer-centered__links a:hover {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .footer-centered__legal {
+      margin-top: 28px;
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.62);
+    }
+    .footer-centered__legal p { margin: 0; }
+    .footer-centered__company {
+      font-family: var(--font-heading);
+      font-weight: 500;
+      color: var(--color-text-on-dark);
+      opacity: 0.92;
+      margin: 0 0 6px;
+    }
+    .footer-centered__legal .legal-sep {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      vertical-align: middle;
+      margin: 0 10px 2px;
+      opacity: 0.5;
+    }
+    .footer-centered__bottom {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-centered__bottom a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-centered__bottom a:hover {
+      color: var(--color-primary);
+    }
+    /* ── Socials ── (Peter 2026-05-13: every footer carries
+       Facebook + Instagram via the hidden_fields toggle.) */
+    .footer-centered__socials {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .footer-centered__social {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-centered__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-centered__social svg { width: 16px; height: 16px; }
+
+    @media (max-width: 600px) {
+      .footer-centered { padding: 48px 16px 28px; }
+      .footer-centered__links { gap: 20px; }
+      .footer-centered__bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: footer-02</strong> &nbsp; · &nbsp; Centered brand identity — logo, tagline, utility links row, copyright + agency credit. Light theme. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-02
+  LAYOUT:   Centered light footer. Logo on top, short tagline beneath,
+            divider, then a horizontal row of utility links (repeater).
+            Bottom row: copyright on the left, agency credit on the right.
+            Mobile (≤600px): bottom row stacks centered.
+  CONTENT:  logo + tagline + utility links repeater + legal block
+            (company name + address + Company No. + Tax ID) + copyright + agency credit.
+  EDITABLE: 9 fields — footer_logo (image) + footer_description +
+            footer_links (repeater 1..5) + footer_company_name +
+            footer_address + footer_ico + footer_dic + footer_copyright +
+            agency_credit (link).
+  THEME:    Section bg = --color-bg with --color-border hairlines top, between
+            sections, and above bottom row. Tagline = --color-text-light.
+            Link labels = --color-dark; bottom row labels = --color-text-light.
+  USE FOR:  Most general-purpose modern footer — calm, complete, works on
+            light themes. Different from footer-01 (heavy 4-col dark),
+            footer-03 (2-col split), footer-04 (editorial magazine CTA),
+            footer-05 (dark phone-prominent).
+-->
+<footer id="paticka" class="footer-centered fade-up">
+  <div class="footer-centered__inner">
+    <img class="footer-centered__logo" data-field="footer_logo" src="https://placehold.co/240x60/e7e5e4/1c1917?text=LOGO&font=lato" alt="Logo">
+    <p class="footer-centered__tagline" data-field="footer_description">Write a short sentence about your company here, what you do and who you serve. One sentence is enough.</p>
+
+    <nav class="footer-centered__links" aria-label="Footer links" data-repeat="footer_links" data-min="1" data-max="5">
+      <span style="display:contents"><a data-field="link" data-type="link" href="#domov">Home</a></span>
+      <span style="display:contents"><a data-field="link" data-type="link" href="#sluzby">Services</a></span>
+      <span style="display:contents"><a data-field="link" data-type="link" href="#kontakt">Contact</a></span>
+      <span style="display:contents"><a data-field="link" data-type="link" href="privacy.html">Privacy policy</a></span>
+    </nav>
+
+    <div class="footer-centered__legal">
+      <p class="footer-centered__company" data-field="footer_company_name">Your Company Ltd.</p>
+      <p data-field="footer_address">1 Main Street, 010 01 City</p>
+      <p>
+        <span data-field="footer_ico">Company No.: xxxxxxxx</span>
+        <span class="legal-sep" aria-hidden="true"></span>
+        <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
+      </p>
+    </div>
+
+    <div class="footer-centered__socials">
+      <a class="footer-centered__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+      </a>
+      <a class="footer-centered__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
+
+    <div class="footer-centered__bottom">
+      <p data-field="footer_copyright">© 2026 Your Company. All rights reserved.</p>
+      <p>Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+    </div>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+</body>
+</html>

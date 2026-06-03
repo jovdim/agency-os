@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-03 — Two-column compact split</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* footer-03: two-column compact split, dark theme. Left half — brand
+       identity: logo + short tagline + plain address. Right half —
+       contact (phone, email) + utility links repeater stacked underneath.
+       Bottom row: copyright on the left, agency credit on the right.
+       Dark --color-secondary panel matching footer-01's tone (per Peter —
+       all new footers share footer-01's dark theme).
+
+       Less crowded than footer-01's 4-column corporate look but more
+       substantive than footer-02's centered. */
+    .footer-split {
+      background: var(--color-secondary);
+      padding: 64px 0 32px;
+      color: var(--color-text-on-dark);
+      font-family: var(--font-body);
+    }
+    .footer-split__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .footer-split__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 56px;
+      padding-bottom: 40px;
+    }
+    .footer-split__brand {
+      max-width: 380px;
+    }
+    .footer-split__logo {
+      height: 40px;
+      width: auto;
+      max-width: 200px;
+      object-fit: contain;
+      object-position: left center;
+      margin: 0 0 16px;
+      display: block;
+    }
+    .footer-split__tagline {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--color-text-on-dark);
+      opacity: 0.75;
+      margin: 0 0 24px;
+    }
+    .footer-split__address {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--color-text-on-dark);
+      opacity: 0.7;
+      margin: 0;
+    }
+    .footer-split__legal {
+      margin: 10px 0 0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--color-text-on-dark);
+      opacity: 0.55;
+    }
+    .footer-split__legal span { display: block; }
+    .footer-split__right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .footer-split__heading {
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin: 0 0 14px;
+    }
+    .footer-split__contact {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .footer-split__contact a {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--color-light);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      width: fit-content;
+    }
+    .footer-split__contact a:hover {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .footer-split__links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .footer-split__links li { margin: 0; }
+    .footer-split__links a {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--color-light);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .footer-split__links a:hover {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    /* Socials (FB + IG via hidden_fields toggle) */
+    .footer-split__socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .footer-split__social {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-split__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-split__social svg { width: 16px; height: 16px; }
+
+    .footer-split__bottom {
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-split__bottom p { margin: 0; }
+    .footer-split__bottom a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-split__bottom a:hover {
+      color: var(--color-primary);
+    }
+    @media (max-width: 760px) {
+      .footer-split__grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .footer-split__right { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .footer-split__right { grid-template-columns: 1fr; gap: 28px; }
+      .footer-split__bottom {
+        flex-direction: column;
+        text-align: left;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: footer-03</strong> &nbsp; · &nbsp; 2-column compact — brand+contact left, contact details + utility links right. Light theme. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-03
+  LAYOUT:   2-column light footer. Left (50%): logo + tagline + address.
+            Right (50%): a 2-col sub-grid with contact (phone + email)
+            and utility links stacked. Bottom row: copyright + agency
+            credit. Mobile (≤760px): main grid stacks; right's sub-grid
+            stays 2-col until ≤480px.
+  CONTENT:  logo + tagline + address + Company No. + Tax ID + phone + email +
+            utility links repeater + copyright + agency credit.
+  EDITABLE: 10 fields — footer_logo (image) + footer_description +
+            footer_address + footer_ico + footer_dic + footer_phone (link) +
+            footer_email (link) + footer_links (repeater 2..6) +
+            footer_copyright + agency_credit (link).
+  THEME:    Section bg = --color-bg. Hairlines = --color-border. Tagline +
+            address = --color-text-light. Contact + links = --color-dark
+            with hover underline.
+  USE FOR:  Service businesses with a balanced contact + navigation footer.
+            Different from footer-01 (heavier 4-col), footer-02 (centered),
+            footer-04 (editorial magazine), footer-05 (dark phone CTA).
+-->
+<footer id="paticka" class="footer-split fade-up">
+  <div class="footer-split__inner">
+    <div class="footer-split__grid">
+      <div class="footer-split__brand">
+        <img class="footer-split__logo" data-field="footer_logo" src="https://placehold.co/200x60/e7e5e4/1c1917?text=LOGO&font=lato" alt="Logo">
+        <p class="footer-split__tagline" data-field="footer_description">Write a short description of your company here, what you do and what makes you different.</p>
+        <p class="footer-split__address" data-field="footer_address">1 Main Street, 010 01 City</p>
+        <p class="footer-split__legal">
+          <span data-field="footer_ico">Company No.: xxxxxxxx</span>
+          <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
+        </p>
+        <div class="footer-split__socials">
+          <a class="footer-split__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+          </a>
+          <a class="footer-split__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-split__right">
+        <div>
+          <p class="footer-split__heading">Contact</p>
+          <div class="footer-split__contact">
+            <a data-field="footer_phone" data-type="link" href="">+1 (555) 000-0000</a>
+            <a data-field="footer_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-split__heading">Site</p>
+          <ul class="footer-split__links" data-repeat="footer_links" data-min="2" data-max="6">
+            <li><a data-field="link" data-type="link" href="#o-nas">About us</a></li>
+            <li><a data-field="link" data-type="link" href="#sluzby">Services</a></li>
+            <li><a data-field="link" data-type="link" href="#galeria">Gallery</a></li>
+            <li><a data-field="link" data-type="link" href="#kontakt">Contact</a></li>
+            <li><a data-field="link" data-type="link" href="privacy.html">Privacy policy</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-split__bottom">
+      <p data-field="footer_copyright">© 2026 Your Company. All rights reserved.</p>
+      <p>Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+    </div>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+</body>
+</html>

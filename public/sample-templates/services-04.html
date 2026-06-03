@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-04 — Magazine featured + 3-up supporting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-04: magazine "featured + supporting" hierarchy. First
+       service in the repeater is the flagship — rendered as a big
+       2-col block (substantial image on the left, big title + long
+       description + filled CTA on the right). Remaining services
+       become a 3-up row of smaller cards underneath. Matches how
+       tradesmen actually think about their work: one main service
+       they're known for, a few supporting ones. */
+
+    .services-04 .container { max-width: 1200px; }
+
+    .services-04 .head {
+      max-width: 760px;
+      margin: 0 auto 64px;
+      text-align: center;
+    }
+    /* Hide the eyebrow when empty so the template runs cleanly without
+       a "SERVICES" label above the title, matches services-01/03/05. */
+    .services-04 .head .eyebrow:empty { display: none; }
+    /* Same primary-color underline accent as the rest of the services
+       family so the catalog reads as a coordinated set. */
+    .services-04 .head h2 {
+      position: relative;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+    }
+    .services-04 .head h2::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+    .services-04 .head p {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    /* Layout grid. Three columns by default; the first child gets
+       `grid-column: 1 / -1` to claim the full row as the featured
+       block. grid-auto-flow stays at the default `row` — services
+       2, 3, 4 flow naturally into the three columns of the next
+       row. With 5+ items they wrap into more rows of 3. */
+    .services-04 .layout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 44px 32px;
+    }
+
+    /* First card in the repeater claims the full row. Descendant (no
+       `>`) so the selector still resolves when the card is nested
+       inside a `[data-repeat]` shell — even though that shell has
+       `display:contents` and disappears from layout, the DOM tree
+       still has the card as a grandchild of `.layout`, so the
+       direct-child combinator wouldn't match. parser.ts strips its
+       `[data-sk-repeater-wrap]` scaffolding before emit, so there's
+       no per-card wrapper to worry about — just .card siblings
+       inside `[data-repeat]`. */
+    .services-04 .layout .card:first-child {
+      grid-column: 1 / -1;
+    }
+
+    /* ─── Default (small) card ─────────────────────────────────────
+       Used by every service EXCEPT the first. Hairline border + soft
+       rounded corners give the supporting cards proper card chrome —
+       without it, the image-on-top + text-below layout looked like
+       loose floating content. Image sits flush with the card edges
+       (overflow: hidden clips it to the radius); .card-body holds
+       all the internal padding. Hover: border tints toward primary +
+       a small lift shadow appears, mirroring services-02. */
+    .services-04 .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg);
+      /* Stronger hairline than the global --color-border token (which
+         is bg-80%/text-20% — too faint against a pure-white card).
+         28% text mix gives a clearly visible card edge on any theme
+         while staying subtle enough not to feel boxy. */
+      border: 1px solid color-mix(in srgb, var(--color-text) 28%, transparent);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .services-04 .card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .services-04 .card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+    .services-04 .card-body {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .services-04 .card-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+      margin: 0 0 10px;
+      color: var(--color-text);
+    }
+    .services-04 .card-description {
+      color: var(--color-text-light);
+      font-size: 0.96rem;
+      line-height: 1.65;
+      margin: 0 0 14px;
+    }
+    .services-04 .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      text-decoration: none;
+      width: fit-content;
+      margin-top: auto;
+    }
+    .services-04 .card-cta::after {
+      content: "→";
+      transition: transform var(--transition);
+    }
+    .services-04 .card-cta:hover::after { transform: translateX(4px); }
+
+    /* ─── Featured (first) card ────────────────────────────────────
+       2-col image-left layout. Bigger image (with stronger shadow),
+       larger title (clamp 1.6-2.2rem), longer-friendly description,
+       and a filled-button CTA instead of the small arrow link. The
+       featured block also gets a touch of bottom margin so it visually
+       separates from the 3-up row that follows. Descendant selectors
+       (no `>`) for the same reason as above — `.card` is nested
+       inside the display:contents `[data-repeat]` shell. */
+    .services-04 .layout .card:first-child {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 56px;
+      align-items: center;
+      margin-bottom: 24px;
+      /* Featured doesn't get the bordered-card chrome — it's a
+         hero-style block, the border would feel cramped on a row
+         that big. Reset the default-card chrome here. */
+      border: none;
+      background: transparent;
+      overflow: visible;
+    }
+    .services-04 .layout .card:first-child:hover {
+      box-shadow: none;
+      transform: none;
+    }
+    .services-04 .layout .card:first-child .card-img {
+      margin-bottom: 0;
+      aspect-ratio: 4/3;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+    }
+    /* Featured's .card-body sits in its own grid column — no internal
+       padding needed because the 56px grid gap handles spacing from
+       the image. */
+    .services-04 .layout .card:first-child .card-body {
+      padding: 0;
+    }
+    .services-04 .layout .card:first-child .card-title {
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+    .services-04 .layout .card:first-child .card-description {
+      font-size: 1.04rem;
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+    /* Featured CTA promoted to a filled button (matches .btn-primary).
+       Stronger visual weight than the small arrow link — this is the
+       primary call to action on the section. */
+    .services-04 .layout .card:first-child .card-cta {
+      padding: 12px 22px;
+      border-radius: var(--border-radius);
+      background: var(--color-primary);
+      color: var(--color-bg);
+      font-size: 0.94rem;
+      margin-top: 0;
+      align-self: start;
+      transition: opacity var(--transition);
+    }
+    .services-04 .layout .card:first-child .card-cta:hover {
+      opacity: 0.9;
+    }
+    /* Re-disable the hover-translate on the arrow — the filled button
+       version already has its own opacity hover. */
+    .services-04 .layout .card:first-child .card-cta:hover::after {
+      transform: none;
+    }
+
+    /* ─── Mobile ───────────────────────────────────────────────────
+       Drop to a single column. Featured card collapses to image-top
+       stacked like the small cards, but keeps its bigger title size
+       so the hierarchy still reads. */
+    @media (max-width: 800px) {
+      .services-04 .layout {
+        grid-template-columns: 1fr;
+        gap: 44px;
+      }
+      .services-04 .layout .card:first-child {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-bottom: 0;
+      }
+      .services-04 .layout .card:first-child .card-img {
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-04</strong> &nbsp; · &nbsp; Magazine layout — first service rendered big (featured), remaining services as a 3-up supporting row. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-04
+  LAYOUT:   "Featured + 3-up supporting" hierarchy. First repeater
+            item gets the flagship treatment: 2-col image-left block
+            with a big title + longer description + filled CTA.
+            Remaining items render as smaller image-top cards in a
+            3-up row below. Default content = 4 services (1 featured
+            + 3 supporting). 5+ services flow into additional rows.
+            Mobile collapses everything to a single stacked column.
+  CONTENT:  eyebrow + headline + subheadline, then a repeater of
+            services. Each item = { image, title, description, link }.
+            Same schema as services-01/03/05 so authors can swap
+            between variants without re-entering content.
+  EDITABLE: 3 top-level + 1 repeater (1..99, default 4).
+  THEME:    Underline accent + featured CTA use --color-primary.
+            Supporting cards use the same arrow CTA style as
+            services-05 for visual continuity.
+-->
+<section id="sluzby" class="services-04 fade-up">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-field="services_eyebrow"></span>
+      <h2 data-field="services_headline">Our services</h2>
+      <p data-field="services_subheadline" data-type="richtext">Write a short subtitle here, sum up in one sentence what you offer and what sets you apart (speed, quality, price).</p>
+    </div>
+
+    <!--
+      Services repeater. The renderer wraps each child in
+      <div data-sk-repeater-wrap> at publish time — `.layout`'s
+      `:first-child` selector targets that wrap on publish and the
+      .card directly in the composer iframe (where `display:contents`
+      hides the data-repeat node from layout). data-item-id-source on
+      every card stamps a slugified anchor id from the title at render
+      time.
+    -->
+    <div class="layout">
+      <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+        <article class="card" data-item-id-source="title">
+          <img class="card-img" data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Featured+Service&font=lato" alt="" width="900" height="675" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title" data-field="title">Main service</h3>
+            <p class="card-description" data-field="description" data-type="richtext">Write a description of the main service here. 3 to 4 sentences about what you do within this service, who it is for, what the result is for the customer and why they should choose you. This is the main service, so you can afford a slightly longer text.</p>
+            <a class="card-cta" data-field="link" data-type="link" href="#kontakt">Call us</a>
+          </div>
+        </article>
+        <article class="card">
+          <img class="card-img" data-field="image" src="https://placehold.co/640x480/d6d3d1/57534e?text=Service+2&font=lato" alt="" width="640" height="480" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title" data-field="title">Additional service 1</h3>
+            <p class="card-description" data-field="description" data-type="richtext">Write a short description of the service here. 1 to 2 sentences, what you do and who it helps.</p>
+            <a class="card-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+          </div>
+        </article>
+        <article class="card">
+          <img class="card-img" data-field="image" src="https://placehold.co/640x480/d6d3d1/57534e?text=Service+3&font=lato" alt="" width="640" height="480" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title" data-field="title">Additional service 2</h3>
+            <p class="card-description" data-field="description" data-type="richtext">Write a short description of the service here. 1 to 2 sentences about what you do within this service.</p>
+            <a class="card-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+          </div>
+        </article>
+        <article class="card">
+          <img class="card-img" data-field="image" src="https://placehold.co/640x480/d6d3d1/57534e?text=Service+4&font=lato" alt="" width="640" height="480" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title" data-field="title">Additional service 3</h3>
+            <p class="card-description" data-field="description" data-type="richtext">Write a short description of the service here. 1 to 2 sentences, what problem you solve.</p>
+            <a class="card-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+          </div>
+        </article>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

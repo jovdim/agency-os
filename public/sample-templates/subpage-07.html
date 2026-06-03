@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-07 — Process timeline (numbered steps)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-07 — vertical process timeline. A connecting rail runs down
+       the left; each step has a numbered node (auto via CSS counter) and
+       a card. A final "done" node closes the timeline. Adapted from the
+       pilimestromy "Ako to prebieha" section. */
+    .subpage-process { background: var(--color-bg); padding: var(--section-padding, 80px 0); counter-reset: step; }
+    .subpage-process .head { max-width: 760px; margin: 0 auto 56px; text-align: center; }
+    .subpage-process .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-body); font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 55%, var(--color-bg) 45%); margin-bottom: 16px;
+    }
+    .subpage-process .eyebrow::before {
+      content: ""; display: block; width: 15px; height: 15px;
+      background: var(--color-primary); flex-shrink: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .subpage-process .head h2 {
+      font-family: var(--font-heading); font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+      font-weight: 700; line-height: 1.15; color: var(--color-text); margin: 0; position: relative; padding-bottom: 18px;
+    }
+    .subpage-process .head h2::after { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 56px; height: 3px; background: var(--color-primary); border-radius: 2px; }
+
+    .subpage-process .timeline { position: relative; max-width: 760px; margin: 0 auto; padding: 0 16px; }
+    .subpage-process .timeline::before {
+      content: ""; position: absolute; left: 63px; top: 8px; bottom: 8px; width: 2px;
+      background: linear-gradient(to bottom, var(--color-primary), color-mix(in srgb, var(--color-primary) 30%, transparent), transparent);
+    }
+    .subpage-process .step { position: relative; counter-increment: step; padding: 0 0 28px 96px; }
+    .subpage-process .step:last-of-type { padding-bottom: 0; }
+    .subpage-process .step .node {
+      position: absolute; left: 16px; top: 0; width: 64px; height: 64px; border-radius: 999px;
+      display: grid; place-items: center; background: var(--color-bg);
+      border: 3px solid var(--color-primary); color: var(--color-primary);
+      font-family: var(--font-heading); font-weight: 800; font-size: 1.25rem; z-index: 1;
+    }
+    .subpage-process .step .node::before { content: counter(step, decimal-leading-zero); }
+    .subpage-process .step .card {
+      border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-bg-alt);
+      padding: 22px 24px; transition: border-color var(--transition);
+    }
+    .subpage-process .step:hover .card { border-color: var(--color-primary); }
+    .subpage-process .step .kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-light); margin: 0 0 6px; }
+    .subpage-process .step h3 { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--color-text); margin: 0; }
+    .subpage-process .step .body { margin: 10px 0 0; font-size: 1rem; line-height: 1.6; color: var(--color-text-light); }
+    .subpage-process .step .body p { margin: 0 0 0.6em; }
+    .subpage-process .step .body p:last-child { margin-bottom: 0; }
+
+    .subpage-process .finish { position: relative; padding: 0 0 0 96px; margin-top: 28px; }
+    .subpage-process .finish .node {
+      position: absolute; left: 16px; top: 0; width: 64px; height: 64px; border-radius: 999px;
+      display: grid; place-items: center; background: var(--color-primary); color: #fff; z-index: 1;
+    }
+    .subpage-process .finish .node svg { width: 28px; height: 28px; }
+    .subpage-process .finish .kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-primary); margin: 8px 0 4px; }
+    .subpage-process .finish .label { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--color-text); margin: 0; }
+
+    @media (max-width: 600px) {
+      .subpage-process .timeline::before { left: 51px; }
+      .subpage-process .step, .subpage-process .finish { padding-left: 76px; }
+      .subpage-process .step .node, .subpage-process .finish .node { left: 8px; width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-07</strong> &nbsp; · &nbsp; Vertical numbered timeline of process steps + a final "done" node. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-07
+  LAYOUT:   Centered heading, then a vertical timeline. Each step = a
+            numbered node on a connecting rail + a card (kicker, title,
+            body). A final accent node closes the sequence.
+  CONTENT:  Eyebrow, heading, repeating steps (title + body), and an
+            editable "done" label.
+  EDITABLE: eyebrow (text), heading (text), steps repeater (title, body),
+            finish_kicker (text), finish_label (text).
+  THEME:    --color-primary (rail, nodes), --color-bg-alt (cards),
+            --font-heading/body. Numbers via CSS counter.
+  JS:       none.
+-->
+<section id="postup" class="subpage-process">
+  <div class="head fade-up">
+    <span class="eyebrow" data-field="eyebrow">How we work together</span>
+    <h2 data-field="heading">How it works</h2>
+  </div>
+  <div class="timeline fade-up">
+    <div data-repeat="steps" data-min="1" data-max="99" style="display:contents">
+      <div class="step" data-item-id-source="title">
+        <span class="node"></span>
+        <div class="card">
+          <p class="kicker">Step</p>
+          <h3 data-field="title">First step</h3>
+          <div class="body" data-field="body" data-type="richtext"><p>Write here what happens in the first step. Short and clear, from the customer's point of view.</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="node"></span>
+        <div class="card">
+          <p class="kicker">Step</p>
+          <h3 data-field="title">Second step</h3>
+          <div class="body" data-field="body" data-type="richtext"><p>Write the description of the second step here.</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="node"></span>
+        <div class="card">
+          <p class="kicker">Step</p>
+          <h3 data-field="title">Third step</h3>
+          <div class="body" data-field="body" data-type="richtext"><p>Write the description of the third step here.</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="node"></span>
+        <div class="card">
+          <p class="kicker">Step</p>
+          <h3 data-field="title">Fourth step</h3>
+          <div class="body" data-field="body" data-type="richtext"><p>Write the description of the fourth step here.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="finish">
+      <span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <p class="kicker" data-field="finish_kicker">Done</p>
+      <p class="label" data-field="finish_label">Work completed, everything cleaned up.</p>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

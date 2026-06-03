@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>scroll-toggle — Bi-directional scroll button (down in hero, up everywhere else)</title>
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* scroll-toggle: floating circle that flips its meaning based on
+       whether the hero section is in view.
+         · Hero visible  → down-arrow, click scrolls to BOTTOM of page
+         · Hero gone     → up-arrow,   click scrolls to TOP of page
+       Always visible (unlike scroll-top which fades in after 400px).
+       The visitor never has to think "where am I scrolled to" — the
+       icon shows them what's about to happen. Don't combine with
+       scroll-top on the same page; they fight for the same slot.
+
+       Same compact 40px scale + bottom-right anchor + theme-tracking
+       colors as the rest of the widget family (whatsapp / phone /
+       scroll-top), so all the floaters look like one set. */
+    .widget-scrolltoggle {
+      position: fixed;
+      bottom: 72px; /* JS recomputes based on sibling widgets */
+      right: 24px;
+      z-index: 9988;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      color: var(--color-light);
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+      /* No opacity-0 default — this widget is always visible. The mode
+         classes only swap WHICH arrow is showing. */
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .widget-scrolltoggle:hover {
+      background: var(--color-primary);
+    }
+    .widget-scrolltoggle:active {
+      transform: scale(0.94);
+    }
+    /* Two SVGs inside the button — CSS hides the wrong one per mode.
+       We render both into the DOM (rather than swapping innerHTML at
+       toggle time) so the transition is GPU-cheap and accessible:
+       screen readers stay on the same element, aria-label flips. */
+    .widget-scrolltoggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      position: absolute;
+      transition: opacity 0.18s ease;
+    }
+    /* Down arrow visible by default — until JS marks the button as
+       past-hero, the visitor is in the hero, so DOWN is the meaningful
+       action. Avoids a "flash of wrong arrow" before JS boots. */
+    .widget-scrolltoggle .arrow-down { opacity: 1; }
+    .widget-scrolltoggle .arrow-up   { opacity: 0; }
+    .widget-scrolltoggle.mode-up .arrow-down { opacity: 0; }
+    .widget-scrolltoggle.mode-up .arrow-up   { opacity: 1; }
+    @media (max-width: 600px) {
+      .widget-scrolltoggle {
+        bottom: 64px;
+        right: 16px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .widget-scrolltoggle,
+      .widget-scrolltoggle svg {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: scroll-toggle</strong> &nbsp; · &nbsp; In the hero → down-arrow scrolls to bottom. Past the hero → up-arrow scrolls to top. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- Fake hero so the preview can demo the mode flip -->
+<div id="domov" style="min-height:100vh;background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:1.5rem">
+  Fake hero — scroll down to see the arrow flip
+</div>
+<div style="min-height:1400px;background:var(--color-bg-alt);padding:40px 24px;text-align:center;color:#57534e;font-family:'DM Sans',sans-serif">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Past the hero now — arrow points UP</p>
+  <p style="margin:0;font-size:0.9rem">Click it to glide back to top.</p>
+</div>
+
+<!-- SECTION:widgets:start -->
+<!--
+  TEMPLATE: scroll-toggle
+  LAYOUT:   Fixed-position circular button anchored bottom-right. Two
+            chevron SVGs stacked inside the button; CSS swaps which
+            one shows based on the .mode-up class set by JS.
+  CONTENT:  Down chevron (default) or up chevron (past-hero). Both
+            inherit currentColor so the icon flips automatically with
+            the theme's --color-light.
+  EDITABLE: 2 fields —
+              · widget_label_down (text) — aria-label + tooltip while
+                in the hero. Default: "Scroll down".
+              · widget_label_up   (text) — aria-label + tooltip after
+                the hero. Default: "Back to top".
+            Both flip into the button's aria-label / title via the
+            mode-aware MutationObserver below, so screen-reader users
+            hear the right action per scroll position too.
+  THEME:    Same palette as scroll-top — background --color-secondary,
+            hover --color-primary, icon currentColor = --color-light.
+  POSITION: Dynamic — JS reads the page for sibling widgets and pins
+            this widget to ALWAYS be at the top of the bottom-RIGHT
+            stack with no gap (slot height = 40px button + 8px gap):
+              · No siblings           → bottom 24px (16px mobile)
+              · WhatsApp OR phone     → bottom 72px (64px mobile)
+              · WhatsApp AND phone    → bottom 120px (112px mobile)
+            Don't combine with scroll-top — both want the same slot.
+  JS:       Self-contained IIFE. Uses IntersectionObserver on the
+            first section that looks like a hero (id="domov" or first
+            <section>); falls back to a scrollY threshold (~80vh)
+            when the API is missing. Toggles .mode-up when the hero
+            leaves the viewport. Click dispatches scrollTo top or
+            bottom based on current mode. Respects prefers-reduced-
+            motion.
+-->
+<button id="widget-scrolltoggle" class="widget-scrolltoggle" type="button" aria-label="Scroll down" title="Scroll down">
+  <svg class="arrow-down" viewBox="0 0 24 24" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+  <svg class="arrow-up" viewBox="0 0 24 24" aria-hidden="true">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+  <span data-field="widget_label_down" hidden>Scroll down</span>
+  <span data-field="widget_label_up" hidden>Back to top</span>
+</button>
+
+<script>
+  (function () {
+    var btn = document.getElementById('widget-scrolltoggle');
+    if (!btn || btn.dataset.skInit) return;
+    btn.dataset.skInit = '1';
+
+    // Read both labels from the hidden spans + mirror onto aria-label
+    // when the mode changes. MutationObserver re-reads when the
+    // composer's text-patch hot-reload mutates either label.
+    function readLabel(name) {
+      var el = btn.querySelector('[data-field="' + name + '"]');
+      return el ? (el.textContent || '').trim() : '';
+    }
+    function syncLabel() {
+      var isUp = btn.classList.contains('mode-up');
+      var label = isUp
+        ? readLabel('widget_label_up') || 'Back to top'
+        : readLabel('widget_label_down') || 'Scroll down';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    }
+    syncLabel();
+    if (typeof MutationObserver !== 'undefined') {
+      ['widget_label_down', 'widget_label_up'].forEach(function (n) {
+        var el = btn.querySelector('[data-field="' + n + '"]');
+        if (el) {
+          new MutationObserver(syncLabel).observe(el, {
+            characterData: true,
+            childList: true,
+            subtree: true,
+          });
+        }
+      });
+    }
+
+    // ── Stack-aware positioning (mirrors scroll-top.html) ──
+    function reposition() {
+      var isMobile =
+        window.matchMedia &&
+        window.matchMedia('(max-width: 600px)').matches;
+      var base = isMobile ? 16 : 24;
+      var slot = 48;
+      var hasWhatsapp = !!document.querySelector('.widget-whatsapp');
+      var hasPhone = !!document.querySelector('.widget-phone');
+      var below = (hasWhatsapp ? 1 : 0) + (hasPhone ? 1 : 0);
+      btn.style.bottom = base + below * slot + 'px';
+    }
+    reposition();
+    setTimeout(reposition, 50);
+    setTimeout(reposition, 250);
+    window.addEventListener('resize', reposition);
+
+    // ── Mode detection: hero in view → mode-down, else mode-up ──
+    // Resolve the "hero" element with a graceful cascade:
+    //   1. Explicit id="domov" (set on every hero-XX template by default
+    //      after the anchor migration); accept legacy id="hero"
+    //      too so widget-equipped sites that haven't been republished
+    //      yet keep working.
+    //   2. First <section> on the page (in case the author renamed it).
+    //   3. Null → use a scroll-position fallback.
+    function findHero() {
+      return (
+        document.getElementById('domov') ||
+        document.getElementById('hero') ||
+        document.querySelector('main section, body > section') ||
+        null
+      );
+    }
+
+    function setMode(isUp) {
+      if (btn.classList.contains('mode-up') === isUp) return;
+      btn.classList.toggle('mode-up', isUp);
+      syncLabel();
+    }
+
+    var hero = findHero();
+    if (hero && 'IntersectionObserver' in window) {
+      // Hero is considered "in view" while at least 20% of its area
+      // intersects the viewport. Threshold steps keep the toggle from
+      // chattering near the boundary.
+      var io = new IntersectionObserver(function (entries) {
+        var e = entries[0];
+        var inHero = e.isIntersecting && e.intersectionRatio > 0.2;
+        setMode(!inHero);
+      }, { threshold: [0, 0.2, 0.5, 0.8] });
+      io.observe(hero);
+    } else {
+      // Fallback: scroll-position threshold at ~80% of viewport height.
+      // Approximates "you've scrolled past the hero" on the typical
+      // 100vh hero without needing an element reference.
+      function scrollUpdate() {
+        var threshold = window.innerHeight * 0.8;
+        setMode(window.scrollY > threshold);
+      }
+      scrollUpdate();
+      window.addEventListener('scroll', function () {
+        window.requestAnimationFrame(scrollUpdate);
+      }, { passive: true });
+      window.addEventListener('resize', scrollUpdate);
+    }
+
+    btn.addEventListener('click', function () {
+      var prefersReduced = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var isUp = btn.classList.contains('mode-up');
+      // Target = full document height when scrolling down. scrollHeight
+      // is read at click time so dynamically-grown pages (lazy-loaded
+      // images, etc.) get the right destination.
+      var target = isUp
+        ? 0
+        : Math.max(
+            document.documentElement.scrollHeight,
+            document.body.scrollHeight,
+          );
+      window.scrollTo({
+        top: target,
+        behavior: prefersReduced ? 'auto' : 'smooth',
+      });
+    });
+  })();
+</script>
+<!-- SECTION:widgets:end -->
+
+</body>
+</html>

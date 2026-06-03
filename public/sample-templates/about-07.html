@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-07 — Split heading + body with checkmark list and full-width image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-07 — split intro layout + full-width photo below.
+       Heading anchored on the LEFT, paragraphs + checkmark bullet
+       list + closing paragraph on the RIGHT, and a single wide
+       photo of the team / machinery / site below the text columns.
+       (Renamed from about-08 on 2026-05-22 for catalog alignment.) */
+
+    .about-07 {
+      padding: 100px 24px;
+      background: var(--color-bg);
+    }
+
+    .about-07__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    /* Two-column split — heading takes the left 40%, body takes the
+       right 60% (denser column gets more horizontal room). Generous
+       gap so the eye can travel cleanly between the two. */
+    .about-07__split {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 80px;
+      align-items: start;
+      margin-bottom: 64px;
+    }
+
+    .about-07__heading {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    .about-07__body {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    .about-07__body p {
+      font-size: 1rem;
+      line-height: 1.75;
+      margin: 0 0 22px;
+      color: color-mix(in srgb, var(--color-text) 82%, transparent);
+    }
+    .about-07__body p:empty { display: none; }
+    .about-07__body p:last-child { margin-bottom: 0; }
+
+    .about-07__list-title {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-text) !important;
+      margin: 8px 0 14px !important;
+    }
+
+    .about-07__list {
+      list-style: none;
+      margin: 0 0 22px;
+      padding: 0;
+    }
+    .about-07__list > li,
+    .about-07__list > [data-repeat] > li,
+    .about-07__list > [data-repeat] > [data-sk-repeater-wrap] > li {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      line-height: 1.55;
+      color: color-mix(in srgb, var(--color-text) 82%, transparent);
+    }
+    .about-07__list > li::before,
+    .about-07__list > [data-repeat] > li::before,
+    .about-07__list > [data-repeat] > [data-sk-repeater-wrap] > li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+    .about-07__list [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .about-07__image-wrap {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.18);
+    }
+    .about-07__image-wrap img {
+      width: 100%;
+      height: auto;
+      max-height: 560px;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-width: 1024px) {
+      .about-07__split { gap: 48px; }
+    }
+
+    @media (max-width: 768px) {
+      .about-07 { padding: 72px 20px; }
+      .about-07__split {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-bottom: 40px;
+      }
+      .about-07__heading {
+        font-size: clamp(1.75rem, 6.5vw, 2.4rem);
+      }
+      .about-07__image-wrap img {
+        max-height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-07</strong> &nbsp; · &nbsp; Split heading + body with checkmark bullet list, full-width image below. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-07 (formerly about-08, renamed 2026-05-22)
+  LAYOUT:   2-column split top: large heading LEFT, paragraphs +
+            checkmark bullet list + closing paragraph RIGHT. Below the
+            split sits a single full-width photo with rounded corners
+            and a subtle shadow. Mobile stacks everything vertically.
+  CONTENT:  Heading, intro paragraph, equipment paragraph, list title,
+            bullet list (2-8 items), closing paragraph, image.
+  EDITABLE: heading (text), 3 paragraphs (richtext-style), list title,
+            bullet items via repeater, image.
+  REFERENCE: bagerexpress.sk "Solutions for excavations..." section is the
+             layout reference.
+  THEME:    Checkmark color uses --color-primary. Section bg uses
+            --color-bg. Headings use --font-heading; body uses --font-body.
+-->
+<section id="o-nas" class="about-07 fade-up">
+  <div class="about-07__inner">
+
+    <div class="about-07__split">
+
+      <h2 class="about-07__heading" data-field="about_heading" data-type="richtext">Write the main headline of the section here, short and to the point, ideally with the region or service</h2>
+
+      <div class="about-07__body">
+        <p data-field="about_intro" data-type="richtext">Write the opening paragraph about your company here, who you are, when you were founded and what your main goal is. 2 to 3 sentences that build trust. Mention the customer segments you work for and the area you operate in.</p>
+
+        <p data-field="about_equipment" data-type="richtext">Write the second paragraph here, what you have at your disposal (equipment, team, experience). 2 to 3 sentences about what makes your company a reliable choice. Mention the equipment, know-how or long-term experience thanks to which you achieve precision and quality.</p>
+
+        <p class="about-07__list-title" data-field="about_list_title">Our approach:</p>
+
+        <ul class="about-07__list">
+          <div data-repeat="about_bullets" data-min="2" data-max="8" style="display:contents">
+            <li><span data-field="bullet">first benefit, an individual approach to every customer</span></li>
+            <li><span data-field="bullet">second benefit, professional dealing and meeting deadlines</span></li>
+            <li><span data-field="bullet">third benefit, fair prices with no hidden fees</span></li>
+            <li><span data-field="bullet">fourth benefit, a focus on safety and quality of work</span></li>
+          </div>
+        </ul>
+
+        <p data-field="about_closing" data-type="richtext">Write the closing paragraph here, a summary of your approach. 1 to 2 sentences that reassure the customer that every job means the same priority and quality to you.</p>
+      </div>
+
+    </div>
+
+    <div class="about-07__image-wrap">
+      <img data-field="about_image" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&auto=format&fit=crop" alt="">
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

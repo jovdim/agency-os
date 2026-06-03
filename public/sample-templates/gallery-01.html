@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-01 — Mixed image + video gallery with lightbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-01: mixed media gallery — each item can be an image OR a
+       video (YouTube / Vimeo / direct .mp4). When the item has a non-empty
+       video_url field, the runtime script tags it with `.has-video`,
+       overlays a play-button, and on click opens a lightbox with the
+       appropriate player. Items without a video URL render as plain
+       image tiles. Same grid layout for both — visual rhythm uniform. */
+
+    .gallery-01 {
+      padding: 96px 0;
+    }
+    .gallery-01 .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .gallery-01 .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 48px;
+    }
+
+    .gallery-01__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    /* Repeater-wrap defense (same root cause as reviews-03 etc.): the
+       publish renderer wraps each [data-repeat] child in a
+       <div data-sk-repeater-wrap>, which then becomes the grid item.
+       Make the inner figure fill the wrapper so the visual reads
+       identically in both composer preview and published HTML. */
+    .gallery-01__grid > [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .gallery-01__item {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      /* Square corners — Peter's preference 2026-05-14. The lightbox
+         image still keeps its 6px radius (a separate rule) since that
+         only renders inside the dark backdrop. */
+      border-radius: 0;
+      cursor: zoom-in;
+      background: var(--color-bg-alt);
+      margin: 0;
+    }
+    .gallery-01__item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .gallery-01__item:hover img {
+      transform: scale(1.04);
+    }
+
+    /* Video overlay — JS adds .has-video to items whose video_url is
+       set. The ::after pseudo is a circle with a play triangle SVG,
+       centered over the thumbnail. cursor switches to "pointer" so
+       it's discoverable as clickable. */
+    .gallery-01__item.has-video {
+      cursor: pointer;
+    }
+    .gallery-01__item.has-video::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.92);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'><path d='M8 5v14l11-7z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: 56% center;
+      background-size: 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      pointer-events: none;
+    }
+    .gallery-01__item.has-video:hover::after {
+      transform: translate(-50%, -50%) scale(1.08);
+      background-color: rgba(255, 255, 255, 1);
+    }
+
+    /* ── Lightbox ──
+       Mirrors gallery-02 / gallery-03 exactly so the fullscreen viewer
+       feels identical across all three galleries — same backdrop,
+       same button style, same counter, same prev/next navigation.
+       The only difference: this lightbox's stage can hold EITHER an
+       <img> (image item) OR a <video> (video item) populated by JS.
+       Initially hidden via `hidden` attribute; JS removes it and adds
+       `is-open` to fade in. */
+    /* Frosted-glass backdrop — soft dark with blur. Replaces the
+       earlier "transparent + black image bg" approach (Peter 2026-05-14:
+       transparent let portrait images sit as a weird floating black
+       rectangle on the page; a tasteful backdrop "looks complete just
+       like a typical image viewer"). Background-color is dark enough
+       to dim the page behind, blur softens any high-contrast content
+       so the lightbox reads as a true viewer, not an overlay. */
+    .gallery-01__lightbox {
+      position: fixed; inset: 0;
+      background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .gallery-01__lightbox.is-open { display: flex; opacity: 1; }
+    body.gallery-01-locked { overflow: hidden; }
+
+    /* Stage fills the WHOLE viewport (100vw × 100vh). The image/video
+       uses `object-fit: contain` to grow as large as possible while
+       preserving aspect — so portraits and landscapes both render at
+       their max size on any device. Buttons (close / prev / next) sit
+       absolute on the lightbox itself, so they float over the image
+       at the screen edges without stealing space from the stage. */
+    .gallery-01__lightbox-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-01__lightbox-stage img,
+    .gallery-01__lightbox-stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      /* Slide transition between images. show() positions the new
+         element off-screen, then animates it to translateX(0). The old
+         element animates off in the opposite direction. The CSS here
+         declares the transition once; JS toggles transform + opacity. */
+      opacity: 1;
+      transform: translateX(0);
+      transition: transform 0.32s ease, opacity 0.32s ease;
+    }
+
+    /* Round translucent button style — same as gallery-02/03's .lb-btn.
+       z-index: 2 elevates buttons ABOVE the 100vw × 100vh stage so
+       clicks register on the buttons themselves. Without this the stage
+       (later in DOM, no z-index) covers the close + prev buttons; only
+       next worked because it sits after the stage in DOM. */
+    .gallery-01__btn {
+      position: absolute;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      display: grid; place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      backdrop-filter: blur(6px);
+      border: 0;
+      z-index: 2;
+    }
+    .gallery-01__btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.05);
+    }
+    .gallery-01__btn svg { width: 22px; height: 22px; }
+    .gallery-01__close { top: 20px; right: 20px; }
+    .gallery-01__prev  { left: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-01__next  { right: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-01__prev:hover { transform: translateY(-50%) scale(1.05); }
+    .gallery-01__next:hover { transform: translateY(-50%) scale(1.05); }
+
+    /* Pill counter — bottom-center "3 / 6". Same z-index as buttons so
+       the counter sits above the stage. */
+    .gallery-01__counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.88rem;
+      font-family: var(--font-heading);
+      font-weight: 500;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+
+    /* Hide the video_url text node — it's a data carrier, not visible
+       content. data-field is preserved so the composer can edit it as
+       a text input next to each item. */
+    .gallery-01__video-url {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .gallery-01 { padding: 64px 0; }
+      .gallery-01__grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 8px;
+      }
+      .gallery-01__item { border-radius: 0; }
+      .gallery-01__item.has-video::after {
+        width: 56px;
+        height: 56px;
+        background-size: 24px;
+      }
+      /* Mobile: tighten nav buttons + counter offsets a bit. */
+      .gallery-01__close { top: 12px; right: 12px; }
+      .gallery-01__prev  { left: 8px; }
+      .gallery-01__next  { right: 8px; }
+      .gallery-01__counter { bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-01</strong> &nbsp; · &nbsp; Mixed image + video gallery. Each item can be a still image OR a video (YouTube / Vimeo / direct mp4). Video items get a play-button overlay and open a lightbox on click. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-01
+  LAYOUT:   Responsive grid (auto-fill, min 280px columns). Each item is
+            a 4:3 tile — image by default, video tile when video_url is
+            non-empty. Click a video tile → lightbox with embedded
+            player. Lightbox dismisses on overlay click, X button, or ESC.
+  CONTENT:  eyebrow + headline + gallery_items repeater (3..20).
+            Each item = { image, video_url, caption }.
+            video_url accepts:
+              - YouTube watch URL (https://www.youtube.com/watch?v=…)
+              - YouTube short URL (https://youtu.be/…)
+              - Vimeo URL (https://vimeo.com/…)
+              - Direct .mp4 URL (any URL ending in .mp4 / .webm / .mov)
+            Empty video_url = plain image tile.
+  EDITABLE: 2 top-level fields + 1 repeater. The video URL field is
+            hidden in the rendered output but appears as a normal text
+            input in the composer per data-field.
+  USE FOR:  Service galleries where clients want to mix project photos
+            with short video tours / equipment-in-action clips. Replaces
+            gallery-01/02/03 when video is part of the showcase.
+-->
+<section id="galeria" class="gallery-01 fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Gallery</span>
+      <h2 data-field="gallery_headline">Our work</h2>
+    </div>
+
+    <!--
+      Mixed-media repeater. Each item has an image (always shown as the
+      thumbnail) + optional video_url. The inline script below scans
+      every item, sees which have a non-empty video_url, and tags them
+      with `.has-video`. That triggers the play-button overlay CSS and
+      registers a click handler that opens the lightbox.
+    -->
+    <div class="gallery-01__grid" data-repeat="gallery_items" data-min="3" data-max="999">
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+1&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+2&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+3&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+4&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+5&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+      <figure class="gallery-01__item">
+        <img data-field="image" data-group="media" src="https://placehold.co/800x600/d6d3d1/57534e?text=Image+6&font=lato" alt="" loading="lazy">
+        <span class="gallery-01__video-url" data-field="video_url" data-type="video" data-group="media"></span>
+      </figure>
+    </div>
+  </div>
+
+  <!--
+    Lightbox modal. One per section. Stage starts empty; the script
+    inserts an <img> or <video> when an item is clicked and swaps it
+    on prev/next navigation. Reparented to <body> at init so the
+    .fade-up containing block doesn't shrink position:fixed to the
+    section's bounds.
+  -->
+  <div class="gallery-01__lightbox" role="dialog" aria-modal="true" aria-label="Gallery" hidden>
+    <button class="gallery-01__btn gallery-01__close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <button class="gallery-01__btn gallery-01__prev" type="button" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <div class="gallery-01__lightbox-stage"></div>
+    <button class="gallery-01__btn gallery-01__next" type="button" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+    <div class="gallery-01__counter"><span class="gallery-01__current">1</span> / <span class="gallery-01__total">6</span></div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('.gallery-01');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      var items = Array.from(section.querySelectorAll('.gallery-01__item'));
+      if (!items.length) return;
+
+      // ── Phase 1: visual tagging (runs in BOTH composer iframe + live) ──
+      // Tag video items with `.has-video` so the play-button overlay
+      // shows. Auto-extract first-frame thumbnail when the tile's
+      // image hasn't been customized. Same behavior in both contexts
+      // so the composer preview reflects what visitors will see.
+
+      function isVideoUrl(url) {
+        return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) ||
+               url.indexOf('/storage/') !== -1;
+      }
+
+      function extractVideoThumbnail(url, cb) {
+        // Hidden <video> + canvas → JPEG data URL of the first
+        // non-black frame. Used to seed the tile thumbnail when the
+        // author hasn't uploaded a separate poster image.
+        var video = document.createElement('video');
+        video.crossOrigin = 'anonymous';
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        var done = false;
+        function finish(result) { if (done) return; done = true; cb(result); }
+        video.addEventListener('loadedmetadata', function () {
+          var t = Math.min(0.5, Math.max(0.1, (video.duration || 1) / 4));
+          try { video.currentTime = t; } catch (_) { video.currentTime = 0; }
+        });
+        video.addEventListener('seeked', function () {
+          var canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth || 800;
+          canvas.height = video.videoHeight || 600;
+          try {
+            var ctx = canvas.getContext('2d');
+            // Hint the compositor to use the best downscale filter
+            // available. Default 'low' on some browsers produces
+            // visibly soft frames on retina-class video sources.
+            try {
+              ctx.imageSmoothingQuality = 'high';
+            } catch (_) { /* older browsers: property unsettable */ }
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // PNG (lossless) — preserves the exact pixels the video
+            // decoder produced. Trades higher memory cost vs JPEG
+            // (PNGs of a 1080p frame can be ~3-5 MB as a data URL)
+            // for byte-perfect quality. Acceptable because the data
+            // URL lives only in browser memory and clears when the
+            // page unloads — it's never persisted to deployed HTML.
+            // Peter 2026-05-13: thumbnail quality MUST match source.
+            finish(canvas.toDataURL('image/png'));
+          } catch (_) { finish(null); }
+        });
+        video.addEventListener('error', function () { finish(null); });
+        setTimeout(function () { finish(null); }, 4000);
+        video.src = url;
+      }
+
+      function autoSetThumbnail(item, url) {
+        var img = item.querySelector('img');
+        if (!img) return;
+        var currentSrc = img.getAttribute('src') || '';
+        var isPlaceholder =
+          currentSrc.indexOf('placehold.co') !== -1 ||
+          currentSrc.indexOf('placeholder') !== -1 ||
+          !currentSrc;
+        if (!isPlaceholder) return;
+        if (isVideoUrl(url)) {
+          extractVideoThumbnail(url, function (dataUrl) {
+            if (dataUrl) img.src = dataUrl;
+          });
+        }
+      }
+
+      function tagVisuals(item) {
+        var urlEl = item.querySelector('.gallery-01__video-url');
+        var url = urlEl ? (urlEl.textContent || '').trim() : '';
+        if (url) {
+          item.classList.add('has-video');
+          autoSetThumbnail(item, url);
+        } else {
+          item.classList.remove('has-video');
+        }
+      }
+      items.forEach(tagVisuals);
+
+      // Live-edit reactivity inside the composer — react to video
+      // URL / image src changes by re-running tagVisuals. One observer
+      // per item, narrowly scoped so cross-item edits don't fire
+      // each other's handlers.
+      items.forEach(function (item) {
+        var observer = new MutationObserver(function () { tagVisuals(item); });
+        observer.observe(item, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+          attributes: true,
+          attributeFilter: ['src'],
+        });
+      });
+
+      // ── Phase 2: lightbox (skipped in composer iframe) ──
+      // Composer owns tile clicks for field-replace / section-select,
+      // matching gallery-02 / gallery-03 exactly. The lightbox still
+      // ships in the rendered HTML and works in the "Preview site"
+      // tab + on the live published site (both top-level windows).
+      if (window !== window.parent) return;
+
+      var lb = section.querySelector('.gallery-01__lightbox');
+      if (!lb) return;
+      // Reparent to <body> — .fade-up's transform makes the section a
+      // containing block for position:fixed descendants. Same trick
+      // gallery-02 / gallery-03 / hero-04 use. Idempotent.
+      if (lb.parentElement !== document.body) {
+        document.body.appendChild(lb);
+      }
+
+      var stage = lb.querySelector('.gallery-01__lightbox-stage');
+      var currentEl = lb.querySelector('.gallery-01__current');
+      var totalEl = lb.querySelector('.gallery-01__total');
+      var closeBtn = lb.querySelector('.gallery-01__close');
+      var prevBtn = lb.querySelector('.gallery-01__prev');
+      var nextBtn = lb.querySelector('.gallery-01__next');
+
+      var currentIdx = 0;
+      var lastFocused = null;
+      if (totalEl) totalEl.textContent = String(items.length);
+
+      // Slide transition between images. dir = 1 (NEXT) means motion
+       // goes left-to-right: old element slides OFF to the right, new
+       // element enters FROM the left. dir = -1 (PREV) is the reverse.
+       // dir = 0 (first open) skips the slide-out and just fades the
+       // new element in centered.
+       // CSS on stage img/video declares `transition: transform 0.32s,
+       // opacity 0.32s`; we toggle inline transform + opacity here and
+       // the browser interpolates. Double-rAF guarantees the browser
+       // paints the new element's start position before we trigger the
+       // transition back to translateX(0).
+      function show(idx, dir) {
+        currentIdx = (idx + items.length) % items.length;
+        var item = items[currentIdx];
+        var urlEl = item.querySelector('.gallery-01__video-url');
+        var videoUrl = urlEl ? (urlEl.textContent || '').trim() : '';
+        var imgEl = item.querySelector('img');
+        var imgUrl = imgEl ? (imgEl.getAttribute('src') || '').trim() : '';
+        var existing = stage.firstElementChild;
+        var d = dir || 0;
+        // NEXT (d > 0): old slides LEFT, new enters FROM the right
+        // (standard carousel direction — Peter's preference after testing
+        // the inverted variant). PREV (d < 0): mirror of that.
+        var outX = d > 0 ? '-40%' : d < 0 ? '40%' : '0';
+        var inStartX = d > 0 ? '40%' : d < 0 ? '-40%' : '0';
+
+        function swap() {
+          // Clear previous content first so any playing <video> stops +
+          // releases its decoder before the new one mounts.
+          stage.innerHTML = '';
+          var newEl = null;
+          if (videoUrl && isVideoUrl(videoUrl)) {
+            newEl = document.createElement('video');
+            newEl.src = videoUrl;
+            newEl.controls = true;
+            newEl.autoplay = true;
+            newEl.playsInline = true;
+          } else if (imgUrl) {
+            newEl = document.createElement('img');
+            newEl.src = imgUrl;
+            newEl.alt = imgEl ? (imgEl.alt || '') : '';
+          }
+          if (newEl) {
+            // Drop transition temporarily so we can JUMP the new
+            // element to its starting position without animating.
+            newEl.style.transition = 'none';
+            newEl.style.transform = 'translateX(' + inStartX + ')';
+            newEl.style.opacity = '0';
+            stage.appendChild(newEl);
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                // Restore transition (use empty string to fall back to
+                // the CSS rule's transition value) + animate to center.
+                newEl.style.transition = '';
+                newEl.style.transform = 'translateX(0)';
+                newEl.style.opacity = '1';
+              });
+            });
+          }
+          if (currentEl) currentEl.textContent = String(currentIdx + 1);
+        }
+
+        if (existing && d !== 0) {
+          existing.style.transform = 'translateX(' + outX + ')';
+          existing.style.opacity = '0';
+          setTimeout(swap, 320);
+        } else {
+          swap();
+        }
+      }
+
+      function open(idx) {
+        lastFocused = document.activeElement;
+        show(idx);
+        lb.hidden = false;
+        requestAnimationFrame(function () { lb.classList.add('is-open'); });
+        document.body.classList.add('gallery-01-locked');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function close() {
+        lb.classList.remove('is-open');
+        document.body.classList.remove('gallery-01-locked');
+        setTimeout(function () {
+          lb.hidden = true;
+          // Clear stage so any playing <video> stops + releases its
+          // decoder. Without this, audio keeps going behind the
+          // closed lightbox until the user leaves the page.
+          stage.innerHTML = '';
+        }, 250);
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      items.forEach(function (item, i) {
+        item.style.cursor = 'pointer';
+        item.tabIndex = 0;
+        item.setAttribute('role', 'button');
+        item.setAttribute('aria-label', 'Open');
+        item.addEventListener('click', function () { open(i); });
+        item.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open(i);
+          }
+        });
+      });
+
+      if (closeBtn) closeBtn.addEventListener('click', close);
+      // Direction: 1 = NEXT, -1 = PREV. show() reads this to slide the
+      // old image off in one direction and the new one in from the other.
+      if (prevBtn) prevBtn.addEventListener('click', function () { show(currentIdx - 1, -1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { show(currentIdx + 1, 1); });
+
+      // Click backdrop = close. Clicks on the stage / buttons bubble
+      // here too, so guard by checking the click target.
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb) close();
+      });
+
+      // Keyboard: Esc to close, ←/→ to navigate (with slide direction).
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(currentIdx - 1, -1);
+        else if (e.key === 'ArrowRight') show(currentIdx + 1, 1);
+      });
+
+      // Touch swipe — passive listeners so we don't fight scroll.
+      var touchStartX = 0;
+      lb.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      lb.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          var step = dx < 0 ? 1 : -1;
+          show(currentIdx + step, step);
+        }
+      }, { passive: true });
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the gallery.</p>
+</div>
+
+</body>
+</html>

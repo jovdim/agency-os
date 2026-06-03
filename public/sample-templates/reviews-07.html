@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-07 — Orange-top testimonial cards with project photo below</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* reviews-07 — Visage SK testimonial grid. Each card is a stacked
+       two-layer block: a PRIMARY-COLOR top panel (avatar + 5 stars +
+       quote + author) and a project PHOTO bottom panel. Reads as
+       "person + their words" above the literal project they're
+       reviewing. 3-up on desktop, single column on mobile. */
+    .reviews-07 {
+      background: var(--color-bg);
+      padding: 80px 0;
+    }
+    .reviews-07 .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .reviews-07 .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 48px;
+    }
+    .reviews-07 .section-head .eyebrow:empty { display: none; }
+    .reviews-07 .reviews-headline {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+      line-height: 1.2;
+      color: var(--color-text);
+      margin: 0 0 14px;
+    }
+    .reviews-07 .reviews-headline-accent { color: var(--color-primary); }
+    .reviews-07 .reviews-subtitle {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+
+    /* 3-column grid for testimonials. Stacks to 1 col under 800px. */
+    .reviews-07 .reviews-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 800px) {
+      .reviews-07 .reviews-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+      }
+    }
+
+    /* Card shell — flex column so the orange top panel fills
+       remaining height when quotes have different lengths, keeping
+       project images aligned across the row.
+
+       Override values that template-base.css's global `.review-card`
+       rule sets (background, border, border-radius, padding). Our
+       card is a borderless two-layer block — the orange top panel
+       and project photo provide all the visual structure. */
+    .reviews-07 .review-card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+    }
+
+    /* TOP: primary-color panel with avatar + stars + quote + author */
+    .reviews-07 .review-top {
+      background: var(--color-primary);
+      color: #ffffff;
+      padding: 36px 28px 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .reviews-07 .review-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #ffffff;
+      border: 3px solid #ffffff;
+      flex-shrink: 0;
+    }
+    .reviews-07 .review-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* 5-star row — fixed (not editable). The author already attests
+       to satisfaction by being a testimonial; the stars are
+       decorative reinforcement. */
+    .reviews-07 .review-stars {
+      display: flex;
+      gap: 3px;
+    }
+    .reviews-07 .review-stars svg { display: block; }
+    .reviews-07 .review-quote {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      color: #ffffff;
+      margin: 4px 0 6px;
+    }
+    .reviews-07 .review-author {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      font-weight: 500;
+      color: #ffffff;
+      margin: 0;
+    }
+    .reviews-07 .review-author::before { content: '— '; }
+
+    /* BOTTOM: project photo */
+    .reviews-07 .review-photo {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--color-text) 6%, transparent);
+    }
+    .reviews-07 .review-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: reviews-07</strong> &nbsp; · &nbsp; Visage-style 3-up testimonial cards. PRIMARY-color top panel (avatar + 5 stars + quote + author) above a project image. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-07
+  LAYOUT:   Centered header (eyebrow + 2-tone heading + subtitle).
+            Below: 3-column grid of stacked testimonial cards. Each
+            card has a primary-color top panel (avatar + 5 stars +
+            quote + author) and a project photo at the bottom.
+  CONTENT:  Header: eyebrow + 2 heading parts + subtitle.
+            Per review: avatar + quote + author + project photo.
+  EDITABLE: Header 4 + per-item 4 fields × N reviews (1..99).
+  THEME:    Primary color drives the orange top panel + accent
+            word in the heading. Stars are fixed 5-star (decorative
+            reinforcement, not editable per item).
+  USE FOR:  Service-driven sites where photo proof matters as much
+            as the words — construction, renovation, gardens, etc.
+            The 2-layer card (person above project) emphasizes
+            "this real person hired us and got this real result".
+-->
+<section id="referencie" class="reviews-07">
+  <div class="container">
+    <div class="section-head fade-up">
+      <span class="eyebrow" data-field="reviews_eyebrow"></span>
+      <h2 class="reviews-headline">
+        <span data-field="reviews_headline_main">Re</span><span class="reviews-headline-accent" data-field="reviews_headline_accent">views</span>
+      </h2>
+      <p class="reviews-subtitle" data-field="reviews_subtitle">Real experiences, real results</p>
+    </div>
+
+    <!--
+      Reviews repeater: 1..99 testimonial cards. Per-item fields are
+      avatar image + quote text + author name + project photo. Stars
+      are fixed 5-star — not a per-item field — because a testimonial
+      block IS the implicit 5-star endorsement and we don't want
+      authors creating "3-star testimonials" by mistake.
+    -->
+    <div class="reviews-grid">
+      <div data-repeat="reviews" data-min="1" data-max="99" style="display:contents">
+        <div class="review-card fade-up" data-item-id-source="author">
+          <div class="review-top">
+            <div class="review-avatar">
+              <img data-field="avatar" src="https://placehold.co/200x200/ffffff/57534e?text=Avatar&font=lato" alt="" width="200" height="200" loading="lazy">
+            </div>
+            <div class="review-stars" aria-label="5 stars">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+            </div>
+            <p class="review-quote" data-field="quote">A short review from a satisfied client. 2 to 3 sentences about what we achieved together and why they would recommend us.</p>
+            <p class="review-author" data-field="author">Client Name</p>
+          </div>
+          <div class="review-photo hover-zoom">
+            <img data-field="project_image" src="https://placehold.co/600x450/d6d3d1/57534e?text=Projekt&font=lato" alt="" width="600" height="450" loading="lazy">
+          </div>
+        </div>
+        <div class="review-card fade-up" data-item-id-source="author">
+          <div class="review-top">
+            <div class="review-avatar">
+              <img data-field="avatar" src="https://placehold.co/200x200/ffffff/57534e?text=Avatar&font=lato" alt="" width="200" height="200" loading="lazy">
+            </div>
+            <div class="review-stars" aria-label="5 stars">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+            </div>
+            <p class="review-quote" data-field="quote">A short review from another client. Two to three sentences describing the specific benefit of your work.</p>
+            <p class="review-author" data-field="author">Client Name</p>
+          </div>
+          <div class="review-photo hover-zoom">
+            <img data-field="project_image" src="https://placehold.co/600x450/d6d3d1/57534e?text=Projekt&font=lato" alt="" width="600" height="450" loading="lazy">
+          </div>
+        </div>
+        <div class="review-card fade-up" data-item-id-source="author">
+          <div class="review-top">
+            <div class="review-avatar">
+              <img data-field="avatar" src="https://placehold.co/200x200/ffffff/57534e?text=Avatar&font=lato" alt="" width="200" height="200" loading="lazy">
+            </div>
+            <div class="review-stars" aria-label="5 stars">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" aria-hidden="true"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+            </div>
+            <p class="review-quote" data-field="quote">A short review from a third client. A specific detail about what was best about the cooperation.</p>
+            <p class="review-author" data-field="author">Client Name</p>
+          </div>
+          <div class="review-photo hover-zoom">
+            <img data-field="project_image" src="https://placehold.co/600x450/d6d3d1/57534e?text=Projekt&font=lato" alt="" width="600" height="450" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

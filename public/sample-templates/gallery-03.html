@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-03 — Masonry (Pinterest-style, variable heights)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-03: masonry layout — Pinterest-style. Each image keeps its
+       natural aspect ratio (no forced 4:3 cropping) and tiles arrange
+       themselves into vertical columns of varying heights. Default
+       placeholders demonstrate the effect with mixed portraits / squares /
+       widescreens.
+
+       Implementation uses CSS multi-column layout (column-count + break-
+       inside: avoid). True CSS Grid masonry is still experimental
+       (Firefox-only behind a flag in 2026), so columns is the reliable
+       cross-browser path. Caveat: items flow column-major (1, 2, 3 down
+       col 1; 4, 5, 6 down col 2) instead of row-major. For a portfolio
+       gallery this is fine — the reading order is the column flow, not
+       a strict left-to-right narrative.
+
+       Same lightbox + iframe-aware setup as gallery-01 / gallery-02. Same
+       4-field schema as the other galleries — clients can swap freely. */
+    .gallery-03 .gallery-masonry {
+      column-count: 3;
+      column-gap: 14px;
+    }
+    .gallery-03 .gallery-masonry figure {
+      margin: 0 0 14px 0;
+      overflow: hidden;
+      /* Square corners — Peter's preference 2026-05-14. Lightbox keeps
+         its 6px radius (separate rule below). */
+      border-radius: 0;
+      cursor: zoom-in;
+      position: relative;
+      background: var(--color-bg-alt);
+      /* Critical for masonry: prevents the browser from splitting a single
+         tile across two columns mid-image. */
+      break-inside: avoid;
+      page-break-inside: avoid; /* legacy alias for older Safari */
+    }
+    .gallery-03 .gallery-masonry img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform var(--transition);
+    }
+    .gallery-03 .gallery-masonry figure:hover img {
+      transform: scale(1.04);
+    }
+    .gallery-03 .gallery-masonry figure::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background var(--transition);
+      pointer-events: none;
+    }
+    .gallery-03 .gallery-masonry figure:hover::after {
+      background: rgba(0,0,0,0.18);
+    }
+    .gallery-03 .gallery-masonry figure:focus-visible {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+    @media (max-width: 900px) {
+      .gallery-03 .gallery-masonry {
+        column-count: 2;
+        column-gap: 10px;
+      }
+      .gallery-03 .gallery-masonry figure { margin-bottom: 10px; }
+    }
+    @media (max-width: 500px) {
+      .gallery-03 .gallery-masonry { column-count: 1; }
+    }
+
+    /* Lightbox overlay — same modern fullscreen viewer as gallery-01 /
+       gallery-02. Frosted backdrop + full-screen stage + smooth cross-
+       fade between images. */
+    .lb-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .lb-backdrop.is-open { display: flex; opacity: 1; }
+    body.lb-locked { overflow: hidden; }
+    .lb-image-wrap { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .lb-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      /* Slide transition — see gallery-02 for full notes. */
+      opacity: 1;
+      transform: translateX(0);
+      transition: transform 0.32s ease, opacity 0.32s ease;
+    }
+    /* z-index: 2 elevates buttons above the 100vw × 100vh image-wrap so
+       clicks register on them (without it the wrap covers them and
+       clicks fall through to the close handler). Same fix as gallery-02. */
+    .lb-btn { position: absolute; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); color: #fff; display: grid; place-items: center; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; backdrop-filter: blur(6px); border: 0; z-index: 2; }
+    .lb-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.05); }
+    .lb-btn svg { width: 22px; height: 22px; }
+    .lb-close { top: 20px; right: 20px; }
+    .lb-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+    .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
+    .lb-prev:hover { transform: translateY(-50%) scale(1.05); }
+    .lb-next:hover { transform: translateY(-50%) scale(1.05); }
+    .lb-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.85); font-size: 0.88rem; font-family: var(--font-heading); font-weight: 500; background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(6px); z-index: 2; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-03</strong> &nbsp; · &nbsp; Masonry / Pinterest layout. Images keep natural aspect ratios. 3 cols desktop, 2 cols tablet, 1 col phone. Lightbox same as the other galleries. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-03
+  LAYOUT:   3-column masonry (Pinterest-style). Each image keeps its
+            natural aspect ratio — no forced cropping — and tiles flow
+            into columns of varying heights. Implemented with CSS multi-
+            column layout (true Grid masonry is still experimental). 6
+            default tiles with mixed portrait / square / widescreen
+            placeholders to demonstrate the layout. Mobile collapses to
+            2 cols (≤900px) then 1 col (≤500px).
+  CONTENT:  eyebrow, headline, subheadline + images repeater (default 6).
+  EDITABLE: 4 schema fields — eyebrow + headline + subheadline + images
+            repeater. Each image item = { image }. Same 4-field schema as
+            gallery-01 / gallery-02 — clients can swap freely between
+            them with zero data loss.
+  LIGHTBOX: Click tile opens fullscreen viewer (←/→/Esc, swipe, backdrop
+            close). Self-disables when running inside an iframe (CRM
+            editor) so click-to-replace in the inline editor isn't
+            intercepted.
+  THEME:    Focus outline + hover scale animation respect var(--color-primary).
+            Tile backgrounds and overlays use neutral grays, not theme-driven.
+  USE FOR:  Photographers, restaurants, gardens, real estate — any
+            portfolio where the photos themselves vary in aspect ratio
+            and forcing them into uniform 4:3 tiles loses the photo's
+            intent. Different from gallery-01 (uniform grid) and
+            gallery-02 (one featured + small).
+-->
+<section id="galeria" class="gallery-03 fade-up" data-gallery>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Gallery</span>
+      <h2 data-field="gallery_headline">Write your gallery headline here</h2>
+      <p data-field="gallery_subheadline">Write a short description below the headline here. This layout keeps the original proportions of the images, ideal for photos in different formats (portrait, square, panorama).</p>
+    </div>
+    <div class="gallery-masonry" data-repeat="gallery_images" data-min="1" data-max="999">
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x1000/c4bdb1/57534e?text=Portrait+4:5&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Landscape+4:3&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x800/b3aca0/57534e?text=Square+1:1&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x600/d6d3d1/57534e?text=Landscape+4:3&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x1000/c4bdb1/57534e?text=Portrait+4:5&font=lato" alt="" loading="lazy"></figure>
+      <figure tabindex="0" role="button" aria-label="Open image"><img data-field="image" src="https://placehold.co/800x450/b3aca0/57534e?text=Wide+16:9&font=lato" alt="" loading="lazy"></figure>
+    </div>
+  </div>
+
+  <!-- Lightbox overlay (lives inside the section so it travels with the template) -->
+  <div class="lb-backdrop" role="dialog" aria-modal="true" aria-label="Photo gallery" hidden>
+    <button class="lb-btn lb-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Previous image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="lb-image-wrap"><img class="lb-image" alt=""></div>
+    <button class="lb-btn lb-next" type="button" aria-label="Next image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="lb-counter"><span class="lb-current">1</span> / <span class="lb-total">6</span></div>
+  </div>
+
+  <script>
+    (function () {
+      // Skip lightbox setup when running inside an iframe (CRM editor / composer preview).
+      // The CRM owns image clicks for click-to-replace.
+      if (window !== window.parent) return;
+
+      var section = document.currentScript.closest('section') || document.querySelector('.gallery-03');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      var grid = section.querySelector('.gallery-masonry');
+      var lb = section.querySelector('.lb-backdrop');
+      if (!grid || !lb) return;
+
+      // .fade-up keeps a transform set even after .visible, which makes
+      // the section a containing block for any position:fixed descendant —
+      // the backdrop would be sized to the section, not the viewport.
+      // Reparent to <body> to escape. Idempotent.
+      if (lb.parentElement !== document.body) {
+        document.body.appendChild(lb);
+      }
+
+      var figures = Array.from(grid.querySelectorAll('figure'));
+      if (!figures.length) return;
+
+      var lbImg = lb.querySelector('.lb-image');
+      var lbCurrent = lb.querySelector('.lb-current');
+      var lbTotal = lb.querySelector('.lb-total');
+      var closeBtn = lb.querySelector('.lb-close');
+      var prevBtn = lb.querySelector('.lb-prev');
+      var nextBtn = lb.querySelector('.lb-next');
+
+      var currentIdx = 0;
+      var lastFocused = null;
+
+      lbTotal.textContent = figures.length;
+
+      // Slide transition — see gallery-02 for full notes.
+      function show(idx, dir) {
+        currentIdx = (idx + figures.length) % figures.length;
+        var fig = figures[currentIdx];
+        var img = fig.querySelector('img');
+        var d = dir || 0;
+        // NEXT: old slides LEFT, new enters from RIGHT (standard).
+        var outX = d > 0 ? '-40%' : d < 0 ? '40%' : '0';
+        var inStartX = d > 0 ? '40%' : d < 0 ? '-40%' : '0';
+
+        function swap() {
+          lbImg.src = img.src;
+          lbImg.alt = img.alt || '';
+          lbCurrent.textContent = currentIdx + 1;
+          lbImg.style.transition = 'none';
+          lbImg.style.transform = 'translateX(' + inStartX + ')';
+          lbImg.style.opacity = '0';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              lbImg.style.transition = '';
+              lbImg.style.transform = 'translateX(0)';
+              lbImg.style.opacity = '1';
+            });
+          });
+        }
+
+        if (!lbImg.src || d === 0) {
+          swap();
+        } else {
+          lbImg.style.transform = 'translateX(' + outX + ')';
+          lbImg.style.opacity = '0';
+          setTimeout(swap, 320);
+        }
+      }
+      function open(idx) {
+        lastFocused = document.activeElement;
+        show(idx);
+        lb.hidden = false;
+        requestAnimationFrame(function () { lb.classList.add('is-open'); });
+        document.body.classList.add('lb-locked');
+        closeBtn.focus();
+      }
+      function close() {
+        lb.classList.remove('is-open');
+        document.body.classList.remove('lb-locked');
+        setTimeout(function () { lb.hidden = true; lbImg.src = ''; }, 250);
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      figures.forEach(function (fig, i) {
+        fig.addEventListener('click', function () { open(i); });
+        fig.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); }
+        });
+      });
+      closeBtn.addEventListener('click', close);
+      // Direction: 1 = NEXT, -1 = PREV. show() reads this to slide.
+      prevBtn.addEventListener('click', function () { show(currentIdx - 1, -1); });
+      nextBtn.addEventListener('click', function () { show(currentIdx + 1, 1); });
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb || e.target.classList.contains('lb-image-wrap')) close();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(currentIdx - 1, -1);
+        else if (e.key === 'ArrowRight') show(currentIdx + 1, 1);
+      });
+      var touchStartX = 0;
+      lb.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          var step = dx < 0 ? 1 : -1;
+          show(currentIdx + step, step);
+        }
+      }, { passive: true });
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the gallery.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+{
+  "sections": [
+    {
+      "type": "navigation",
+      "label": "Navigation Bar",
+      "order": 1,
+      "fields": {
+        "logo_text": "Your Company",
+        "cta_text": "Get a Free Quote",
+        "cta_url": "#contact",
+        "links": [
+          { "label": "Home", "url": "#" },
+          { "label": "About", "url": "#about" },
+          { "label": "Services", "url": "#services" },
+          { "label": "Gallery", "url": "#gallery" },
+          { "label": "Contact", "url": "#contact" }
+        ]
+      }
+    },
+    {
+      "type": "hero",
+      "label": "Hero Banner",
+      "order": 2,
+      "fields": {
+        "heading": "Professional Plumbing Services in Bratislava",
+        "subheading": "Reliable, fast, and affordable plumbing for homes and businesses. Available 24/7 for emergencies.",
+        "cta_text": "Call Us Now",
+        "cta_url": "tel:+421900123456",
+        "background_image": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=1200&q=80"
+      }
+    },
+    {
+      "type": "about",
+      "label": "About Us",
+      "order": 3,
+      "fields": {
+        "heading": "About Our Company",
+        "description": "We have been serving the Bratislava region for over 15 years. Our team of certified plumbers handles everything from small repairs to complete installations. We pride ourselves on punctuality, clean work, and fair pricing.",
+        "image": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80",
+        "experience_years": "15+",
+        "completed_projects": "2,000+"
+      }
+    },
+    {
+      "type": "services_grid",
+      "label": "Our Services",
+      "order": 4,
+      "fields": {
+        "heading": "What We Do",
+        "subheading": "Complete plumbing solutions for every need",
+        "services": [
+          {
+            "title": "Emergency Repairs",
+            "description": "24/7 emergency plumbing service. We arrive within 60 minutes.",
+            "icon": "wrench"
+          },
+          {
+            "title": "Bathroom Renovation",
+            "description": "Complete bathroom remodeling from design to installation.",
+            "icon": "bath"
+          },
+          {
+            "title": "Pipe Installation",
+            "description": "New pipe installation for residential and commercial buildings.",
+            "icon": "pipe"
+          },
+          {
+            "title": "Heating Systems",
+            "description": "Central heating installation, repair, and maintenance.",
+            "icon": "flame"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "label": "Our Work",
+      "order": 5,
+      "fields": {
+        "heading": "Recent Projects",
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=80",
+            "alt": "Bathroom renovation",
+            "caption": "Modern bathroom — Bratislava"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=80",
+            "alt": "Kitchen plumbing",
+            "caption": "Kitchen remodel — Petržalka"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80",
+            "alt": "Pipe work",
+            "caption": "Commercial pipes — Ružinov"
+          }
+        ]
+      }
+    },
+    {
+      "type": "testimonials",
+      "label": "What Clients Say",
+      "order": 6,
+      "fields": {
+        "heading": "Customer Reviews",
+        "testimonials": [
+          {
+            "quote": "They fixed our burst pipe in under an hour. Excellent service!",
+            "author": "Ján Novák",
+            "role": "Homeowner, Bratislava"
+          },
+          {
+            "quote": "Professional team, fair price. Our go-to plumber now.",
+            "author": "Martina Kováčová",
+            "role": "Restaurant Owner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "contact",
+      "label": "Contact Form",
+      "order": 7,
+      "fields": {
+        "heading": "Get in Touch",
+        "subheading": "Request a free quote or ask us anything",
+        "address": "Hlavná 42, 811 01 Bratislava",
+        "phone": "+421 900 123 456",
+        "email": "info@yourplumbing.sk"
+      }
+    },
+    {
+      "type": "footer",
+      "label": "Footer",
+      "order": 8,
+      "fields": {
+        "company_name": "Your Plumbing s.r.o.",
+        "copyright": "© 2026 All rights reserved",
+        "facebook_url": "",
+        "instagram_url": ""
+      }
+    }
+  ]
+}

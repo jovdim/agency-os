@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-09 — Split: text + corner-bracket framed media, icon bullets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* about-09 — split "About us" section ported from the pilimestromy About.
+       Left column: pentagon eyebrow + headline + section-line + body +
+       icon-tile bullet list + 2 CTAs. Right column: a media panel framed
+       by two brand corner-brackets, with a centered play button that opens
+       the configured video URL in a new tab. */
+    .about-09 { padding: 96px 0; }
+    .about-09 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    .about-09 .split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+    }
+    @media (max-width: 900px) { .about-09 .split { grid-template-columns: 1fr; gap: 40px; } }
+
+    .about-09 .eyebrow {
+      display: inline-flex; flex-direction: row; align-items: center; gap: 12px;
+      text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.75rem;
+      font-weight: 600; color: var(--color-text-light); margin: 0 0 18px;
+    }
+    .about-09 .eyebrow::after { display: none; }
+    .about-09 .eyebrow::before {
+      content: ""; width: 16px; height: 16px; flex-shrink: 0;
+      background: var(--color-primary);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .about-09 .about-09__text h2 { font-size: clamp(1.75rem, 3.6vw, 2.75rem); margin: 0; line-height: 1.1; }
+    .about-09 .section-line { display: block; width: 48px; height: 3px; border-radius: 99px; background: var(--color-primary); margin: 20px 0; }
+    .about-09 .about-body { color: var(--color-text-light); font-size: 1.05rem; line-height: 1.75; max-width: 34rem; }
+
+    /* Icon-tile bullet list. */
+    .about-09__points { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px; }
+    .about-09__points li { display: flex; align-items: center; gap: 14px; }
+    .about-09__points .tile {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center;
+      color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent);
+    }
+    .about-09__points .tile svg { width: 20px; height: 20px; }
+    .about-09__points span.label { font-weight: 600; font-size: 1rem; color: var(--color-text); }
+
+    .about-09__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+    /* Media panel with corner brackets + play button. */
+    .about-09__media { position: relative; }
+    .about-09__media .frame {
+      position: relative; border-radius: 16px; overflow: hidden;
+      aspect-ratio: 16 / 9; box-shadow: var(--shadow-lg); background: var(--color-secondary);
+    }
+    .about-09__media .frame img.about-09__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .about-09__media .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 1; }
+    .about-09__media .corner {
+      position: absolute; width: 72px; height: 72px; pointer-events: none; z-index: 2;
+    }
+    .about-09__media .corner.tl { top: -12px; left: -12px; border-top: 3px solid var(--color-primary); border-left: 3px solid var(--color-primary); border-top-left-radius: 16px; }
+    .about-09__media .corner.br { bottom: -12px; right: -12px; border-bottom: 3px solid var(--color-primary); border-right: 3px solid var(--color-primary); border-bottom-right-radius: 16px; }
+    /* Video URL carrier — a data field, not visible content. */
+    .about-09__video { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: about-09</strong> &nbsp; · &nbsp; Split: text + icon bullets + 2 CTAs left, corner-bracket framed media with play button right. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-09
+  LAYOUT:   2-column split on a light band. Left: eyebrow + headline +
+            section-line + body + icon-tile bullets + 2 CTAs. Right: media
+            panel with brand corner-brackets + a play button linking to a
+            video URL. Mobile: text first, media below.
+  CONTENT:  eyebrow + headline + body (richtext) + bullet points (label
+            each) + 2 CTAs + a corner-bracket framed embedded video.
+  EDITABLE: 1 text + 1 text (headline) + 1 longtext + repeater of {label}
+            + 2 link CTAs + 1 image (poster fallback) + 1 video URL.
+  VIDEO:    about_video_url is a "video" field (same composer input as the
+            gallery video tiles). The inline script normalises a YouTube
+            watch / youtu.be / Vimeo / raw-id / embed URL into an embedded
+            iframe overlaid on the poster. Empty URL = poster image only.
+            Autoplays muted+looped on the live site; in the composer it
+            loads paused with controls so editing stays quiet.
+  THEME:    Eyebrow pentagon, section-line, icon tiles and corner brackets
+            all use var(--color-primary). Section uses var(--color-bg-alt)
+            via .section-alt.
+-->
+<section id="o-nas" class="about-09 section-alt fade-up">
+  <div class="container">
+    <div class="split">
+
+      <div class="about-09__text">
+        <span class="eyebrow" data-field="about_eyebrow">About us</span>
+        <h2 data-field="about_headline">Joseph - Tree Care</h2>
+        <span class="section-line" aria-hidden="true"></span>
+        <div class="about-body" data-field="about_body" data-type="richtext"><p>Joseph - Tree Care specializes in rope cutting and hazardous tree felling in the region. Using rope-access tree-climbing techniques, it provides safe and efficient solutions.</p></div>
+
+        <!-- Fixed 3 bullets (NOT a repeater): a data-driven repeater can't
+             carry per-item icons and clones the first item's icon onto every
+             row, so the three reference icons (axe / shield-check / map-pin)
+             are baked in by position with editable text labels. -->
+        <ul class="about-09__points">
+          <li>
+            <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/><path d="M15 13 9 7l4-4 6 6h3a8 8 0 0 1-7 7z"/></svg></span>
+            <span class="label" data-field="about_point_1">SRT rope-access tree-climbing technique</span>
+          </li>
+          <li>
+            <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="label" data-field="about_point_2">Safe solutions in demanding terrain</span>
+          </li>
+          <li>
+            <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <span class="label" data-field="about_point_3">We operate across the region</span>
+          </li>
+        </ul>
+
+        <div class="about-09__actions">
+          <a class="btn btn-primary" data-field="about_cta_1" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+          <a class="btn btn-outline" data-field="about_cta_2" data-type="link" href="#sluzby">View services</a>
+        </div>
+      </div>
+
+      <div class="about-09__media">
+        <span class="corner tl" aria-hidden="true"></span>
+        <span class="corner br" aria-hidden="true"></span>
+        <div class="frame">
+          <img class="about-09__poster" data-field="about_image" src="https://placehold.co/960x540/1a1a1a/e7e5e4?text=Video&font=lato" alt="" loading="lazy">
+          <!-- Video URL carrier (composer-edited, never shown). The inline
+               script turns this into an embedded iframe over the poster. -->
+          <span class="about-09__video" data-field="about_video_url" data-type="video" aria-hidden="true">https://www.youtube.com/embed/-jkdM6VJtEM</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('.about-09');
+      if (!section || section.dataset.skVideoInit) return;
+      section.dataset.skVideoInit = '1';
+
+      var frame = section.querySelector('.about-09__media .frame');
+      var carrier = section.querySelector('.about-09__video');
+      if (!frame || !carrier) return;
+
+      var inComposer = window !== window.parent;
+
+      // Normalise any common YouTube / Vimeo / raw-id input into an
+      // embeddable URL. Already-embed URLs pass through unchanged.
+      function toEmbed(url) {
+        url = (url || '').trim();
+        if (!url) return '';
+        if (url.indexOf('/embed/') !== -1 || url.indexOf('player.vimeo.com') !== -1) return url;
+        var m;
+        if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/))) return 'https://www.youtube.com/embed/' + m[1];
+        if ((m = url.match(/vimeo\.com\/(\d+)/))) return 'https://player.vimeo.com/video/' + m[1];
+        if (/^[\w-]{6,15}$/.test(url)) return 'https://www.youtube.com/embed/' + url;
+        return url;
+      }
+
+      function render() {
+        var embed = toEmbed(carrier.textContent);
+        var existing = frame.querySelector('iframe');
+        if (!embed) { if (existing) existing.remove(); return; }
+
+        var sep = embed.indexOf('?') === -1 ? '?' : '&';
+        var params = 'rel=0&playsinline=1';
+        // Autoplay muted + loop on the live site only; the composer loads
+        // paused with controls so editing isn't noisy.
+        if (!inComposer) {
+          params += '&autoplay=1&mute=1&loop=1';
+          var ytId = embed.match(/youtube\.com\/embed\/([\w-]+)/);
+          if (ytId) params += '&playlist=' + ytId[1];
+        }
+        var src = embed + sep + params;
+
+        if (existing && existing.dataset.src === src) return;
+        if (existing) existing.remove();
+
+        var ifr = document.createElement('iframe');
+        ifr.src = src;
+        ifr.dataset.src = src;
+        ifr.setAttribute('title', 'Video');
+        ifr.setAttribute('loading', 'lazy');
+        ifr.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        ifr.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        ifr.allowFullscreen = true;
+        frame.appendChild(ifr);
+      }
+
+      render();
+
+      // React to composer edits of the video URL.
+      if (typeof MutationObserver !== 'undefined') {
+        new MutationObserver(render).observe(carrier, {
+          characterData: true, childList: true, subtree: true,
+        });
+      }
+    })();
+  </script>
+</section>
+<!-- SECTION:about:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

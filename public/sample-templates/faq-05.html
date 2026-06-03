@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>faq-05 — Minimalist plus-icon accordion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* faq-05: minimalist accordion. Single narrow centered column, hairline
+       dividers, soft +/− icon (rendered via CSS pseudo-elements — two
+       perpendicular lines that rotate to form an X-like minus when open).
+       More restrained than faq-01 (which uses base CSS .faq with a gold
+       chevron) — same accordion behavior, different visual personality.
+
+       Same shared schema as faq-03 / faq-04 (faq_eyebrow + faq_headline
+       + faq_items repeater) so clients can swap freely. Same self-
+       contained accordion JS pattern as faq-02. */
+    .faq-05 .faq-min {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .faq-05 .faq-min__item {
+      border-bottom: 1px solid var(--color-border);
+    }
+    .faq-05 .faq-min__item:first-child {
+      border-top: 1px solid var(--color-border);
+    }
+    .faq-05 .faq-min__q {
+      width: 100%;
+      text-align: left;
+      padding: 28px 48px 28px 0;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      letter-spacing: -0.005em;
+      color: var(--color-dark);
+      position: relative;
+      transition: color 0.2s ease;
+    }
+    .faq-05 .faq-min__q:hover { color: var(--color-primary); }
+    /* The +/− icon — two perpendicular thin lines via ::before (horizontal)
+       and ::after (vertical). When open, the vertical one rotates 90° to
+       overlap the horizontal one, forming a "minus" sign. Smoother than
+       a chevron arrow, less heavy than a filled icon. */
+    .faq-05 .faq-min__q::before,
+    .faq-05 .faq-min__q::after {
+      content: "";
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      width: 14px;
+      height: 1.5px;
+      background: currentColor;
+      transition: transform 0.3s ease;
+    }
+    .faq-05 .faq-min__q::before {
+      transform: translateY(-50%);
+    }
+    .faq-05 .faq-min__q::after {
+      transform: translateY(-50%) rotate(90deg);
+    }
+    .faq-05 .faq-min__q[aria-expanded="true"]::after {
+      transform: translateY(-50%) rotate(0deg);
+    }
+    .faq-05 .faq-min__a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .faq-05 .faq-min__a-inner {
+      padding: 0 48px 28px 0;
+      color: var(--color-text-light);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    @media (max-width: 640px) {
+      .faq-05 .faq-min__q {
+        font-size: 1rem;
+        padding: 22px 36px 22px 0;
+      }
+      .faq-05 .faq-min__a-inner { padding-right: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: faq-05</strong> &nbsp; · &nbsp; Minimalist accordion — hairline dividers, soft +/− icon (two thin lines), centered narrow column. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:faq:start -->
+<!--
+  TEMPLATE: faq-05
+  LAYOUT:   Single narrow centered column (max 760px), accordion list with
+            hairline dividers. Question button left-aligned with a soft +/−
+            icon on the right (rendered as two thin perpendicular lines via
+            ::before/::after — vertical line rotates to form a minus when
+            open, simpler than a filled icon, lighter than a chevron arrow).
+  CONTENT:  eyebrow + headline + faq_items repeater.
+            Each item = { question, answer }.
+  EDITABLE: 2 top-level fields + 1 repeater (faq_items, 2..10 default 5).
+  THEME:    Question uses --color-dark in heading font, hover --color-primary.
+            Answer --color-text-light. Hairlines --color-border. +/− icon
+            tracks currentColor so it inherits hover state.
+  JS:       Self-contained IIFE inside section markers. Wires every
+            `.faq-min__q` to toggle aria-expanded; sets max-height from
+            scrollHeight for variable-length answers. Works for any number
+            of items the repeater emitted.
+  USE FOR:  Long FAQs (5-10 items) where you need accordion behavior to
+            avoid overwhelming the page, but faq-01's gold chevron feels
+            too playful or faq-02's editorial split is overkill. Cleanest
+            of the accordion variants.
+-->
+<section id="otazky" class="faq-05 fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="faq_eyebrow">Frequently asked questions</span>
+      <h2 data-field="faq_headline">The questions we get asked most often</h2>
+    </div>
+
+    <div class="faq-min" data-repeat="faq_items" data-min="2" data-max="10">
+      <div class="faq-min__item" data-item-id-source="question">
+        <button type="button" class="faq-min__q" aria-expanded="false" data-field="question">Write the first question here?</button>
+        <div class="faq-min__a"><div class="faq-min__a-inner" data-field="answer" data-type="richtext">Write the answer to the first question here. Be specific, state what the customer gets, when, and under what conditions. Two to three sentences are enough.</div></div>
+      </div>
+      <div class="faq-min__item">
+        <button type="button" class="faq-min__q" aria-expanded="false" data-field="question">Write the second question here?</button>
+        <div class="faq-min__a"><div class="faq-min__a-inner" data-field="answer" data-type="richtext">Write the answer to the second question here. Answer directly, avoid marketing language, the customer wants a specific piece of information.</div></div>
+      </div>
+      <div class="faq-min__item">
+        <button type="button" class="faq-min__q" aria-expanded="false" data-field="question">Write the third question here?</button>
+        <div class="faq-min__a"><div class="faq-min__a-inner" data-field="answer" data-type="richtext">Write the answer to the third question here. If the answer is more complex, use three to four sentences. Do not write long paragraphs, stay concise.</div></div>
+      </div>
+      <div class="faq-min__item">
+        <button type="button" class="faq-min__q" aria-expanded="false" data-field="question">Write the fourth question here?</button>
+        <div class="faq-min__a"><div class="faq-min__a-inner" data-field="answer" data-type="richtext">Write the answer to the fourth question here. Anticipate what the customer will want to know after the first three questions and answer it.</div></div>
+      </div>
+      <div class="faq-min__item">
+        <button type="button" class="faq-min__q" aria-expanded="false" data-field="question">Write the fifth question here?</button>
+        <div class="faq-min__a"><div class="faq-min__a-inner" data-field="answer" data-type="richtext">Write the answer to the fifth question here. The last question should address doubts, for example price, guarantee, or the delivery process.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      // Wire every question button regardless of how many the repeater
+      // emitted. aria-expanded + max-height from scrollHeight is the
+      // source of truth so animation tracks variable answer length.
+      section.querySelectorAll('.faq-min__q').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var open = btn.getAttribute('aria-expanded') !== 'true';
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          var panel = btn.nextElementSibling;
+          if (panel) panel.style.maxHeight = open ? panel.scrollHeight + 'px' : '0';
+        });
+      });
+    })();
+  </script>
+</section>
+<!-- SECTION:faq:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the FAQ section.</p>
+</div>
+
+
+
+</body></html>

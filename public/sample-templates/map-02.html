@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>map-02 — Editorial split (address card left, map right)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* map-02: editorial split. Map iframe on the right (60%), address card
+       on the left (40%) with eyebrow + heading + address + hours + a small
+       "Get directions" link. Contained inside the page max-width with side
+       padding — NOT full-bleed (that's what map-01 is for). The map gets
+       a hairline border + border-radius so it sits as a contained card,
+       not a sliced-off iframe.
+
+       Useful when the page already has a full-bleed section nearby
+       (contact, hero) and another full-bleed map would create rhythm
+       monotony. Also useful for businesses where the address itself is
+       a feature ("we're in the historic center", "by the river") — the
+       text card lets you say that next to the pin. */
+    .map-split {
+      padding: 96px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .map-split__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 56px;
+      align-items: stretch;
+    }
+    /* Left card: editorial typography stacked. Stays the same height as the
+       map column on desktop via align-items:stretch on the grid + flex column
+       inside. The address details get small uppercase labels (matches the
+       contact-02 / footer-02 pattern). */
+    .map-split__card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 380px;
+    }
+    .map-split__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 20px;
+    }
+    .map-split h2 {
+      font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 28px;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+    .map-split__details {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 28px;
+    }
+    .map-split__label {
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 6px;
+      display: block;
+    }
+    .map-split__value {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-dark);
+      margin: 0;
+    }
+    .map-split__directions {
+      margin-top: 32px;
+    }
+    .map-split__directions a {
+      font-family: var(--font-heading);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-dark);
+      padding-bottom: 2px;
+      transition: opacity 0.2s ease;
+    }
+    .map-split__directions a:hover { opacity: 0.6; }
+    .map-split__directions a::after {
+      content: " →";
+      letter-spacing: 0;
+    }
+
+    /* Right side: contained map. Aspect-ratio keeps it sensible across
+       widths instead of a fixed pixel height. Hairline border + rounded
+       corners read as a card; the iframe inside gets full size and no
+       border of its own. */
+    .map-split__map {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      min-height: 360px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-alt);
+      line-height: 0;
+    }
+    .map-split__map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .map-split { padding: 72px 0; }
+      .map-split__inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .map-split__card {
+        max-width: none;
+      }
+      .map-split__map {
+        aspect-ratio: 3 / 2;
+        min-height: 300px;
+      }
+    }
+    @media (max-width: 500px) {
+      .map-split__map {
+        aspect-ratio: 1 / 1;
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: map-02</strong> &nbsp; · &nbsp; Editorial split — address card left, contained map right. Not full-bleed. Map address + directions link are both editable. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:map:start -->
+<!--
+  TEMPLATE: map-02
+  LAYOUT:   2-column editorial split, contained inside max-width. Left (40%):
+            address card with eyebrow + heading + address + hours + a small
+            directions link. Right (60%): contained map iframe with hairline
+            border and rounded corners (NOT full-bleed — that's map-01).
+            Mobile (≤900px): stacks, card on top, map below at 3:2 aspect.
+  CONTENT:  5 head/info text fields + 1 link + 1 map iframe.
+  EDITABLE: 7 fields total — 5 text/longtext + 1 link (directions) +
+            1 map (renderer rebuilds the embed URL from the plain address).
+            `map2_address_text` drives the visible address card; the
+            separate `map2_address` (map-type) drives the iframe pin.
+  PLACEMENT: After contact section, before footer. Or as a standalone
+            "visit us" section on a single-page restaurant/studio site.
+  THEME:    Section bg = --color-bg. Card heading = --color-dark, labels =
+            --color-text-light. Map border = --color-border. Directions link
+            uses --color-dark with bottom-border underline.
+  USE FOR:  Pages that already have a full-bleed section nearby and need a
+            calmer map block, or businesses where the address itself is part
+            of the story (historic center, river-side, etc.).
+-->
+<section id="mapa" class="map-split fade-up">
+  <div class="map-split__inner">
+
+    <div class="map-split__card">
+      <p class="map-split__eyebrow" data-field="map2_eyebrow">Visit us</p>
+      <h2 data-field="map2_heading">You'll find us in the city center</h2>
+
+      <div class="map-split__details">
+        <div>
+          <span class="map-split__label">Address</span>
+          <!--
+            Decoupled from the map pin (Peter 2026-05-21). Visitors see
+            THIS text in the address card — usually a clean street
+            address ("1 High Street, SW1A 1AA London"). The map iframe below
+            uses its OWN field (`map2_address`) which can be a business
+            name, coordinates, or full embed URL for accurate pinning.
+            Two fields = two distinct purposes:
+              - map2_address_text → what the visitor reads
+              - map2_address      → what Google Maps geocodes for the pin
+          -->
+          <p class="map-split__value" data-field="map2_address_text">Street and number, ZIP City</p>
+        </div>
+      </div>
+
+      <p class="map-split__directions">
+        <a data-field="map2_directions_link" data-type="link" href="https://www.google.com/maps/dir/?api=1&destination=1+High+Street%2C+London" target="_blank" rel="noopener">Open directions</a>
+      </p>
+    </div>
+
+    <!--
+      Map iframe. Same data-type="map" pattern as map-01 — the parser stores
+      a plain address in the schema and the renderer rebuilds the embed URL
+      around it. Address can be a written address, a city, or raw GPS
+      coordinates ("48.1486,17.1077").
+    -->
+    <div class="map-split__map">
+      <iframe
+        data-field="map2_address"
+        data-type="map"
+        src="https://maps.google.com/maps?q=1%20High%20Street%2C%20London&t=&z=15&ie=UTF8&iwloc=B&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Map">
+      </iframe>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:map:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the map section.</p>
+</div>
+
+</body>
+</html>

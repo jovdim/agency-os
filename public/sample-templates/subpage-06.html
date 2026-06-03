@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-06 — Detail block (image left, text right)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-06 — single detail block: image on the left (with a green
+       corner bracket), eyebrow + heading + body on the right. Faithful
+       port of the pilimestromy "Equipment and materials" section. Sits on the
+       alternate (light gray) band so it separates from neighbours. */
+    .subpage-detail { background: var(--color-bg-alt); padding: 64px 0; }
+    .subpage-detail .wrap {
+      max-width: var(--max-width, 1200px); margin: 0 auto; padding: 0 32px;
+      display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: center;
+    }
+    /* Image card with a single accent corner bracket (bottom-right). */
+    .subpage-detail .card { position: relative; }
+    .subpage-detail .card img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      border-radius: 16px; box-shadow: var(--shadow-lg);
+    }
+    .subpage-detail .card::after {
+      content: ""; position: absolute; bottom: -14px; right: -14px;
+      width: 90px; height: 90px; pointer-events: none;
+      border-bottom: 3px solid var(--color-primary); border-right: 3px solid var(--color-primary);
+      border-bottom-right-radius: 16px;
+    }
+    .subpage-detail .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-body); font-size: 0.76rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 55%, var(--color-bg) 45%);
+    }
+    .subpage-detail .eyebrow::before {
+      content: ""; display: block; width: 15px; height: 15px;
+      background: var(--color-primary); flex-shrink: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .subpage-detail h2 {
+      font-family: var(--font-heading); font-size: clamp(1.6rem, 3vw, 2.25rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;
+      color: var(--color-text); margin: 16px 0 0;
+    }
+    .subpage-detail .accent-line { display: block; width: 48px; height: 3px; background: var(--color-primary); border-radius: 2px; margin: 20px 0 0; }
+    .subpage-detail .body { margin: 24px 0 0; font-size: 1.02rem; line-height: 1.7; color: var(--color-text); }
+    .subpage-detail .body p { margin: 0 0 1em; } .subpage-detail .body p:last-child { margin: 0; }
+
+    @media (max-width: 900px) {
+      .subpage-detail .wrap { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
+      .subpage-detail .card { order: 2; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-06</strong> &nbsp; · &nbsp; Detail block — image (corner bracket) left, eyebrow + heading + body right. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-06
+  LAYOUT:   2-column detail block. Left: image card with a green corner
+            bracket. Right: eyebrow, heading, accent rule, body. Sits on
+            the alternate light-gray band. Stacks (image below) on mobile.
+  CONTENT:  image, eyebrow, heading, body.
+  EDITABLE: image (image), eyebrow (text), heading (text), body (richtext).
+  THEME:    --color-primary (accent, bracket, eyebrow marker),
+            --color-bg-alt (band), --font-heading/body.
+  JS:       none.
+-->
+<section id="vybava" class="subpage-detail">
+  <div class="wrap fade-up">
+    <div class="card">
+      <img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Photo&font=lato" alt="" width="900" height="675" loading="lazy" decoding="async">
+    </div>
+    <div>
+      <span class="eyebrow" data-field="eyebrow">Equipment</span>
+      <h2 data-field="heading">Equipment and materials</h2>
+      <span class="accent-line"></span>
+      <div class="body" data-field="body" data-type="richtext">
+        <p>Write here what equipment, tools or materials you work with. Specific brands and types build trust and show that you know your craft.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

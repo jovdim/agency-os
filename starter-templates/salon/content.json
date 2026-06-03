@@ -1,0 +1,174 @@
+{
+  "sections": [
+    {
+      "type": "navigation",
+      "label": "Navigation",
+      "order": 0,
+      "fields": {
+        "logo_text": "Beauty Studio Lucia",
+        "links": [
+          { "label": "Domov", "url": "#hero" },
+          { "label": "O nás", "url": "#about" },
+          { "label": "Služby", "url": "#services" },
+          { "label": "Galéria", "url": "#gallery" },
+          { "label": "Referencie", "url": "#testimonials" },
+          { "label": "Kontakt", "url": "#contact" }
+        ],
+        "cta_text": "Rezervovať",
+        "cta_url": "#contact"
+      }
+    },
+    {
+      "type": "hero",
+      "label": "Hero",
+      "order": 1,
+      "fields": {
+        "heading": "Váš čas na krásu",
+        "subheading": "Profesionálny kadernícky salón v srdci Bratislavy. Strihy, farbenie, styling a kompletná starostlivosť o vaše vlasy.",
+        "cta_text": "Objednať sa",
+        "cta_url": "#contact",
+        "background_image": ""
+      }
+    },
+    {
+      "type": "about",
+      "label": "O nás",
+      "order": 2,
+      "fields": {
+        "heading": "O salóne",
+        "description": "Beauty Studio Lucia pôsobí na slovenskom trhu už 12 rokov. Naše skúsené kaderníčky a kozmetičky vám poskytnú služby na najvyššej úrovni v príjemnom a relaxačnom prostredí. Používame výhradne prémiové produkty značiek L'Oréal Professionnel a Kérastase.",
+        "image": "",
+        "experience_years": "12",
+        "completed_projects": "8 500+"
+      }
+    },
+    {
+      "type": "services_grid",
+      "label": "Služby",
+      "order": 3,
+      "fields": {
+        "heading": "Naše služby",
+        "subheading": "Kompletná starostlivosť o vašu krásu",
+        "services": [
+          {
+            "title": "Dámsky strih",
+            "description": "Konzultácia, umytie, strih a fénovanie. Prispôsobené vášmu typu vlasov a tvári.",
+            "price": "od 25 €"
+          },
+          {
+            "title": "Farbenie vlasov",
+            "description": "Kompletné farbenie alebo melír vrátane konzultácie a ošetrenia po farbení.",
+            "price": "od 45 €"
+          },
+          {
+            "title": "Balayage & Ombré",
+            "description": "Moderné techniky pre prirodzený a žiarivý efekt. Ručné maľovanie farby.",
+            "price": "od 75 €"
+          },
+          {
+            "title": "Svadobný účes",
+            "description": "Skúška účesu a kompletný svadobný styling vrátane líčenia.",
+            "price": "od 90 €"
+          },
+          {
+            "title": "Kozmetické ošetrenie",
+            "description": "Hĺbkové čistenie pleti, hydratačné a anti-age ošetrenia.",
+            "price": "od 35 €"
+          },
+          {
+            "title": "Manikúra & Pedikúra",
+            "description": "Klasická alebo gélová manikúra, spa pedikúra s masážou.",
+            "price": "od 20 €"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "label": "Galéria",
+      "order": 4,
+      "fields": {
+        "heading": "Naša práca",
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600",
+            "alt": "Kadernícky salón interiér",
+            "caption": "Náš salón"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600",
+            "alt": "Balayage vlasy",
+            "caption": "Balayage"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600",
+            "alt": "Farbenie vlasov",
+            "caption": "Farbenie"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600",
+            "alt": "Svadobný účes",
+            "caption": "Svadobný účes"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600",
+            "alt": "Manikúra",
+            "caption": "Manikúra"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600",
+            "alt": "Kozmetika",
+            "caption": "Kozmetika"
+          }
+        ]
+      }
+    },
+    {
+      "type": "testimonials",
+      "label": "Referencie",
+      "order": 5,
+      "fields": {
+        "heading": "Čo hovoria naše klientky",
+        "testimonials": [
+          {
+            "quote": "Lucia a jej tím sú úžasné! Konečne som našla salón, kde sa cítim ako doma. Moje vlasy nikdy nevyzerali lepšie.",
+            "author": "Martina K.",
+            "role": "Stála klientka"
+          },
+          {
+            "quote": "Svadobný účes bol presne podľa mojich predstáv. Ďakujem za nádherný deň!",
+            "author": "Zuzana B.",
+            "role": "Nevesta"
+          },
+          {
+            "quote": "Profesionálny prístup a vždy perfektný výsledok. Odporúčam každému!",
+            "author": "Petra N.",
+            "role": "Klientka 3 roky"
+          }
+        ]
+      }
+    },
+    {
+      "type": "contact",
+      "label": "Kontakt",
+      "order": 6,
+      "fields": {
+        "heading": "Kontaktujte nás",
+        "subheading": "Objednajte sa telefonicky alebo nás navštívte",
+        "address": "Obchodná 28, 811 06 Bratislava",
+        "phone": "+421 902 345 678",
+        "email": "info@beautystudiolucia.sk",
+        "hours": "Po–Pi: 9:00 – 19:00 | So: 9:00 – 14:00"
+      }
+    },
+    {
+      "type": "footer",
+      "label": "Päta",
+      "order": 7,
+      "fields": {
+        "company_name": "Beauty Studio Lucia",
+        "copyright": "© 2025 Beauty Studio Lucia. Všetky práva vyhradené."
+      }
+    }
+  ]
+}

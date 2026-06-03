@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>map-03 — Full-bleed map with overlay address card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* map-03: full-bleed map with a floating address card overlaid on
+       the left. Card sits absolutely positioned, vertically centered,
+       with the section padding as left offset so it never touches the
+       edge. The card is white with a subtle shadow — feels like the
+       Airbnb listing-detail map / property-page pattern.
+
+       Same 7-field schema as map-01 — clients can swap freely between
+       the two `map_*` variants. Different visual personality: map-01 is
+       calm centered intro + map below; map-03 is full-bleed map with
+       the info card "punched into" the map landscape. */
+    .map-03 {
+      position: relative;
+      width: 100%;
+      height: 560px;
+      overflow: hidden;
+      background: var(--color-bg-alt);
+    }
+    .map-03__map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      line-height: 0;
+    }
+    .map-03__map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      filter: saturate(0.9);
+    }
+    /* Floating card — left-aligned with the page's container padding so
+       it lines up with text content above/below this section. Vertically
+       centered. Max-width keeps it card-shaped on wide viewports. */
+    .map-03__card {
+      position: absolute;
+      top: 50%;
+      left: max(24px, calc((100% - var(--max-width)) / 2 + 24px));
+      transform: translateY(-50%);
+      max-width: 380px;
+      width: calc(100% - 48px);
+      background: var(--color-bg);
+      border-radius: 12px;
+      padding: 36px 32px;
+      box-shadow: var(--shadow-lg);
+      z-index: 2;
+    }
+    .map-03__card h2 {
+      font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--color-dark);
+      margin: 16px 0 24px;
+      font-weight: 600;
+    }
+    .map-03__details {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 20px;
+    }
+    .map-03__label {
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 4px;
+      display: block;
+    }
+    .map-03__value {
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      line-height: 1.5;
+      color: var(--color-dark);
+      margin: 0;
+    }
+    .map-03__directions {
+      margin-top: 24px;
+    }
+    .map-03__directions a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      background: var(--color-dark);
+      color: var(--color-light);
+      border-radius: var(--border-radius);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: background var(--transition);
+    }
+    .map-03__directions a:hover {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .map-03__directions a::after {
+      content: "→";
+      transition: transform 0.2s ease;
+    }
+    .map-03__directions a:hover::after {
+      transform: translateX(3px);
+    }
+
+    @media (max-width: 700px) {
+      /* Mobile: card moves to the BOTTOM of the map (still floating,
+         but pinned to the bottom-left so it doesn't cover the pin in
+         the middle). The map height drops a bit too. */
+      .map-03 { height: 580px; }
+      .map-03__card {
+        top: auto;
+        bottom: 24px;
+        transform: none;
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-width: none;
+        padding: 24px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: map-03</strong> &nbsp; · &nbsp; Full-bleed map with floating address card overlay (Airbnb-style). Card on left desktop, bottom-pinned mobile. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:map:start -->
+<!--
+  TEMPLATE: map-03
+  LAYOUT:   Full-bleed Google Maps iframe (560px tall, 580px mobile) with
+            a floating white address card overlaid on the left, vertically
+            centered. Card aligns with the page's container padding so it
+            sits in the same column as text content above / below this
+            section. Mobile (≤700px): card pins to the bottom-left so it
+            doesn't cover the map pin in the middle.
+  CONTENT:  eyebrow + heading + 2-line address + hours + directions
+            button + map iframe (the iframe's editable field stores a
+            plain address; the renderer rebuilds the embed URL).
+  EDITABLE: 7 fields — map_eyebrow + map_heading + map_address_street +
+            map_address_city + map_hours + map_directions_link (link) +
+            map_address (map type). Same schema as map-01 — 100% loss-
+            free swap between them.
+  THEME:    Map gets a slight desaturation filter for a calmer look. Card
+            bg = --color-bg with shadow-lg. Heading = --color-dark, labels =
+            --color-text-light. Directions button uses --color-dark bg with
+            light text; hover swaps to --color-primary. Eyebrow underline
+            applied globally by base CSS.
+  USE FOR:  Pages where the location IS the experience — restaurants,
+            hotels, vineyards, retail storefronts. The card "punches into"
+            the map landscape so the address feels like a landmark callout
+            rather than a separate text block. Different from map-01
+            (text above + full map below) and map-02 (split).
+-->
+<section id="mapa" class="map-03 fade-up">
+  <div class="map-03__map">
+    <iframe
+      data-field="map_address"
+      data-type="map"
+      src="https://maps.google.com/maps?q=1%20High%20Street%2C%20London&t=&z=15&ie=UTF8&iwloc=B&output=embed"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Map">
+    </iframe>
+  </div>
+
+  <div class="map-03__card">
+    <span class="eyebrow" data-field="map_eyebrow">Visit us</span>
+    <h2 data-field="map_heading">You'll find us here</h2>
+
+    <div class="map-03__details">
+      <div>
+        <span class="map-03__label">Address</span>
+        <!--
+          Decoupled from the map pin (Peter 2026-05-21, same pattern as
+          map-02). Visitors see THIS text in the address card — usually
+          a clean street address. The map iframe above uses its OWN
+          field (`map_address`) which can be a business name,
+          coordinates, or full embed URL for accurate pinning.
+        -->
+        <p class="map-03__value" data-field="map_address_text">Street and number, ZIP City</p>
+      </div>
+    </div>
+
+    <div class="map-03__directions">
+      <a data-field="map_directions_link" data-type="link" href="https://www.google.com/maps/dir/?api=1&destination=1+High+Street%2C+London" target="_blank" rel="noopener">Open directions</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:map:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the map section.</p>
+</div>
+
+</body>
+</html>

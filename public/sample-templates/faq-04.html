@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>faq-04 — Numbered single-column (all visible)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* faq-04: numbered single-column list, all questions visible, NO
+       accordion. Each item has a big "01 / 02 / 03 ..." numeral on the
+       left (CSS counter, auto-numbered) and the Q+A pair on the right.
+       Editorial, magazine-style — implies a natural order to the
+       questions (intro topic first, edge cases later).
+
+       Same auto-numbering pattern as reviews-05: CSS counter +
+       decimal-leading-zero so single digits show as 01, 02 instead of
+       1, 2. Adding/removing items keeps the sequence correct without
+       per-item edits.
+
+       Same shared schema as faq-03 / faq-05 (faq_eyebrow + faq_headline
+       + faq_items repeater) so clients can swap freely. */
+    .faq-04 .faq-numbered {
+      counter-reset: faq-counter;
+      max-width: 880px;
+      margin: 0 auto;
+      display: grid;
+      gap: 48px;
+    }
+    .faq-04 .faq-numbered__item {
+      counter-increment: faq-counter;
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .faq-04 .faq-numbered__item::before {
+      /* Auto-generated big numeral — pads single digits with leading
+         zero (01, 02, ... 12) for editorial weight. */
+      content: counter(faq-counter, decimal-leading-zero);
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 3.5vw, 2.6rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--color-primary);
+      padding-top: 4px;
+    }
+    .faq-04 .faq-numbered__body {
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .faq-04 .faq-numbered__item:last-child .faq-numbered__body {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .faq-04 .faq-numbered__q {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: clamp(1.1rem, 1.8vw, 1.25rem);
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      color: var(--color-dark);
+      margin: 0 0 14px;
+    }
+    .faq-04 .faq-numbered__a {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0;
+      max-width: 640px;
+    }
+    @media (max-width: 640px) {
+      .faq-04 .faq-numbered__item {
+        grid-template-columns: 56px 1fr;
+        gap: 20px;
+      }
+      .faq-04 .faq-numbered__item::before {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: faq-04</strong> &nbsp; · &nbsp; Numbered single-column list, all visible, no accordion. CSS counter auto-numbers items. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:faq:start -->
+<!--
+  TEMPLATE: faq-04
+  LAYOUT:   Single narrow centered column (max 880px), numbered list of
+            question/answer pairs. Each item: big CSS-counter numeral on
+            the left (01, 02, ...), Q+A stacked on the right. Hairline
+            divider between items, none after the last.
+  CONTENT:  eyebrow + headline + faq_items repeater.
+            Each item = { question, answer }.
+  EDITABLE: 2 top-level fields + 1 repeater (faq_items, 2..10 default 5).
+  THEME:    Numerals use --color-primary. Question --color-dark in heading
+            font. Answer --color-text-light. Hairlines --color-border.
+            Numbering is automatic — adding / removing items keeps the
+            sequence correct without per-item edits.
+  USE FOR:  FAQs where the order matters — onboarding-style questions
+            ("How do I get started?" → "What's next?" → "When can I
+            expect..."). Numbering implies a natural sequence. Different
+            from faq-03 (2-col grid) and faq-05 (accordion).
+-->
+<section id="otazky" class="faq-04 section-alt fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="faq_eyebrow">Frequently asked questions</span>
+      <h2 data-field="faq_headline">The questions we get asked most often</h2>
+    </div>
+
+    <div class="faq-numbered" data-repeat="faq_items" data-min="2" data-max="10">
+      <div class="faq-numbered__item" data-item-id-source="question">
+        <div class="faq-numbered__body">
+          <h3 class="faq-numbered__q" data-field="question">Write the first question here?</h3>
+          <p class="faq-numbered__a" data-field="answer" data-type="richtext">Write the answer to the first question here. Be specific, state what the customer gets, when, and under what conditions. Two to three sentences are enough.</p>
+        </div>
+      </div>
+      <div class="faq-numbered__item">
+        <div class="faq-numbered__body">
+          <h3 class="faq-numbered__q" data-field="question">Write the second question here?</h3>
+          <p class="faq-numbered__a" data-field="answer" data-type="richtext">Write the answer to the second question here. Answer directly, avoid marketing language, the customer wants a specific piece of information.</p>
+        </div>
+      </div>
+      <div class="faq-numbered__item">
+        <div class="faq-numbered__body">
+          <h3 class="faq-numbered__q" data-field="question">Write the third question here?</h3>
+          <p class="faq-numbered__a" data-field="answer" data-type="richtext">Write the answer to the third question here. If the answer is more complex, use three to four sentences. Do not write long paragraphs, stay concise.</p>
+        </div>
+      </div>
+      <div class="faq-numbered__item">
+        <div class="faq-numbered__body">
+          <h3 class="faq-numbered__q" data-field="question">Write the fourth question here?</h3>
+          <p class="faq-numbered__a" data-field="answer" data-type="richtext">Write the answer to the fourth question here. Anticipate what the customer will want to know after the first three questions and answer it.</p>
+        </div>
+      </div>
+      <div class="faq-numbered__item">
+        <div class="faq-numbered__body">
+          <h3 class="faq-numbered__q" data-field="question">Write the fifth question here?</h3>
+          <p class="faq-numbered__a" data-field="answer" data-type="richtext">Write the answer to the fifth question here. The last question should address doubts, for example price, guarantee, or the delivery process.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:faq:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the FAQ section.</p>
+</div>
+
+
+
+</body></html>

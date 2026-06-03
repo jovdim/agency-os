@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-05 — Horizontal image-left list</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-05: compact horizontal-row list. Each service is a row
+       with the photo on the LEFT (fixed 3:2) and title + description +
+       link to the right. Thin hairline between rows for editorial
+       rhythm. Distinct from services-02 (vertical cards in a 3-col
+       grid) and services-01/03 (huge alternating-side images): this
+       one packs more services into the same vertical space without
+       feeling like a wall, and keeps a real photo on every row. */
+
+    .services-05 .container { max-width: 1080px; }
+
+    .services-05 .head {
+      max-width: 760px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+    /* Hide the eyebrow when empty so the template runs cleanly without
+       a "SERVICES" label above the title, matches services-01/03/04. */
+    .services-05 .head .eyebrow:empty { display: none; }
+    /* Same primary-color underline accent as services-01/03/04 so the
+       family reads as one consistent set in the catalog. */
+    .services-05 .head h2 {
+      position: relative;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+    }
+    .services-05 .head h2::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+    .services-05 .head p {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    /* List container — top + bottom hairlines so the list reads as a
+       discrete block. Between-rows hairlines come from each .row's
+       border-top below. */
+    .services-05 .list {
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* Row layout: image column fixed at 420px on desktop so all rows
+       visually align even when descriptions are different lengths.
+       Started at 320px; bumped to 420px so the photo carries more
+       weight in the row (Peter 2026-05-21). 1fr for the text column
+       eats whatever's left. Vertical centering keeps short
+       descriptions from floating to the top of a tall image card. */
+    .services-05 .row {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 36px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Image: fixed 3:2 aspect so all photos line up regardless of the
+       source resolution. object-fit: cover crops, never distorts.
+       Subtle shadow + border-radius give each row a hint of card
+       structure without making it shout. */
+    .services-05 .row-img {
+      width: 100%;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      display: block;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Text column */
+    .services-05 .row-body { min-width: 0; }
+    .services-05 .row-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+      margin: 0 0 10px;
+      color: var(--color-text);
+    }
+    .services-05 .row-description {
+      color: var(--color-text-light);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin: 0 0 14px;
+    }
+
+    /* Arrow-link CTA — primary-colored, animated arrow on hover. Same
+       pattern as services-05's earlier accordion (kept for visual
+       continuity in case a tech reuses the old `link` field key). */
+    .services-05 .row-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--color-primary);
+      text-decoration: none;
+      width: fit-content;
+    }
+    .services-05 .row-cta::after {
+      content: "→";
+      transition: transform var(--transition);
+    }
+    .services-05 .row-cta:hover::after { transform: translateX(4px); }
+
+    /* Mobile: collapse to image-on-top stacked. Smaller padding
+       between rows since vertical scroll is the natural reading mode.
+       Image keeps its 3:2 ratio but fills the row width — same trick
+       services-02 uses. */
+    @media (max-width: 700px) {
+      .services-05 .row {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 24px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-05</strong> &nbsp; · &nbsp; Horizontal list — image left (fixed 3:2), title + description + link right. Thin hairline between rows. Mobile stacks image-on-top. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-05
+  LAYOUT:   Vertical list of horizontal rows. Each row: image (3:2,
+            fixed 320px wide on desktop) on the left + title +
+            description + arrow CTA on the right. Hairlines top +
+            between every row for a magazine/journal rhythm. Mobile
+            collapses to image-on-top stacked.
+  CONTENT:  eyebrow + headline + subheadline, then a repeater of
+            services. Each item = { image, title, description, link }.
+  EDITABLE: 3 top-level + 1 repeater (1..99, default 4).
+  THEME:    Title in --color-text, description in --color-text-light,
+            CTA + section-title underline in --color-primary. Card
+            shadow uses --shadow-sm (subtle — the list is the
+            structure, not the cards).
+-->
+<section id="sluzby" class="services-05 fade-up">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-field="services_eyebrow"></span>
+      <h2 data-field="services_headline">Our services</h2>
+      <p data-field="services_subheadline" data-type="richtext">Write a short subtitle here, sum up in one sentence what you offer and what sets you apart (speed, quality, price).</p>
+    </div>
+
+    <!--
+      Services repeater: sales adds/removes service rows from the
+      composer (1..99). Each item has image + title + description +
+      link. data-item-id-source="title" stamps an anchor id from the
+      title slug at render time (e.g. "Excavation work" →
+      id="excavation-work") so other sections can deep-link to the row.
+    -->
+    <div class="list" data-repeat="services" data-min="1" data-max="99">
+      <article class="row" data-item-id-source="title">
+        <img class="row-img" data-field="image" src="https://placehold.co/640x428/d6d3d1/57534e?text=Service+1&font=lato" alt="" width="640" height="428" loading="lazy">
+        <div class="row-body">
+          <h3 class="row-title" data-field="title">First service name</h3>
+          <p class="row-description" data-field="description" data-type="richtext">Write a description of the first service here. 2 to 3 sentences about what you do within this service, who it is for and what the customer gets from it.</p>
+          <a class="row-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="row">
+        <img class="row-img" data-field="image" src="https://placehold.co/640x428/d6d3d1/57534e?text=Service+2&font=lato" alt="" width="640" height="428" loading="lazy">
+        <div class="row-body">
+          <h3 class="row-title" data-field="title">Second service name</h3>
+          <p class="row-description" data-field="description" data-type="richtext">Write a description of the second service here. Be specific, state what problem this service solves and what the result is for the customer.</p>
+          <a class="row-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="row">
+        <img class="row-img" data-field="image" src="https://placehold.co/640x428/d6d3d1/57534e?text=Service+3&font=lato" alt="" width="640" height="428" loading="lazy">
+        <div class="row-body">
+          <h3 class="row-title" data-field="title">Third service name</h3>
+          <p class="row-description" data-field="description" data-type="richtext">Write a description of the third service here. If your offer differs for various segments, mention it (companies vs. private customers, larger vs. smaller jobs).</p>
+          <a class="row-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="row">
+        <img class="row-img" data-field="image" src="https://placehold.co/640x428/d6d3d1/57534e?text=Service+4&font=lato" alt="" width="640" height="428" loading="lazy">
+        <div class="row-body">
+          <h3 class="row-title" data-field="title">Fourth service name</h3>
+          <p class="row-description" data-field="description" data-type="richtext">Write a description of the fourth service here. The fourth service is often complementary or specialized, describe it with regard to how it complements the main services.</p>
+          <a class="row-cta" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

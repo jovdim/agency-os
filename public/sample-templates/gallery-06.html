@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-06 — Infinite marquee (dual-direction)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-06 — two horizontal photo strips moving in opposite
+       directions on continuous CSS-keyframe loop. Click any photo to
+       open it in a full-screen lightbox with prev/next arrow nav.
+       The marquee pauses while the lightbox is open + on row hover.
+
+       Inspired by Linear, Vercel, Stripe, Apple "Featured by" sections
+       — the "logo soup" infinite-marquee pattern applied to project
+       photos. Pure visual; the motion is the design. */
+
+    .gallery-marquee {
+      padding: 96px 0;
+      background: var(--color-bg);
+      overflow: hidden;
+    }
+    .gallery-marquee__head {
+      max-width: 720px;
+      margin: 0 auto 64px;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .gallery-marquee__head h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.85rem, 3.8vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 14px 0 0;
+    }
+    .gallery-marquee__head h2 > p { margin: 0; font: inherit; color: inherit; }
+
+    .gallery-marquee__row {
+      position: relative;
+      /* No-JS fallback (composer + Preview-site, which both strip scripts):
+         a horizontal photo strip you can scroll by hand — looks like the
+         live marquee, not a stacked grid. The live script adds
+         `.is-animating` and switches this to a clipped, auto-scrolling row. */
+      overflow-x: auto;
+      overflow-y: hidden;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .gallery-marquee__row::-webkit-scrollbar { display: none; }
+    .gallery-marquee.is-animating .gallery-marquee__row { overflow: hidden; }
+    .gallery-marquee__row + .gallery-marquee__row { margin-top: 16px; }
+    /* Edge fades only make sense over the scrolling marquee — gate them
+       on `.is-animating` so the composer's static grid has clean edges. */
+    .gallery-marquee.is-animating .gallery-marquee__row::before,
+    .gallery-marquee.is-animating .gallery-marquee__row::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .gallery-marquee.is-animating .gallery-marquee__row::before {
+      left: 0;
+      background: linear-gradient(to right, var(--color-bg) 0%, transparent 100%);
+    }
+    .gallery-marquee.is-animating .gallery-marquee__row::after {
+      right: 0;
+      background: linear-gradient(to left, var(--color-bg) 0%, transparent 100%);
+    }
+
+    /* The track is a single horizontal row in BOTH states. Without JS it
+       just overflows its scrollable row (manual strip). The animation —
+       which needs the track DOUBLED by the live script's clone to loop
+       seamlessly (translateX(-50%)) — is gated behind `.is-animating`,
+       added AFTER the clone, so there's never a gap. */
+    .gallery-marquee__track {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+    }
+    .gallery-marquee.is-animating .gallery-marquee__track {
+      animation: marquee-ltr 50s linear infinite;
+    }
+    .gallery-marquee.is-animating .gallery-marquee__row:hover .gallery-marquee__track,
+    .gallery-marquee.is-animating.is-locked .gallery-marquee__track {
+      animation-play-state: paused;
+    }
+    .gallery-marquee.is-animating .gallery-marquee__row--reverse .gallery-marquee__track {
+      animation-name: marquee-rtl;
+      animation-duration: 45s;
+    }
+    @keyframes marquee-ltr {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-rtl {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+
+    /* Each track holds a repeater of cards. Make the repeater
+       wrappers transparent so the flex track flows naturally. */
+    .gallery-marquee__track [data-repeat],
+    .gallery-marquee__track [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .gallery-marquee__card {
+      flex: 0 0 auto;
+      width: 480px;
+      height: 320px;
+      overflow: hidden;
+      position: relative;
+      cursor: zoom-in;
+    }
+    .gallery-marquee__card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease, filter 0.3s ease;
+    }
+    .gallery-marquee__card:hover img {
+      transform: scale(1.05);
+      filter: brightness(1.05);
+    }
+
+    @media (max-width: 800px) {
+      .gallery-marquee { padding: 72px 0; }
+      .gallery-marquee__head { margin-bottom: 40px; }
+      .gallery-marquee__card { width: 320px; height: 220px; }
+      .gallery-marquee__row::before,
+      .gallery-marquee__row::after { width: 28px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gallery-marquee.is-animating .gallery-marquee__row { overflow-x: auto; }
+      .gallery-marquee.is-animating .gallery-marquee__track { animation: none; }
+      .gallery-marquee.is-animating .gallery-marquee__row::before,
+      .gallery-marquee.is-animating .gallery-marquee__row::after { display: none; }
+    }
+
+    /* ── Lightbox ──
+       Same proven viewer as gallery-01 / gallery-07: frosted-glass
+       backdrop, 100vw×100vh stage, round translucent close/prev/next
+       buttons above the stage (z-index:2 so the image never covers them),
+       a pill counter, slide transition, keyboard + touch. The script
+       reparents this to <body> at init and runs only in a top-level
+       window (live site) — never in the composer iframe, which owns
+       card clicks for editing. The marquee pauses while it's open. */
+    .gallery-marquee__lightbox {
+      position: fixed; inset: 0;
+      background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .gallery-marquee__lightbox.is-open { display: flex; opacity: 1; }
+    body.gallery-marquee-locked { overflow: hidden; }
+
+    .gallery-marquee__lb-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-marquee__lb-stage img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      opacity: 1;
+      transform: translateX(0);
+      transition: transform 0.32s ease, opacity 0.32s ease;
+    }
+
+    .gallery-marquee__lb-btn {
+      position: absolute;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      display: grid; place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      backdrop-filter: blur(6px);
+      border: 0;
+      z-index: 2;
+    }
+    .gallery-marquee__lb-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.05);
+    }
+    .gallery-marquee__lb-btn svg { width: 22px; height: 22px; }
+    .gallery-marquee__lb-close { top: 20px; right: 20px; }
+    .gallery-marquee__lb-prev  { left: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-marquee__lb-next  { right: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-marquee__lb-prev:hover { transform: translateY(-50%) scale(1.05); }
+    .gallery-marquee__lb-next:hover { transform: translateY(-50%) scale(1.05); }
+
+    .gallery-marquee__lb-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.88rem;
+      font-family: var(--font-heading);
+      font-weight: 500;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+    @media (max-width: 640px) {
+      .gallery-marquee__lb-close { top: 12px; right: 12px; }
+      .gallery-marquee__lb-prev  { left: 8px; }
+      .gallery-marquee__lb-next  { right: 8px; }
+      .gallery-marquee__lb-counter { bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-06</strong> &nbsp; · &nbsp; Infinite marquee with click-to-expand lightbox. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-06
+  LAYOUT:   Centered intro on top, then two photo strips moving in
+            opposite directions on continuous CSS-keyframe loop. Each
+            strip pauses on hover so the visitor can rest their eye on
+            a specific shot. Soft gradient fade on left + right edges
+            so photos enter/exit smoothly. Card size uniform per
+            breakpoint (480×320 desktop, 320×220 mobile).
+  INTERACT: Click any photo to open it in a full-screen lightbox.
+            Prev/Next arrow buttons + arrow keys navigate. Close via
+            ×, click outside, or Esc. The marquee pauses while the
+            lightbox is open via the `.is-locked` class.
+  SEAMLESS: The JS clones each track's children once on mount so the
+            CSS transform: translateX(-50%) creates a perfect loop
+            (the second half perfectly replaces the first as it slides
+            off-screen).
+  ACCESS:   Respects `prefers-reduced-motion: reduce` — the marquee
+            flattens into a wrap layout (no animation, no edge fades)
+            for users who have motion sensitivity.
+  CONTENT:  eyebrow + headline + 2 sets of 4-16 images (one set per
+            row).
+  EDITABLE: gallery_eyebrow + gallery_headline (text). Two repeaters:
+            row1_images (top row, right→left) and row2_images (bottom
+            row, left→right). Each has an `image` field per item.
+  USE FOR:  Premium / modern brand voice — when the client wants a
+            "lots of work to show off" feel without a wall of grid
+            tiles. Different from gallery-04 (before/after) and
+            gallery-05 (featured + thumb rail).
+-->
+<section id="galeria" class="gallery-marquee fade-up" data-field-order="gallery_eyebrow,gallery_headline,row1_images,row2_images">
+  <div class="gallery-marquee__head">
+    <span class="eyebrow" data-field="gallery_eyebrow">Gallery</span>
+    <h2 data-field="gallery_headline">Our work in pictures</h2>
+  </div>
+
+  <!-- ROW 1 — right→left -->
+  <div class="gallery-marquee__row">
+    <div class="gallery-marquee__track" data-track="1">
+      <div data-repeat="row1_images" data-min="4" data-max="16" style="display:contents">
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2 — left→right -->
+  <div class="gallery-marquee__row gallery-marquee__row--reverse">
+    <div class="gallery-marquee__track" data-track="2">
+      <div data-repeat="row2_images" data-min="4" data-max="16" style="display:contents">
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1564540583246-934409427776?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900&auto=format&fit=crop" alt="">
+        </div>
+        <div class="gallery-marquee__card">
+          <img data-field="image" src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=900&auto=format&fit=crop" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    Lightbox modal — same structure/behavior as gallery-01 / gallery-07.
+    INSIDE the section markers so it ships with the published HTML (a node
+    placed after SECTION:gallery:end is dropped by the parser — that was
+    the bug where clicking did nothing on the live site). Reparented to
+    <body> at init so the marquee's transformed tracks can't trap this
+    position:fixed overlay. Stage starts empty; the script inserts an
+    <img> on open and swaps it on prev/next.
+  -->
+  <div class="gallery-marquee__lightbox" role="dialog" aria-modal="true" aria-label="Gallery" hidden>
+    <button class="gallery-marquee__lb-btn gallery-marquee__lb-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <button class="gallery-marquee__lb-btn gallery-marquee__lb-prev" type="button" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <div class="gallery-marquee__lb-stage"></div>
+    <button class="gallery-marquee__lb-btn gallery-marquee__lb-next" type="button" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+    <div class="gallery-marquee__lb-counter"><span class="gallery-marquee__lb-current">1</span> / <span class="gallery-marquee__lb-total">1</span></div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('.gallery-marquee');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      // The MARQUEE itself (clone + scroll) is purely visual, so it runs
+      // EVERYWHERE the script runs — including the composer iframe — so the
+      // editor preview matches the live site. Only the click-to-open
+      // LIGHTBOX is gated to a top-level window further down, because the
+      // composer reserves card clicks for editing.
+      var topLevel = (window === window.parent);
+
+      // Seamless loop: clone each track's children once so translateX(-50%)
+      // wraps perfectly. In the composer the clones are made inert so they
+      // never intercept a click meant for the editor (the real cards stay
+      // editable); on the live site clones stay clickable so any photo
+      // scrolling past opens the lightbox.
+      section.querySelectorAll('.gallery-marquee__track').forEach(function (track) {
+        var children = Array.prototype.slice.call(track.children);
+        children.forEach(function (child) {
+          var clone = child.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          if (!topLevel) clone.style.pointerEvents = 'none';
+          track.appendChild(clone);
+        });
+      });
+
+      // Switch from the static strip to the scrolling marquee ONLY now that
+      // the track is doubled — so the loop is seamless (no gap).
+      section.classList.add('is-animating');
+
+      // Everything below is the lightbox — a top-level-only enhancement.
+      if (!topLevel) return;
+
+      // Source list = ORIGINAL (non-clone) cards across both rows, in order.
+      var srcs = [];
+      var alts = [];
+      section.querySelectorAll('.gallery-marquee__card').forEach(function (card) {
+        if (card.closest('[aria-hidden="true"]')) return;
+        var img = card.querySelector('img');
+        if (!img) return;
+        var src = img.getAttribute('src') || '';
+        if (!src) return;
+        srcs.push(src);
+        alts.push(img.getAttribute('alt') || '');
+      });
+      if (!srcs.length) return;
+
+      var lb = section.querySelector('.gallery-marquee__lightbox');
+      if (!lb) return;
+      if (lb.parentElement !== document.body) document.body.appendChild(lb);
+
+      var stage = lb.querySelector('.gallery-marquee__lb-stage');
+      var currentEl = lb.querySelector('.gallery-marquee__lb-current');
+      var totalEl = lb.querySelector('.gallery-marquee__lb-total');
+      var closeBtn = lb.querySelector('.gallery-marquee__lb-close');
+      var prevBtn = lb.querySelector('.gallery-marquee__lb-prev');
+      var nextBtn = lb.querySelector('.gallery-marquee__lb-next');
+
+      var currentIdx = 0;
+      var lastFocused = null;
+      if (totalEl) totalEl.textContent = String(srcs.length);
+      if (srcs.length <= 1) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+      }
+
+      function show(idx, dir) {
+        currentIdx = (idx + srcs.length) % srcs.length;
+        var imgUrl = srcs[currentIdx];
+        var imgAlt = alts[currentIdx];
+        var existing = stage.firstElementChild;
+        var d = dir || 0;
+        var outX = d > 0 ? '-40%' : d < 0 ? '40%' : '0';
+        var inStartX = d > 0 ? '40%' : d < 0 ? '-40%' : '0';
+
+        function swap() {
+          stage.innerHTML = '';
+          var newEl = document.createElement('img');
+          newEl.src = imgUrl;
+          newEl.alt = imgAlt;
+          newEl.style.transition = 'none';
+          newEl.style.transform = 'translateX(' + inStartX + ')';
+          newEl.style.opacity = '0';
+          stage.appendChild(newEl);
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              newEl.style.transition = '';
+              newEl.style.transform = 'translateX(0)';
+              newEl.style.opacity = '1';
+            });
+          });
+          if (currentEl) currentEl.textContent = String(currentIdx + 1);
+        }
+
+        if (existing && d !== 0) {
+          existing.style.transform = 'translateX(' + outX + ')';
+          existing.style.opacity = '0';
+          setTimeout(swap, 320);
+        } else {
+          swap();
+        }
+      }
+
+      function open(idx) {
+        lastFocused = document.activeElement;
+        show(idx);
+        lb.hidden = false;
+        requestAnimationFrame(function () { lb.classList.add('is-open'); });
+        section.classList.add('is-locked');
+        document.body.classList.add('gallery-marquee-locked');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function close() {
+        lb.classList.remove('is-open');
+        section.classList.remove('is-locked');
+        document.body.classList.remove('gallery-marquee-locked');
+        setTimeout(function () { lb.hidden = true; stage.innerHTML = ''; }, 250);
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      // Delegated click — fires for BOTH original and cloned cards (both
+      // scroll past in the marquee), mapping the clicked photo to its
+      // index in the source list.
+      section.addEventListener('click', function (e) {
+        var card = e.target.closest('.gallery-marquee__card');
+        if (!card) return;
+        var img = card.querySelector('img');
+        if (!img) return;
+        var idx = srcs.indexOf(img.getAttribute('src'));
+        if (idx < 0) idx = 0;
+        open(idx);
+      });
+
+      if (closeBtn) closeBtn.addEventListener('click', close);
+      if (prevBtn) prevBtn.addEventListener('click', function () { show(currentIdx - 1, -1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { show(currentIdx + 1, 1); });
+
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb) close();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(currentIdx - 1, -1);
+        else if (e.key === 'ArrowRight') show(currentIdx + 1, 1);
+      });
+
+      var touchStartX = 0;
+      lb.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      lb.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          var step = dx < 0 ? 1 : -1;
+          show(currentIdx + step, step);
+        }
+      }, { passive: true });
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

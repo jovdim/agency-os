@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cta-02 — Editorial split band (no image, solid dark panel)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* cta-02: editorial split band. No background image, no dark overlay,
+       no centered drama. A full-bleed panel on --color-secondary (dark)
+       with the heading + supporting line on the left and a single CTA
+       button on the right — asymmetric and calm. The contrast vs cta-01
+       (image + overlay + centered + 2 buttons) is the whole point: pick
+       cta-02 when you don't have a great hero-grade photo for this slot
+       or when the page already has lots of imagery and needs a typographic
+       breather before the footer.
+
+       Uses --color-secondary as the panel so it tracks the user's dark
+       theme color. Text is forced to --color-text-on-dark (the fixed
+       neutral guaranteed-readable on dark surfaces). The CTA button is
+       --color-primary so the user's brand accent still plays. */
+    .cta-band-editorial {
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+      padding: 96px 0;
+    }
+    .cta-band-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 56px;
+      align-items: center;
+    }
+    .cta-band-editorial__text { max-width: 640px; }
+    .cta-band-editorial__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin: 0 0 20px;
+    }
+    .cta-band-editorial h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px;
+      color: var(--color-light);
+      font-weight: 600;
+    }
+    .cta-band-editorial__sub {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--color-text-on-dark);
+      opacity: 0.78;
+      margin: 0;
+    }
+    /* Right column: button alignment is end on desktop so the band reads
+       as "statement on the left, action on the right." Single button only —
+       a second action would dilute the move. */
+    .cta-band-editorial__action {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .cta-band-editorial__action .btn {
+      min-width: 220px;
+      justify-content: center;
+      padding: 18px 32px;
+      font-size: 1rem;
+    }
+    /* The base .btn-primary already covers background + color. Hover
+       inverts to --color-bg with --color-secondary text, which keeps
+       the button readable on this dark panel without a custom palette. */
+    .cta-band-editorial__action .btn-primary:hover {
+      background: var(--color-bg);
+      color: var(--color-secondary);
+      transform: translateY(-2px);
+    }
+
+    /* Mobile: stack to a single column. The action goes flush-left so
+       the visual rhythm matches the heading above it. Padding tightens
+       so the band doesn't feel oversized on phones. */
+    @media (max-width: 800px) {
+      .cta-band-editorial { padding: 72px 0; }
+      .cta-band-editorial__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .cta-band-editorial__action {
+        justify-content: flex-start;
+      }
+      .cta-band-editorial__action .btn {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: cta-02</strong> &nbsp; · &nbsp; Editorial split band — heading + sub left, single CTA right, solid dark panel (no image, no overlay). &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- Spacer (preview-only) so the band doesn't sit at the very top of the viewport -->
+<div style="min-height:80px;background:var(--color-bg)"></div>
+
+<!-- SECTION:cta:start -->
+<!--
+  TEMPLATE: cta-02
+  LAYOUT:   Full-bleed editorial band on --color-secondary. Asymmetric grid
+            (1.4fr text / 1fr action). Left: eyebrow + heading + supporting
+            line. Right: single CTA button, end-aligned. Mobile: stacks.
+  CONTENT:  eyebrow, headline, supporting line, single CTA button.
+  EDITABLE: 4 fields — 3 text/longtext + 1 link.
+  THEME:    Panel = --color-secondary (dark). Eyebrow = --color-primary.
+            Heading = --color-light, sub = --color-text-on-dark @ 78%.
+            Button = .btn-primary; hover inverts to --color-bg / --color-secondary.
+  USE FOR:  Calmer CTA than cta-01 — no image required. Pick when the page
+            already has heavy imagery elsewhere or when the client doesn't
+            have a hero-grade photo for the CTA slot.
+-->
+<section id="vyzva" class="cta-band-editorial fade-up">
+  <div class="cta-band-editorial__inner">
+
+    <div class="cta-band-editorial__text">
+      <p class="cta-band-editorial__eyebrow" data-field="cta2_eyebrow">Ready to start?</p>
+      <h2 data-field="cta2_headline">Write your main CTA headline here, a call to action for the customer</h2>
+      <p class="cta-band-editorial__sub" data-field="cta2_sub" data-type="richtext">Write a short text below the headline here, 1 to 2 sentences about what the customer gets after the first contact (fast response, free consultation, a proposal for the next step).</p>
+    </div>
+
+    <div class="cta-band-editorial__action">
+      <a class="btn btn-primary" data-field="cta2_button" data-type="link" href="#kontakt">Free consultation</a>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:cta:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the CTA band.</p>
+</div>
+
+</body>
+</html>

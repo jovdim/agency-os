@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cta-04 — Phone-prominent CTA on background image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* cta-04: phone-prominent, on a full-bleed atmospheric background
+       image with dark overlay (workshop, hands-at-work, material close-
+       up — anything that hints at the service without being a hero shot).
+       Centered text, single OVERSIZED primary button — the button label
+       is the formatted phone number, the href is tel:+15550000000...
+
+       The phone-as-button (rather than underlined inline link) makes the
+       action explicit on touch devices — tap anywhere on the button vs.
+       a thin underline that's hard to hit. Button is sized larger than
+       the standard .btn so it stays the obvious primary action against
+       the headline. The button field is `cta_phone` (a phone-keyed link)
+       so it auto-fills from the Brand panel's phone, shows a single
+       phone input in the composer, and renders as a tel: link — the
+       button label IS the number. */
+    .cta-04 {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 120px 24px;
+      text-align: center;
+      color: var(--color-light);
+      overflow: hidden;
+    }
+    .cta-04::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(12,10,9,0.78), rgba(28,25,23,0.72));
+      z-index: 1;
+    }
+    .cta-04__inner {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .cta-04 h2 {
+      color: var(--color-light);
+      font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin: 0 0 18px;
+      font-weight: 600;
+    }
+    .cta-04__sub {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      max-width: 540px;
+      margin: 0 auto 36px;
+    }
+    /* Phone button — oversized version of .btn-primary. Same primary
+       brand color, just bigger font + padding so the phone number reads
+       as the obvious tap target. Hover inverts to white-on-dark per the
+       same convention used on cta-01's outline button. */
+    .cta-04 .cta-04__phone-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 22px 40px;
+      background: var(--color-primary);
+      color: #fff;
+      border: 2px solid var(--color-primary);
+      border-radius: var(--border-radius);
+      font-family: var(--font-heading);
+      font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+      font-weight: 600;
+      letter-spacing: 0.005em;
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+    .cta-04 .cta-04__phone-btn:hover {
+      background: #fff;
+      color: var(--color-secondary);
+      border-color: #fff;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 600px) {
+      .cta-04 { padding: 96px 16px; }
+      .cta-04 .cta-04__phone-btn {
+        padding: 18px 28px;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: cta-04</strong> &nbsp; · &nbsp; Phone-prominent CTA. Background image + dark overlay + centered text + single oversized phone button. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:cta:start -->
+<!--
+  TEMPLATE: cta-04
+  LAYOUT:   Full-bleed background image with dark gradient overlay,
+            centered text, single OVERSIZED phone button (the button label
+            is the formatted phone number, the href is the tel: link).
+            The button is sized noticeably larger than the standard .btn
+            so the phone number stays the obvious tap target.
+  CONTENT:  background image + eyebrow + headline + supporting text + phone button.
+  EDITABLE: 5 fields — cta_bg (image) + cta_eyebrow + cta_headline +
+            cta_text (longtext) + cta_phone (the phone link; phone-keyed
+            so it auto-fills from the Brand panel phone and renders tel:).
+  THEME:    Dark gradient overlay (fixed neutral) for text legibility on
+            any image. Heading uses --color-light. Eyebrow underline tracks
+            the global rule. Button = --color-primary, hover inverts to
+            white-on-dark.
+  USE FOR:  Service businesses where the phone is the primary contact
+            channel — renovations, plumbers, gardens, restaurants. The
+            background image adds atmosphere (workshop / hands at work /
+            material close-up); the phone button keeps the action explicit.
+            Different from cta-01 (image + 2 buttons) and cta-02 (dark
+            band, no image) and cta-05 (image + asymmetric typography).
+-->
+<section id="vyzva" class="cta-04 fade-up" data-field="cta_bg" style="background-image:url('https://placehold.co/1920x900/57534e/e7e5e4?text=CTA+atmospheric+image&font=lato')">
+  <div class="cta-04__inner">
+    <span class="eyebrow" data-field="cta_eyebrow">The fastest way to reach us</span>
+    <h2 data-field="cta_headline">Call us directly</h2>
+    <p class="cta-04__sub" data-field="cta_text" data-type="richtext">Write a short text below the headline here, 1 to 2 sentences about when and how quickly you call back, or how an alternative way of getting in touch works.</p>
+    <a class="cta-04__phone-btn" data-field="cta_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+  </div>
+</section>
+<!-- SECTION:cta:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the CTA.</p>
+</div>
+
+</body>
+</html>

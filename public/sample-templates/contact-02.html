@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact-02 — Refined editorial split (info left, form right)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* contact-02: refined split. Both halves sit on var(--color-bg) — no
+       dark info column, no card chrome. Grid is 40/60 so the form gets
+       the breathing room while the info side stays compact. The plain
+       address/phone/email block is set in body type with quiet uppercase
+       labels above each value (label set with extra letter-spacing).
+       Form fields are minimal — no rounded card, no shadow, just hairline
+       borders that thicken on focus. */
+    .contact-editorial {
+      padding: 120px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .contact-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 96px;
+      align-items: start;
+    }
+    /* Info side */
+    .contact-editorial__info { max-width: 380px; }
+    .contact-editorial__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 24px;
+    }
+    .contact-editorial h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 24px;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+    .contact-editorial__intro {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0 0 48px;
+    }
+    .contact-editorial__details {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 32px;
+    }
+    .contact-editorial__detail-label {
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 6px;
+      display: block;
+    }
+    .contact-editorial__detail-value {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-dark);
+      margin: 0;
+    }
+    .contact-editorial__detail-value a {
+      color: var(--color-dark);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s ease;
+    }
+    .contact-editorial__detail-value a:hover {
+      border-bottom-color: var(--color-dark);
+    }
+    /* Form side */
+    .contact-editorial__form {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .contact-editorial__form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .contact-editorial__field {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--color-border);
+      padding: 20px 0 16px;
+    }
+    .contact-editorial__form-row .contact-editorial__field + .contact-editorial__field {
+      border-left: 1px solid var(--color-border);
+      padding-left: 24px;
+    }
+    .contact-editorial__field:first-child { border-top: 1px solid var(--color-border); }
+    .contact-editorial__form-row:first-child .contact-editorial__field { border-top: 1px solid var(--color-border); }
+    .contact-editorial__field label {
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 8px;
+    }
+    .contact-editorial__field input,
+    .contact-editorial__field textarea {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-dark);
+      background: transparent;
+      border: 0;
+      padding: 0;
+      outline: none;
+      resize: vertical;
+      width: 100%;
+    }
+    .contact-editorial__field input::placeholder,
+    .contact-editorial__field textarea::placeholder {
+      color: var(--color-text-light);
+      opacity: 0.6;
+    }
+    .contact-editorial__field--focus,
+    .contact-editorial__field:focus-within {
+      border-bottom-color: var(--color-dark);
+    }
+    .contact-editorial__form-actions {
+      margin-top: 32px;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .contact-editorial__form-actions .btn {
+      min-width: 180px;
+      justify-content: center;
+    }
+    @media (max-width: 900px) {
+      .contact-editorial { padding: 80px 0; }
+      .contact-editorial__inner {
+        grid-template-columns: 1fr;
+        gap: 56px;
+      }
+      .contact-editorial__form-row {
+        grid-template-columns: 1fr;
+      }
+      .contact-editorial__form-row .contact-editorial__field + .contact-editorial__field {
+        border-left: 0;
+        padding-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: contact-02</strong> &nbsp; · &nbsp; Editorial split — info left, form right. Both halves on bg, hairline-only form fields, single CTA. Form id is <code>contact-form</code>. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:contact:start -->
+<!--
+  TEMPLATE: contact-02
+  LAYOUT:   2-column editorial split. Left (40%): eyebrow + headline +
+            intro paragraph + plain contact details (phone, email, address)
+            stacked with small uppercase labels. Right (60%): minimal
+            contact form — no card chrome, fields separated by hairlines,
+            single CTA button below. Mobile: stacks (info first, form below).
+  CONTENT:  eyebrow, headline, intro, contact info (phone, email, 2 address
+            lines), and the form skeleton.
+  EDITABLE: 8 fields total — 3 header text/longtext + 4 contact details
+            (3 text + 1 link for email — phone is also a link) + 1 button label.
+  FORM:     id="contact-form" REQUIRED so the global contact-handler.js picks it up.
+            Field names: name, email, phone, message (do not rename).
+            No GDPR checkbox in this variant — the lighter editorial feel
+            assumes consent text is handled in the privacy footer link.
+  THEME:    Section bg = --color-bg. Hairlines + form borders = --color-border.
+            Heading = --color-dark, intro/labels = --color-text-light.
+            CTA uses .btn-primary which tracks --color-primary.
+-->
+<section id="kontakt" class="contact-editorial fade-up">
+  <div class="contact-editorial__inner">
+
+    <div class="contact-editorial__info">
+      <p class="contact-editorial__eyebrow" data-field="contact_eyebrow">Contact</p>
+      <h2 data-field="contact_headline">Get in touch with us</h2>
+      <p class="contact-editorial__intro" data-field="contact_intro" data-type="richtext">We are available every working day. Tell us what you need and we will get back to you within 24 hours.</p>
+
+      <div class="contact-editorial__details">
+        <div>
+          <span class="contact-editorial__detail-label">Phone</span>
+          <p class="contact-editorial__detail-value">
+            <a data-field="contact_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+          </p>
+        </div>
+        <div>
+          <span class="contact-editorial__detail-label">Email</span>
+          <p class="contact-editorial__detail-value">
+            <a data-field="contact_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+          </p>
+        </div>
+        <div>
+          <span class="contact-editorial__detail-label">Address</span>
+          <p class="contact-editorial__detail-value">
+            <span data-field="contact_address">Street and number, ZIP City</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- onsubmit="return false" blocks native browser submission so the
+         URL never leaks ?name=…&phone=… query params if our handler
+         doesn't attach in time. contact-handler.js still works — it
+         adds its own listener + calls preventDefault + POSTs. -->
+    <form id="contact-form" class="contact-editorial__form" novalidate aria-label="Contact form" onsubmit="return false">
+      <!-- Form recipient (composer-only carriers — never visible). See
+           contact-01 for the full convention; renderer Pass 6 reads
+           these and stamps data-sk-form-recipient on this <form>. -->
+      <span data-field="form_recipient_email" data-group="form_settings" hidden></span>
+      <span data-field="form_enabled" data-type="boolean" data-group="form_settings" hidden>true</span>
+
+      <div class="contact-editorial__form-row">
+        <div class="contact-editorial__field">
+          <label for="cf2-name">Name</label>
+          <input type="text" id="cf2-name" name="name" autocomplete="name" placeholder="Your name">
+        </div>
+        <div class="contact-editorial__field">
+          <label for="cf2-phone">Phone</label>
+          <input type="tel" id="cf2-phone" name="phone" autocomplete="tel" placeholder="+1 (555) 000-0000">
+        </div>
+      </div>
+      <div class="contact-editorial__field">
+        <label for="cf2-email">Email</label>
+        <input type="email" id="cf2-email" name="email" autocomplete="email" placeholder="you@email.com">
+      </div>
+      <div class="contact-editorial__field">
+        <label for="cf2-message">Message</label>
+        <textarea id="cf2-message" name="message" rows="4" placeholder="Briefly describe what you need."></textarea>
+      </div>
+      <div class="contact-editorial__form-actions">
+        <button type="submit" class="btn btn-primary" data-field="contact_form_submit">Send message</button>
+      </div>
+    </form>
+
+  </div>
+</section>
+<!-- SECTION:contact:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the contact section.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+/* nav-04 — same FLOATING PILL shape as nav-03 but with a glass/
+       frosted treatment on the pill itself. Hero image shows THROUGH
+       the pill (via backdrop-filter blur) instead of just around it.
+
+       Identical layout to nav-03; only the .nav-inner background +
+       border + the dropdown styling differ. Schema unchanged. */
+
+    .site-nav.nav-frosted-pill {
+      /* Wrapper transparent + position:fixed so the hero starts at the
+         top of the page and flows up underneath. Same approach as
+         nav-03 — see that template for the full reasoning. */
+      background: transparent;
+      border-bottom: 0;
+      padding: 16px 24px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .site-nav.nav-frosted-pill .nav-inner {
+      /* The pill itself — semi-transparent + backdrop-blur so the hero
+         image behind it is visible AND softened. Higher opacity (0.55)
+         than typical glass (0.3) because text in the pill needs to stay
+         readable over busy/dark hero images. */
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      max-width: calc(var(--max-width) - 48px);
+      margin: 0 auto;
+      padding: 12px 12px 12px 24px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      /* Lighter shadow than nav-03's — the glass effect itself does
+         most of the "lifted" visual work, so a heavy shadow would
+         compete with the translucency. */
+      box-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Fallback for browsers without backdrop-filter (older Firefox/
+       Safari): bump opacity to 0.85 so text stays legible without the
+       blur softening the hero behind. */
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-frosted-pill .nav-inner {
+        background: rgba(255, 255, 255, 0.85);
+      }
+    }
+
+    /* Logo — same envelope as nav-03 so the pill stays compact. */
+    .site-nav.nav-frosted-pill .logo {
+      display: flex;
+      align-items: center;
+      width: 150px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+    .site-nav.nav-frosted-pill .logo img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+
+    /* Link cluster — centered between logo and CTA. */
+    .site-nav.nav-frosted-pill .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      font-family: var(--font-heading);
+    }
+    .site-nav.nav-frosted-pill .nav-links a:not(.nav-cta) {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 4px;
+      border-radius: 6px;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+    .site-nav.nav-frosted-pill .nav-links a:not(.nav-cta):hover {
+      color: var(--color-primary);
+      /* Hover bg slightly darker than the glass so the user gets clear
+         feedback. Goes back to transparent on leave via the transition. */
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    /* CTA — primary-color pill at the right edge. Same as nav-03 v3
+       (uses --color-primary so it tracks theme primary changes). */
+    .site-nav.nav-frosted-pill .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .site-nav.nav-frosted-pill .nav-cta:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown — also frosted to match the parent pill. Anchored to the
+       .site-nav wrapper (no position:relative on .has-dropdown) so
+       the centering matches nav-01. */
+    .site-nav.nav-frosted-pill .has-dropdown .dropdown {
+      top: calc(100% + 10px);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
+      box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.2);
+    }
+    /* Wider hover-bridge because the dropdown sits 10px below the
+       trigger (vs default 4px in template-base.css). */
+    .site-nav.nav-frosted-pill .has-dropdown .dropdown::before {
+      top: -10px;
+      height: 10px;
+    }
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-frosted-pill .has-dropdown .dropdown {
+        background: rgba(255, 255, 255, 0.97);
+      }
+    }
+
+    /* ── Mobile (< 900px) ── */
+    @media (max-width: 900px) {
+      .site-nav.nav-frosted-pill { padding: 12px 16px; }
+      .site-nav.nav-frosted-pill .nav-inner {
+        padding: 10px 10px 10px 18px;
+        gap: 0;
+      }
+      .site-nav.nav-frosted-pill .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        gap: 0;
+        margin: 0;
+        padding: 12px 18px;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 18px;
+        box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.2);
+      }
+      @supports not (backdrop-filter: blur(1px)) {
+        .site-nav.nav-frosted-pill .nav-links {
+          background: rgba(255, 255, 255, 0.97);
+        }
+      }
+      .site-nav.nav-frosted-pill .nav-links.open { display: flex; }
+      .site-nav.nav-frosted-pill .nav-links li { width: 100%; }
+      .site-nav.nav-frosted-pill .nav-links a:not(.nav-cta) {
+        padding: 14px 4px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 0;
+        font-size: 0.95rem;
+      }
+      .site-nav.nav-frosted-pill .nav-cta {
+        margin-top: 12px;
+        margin-left: auto;
+      }
+      .site-nav.nav-frosted-pill .hamburger {
+        display: flex;
+        margin-left: auto;
+      }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-frosted-pill .hamburger { display: none; }
+    }

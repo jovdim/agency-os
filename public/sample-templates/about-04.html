@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-04 — Centered intro + wide landscape photo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-04 — centered intro paragraph above a wide landscape photo.
+       Single editorial column on top, image-anchored composition below.
+       Different visual personality from about-01 / 02 / 03 (clean 50/50
+       splits) and about-08 (split + checklist + photo below) — here the
+       text sits centered above the image, not beside it. Photo is wide
+       landscape (16/10) instead of portrait so it reads as a "team /
+       workshop" shot rather than a single-person portrait. */
+
+    .about-04 {
+      padding: 96px 0;
+    }
+    .about-04__head {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 24px;
+    }
+    .about-04__headline {
+      font-family: var(--font-heading);
+      font-size: clamp(1.75rem, 3.6vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 14px 0 22px;
+    }
+    .about-04__headline > p { margin: 0; font: inherit; color: inherit; }
+    .about-04__body {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.75;
+    }
+    .about-04__body > p { margin: 0 0 14px; }
+    .about-04__body > p:last-child { margin-bottom: 0; }
+
+    .about-04__stage {
+      max-width: 980px;
+      margin: 64px auto 0;
+      padding: 0 24px;
+    }
+    .about-04__image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .about-04__actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding: 0 24px;
+    }
+
+    @media (max-width: 800px) {
+      .about-04 { padding: 72px 0; }
+      .about-04__stage { margin-top: 40px; }
+      .about-04__image { aspect-ratio: 4/3; }
+      .about-04__actions { margin-top: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-04</strong> &nbsp; · &nbsp; Centered intro above a wide landscape team/workshop photo. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-04
+  LAYOUT:   Centered single column for the intro (eyebrow + headline +
+            multi-paragraph body) on top, followed by a wide landscape
+            photo (aspect 16/10 desktop, 4/3 mobile) + 1-2 CTAs.
+  CONTENT:  eyebrow + headline + body (richtext, multiple paragraphs) +
+            image + 1-2 CTAs.
+  EDITABLE: 6 fields — about_eyebrow + about_headline (text) +
+            about_body (richtext) + about_image + about_cta_1 +
+            about_cta_2 (links). Same 6-field schema as about-01 / 02
+            / 03 — swap between any of them is loss-free.
+  THEME:    Section bg inherits from `section-alt`. Headline + image
+            corners + buttons inherit theme. Eyebrow underline at
+            --color-primary via the global .eyebrow rule.
+  USE FOR:  Owner-led service businesses where a centered editorial
+            intro reads better than a side-by-side split — when the
+            photo is a workshop / team shot (wide landscape) rather
+            than a single-subject portrait (which works better in 01
+            / 02 / 03's portrait split).
+-->
+<section id="o-nas" class="about-04 section-alt fade-up" data-field-order="about_eyebrow,about_headline,about_body,about_image,about_cta_1,about_cta_2">
+  <div class="about-04__head">
+    <span class="eyebrow" data-field="about_eyebrow">About us</span>
+    <h2 class="about-04__headline" data-field="about_headline">We stand behind every job personally</h2>
+    <div class="about-04__body" data-field="about_body" data-type="richtext"><p>Write a short story of the company here. When you started, why you got into it and how big your team is today. 2 to 3 sentences are enough.</p><p>In the second paragraph, add who you most often work for and what sets you apart from the competition. Specific examples read better than general phrases.</p></div>
+  </div>
+
+  <div class="about-04__stage">
+    <img class="about-04__image" data-field="about_image" src="https://placehold.co/1280x800/57534e/e7e5e4?text=Team+or+workshop+photo&font=lato" alt="" width="1280" height="800" loading="lazy">
+  </div>
+
+  <div class="about-04__actions">
+    <a class="btn btn-primary" data-field="about_cta_1" data-type="link" href="#kontakt">Get in touch</a>
+    <a class="btn btn-outline" data-field="about_cta_2" data-type="link" href="#sluzby">Our services</a>
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

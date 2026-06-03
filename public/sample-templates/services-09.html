@@ -1,0 +1,396 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-09 — 3-up services row on full-section background image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* services-09: simple 3-up services row on a FULL-SECTION background
+       image. Three equal text-only cards (heading + description) in a
+       row on desktop, stacked on mobile. CTA centered below.
+
+       Cards use the same glass effect as services-08 (semi-transparent
+       white + backdrop blur) so the section reads as a companion piece
+       — the two templates are designed to stack on the same page,
+       typically services-08 (flagship + supporting) above and
+       services-09 (3 equal pillars) below, or vice versa.
+
+       Repeater (services_pillars, 2..4 items). Default 3 because that
+       is the layout's natural shape; 2 still reads as a balanced row,
+       4 wraps to a 2x2 on the narrower breakpoint. */
+
+    .services-09 {
+      position: relative;
+      padding: 96px 0;
+      overflow: hidden;
+      color: #fff;
+      background-color: #1c1917;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .services-09::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      /* Darker overlay (Peter's pick 2026-05-20). 65-82% black —
+         matches services-08 for consistency. */
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.78) 0%,
+          rgba(0, 0, 0, 0.65) 40%,
+          rgba(0, 0, 0, 0.7) 70%,
+          rgba(0, 0, 0, 0.82) 100%
+        );
+      z-index: 0;
+      pointer-events: none;
+    }
+    .services-09 .container {
+      position: relative;
+      z-index: 1;
+      /* True full-width section on desktop (Peter 2026-05-20 iter 2:
+         "still not wide enough"). Cap removed entirely — cards span
+         from viewport edge to viewport edge with only a small 32px
+         gutter so they don't crash against the screen edges. On a
+         1920px screen each card now gets ~620px of width; on a
+         2560px screen ~830px. The bg image fills the rest. */
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .services-09__head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 48px;
+    }
+    .services-09__head .eyebrow {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .services-09__head h2 {
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .services-09__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    /* Repeater-wrap defense: each child gets wrapped in
+       <div data-sk-repeater-wrap> on publish. display:contents flattens
+       the wrapper so the .services-09__card is the actual grid item.
+       Pattern carried from gallery-04 / reviews-03 / services-06. */
+    .services-09__grid > [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .services-09__card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 240px;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    }
+    .services-09__card:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .services-09__card-heading {
+      font-family: var(--font-heading);
+      font-size: 1.22rem;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .services-09__card-description {
+      /* Paragraph-friendly typography (was 0.95rem / 1.6). Real
+         service descriptions are 2-4 sentences, sometimes more.
+         1rem / 1.62 reads as a real paragraph. */
+      font-size: 1rem;
+      line-height: 1.62;
+      color: rgba(255, 255, 255, 0.82);
+      margin: 0;
+    }
+    /* TipTap wraps edited content in <p>. The nested-<p> trap that
+       hit how-it-works-01 and services-08 hits here too. Same fix:
+       make inner <p> inherit font props from the description
+       container (which is now a <div>, see HTML below) and zero its
+       margin so a single paragraph isn't pushed around. */
+    .services-09__card-description > p {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+    .services-09__card-description > p + p {
+      margin-top: 0.7em;
+    }
+
+    .services-09__cta-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 44px;
+    }
+    .services-09__cta-row .btn {
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.98rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .services-09__cta-row .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .services-09__cta-row .btn-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 1100px) {
+      /* Drop to 2-col EARLIER than the original 900px breakpoint.
+         At 1000-1100px window, 3 paragraph-heavy cards in a row
+         get cramped — going 2-col gives them ~480px each which
+         reads cleanly. Trade-off: with 3 pillars the last card
+         sits alone on row 2 — that's fine, it actually emphasizes
+         the third pillar without breaking the rhythm. */
+      .services-09 { padding: 84px 0; }
+      .services-09__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      .services-09__card {
+        min-height: 220px;
+        padding: 30px 26px;
+      }
+    }
+    @media (max-width: 760px) {
+      /* Single column, comfortable padding (Peter 2026-05-20: mobile
+         looked GOOD with some breathing room, the edge-to-edge
+         iteration was wrong). Reverted to ~16px container gutter and
+         ~20px card horizontal padding. The "wider" request was for
+         DESKTOP, not mobile — handled in .services-09 .container max-
+         width override above. */
+      .services-09 { padding: 56px 0; }
+      .services-09__head { margin-bottom: 28px; }
+      .services-09 .container { padding: 0 16px; max-width: 100%; }
+      .services-09__grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .services-09__card {
+        min-height: 0;
+        padding: 24px 20px;
+        border-radius: 16px;
+      }
+      .services-09__card-heading {
+        font-size: 1.12rem;
+      }
+      .services-09__card-description {
+        font-size: 0.96rem;
+        line-height: 1.55;
+      }
+
+      /* Mobile truncation: cap description height with a fade-out so
+         the section doesn't become a wall of paragraphs on phone.
+         Tap the chevron button to expand and read the full text. */
+      .services-09__card-description {
+        max-height: 8em;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+        /* Smooth height + mask transition. 360ms feels luxurious;
+           cubic-bezier matches the dropdown easing (ease-out-expo).
+           max-height animates to 60em on expand — `none` isn't an
+           animatable value so we use a generous cap that covers any
+           realistic description length. Peter 2026-05-20: "the
+           dropdown should animate not be instant." */
+        transition:
+          max-height 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+          -webkit-mask-image 0.36s ease,
+          mask-image 0.36s ease;
+      }
+      .services-09__card.is-expanded .services-09__card-description {
+        max-height: 60em;
+        -webkit-mask-image: linear-gradient(to bottom, #000 100%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 100%, transparent 100%);
+      }
+      /* !important because the unscoped .services-09__more rule (below)
+         sets display: none and appears LATER in source — without
+         !important it wins the cascade tie even on mobile. Diagnosed
+         the hard way 2026-05-20 (Peter "where's the chevron?"). */
+      .services-09__more { display: flex !important; }
+    }
+
+    /* "More" expand button. Pill-shaped with text + chevron. Hidden
+       on desktop, only visible on mobile (≤760px) via the media query
+       above. Made deliberately visible (text + icon, larger size) so
+       it can't be missed in the truncated-card preview state. */
+    .services-09__more {
+      display: none;
+      align-self: center;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .services-09__more svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+    .services-09__more:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+    .services-09__card.is-expanded .services-09__more svg {
+      transform: rotate(180deg);
+    }
+    .services-09__more .more-label-collapsed,
+    .services-09__card.is-expanded .services-09__more .more-label-expanded {
+      display: inline;
+    }
+    .services-09__more .more-label-expanded,
+    .services-09__card.is-expanded .services-09__more .more-label-collapsed {
+      display: none;
+    }
+    @media (max-width: 480px) {
+      .services-09 { padding: 48px 0; }
+      .services-09__head { margin-bottom: 24px; }
+      .services-09 .container { padding: 0 14px; }
+      .services-09__card {
+        padding: 22px 18px;
+        border-radius: 14px;
+      }
+      .services-09__cta-row { margin-top: 28px; }
+      .services-09__cta-row .btn {
+        padding: 12px 24px;
+        font-size: 0.94rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: services-09</strong> &nbsp; · &nbsp; 3-up services row (glass cards) on a full-section background image. CTA centered below. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-09
+  LAYOUT:   Full-section background image with a dark gradient overlay.
+            Centered title block on top. Three equal text-only cards
+            (heading + description) in a row on desktop, 2-up on
+            tablet, single column on phone. Glass card styling matches
+            services-08 so the two templates pair naturally on the
+            same page. CTA button centered under the grid.
+  CONTENT:  bg image + eyebrow + headline + services_pillars repeater
+            (2..4) + CTA label/link.
+  EDITABLE: 1 image, 2 top-level text, repeater (heading + description
+            per card), 1 link.
+  THEME:    Section bg image is editable. Overlay + glass card styling
+            are fixed (tuned for legibility on ANY photo). CTA picks up
+            --color-primary so it tracks the theme dice.
+  USE FOR:  Three equal pillars / outcomes / value-props — when no
+            single offering dominates and the rhythm of "three equal
+            things" is the message. Pairs with services-08 (bento +
+            hierarchy) on the same page when you have BOTH a flagship
+            offering AND three supporting pillars to communicate.
+-->
+<section id="sluzby" class="services-09 fade-up" data-field="services_bg_image" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&auto=format&fit=crop')">
+  <div class="container">
+    <div class="services-09__head">
+      <span class="eyebrow" data-field="services_eyebrow">Why us</span>
+      <h2 data-field="services_headline">The three pillars of our work</h2>
+    </div>
+
+    <div class="services-09__grid" data-repeat="services_pillars" data-min="2" data-max="99">
+      <article class="services-09__card" data-item-id-source="heading">
+        <h3 class="services-09__card-heading" data-field="heading">Experience</h3>
+        <div class="services-09__card-description" data-field="description" data-type="richtext">Years of practice in the field. We know how to work efficiently and to a high standard, with no unnecessary delays or surprises.</div>
+        <button class="services-09__more" type="button">
+          <span class="more-label-collapsed">More information</span>
+          <span class="more-label-expanded">Less</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </article>
+      <article class="services-09__card">
+        <h3 class="services-09__card-heading" data-field="heading">Speed</h3>
+        <div class="services-09__card-description" data-field="description" data-type="richtext">We keep to agreed deadlines. We work fast but precisely, quality always comes first.</div>
+        <button class="services-09__more" type="button">
+          <span class="more-label-collapsed">More information</span>
+          <span class="more-label-expanded">Less</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </article>
+      <article class="services-09__card">
+        <h3 class="services-09__card-heading" data-field="heading">Reliability</h3>
+        <div class="services-09__card-description" data-field="description" data-type="richtext">Open communication, transparent prices, no hidden fees. Client satisfaction is key for us.</div>
+        <button class="services-09__more" type="button">
+          <span class="more-label-collapsed">More information</span>
+          <span class="more-label-expanded">Less</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </article>
+    </div>
+
+    <div class="services-09__cta-row">
+      <a class="btn btn-primary" data-field="services_cta" data-type="link" href="#kontakt">Contact us</a>
+    </div>
+
+    <script>
+      /* Tap-to-expand for truncated mobile cards. Same pattern as
+         services-08. Scoped to the nearest .services-09 root so
+         multiple sections don't interfere. */
+      (function () {
+        var section = document.currentScript.closest(".services-09");
+        if (!section) return;
+        section.querySelectorAll(".services-09__more").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var card = btn.closest(".services-09__card");
+            if (card) card.classList.toggle("is-expanded");
+          });
+        });
+      })();
+    </script>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below.</p>
+</div>
+
+</body></html>

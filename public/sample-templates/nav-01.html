@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nav-01 — Standard navbar with services dropdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* Navbar background — solid bar variant uses the user's nav color
+       directly. Falls back to white if --color-nav-bg isn't set (legacy
+       sites without a theme override). Overrides template-base.css's
+       `.site-nav { background: var(--color-bg) }` so changing the page
+       bg in the Theme panel doesn't accidentally retint the navbar. */
+    .site-nav { background: var(--color-nav-bg, #ffffff); }
+
+    /* Logo — canonical real-world navbar pattern: fix HEIGHT, let WIDTH
+       follow the logo's natural aspect ratio. No max-width cap — the
+       full logo always renders at its true aspect, no matter how wide.
+       Width is naturally bounded by the fixed height (a 10:1 wordmark
+       at 48px tall is 480px wide, which fits well within the navbar's
+       max-width container). Mobile bumps to 40px to keep the bar compact. */
+    .site-nav .nav-inner .logo {
+      display: inline-flex;
+      align-items: center;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .site-nav .nav-inner .logo img {
+      height: 100%;
+      width: auto;
+      display: block;
+    }
+    @media (max-width: 800px) {
+      .site-nav .nav-inner .logo { height: 40px; }
+    }
+    .site-nav .nav-cta {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Default menu link color — explicit override of the global `a` rule
+       in template-base.css which uses var(--color-primary). Without this,
+       menu link text picks up the primary brand color whenever the theme
+       primary changes (so menu items go blue, red, etc., not just the CTA).
+       Scoped to direct-li-children of `.nav-links` so .dropdown a items
+       aren't affected. We no longer need the `[data-repeat]` companion
+       selector — the outer <ul> itself carries data-repeat, which means
+       all menu items end up as DIRECT li children after rendering. */
+    .site-nav .nav-links > li > a:not(.nav-cta) {
+      color: var(--color-nav-text, var(--color-text));
+      transition: color 0.2s ease;
+    }
+    /* Hover — accent the link in primary color for clear feedback. */
+    .site-nav .nav-links > li > a:not(.nav-cta):hover {
+      color: var(--color-primary);
+    }
+
+    /* Dropdown indicator + reveal — driven by `:has` so a chevron only
+       appears on menu items that actually carry dropdown_items, and the
+       dropdown surface only opens when there's something to show. No
+       hand-maintained `.has-dropdown` class needed — the renderer leaves
+       every cloned <li> structurally identical (each has an empty
+       `<ul class="dropdown" data-repeat="dropdown_items">`); CSS reads
+       the data, not a hint class. */
+    .site-nav .nav-links > li:has(> .dropdown > li) > a::after {
+      content: "";
+      display: inline-block;
+      width: 0; height: 0;
+      margin-left: 6px;
+      vertical-align: middle;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid currentColor;
+      transform: translateY(-1px);
+    }
+    /* Empty dropdowns are invisible AND non-interactive — hovering an
+       item that has no dropdown_items must NOT pop a blank panel. */
+    .site-nav .nav-links > li > .dropdown:not(:has(> li)) {
+      display: none !important;
+    }
+    /* Hover/focus reveal. The shared template-base.css ships an
+       equivalent rule keyed on the legacy `.has-dropdown` class which
+       this template no longer carries (every cloned <li> looks the
+       same now), so we reproduce the reveal locally and gate on
+       `:has(> li)` so empty dropdowns stay closed.
+       CRITICAL: the base `.dropdown` rule hides the surface via
+       `opacity: 0; visibility: hidden; transform: translate*`. Reveal
+       MUST flip those same properties, not `display`, or the dropdown
+       stays invisible regardless of hover. Width/positioning still
+       inherits from the base styles. */
+    @media (hover: hover) and (min-width: 901px) {
+      .site-nav .nav-links > li:hover > .dropdown:has(> li),
+      .site-nav .nav-links > li:focus-within > .dropdown:has(> li) {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+    }
+    /* Mobile open-toggle. Base CSS animates the dropdown reveal via
+       max-height/opacity/padding when an ancestor <li> carries `.open`
+       — local rule only rotates the chevron. (No `display: block`
+       override anymore — that hid the animation; see
+       template-base.css mobile `.dropdown` rule.) */
+    @media (max-width: 900px) {
+      .site-nav .nav-links > li.open > a::after {
+        transform: translateY(-1px) rotate(180deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: nav-01</strong> &nbsp; · &nbsp; Standard sticky navbar. Image logo, menu with hover dropdown, phone CTA. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:nav:start -->
+<!--
+  TEMPLATE: nav-01
+  LAYOUT:   Sticky navbar. Logo image on the left, menu in the middle,
+            phone CTA on the right. "Services" item has hover dropdown listing 4 services.
+            Below 900px collapses to hamburger; dropdown becomes inline expand.
+  CONTENT:  Logo image, 5 main links (with editable label + URL each), 4 service items in
+            dropdown (label + URL each), phone CTA (label + tel: href).
+  EDITABLE: 1 image + 10 link-type fields. Everything is editable per-client.
+-->
+<nav id="top" class="site-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+
+    <!-- Logo: image. Client uploads their own; placeholder used until then. -->
+    <a href="/" class="logo" aria-label="Home">
+      <img data-field="nav_logo" src="https://placehold.co/360x88/e5e7eb/6b7280?text=LOGO&amp;font=lato" alt="Logo">
+    </a>
+
+    <!--
+      Main menu — a single flat repeater. One item type, one list, drag
+      to reorder. Each item is { label, href, dropdown_items? }: the
+      first two are the link, dropdown_items is a nested repeater that
+      stays empty for plain links and gets populated to make the item a
+      dropdown trigger (typically used for "Services").
+
+      Authoring rule: the <li> that carries nested [data-repeat] markup
+      (here, Services with its `<ul class="dropdown" data-repeat=
+      "dropdown_items">`) is the structural template — the parser and
+      both renderers locate it by scanning all children and picking the
+      first one with a nested repeater inside, falling back to first
+      child when none has it. So Services' position in this list does
+      NOT have to be index 0 — DOM order is purely the day-one visual
+      order. Default order below puts Services in the middle of the
+      pack (Home → About → Services → Gallery → Contact), which reads
+      most naturally for the typical small-business site.
+
+      Renderer-side: the per-item dropdown <ul> is cloned onto every
+      menu item but stays empty for items the user hasn't added any
+      dropdown_items to. CSS `:has` hides the empty <ul> + suppresses
+      the chevron so plain links read as plain links.
+    -->
+    <ul class="nav-links" id="nav-links-list" data-repeat="nav_links" data-min="1" data-max="12">
+      <li><a data-field="label" data-type="link" href="#domov">Home</a></li>
+      <li><a data-field="label" data-type="link" href="#o-nas">About</a></li>
+      <li>
+        <a data-field="label" data-type="link" href="#sluzby" aria-haspopup="true" aria-expanded="false">Services</a>
+        <ul class="dropdown" aria-label="Service list" data-repeat="dropdown_items" data-min="0" data-max="10">
+          <li><a data-field="label" data-type="link" href="#sluzba-1">Service 1</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-2">Service 2</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-3">Service 3</a></li>
+          <li><a data-field="label" data-type="link" href="#sluzba-4">Service 4</a></li>
+        </ul>
+      </li>
+      <li><a data-field="label" data-type="link" href="#galeria">Gallery</a></li>
+      <li><a data-field="label" data-type="link" href="#kontakt">Contact</a></li>
+    </ul>
+
+    <!-- Phone CTA: label + tel: href both editable -->
+    <!-- Socials: FB + IG. Each is a link field with hide/restore
+         via the composer's hidden_fields toggle. After the hamburger
+         in DOM so desktop reads "[Logo] [Menu] [CTA] [FB] [IG]" and
+         mobile reads "[Logo] ... [Hamburger] [FB] [IG]". -->
+    <!-- Right-edge action cluster — socials + phone CTA + hamburger
+         packed into one tight horizontal group on the right edge of
+         the navbar. `.nav-actions` base rule lives in
+         public/template-base.css. -->
+    <div class="nav-actions">
+      <div class="nav-socials">
+            <a class="nav-social" data-field="nav_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+            </a>
+            <a class="nav-social" data-field="nav_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          </div>
+          <a class="nav-cta" data-field="nav_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+      
+          <!-- Mobile hamburger toggle -->
+          <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="nav-links-list">
+            <span></span><span></span><span></span>
+          </button>
+    </div>
+
+
+  </div>
+
+  <!--
+    Self-contained nav behavior. Travels with the template.
+      1. Hamburger toggles the mobile menu.
+      2. Dropdown triggers never navigate — they only open the dropdown
+         (mobile) or do nothing (desktop, where CSS hover already opens it).
+      3. Services dropdown items are a manual repeater (composer-edited).
+  -->
+  <script>
+    (function () {
+      var nav = document.currentScript.closest('.site-nav') || document.querySelector('.site-nav');
+      if (!nav || nav.dataset.skInit) return;
+      nav.dataset.skInit = '1';
+
+      // 1. Hamburger
+      var hamburger = nav.querySelector('.hamburger');
+      var links = nav.querySelector('.nav-links');
+      if (hamburger && links) {
+        hamburger.addEventListener('click', function () {
+          var open = links.classList.toggle('open');
+          hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+
+      // 2. Dropdown triggers — find every menu item whose dropdown is
+      //    non-empty (we no longer have a `.has-dropdown` class hint
+      //    because every cloned <li> structurally carries an (empty or
+      //    populated) .dropdown — see the CSS `:has` comment above for
+      //    why). preventDefault always; toggle on mobile only.
+      nav.querySelectorAll('.nav-links > li > a').forEach(function (a) {
+        var li = a.parentElement;
+        if (!li) return;
+        var dd = li.querySelector(':scope > .dropdown > li');
+        if (!dd) return; // plain link, no dropdown to toggle
+        a.addEventListener('click', function (e) {
+          // Mobile: dropdown is the primary interaction (no hover on
+          // touch devices), so the click TOGGLES the sub-menu and
+          // preventDefault keeps the href from firing. Desktop: the
+          // dropdown opens on :hover, so a click should just navigate
+          // to the trigger's href (e.g. #sluzby) — let it fire.
+          // (Peter 2026-05-15 v4)
+          if (window.innerWidth <= 900) {
+            e.preventDefault();
+            var open = li.classList.toggle('open');
+            a.setAttribute('aria-expanded', open ? 'true' : 'false');
+          }
+        });
+      });
+
+      // 3. Auto-close on link tap (mobile) — when the user picks any
+      //    actual link (top-level non-trigger OR a service inside the
+      //    Services dropdown), the menu collapses so the page can scroll
+      //    to the target instead of staying obscured by the overlay.
+      //    (Peter 2026-05-15 v3 — previously the menu stayed open and
+      //    the user had to tap the hamburger again to dismiss it.)
+      //
+      //    Delegated to the .nav-links container so this works after
+      //    repeater clones add new menu items at runtime.
+      if (links) {
+        links.addEventListener('click', function (e) {
+          if (window.innerWidth > 900) return;
+          if (!links.classList.contains('open')) return;
+          var a = e.target && e.target.closest ? e.target.closest('a') : null;
+          if (!a || !links.contains(a)) return;
+          // Skip TRIGGER taps — those open the sub-menu, they don't
+          // navigate. Trigger = the <a> that's a direct child of an
+          // <li> with a non-empty .dropdown.
+          var parent = a.parentElement;
+          if (parent && parent.matches('.nav-links > li') &&
+              parent.querySelector(':scope > .dropdown > li')) {
+            return;
+          }
+          // Close menu + collapse any open dropdown so the next open
+          // starts from a clean state.
+          links.classList.remove('open');
+          if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+          nav.querySelectorAll('.nav-links > li.open').forEach(function (openLi) {
+            openLi.classList.remove('open');
+            var openA = openLi.querySelector(':scope > a');
+            if (openA) openA.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+    })();
+  </script>
+</nav>
+<!-- SECTION:nav:end -->
+
+<!-- Spacer (preview-only, stripped on upload — only what's between SECTION markers ships) -->
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:600px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">This grey block simulates page content below the nav.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+
+
+</body></html>

@@ -1,0 +1,153 @@
+{
+  "sections": [
+    {
+      "type": "navigation",
+      "label": "Navigation",
+      "order": 1,
+      "fields": {
+        "logo_text": "Ristorante",
+        "cta_text": "Reserve a Table",
+        "cta_url": "#contact",
+        "links": [
+          { "label": "Home", "url": "#" },
+          { "label": "Our Story", "url": "#about" },
+          { "label": "Menu", "url": "#menu" },
+          { "label": "Gallery", "url": "#gallery" },
+          { "label": "Contact", "url": "#contact" }
+        ]
+      }
+    },
+    {
+      "type": "hero",
+      "label": "Hero Banner",
+      "order": 2,
+      "fields": {
+        "tagline": "est. 2010",
+        "heading": "Authentic Italian Cuisine in the Heart of Bratislava",
+        "subheading": "Fresh ingredients, traditional recipes, unforgettable flavors. Join us for a culinary journey through Italy.",
+        "cta_text": "View Our Menu",
+        "cta_url": "#menu",
+        "background_image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80"
+      }
+    },
+    {
+      "type": "about",
+      "label": "Our Story",
+      "order": 3,
+      "fields": {
+        "heading": "Our Story",
+        "description": "Founded in 2010 by Chef Marco, our restaurant brings the authentic tastes of southern Italy to Slovakia. Every dish is crafted from the freshest local and imported ingredients, prepared with techniques passed down through generations.",
+        "image": "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=600&q=80",
+        "chef_name": "Marco Rossini",
+        "years_experience": "2010"
+      }
+    },
+    {
+      "type": "services_grid",
+      "label": "Menu Highlights",
+      "order": 4,
+      "fields": {
+        "heading": "Menu Highlights",
+        "subheading": "A taste of our most popular dishes",
+        "services": [
+          {
+            "title": "Margherita Pizza",
+            "description": "San Marzano tomatoes, fresh mozzarella, basil, extra virgin olive oil",
+            "price": "€12.90"
+          },
+          {
+            "title": "Homemade Pasta Carbonara",
+            "description": "Spaghetti, guanciale, Pecorino Romano, farm eggs",
+            "price": "€14.50"
+          },
+          {
+            "title": "Grilled Sea Bass",
+            "description": "Mediterranean sea bass, lemon butter, roasted vegetables",
+            "price": "€18.90"
+          },
+          {
+            "title": "Tiramisu",
+            "description": "Our signature dessert — mascarpone, espresso, Savoiardi",
+            "price": "€7.50"
+          },
+          {
+            "title": "Antipasto Board",
+            "description": "Selection of Italian cured meats, cheeses, olives, bruschetta",
+            "price": "€16.00"
+          },
+          {
+            "title": "Risotto ai Funghi",
+            "description": "Arborio rice, porcini mushrooms, Parmigiano Reggiano",
+            "price": "€13.90"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "label": "Gallery",
+      "order": 5,
+      "fields": {
+        "heading": "Our Atmosphere",
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80",
+            "alt": "Restaurant interior"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80",
+            "alt": "Signature dish"
+          },
+          {
+            "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80",
+            "alt": "Outdoor terrace"
+          }
+        ]
+      }
+    },
+    {
+      "type": "testimonials",
+      "label": "Reviews",
+      "order": 6,
+      "fields": {
+        "heading": "What Our Guests Say",
+        "testimonials": [
+          {
+            "quote": "The best Italian food outside of Italy. The pasta is absolutely divine!",
+            "author": "Elena K.",
+            "role": "Google Review"
+          },
+          {
+            "quote": "Amazing atmosphere, friendly staff, and the tiramisu is to die for.",
+            "author": "Peter M.",
+            "role": "TripAdvisor"
+          }
+        ]
+      }
+    },
+    {
+      "type": "contact",
+      "label": "Visit Us",
+      "order": 7,
+      "fields": {
+        "heading": "Visit Us",
+        "subheading": "Reservations recommended for dinner service",
+        "address": "Obchodná 28, 811 06 Bratislava",
+        "phone": "+421 2 5443 1234",
+        "email": "reservations@ristorante.sk",
+        "hours": "Mon–Sat: 11:00–23:00, Sun: 12:00–21:00"
+      }
+    },
+    {
+      "type": "footer",
+      "label": "Footer",
+      "order": 8,
+      "fields": {
+        "company_name": "Ristorante s.r.o.",
+        "copyright": "© 2026 All rights reserved",
+        "facebook_url": "",
+        "instagram_url": ""
+      }
+    }
+  ]
+}

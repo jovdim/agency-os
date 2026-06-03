@@ -1,0 +1,231 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>testimonials-01 — Editorial pull-quote grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* testimonials-01: editorial pull-quote grid. No avatars, no stars,
+       no chunky cards. Each tile is a quote followed by a thin divider
+       and an attribution line set in small caps. The grid alternates
+       between var(--color-bg) and var(--color-bg-alt) panels via the
+       repeater item index — the band logic mirrors services-01's
+       :nth-of-type approach but on the cell level instead of full-bleed
+       rows. The visual interest comes from typography, not decoration. */
+    .testimonials-editorial {
+      padding: 120px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .testimonials-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .testimonials-editorial__head {
+      max-width: 640px;
+      margin: 0 0 64px;
+    }
+    .testimonials-editorial__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 20px;
+    }
+    .testimonials-editorial h2 {
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 16px;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+    .testimonials-editorial__sub {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0;
+      max-width: 560px;
+    }
+    /* The grid. 3 cols desktop, 2 tablet, 1 mobile. Items get a hairline
+       border on the left so the column rhythm reads even when the panel
+       backgrounds match. The opening glyph (") sits in the upper-left as
+       a quiet typographic anchor — small, low-contrast, never decorative. */
+    .testimonials-editorial__grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .testimonials-editorial__item {
+      padding: 44px 36px;
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .testimonials-editorial__item:last-child {
+      border-right: none;
+    }
+    .testimonials-editorial__item::before {
+      content: "\201C"; /* opening curly double-quote */
+      position: absolute;
+      top: 28px;
+      left: 36px;
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      line-height: 1;
+      color: var(--color-text-light);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .testimonials-editorial__quote {
+      font-family: var(--font-heading);
+      font-weight: 500;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--color-dark);
+      margin: 28px 0 28px;
+      letter-spacing: -0.005em;
+      flex: 1;
+    }
+    .testimonials-editorial__divider {
+      width: 32px;
+      height: 1px;
+      background: var(--color-border);
+      margin: 0 0 18px;
+      border: 0;
+    }
+    .testimonials-editorial__author {
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text);
+      margin: 0 0 4px;
+    }
+    .testimonials-editorial__role {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+    /* Tablet: 2 cols. Drop the right border on every 2nd cell. Items in the
+       first row get a bottom border so rows visually stack.
+       Both selector forms so the rule survives the publish renderer's
+       [data-sk-repeater-wrap] wrapper (see services-01.html for full
+       rationale on this pattern). */
+    @media (max-width: 1024px) {
+      .testimonials-editorial__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .testimonials-editorial__item:nth-child(2n),
+      [data-sk-repeater-wrap]:nth-child(2n) .testimonials-editorial__item {
+        border-right: none;
+      }
+      .testimonials-editorial__item:not(:nth-last-child(-n+2)),
+      [data-sk-repeater-wrap]:not(:nth-last-child(-n+2)) .testimonials-editorial__item {
+        border-bottom: 1px solid var(--color-border);
+      }
+    }
+    /* Mobile: 1 col. Right borders off, separator becomes a bottom border. */
+    @media (max-width: 640px) {
+      .testimonials-editorial { padding: 80px 0; }
+      .testimonials-editorial__head { margin-bottom: 40px; }
+      .testimonials-editorial__grid {
+        grid-template-columns: 1fr;
+      }
+      .testimonials-editorial__item {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        padding: 36px 24px;
+      }
+      .testimonials-editorial__item::before {
+        left: 24px;
+      }
+      .testimonials-editorial__item:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: testimonials-01</strong> &nbsp; · &nbsp; Editorial pull-quote grid — small eyebrow, refined heading, 3-column quote tiles separated by hairlines. No avatars, no stars. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:testimonials:start -->
+<!--
+  TEMPLATE: testimonials-01
+  LAYOUT:   Optional editorial header (eyebrow + heading + sub) above a
+            3-column quote grid separated by hairlines. Each tile has an
+            opening curly-quote glyph in the upper-left, the quote set in
+            Space Grotesk medium, a 32px divider, and an attribution line
+            (small-caps name + role/company in muted body type).
+            Responsive: 3 cols → 2 cols (≤1024px) → 1 col (≤640px).
+  CONTENT:  3 header fields + 1 repeater (testimonials, 1..6 items, 3 by default).
+            Each item = { quote, author_name, author_role }.
+  EDITABLE: 3 top-level text fields + repeater of 3 fields per item.
+  THEME:    Section bg = --color-bg. Hairlines = --color-border.
+            Quote = --color-dark, role = --color-text-light, opening glyph
+            uses --color-text-light at 35% opacity.
+  USE FOR:  Service businesses, studios, professionals — anywhere social
+            proof is appropriate but feels too "AI-generated SaaS" with
+            avatars or star ratings.
+-->
+<section id="referencie" class="testimonials-editorial fade-up">
+  <div class="testimonials-editorial__inner">
+
+    <div class="testimonials-editorial__head">
+      <p class="testimonials-editorial__eyebrow" data-field="testimonials_eyebrow">Testimonials</p>
+      <h2 data-field="testimonials_heading">Words from those who trust us</h2>
+      <p class="testimonials-editorial__sub" data-field="testimonials_subheadline" data-type="richtext">Short statements from clients we have worked with. No embellishment, just honest feedback from real projects.</p>
+    </div>
+
+    <!--
+      Testimonials repeater. Each item carries the quote text and an
+      attribution split into name + role/company so the role can be styled
+      separately from the name without nesting markup inside a single field.
+    -->
+    <div class="testimonials-editorial__grid" data-repeat="testimonials" data-min="1" data-max="6">
+      <article class="testimonials-editorial__item" data-item-id-source="author_name">
+        <p class="testimonials-editorial__quote" data-field="quote" data-type="richtext">Write the first customer quote here. Try 1 to 2 sentences about how the collaboration went, deadlines, communication, quality of the result.</p>
+        <hr class="testimonials-editorial__divider">
+        <p class="testimonials-editorial__author" data-field="author_name">Customer first and last name</p>
+        <p class="testimonials-editorial__role" data-field="author_role">Position, Company name</p>
+      </article>
+      <article class="testimonials-editorial__item">
+        <p class="testimonials-editorial__quote" data-field="quote" data-type="richtext">Write the second quote here. Try using a different angle, for example the team's approach, a tailored solution, or the reliability of the collaboration.</p>
+        <hr class="testimonials-editorial__divider">
+        <p class="testimonials-editorial__author" data-field="author_name">Customer first and last name</p>
+        <p class="testimonials-editorial__role" data-field="author_role">Position, Company name</p>
+      </article>
+      <article class="testimonials-editorial__item">
+        <p class="testimonials-editorial__quote" data-field="quote" data-type="richtext">Write the third quote here. A short, concise sentence about professionalism, the result, or why the customer would recommend you to others.</p>
+        <hr class="testimonials-editorial__divider">
+        <p class="testimonials-editorial__author" data-field="author_name">Customer first and last name</p>
+        <p class="testimonials-editorial__role" data-field="author_role">Position, Company name</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:testimonials:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the testimonials section.</p>
+</div>
+
+
+
+</body></html>

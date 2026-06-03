@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>how-it-works-02 — Numbered vertical list</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* how-it-works-02 — calm editorial numbered list. Vertical stack of
+       steps, each with a large primary-colored number on the left + bold
+       title + plain description on the right. Hairline divider between
+       steps. No images, no card chrome — designed to read as a quiet
+       process explanation that pairs well with a busy hero or photo-heavy
+       services grid above it.
+
+       Same field schema as how-it-works-01 (minus step_image): hiw_title,
+       hiw_subtitle, repeater hiw_steps with step_icon (used as the
+       number — "01", "02" by default) + step_title + step_description.
+       Swap with hiw-01 / hiw-03 keeps all text fields. */
+
+    .hiw-02 {
+      padding: 100px 24px;
+      background: var(--color-bg);
+    }
+
+    .hiw-02__inner {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .hiw-02__title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      text-align: center;
+      margin: 0 0 16px;
+      color: var(--color-dark);
+    }
+    /* TipTap wraps content in <p>; inherit so the element's own styling
+       wins. Same pattern as hiw-01. */
+    .hiw-02__title > p { margin: 0; font: inherit; color: inherit; }
+
+    .hiw-02__subtitle {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--color-text) 65%, transparent);
+      text-align: center;
+      margin: 0 auto 64px;
+      max-width: 680px;
+    }
+    .hiw-02__subtitle:empty { display: none; }
+    .hiw-02__subtitle:empty ~ .hiw-02__list { margin-top: 64px; }
+    .hiw-02__subtitle > p { margin: 0; font: inherit; color: inherit; }
+
+    .hiw-02__list {
+      display: flex;
+      flex-direction: column;
+    }
+    /* Publish renderer wraps each repeater child in [data-sk-repeater-wrap].
+       Keep those wrappers transparent so flex layout still applies to the
+       steps themselves. Same trick used in hiw-01. */
+    .hiw-02__list [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .hiw-02__step {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 32px;
+      align-items: start;
+      padding: 32px 20px;
+      margin: 0 -20px;
+      border-top: 1px solid var(--color-border);
+      border-radius: 12px;
+      background-color: transparent;
+      transition: background-color 0.25s ease, transform 0.25s ease;
+    }
+    /* Subtle editorial hover — soft tint fades in, whole step nudges
+       4px to the right. No scale, no glow — just enough motion to
+       confirm the row is interactive without feeling like a "card". */
+    .hiw-02__step:hover {
+      background-color: color-mix(in srgb, var(--color-primary) 6%, transparent);
+      transform: translateX(4px);
+    }
+    .hiw-02__step:hover .hiw-02__num {
+      color: color-mix(in srgb, var(--color-primary) 88%, var(--color-dark));
+    }
+    /* No divider above the first step. Dual selector handles both the
+       preview (cards are siblings) and the published case (cards wrapped
+       in [data-sk-repeater-wrap]). Per feedback_nth_of_type_repeater_wrap. */
+    .hiw-02__step:first-of-type,
+    [data-sk-repeater-wrap]:first-of-type .hiw-02__step {
+      border-top: 0;
+      padding-top: 12px;
+    }
+
+    .hiw-02__num {
+      font-family: var(--font-heading);
+      font-size: clamp(2.6rem, 5vw, 3.8rem);
+      font-weight: 600;
+      line-height: 1;
+      color: var(--color-primary);
+      letter-spacing: -0.03em;
+      display: block;
+      transition: color 0.25s ease;
+    }
+    .hiw-02__num > p { margin: 0; font: inherit; color: inherit; }
+
+    .hiw-02__body { padding-top: 6px; }
+
+    .hiw-02__step-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-dark);
+      margin: 0 0 10px;
+    }
+    .hiw-02__step-title > p { margin: 0; font: inherit; color: inherit; }
+
+    /* Description is a <div> (not <p>) so TipTap's <p> wrap nests safely.
+       Same rationale as hiw-01__description. */
+    .hiw-02__desc {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text-light);
+      margin: 0;
+      max-width: 64ch;
+    }
+    .hiw-02__desc > p { margin: 0; font: inherit; color: inherit; }
+
+    @media (max-width: 700px) {
+      .hiw-02 { padding: 72px 20px; }
+      .hiw-02__step {
+        grid-template-columns: 72px 1fr;
+        gap: 18px;
+        padding: 24px 0;
+      }
+      .hiw-02__num { font-size: 2rem; }
+      .hiw-02__step-title { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: how-it-works-02</strong> &nbsp; · &nbsp; Numbered vertical list — calm editorial process layout, no images. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:how-it-works:start -->
+<!--
+  TEMPLATE: how-it-works-02
+  CATEGORY: how-it-works (process / values / approach intro section).
+  LAYOUT:   Centered section title + optional subtitle on a light bg.
+            Below: a vertical stack of steps, each a 2-column grid with
+            a large primary-colored number on the left and bold title +
+            plain description on the right. Hairline divider between
+            steps (no top border on the first one).
+  CONTENT:  Title, subtitle, 2-8 steps (default 3). Each step:
+            number/symbol (text) + title + description (plain text).
+  EDITABLE: hiw_title (text), hiw_subtitle (text), step_icon (text —
+            used as the number, e.g. "01"), step_title (text),
+            step_description (PLAIN TEXT). Same fields as hiw-01 / 03
+            minus step_image — swap is loss-free for text.
+  PAIRS WITH: any hero. Visually quieter than hiw-01 (photo cards) so it
+            sits well below a strong hero without competing.
+  THEME:    Numbers use --color-primary. Section bg uses --color-bg.
+            Title uses --font-heading, description uses --font-body.
+            Dividers use --color-border.
+-->
+<section id="postup" class="hiw-02 fade-up">
+  <div class="hiw-02__inner">
+    <h2 class="hiw-02__title" data-field="hiw_title">How we work together</h2>
+    <div class="hiw-02__subtitle" data-field="hiw_subtitle"></div>
+
+    <div class="hiw-02__list">
+      <div data-repeat="hiw_steps" data-min="2" data-max="8" style="display:contents">
+
+        <article class="hiw-02__step">
+          <span class="hiw-02__num" data-field="step_icon">01</span>
+          <div class="hiw-02__body">
+            <div class="hiw-02__step-title" data-field="step_title">Get in touch</div>
+            <div class="hiw-02__desc" data-field="step_description">Write or call us. We will quickly hear out what you need and when it would suit you to start.</div>
+          </div>
+        </article>
+
+        <article class="hiw-02__step">
+          <span class="hiw-02__num" data-field="step_icon">02</span>
+          <div class="hiw-02__body">
+            <div class="hiw-02__step-title" data-field="step_title">Site visit and quote</div>
+            <div class="hiw-02__desc" data-field="step_description">We come for a site visit or go through everything over the phone. Within 24 hours we prepare a clear quote with no hidden costs.</div>
+          </div>
+        </article>
+
+        <article class="hiw-02__step">
+          <span class="hiw-02__num" data-field="step_icon">03</span>
+          <div class="hiw-02__body">
+            <div class="hiw-02__step-title" data-field="step_title">Work as agreed</div>
+            <div class="hiw-02__desc" data-field="step_description">We work within the agreed timeframe, exactly as we arranged. Once finished, we hand over the work in person and explain everything you need to know.</div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:how-it-works:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below how-it-works-02 — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

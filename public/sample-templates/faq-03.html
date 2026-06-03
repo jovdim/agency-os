@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>faq-03 — Two-column magazine spread (all visible)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* faq-03: two-column grid, all questions visible, NO accordion. Each
+       Q&A is a simple text pair — Q in heading font (bold), A in body
+       text below. No card chrome, no shadows, no expand/collapse — the
+       page itself IS the navigation; the visitor scans, not clicks.
+
+       Best for FAQs of 4-8 short questions where the answers are 1-2
+       sentences each and hiding them behind a click adds friction.
+
+       Same shared schema as faq-04 / faq-05 (faq_eyebrow + faq_headline
+       + faq_items repeater) so clients can swap freely between the new
+       pool. */
+    .faq-03 .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 56px 48px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .faq-03 .faq-grid__item {
+      max-width: 480px;
+    }
+    .faq-03 .faq-grid__q {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      letter-spacing: -0.005em;
+      color: var(--color-dark);
+      margin: 0 0 14px;
+    }
+    .faq-03 .faq-grid__a {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+    @media (max-width: 760px) {
+      .faq-03 .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .faq-03 .faq-grid__item { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: faq-03</strong> &nbsp; · &nbsp; 2-column grid, all questions + answers visible, no accordion. Mobile collapses to 1 column. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:faq:start -->
+<!--
+  TEMPLATE: faq-03
+  LAYOUT:   2-column grid of question/answer pairs. Everything visible —
+            no accordion, no expand/collapse. Each pair is a simple text
+            block: question (bold heading-style), answer below in body.
+            Mobile collapses to 1 column.
+  CONTENT:  eyebrow + headline + faq_items repeater.
+            Each item = { question, answer }.
+  EDITABLE: 2 top-level fields + 1 repeater (faq_items, 2..10 default 6).
+  THEME:    Question uses --color-dark in heading font. Answer uses
+            --color-text-light. No card chrome, no shadows, no JS.
+            Eyebrow underline applied globally by base CSS.
+  USE FOR:  Short FAQs (4-8 items) where answers are 1-2 sentences each.
+            Visible-by-default removes friction — visitor scans, doesn't
+            click. Different from faq-01 / faq-02 / faq-05 (all accordion).
+-->
+<section id="otazky" class="faq-03 fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="faq_eyebrow">Frequently asked questions</span>
+      <h2 data-field="faq_headline">The questions we get asked most often</h2>
+    </div>
+
+    <div class="faq-grid" data-repeat="faq_items" data-min="2" data-max="10">
+      <div class="faq-grid__item" data-item-id-source="question">
+        <h3 class="faq-grid__q" data-field="question">Write the first question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write a brief answer here. Be specific, state what the customer gets, when, and under what conditions. Two sentences are enough.</p>
+      </div>
+      <div class="faq-grid__item">
+        <h3 class="faq-grid__q" data-field="question">Write the second question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write a brief answer to the second question here. Answer directly, avoid marketing language.</p>
+      </div>
+      <div class="faq-grid__item">
+        <h3 class="faq-grid__q" data-field="question">Write the third question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write a brief answer here. If the answer is more complex, you can use three sentences. Do not write long paragraphs.</p>
+      </div>
+      <div class="faq-grid__item">
+        <h3 class="faq-grid__q" data-field="question">Write the fourth question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write the answer to the fourth question here. Anticipate what the customer will want to know after the first three.</p>
+      </div>
+      <div class="faq-grid__item">
+        <h3 class="faq-grid__q" data-field="question">Write the fifth question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write the answer to the fifth question here. Address typical doubts, for example price, guarantee, or process.</p>
+      </div>
+      <div class="faq-grid__item">
+        <h3 class="faq-grid__q" data-field="question">Write the sixth question here?</h3>
+        <p class="faq-grid__a" data-field="answer" data-type="richtext">Write the answer to the sixth question here. The last question can lead to the next step, for example how to contact you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:faq:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the FAQ section.</p>
+</div>
+
+
+
+</body></html>

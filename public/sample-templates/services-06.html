@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-06 — Cinematic overlap spreads (alternating corners)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-06: cinematic "magazine spread" layout. Each service
+       gets a full-row 21:9 letterbox photo with a floating text card
+       that overlaps the bottom corner of the image. Cards alternate
+       corners per row (1 = bottom-right, 2 = bottom-left, 3 = right,
+       ...). Mobile collapses to a clean stack with the card sitting
+       just below the image. The catalog's "best-in-class" services
+       slot — image dominates, depth from the card overlap, no
+       legibility risk (card has its own background). */
+
+    .services-06 .container { max-width: 1280px; }
+
+    .services-06 .head {
+      max-width: 760px;
+      margin: 0 auto 64px;
+      text-align: center;
+    }
+    /* Hide the eyebrow when empty so the template runs cleanly without
+       a "SERVICES" label above the title, matches services-01/03/04/05. */
+    .services-06 .head .eyebrow:empty { display: none; }
+    .services-06 .head h2 {
+      position: relative;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+    }
+    .services-06 .head h2::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+    .services-06 .head p {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    /* Stack of spreads. Generous gap because each spread is visually
+       substantial — squishing them would kill the cinematic feel. */
+    .services-06 .spreads {
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+    }
+
+    /* Each spread = image + floating card. position: relative so the
+       absolutely-positioned card anchors to the spread's bounds (not
+       the document). */
+    .services-06 .spread {
+      position: relative;
+    }
+
+    /* Hero photo — full row width, cinematic 21:9 letterbox. 16:10
+       was too tall at 1200-1400px container widths (~750px image
+       eating the viewport); 21:9 lands the same image around 500px
+       tall — feels deliberately cinematic without dominating the
+       scroll. Soft rounded corners + medium shadow gives the photo
+       presence without being too "card-y" (the floating card is the
+       obvious card; the image wants to read as a hero photo, not
+       another card). */
+    .services-06 .spread-img {
+      width: 100%;
+      aspect-ratio: 21/9;
+      object-fit: cover;
+      display: block;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Floating card — sits ON the image's bottom corner with its own
+       solid background and stronger shadow, so it reads as "lifted
+       above" the photo. Default position: bottom-right (used by ODD
+       spreads); EVEN spreads override to bottom-left below. */
+    .services-06 .spread-card {
+      position: absolute;
+      bottom: 28px;
+      right: 28px;
+      max-width: 480px;
+      background: var(--color-bg);
+      border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 24px 28px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Alternating corners. :nth-of-type counts <article> siblings
+       inside [data-repeat] (display:contents flattens it from layout
+       but keeps the sibling relationship for selector matching).
+       parser.ts strips the per-card wrap before emit, so both
+       composer + publish see the same sibling chain — no dual
+       selector needed. See [[feedback_data_repeat_no_direct_child]]. */
+    .services-06 .spread:nth-of-type(even) .spread-card {
+      right: auto;
+      left: 28px;
+    }
+
+    .services-06 .spread-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+      margin: 0;
+      color: var(--color-text);
+    }
+
+    .services-06 .spread-description {
+      color: var(--color-text-light);
+      font-size: 0.98rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* Filled primary CTA — every spread treats its service as the
+       headline. No "small arrow link" version on this template
+       because every service is shown big. */
+    .services-06 .spread-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--border-radius);
+      background: var(--color-primary);
+      color: var(--color-bg);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
+      width: fit-content;
+      align-self: start;
+      margin-top: 4px;
+      transition: opacity var(--transition);
+    }
+    .services-06 .spread-cta:hover { opacity: 0.9; }
+
+    /* ─── Mobile ───────────────────────────────────────────────────
+       The overlap pattern doesn't work on narrow viewports — the
+       floating card would either dominate the image or be illegible.
+       Drop absolute positioning, let the card sit just below the
+       image with a 28px negative top margin so there's still a hint
+       of overlap (preserves the visual identity without the
+       legibility cost). Card stretches near-full width with a small
+       horizontal inset. Image relaxes to 4:3 (taller) so it fits
+       phone screens without looking cropped. */
+    @media (max-width: 800px) {
+      .services-06 .spreads { gap: 56px; }
+      .services-06 .spread-img { aspect-ratio: 4/3; }
+      .services-06 .spread-card {
+        position: static;
+        max-width: 100%;
+        margin: -28px 16px 0;
+        right: auto;
+        left: auto;
+        box-shadow: var(--shadow-md);
+      }
+      .services-06 .spread:nth-of-type(even) .spread-card {
+        right: auto;
+        left: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-06</strong> &nbsp; · &nbsp; Cinematic spreads — full-width 21:9 letterbox hero photo per service with a floating text card on the bottom corner, alternating left/right per row. Mobile collapses to a clean stack. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-06
+  LAYOUT:   Each service rendered as a "magazine spread" — full row
+            21:9 letterbox hero photo with a text card floating on the bottom
+            corner of the image. ODD spreads (1, 3, 5) have the card
+            on the bottom-RIGHT; EVEN spreads (2, 4, 6) flip to
+            bottom-LEFT for editorial rhythm. Mobile stacks the card
+            BELOW the image (slight negative margin keeps a hint of
+            the overlap identity).
+  CONTENT:  eyebrow + headline + subheadline, then a repeater of
+            services. Each item = { image, title, description, link }.
+            Same schema as services-01/03/04/05 so users can switch
+            between variants without re-entering content.
+  EDITABLE: 3 top-level + 1 repeater (1..99, default 4).
+  THEME:    Card uses --color-bg with a darker hairline border for
+            edge definition on any theme. Filled CTA uses
+            --color-primary. Section-title underline accent matches
+            the rest of the services family.
+  WHEN TO USE: Sites where each service has strong, hero-worthy photos
+               of real work. Excavation, construction, landscaping,
+               renovation — trades whose work LOOKS impressive. Best
+               for 3-5 services (1 stunning row each).
+-->
+<section id="sluzby" class="services-06 fade-up">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-field="services_eyebrow"></span>
+      <h2 data-field="services_headline">Our services</h2>
+      <p data-field="services_subheadline" data-type="richtext">Write a short subtitle here, sum up in one sentence what you offer and what sets you apart (speed, quality, price).</p>
+    </div>
+
+    <!--
+      Services repeater. data-repeat carries display:contents so the
+      data-repeat wrapper disappears from layout — the .spread
+      <article> elements become direct layout children of .spreads.
+      DOM-wise they remain children of [data-repeat], so :nth-of-type
+      counts them correctly for the alternating-corner CSS above.
+    -->
+    <div class="spreads">
+      <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+        <article class="spread" data-item-id-source="title">
+          <img class="spread-img" data-field="image" src="https://placehold.co/1680x720/d6d3d1/57534e?text=Service+1&font=lato" alt="" width="1680" height="720" loading="lazy">
+          <div class="spread-card">
+            <h3 class="spread-title" data-field="title">First service name</h3>
+            <p class="spread-description" data-field="description" data-type="richtext">Write a description of the first service here. 2 to 3 sentences about what you do within this service, who it is for and what the result is for the customer.</p>
+            <a class="spread-cta" data-field="link" data-type="link" href="#kontakt">Call us</a>
+          </div>
+        </article>
+        <article class="spread">
+          <img class="spread-img" data-field="image" src="https://placehold.co/1680x720/d6d3d1/57534e?text=Service+2&font=lato" alt="" width="1680" height="720" loading="lazy">
+          <div class="spread-card">
+            <h3 class="spread-title" data-field="title">Second service name</h3>
+            <p class="spread-description" data-field="description" data-type="richtext">Write a description of the second service here. Be specific, state what problem this service solves and what the result is for the customer.</p>
+            <a class="spread-cta" data-field="link" data-type="link" href="#kontakt">Call us</a>
+          </div>
+        </article>
+        <article class="spread">
+          <img class="spread-img" data-field="image" src="https://placehold.co/1680x720/d6d3d1/57534e?text=Service+3&font=lato" alt="" width="1680" height="720" loading="lazy">
+          <div class="spread-card">
+            <h3 class="spread-title" data-field="title">Third service name</h3>
+            <p class="spread-description" data-field="description" data-type="richtext">Write a description of the third service here. Mention segments or specialization, for larger companies, for private customers, for specific types of jobs.</p>
+            <a class="spread-cta" data-field="link" data-type="link" href="#kontakt">Call us</a>
+          </div>
+        </article>
+        <article class="spread">
+          <img class="spread-img" data-field="image" src="https://placehold.co/1680x720/d6d3d1/57534e?text=Service+4&font=lato" alt="" width="1680" height="720" loading="lazy">
+          <div class="spread-card">
+            <h3 class="spread-title" data-field="title">Fourth service name</h3>
+            <p class="spread-description" data-field="description" data-type="richtext">Write a description of the fourth service here. A complementary or specialized offering that complements the main services, describe it with regard to how it helps the client.</p>
+            <a class="spread-cta" data-field="link" data-type="link" href="#kontakt">Call us</a>
+          </div>
+        </article>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

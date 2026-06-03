@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-08 — Rounded image grid with accent expand badge + lightbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* gallery-08 — image grid ported from the pilimestromy GalleryPreview.
+       Centered header (pentagon eyebrow + headline + section-line +
+       subtext), then a 2/3-col grid of rounded photo tiles. Each tile
+       zooms slightly on hover, reveals a dark top gradient and a small
+       brand "expand" badge bottom-right. Click opens a full-screen
+       lightbox with prev/next + counter. */
+    .gallery-08 { padding: 96px 0; background: var(--color-bg); }
+    .gallery-08 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    .gallery-08 .section-head {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      max-width: 760px; margin: 0 auto 56px;
+    }
+    .gallery-08 .eyebrow {
+      display: inline-flex; flex-direction: row; align-items: center; gap: 12px;
+      text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.75rem;
+      font-weight: 600; color: var(--color-text-light); margin: 0 0 18px;
+    }
+    .gallery-08 .eyebrow::after { display: none; }
+    .gallery-08 .eyebrow::before {
+      content: ""; width: 16px; height: 16px; flex-shrink: 0;
+      background: var(--color-primary);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .gallery-08 .section-head h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin: 0; }
+    .gallery-08 .section-head .section-line { display: block; width: 48px; height: 3px; border-radius: 99px; background: var(--color-primary); margin: 20px auto 0; }
+    .gallery-08 .section-head p { color: var(--color-text-light); font-size: 1.05rem; margin: 20px 0 0; }
+
+    .gallery-08__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 700px) { .gallery-08__grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+    .gallery-08__grid > [data-sk-repeater-wrap] { display: contents; }
+
+    .gallery-08__item {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+      border-radius: 16px; cursor: zoom-in; background: var(--color-bg-alt); margin: 0;
+      box-shadow: var(--shadow-md);
+    }
+    .gallery-08__item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s ease; }
+    .gallery-08__item:hover img { transform: scale(1.1); }
+    .gallery-08__item::before {
+      content: ""; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(15,15,15,.55), transparent 55%);
+      opacity: 0; transition: opacity .3s ease;
+    }
+    .gallery-08__item:hover::before { opacity: 1; }
+    .gallery-08__badge {
+      position: absolute; bottom: 14px; right: 14px; z-index: 2;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--color-primary); color: #fff; display: grid; place-items: center;
+      opacity: 0; transform: translateY(6px); transition: opacity .3s ease, transform .3s ease;
+      pointer-events: none;
+    }
+    .gallery-08__item:hover .gallery-08__badge { opacity: 1; transform: translateY(0); }
+    .gallery-08__badge svg { width: 16px; height: 16px; }
+
+    /* Lightbox (mirrors gallery-01). */
+    .gallery-08__lightbox {
+      position: fixed; inset: 0; background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(24px) saturate(1.1); -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      z-index: 9999; display: none; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .gallery-08__lightbox.is-open { display: flex; opacity: 1; }
+    body.gallery-08-locked { overflow: hidden; }
+    .gallery-08__lightbox-stage { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .gallery-08__lightbox-stage img {
+      width: 100%; height: 100%; object-fit: contain; display: block; user-select: none;
+      opacity: 1; transform: translateX(0); transition: transform 0.32s ease, opacity 0.32s ease;
+    }
+    .gallery-08__btn {
+      position: absolute; width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12); color: #fff; display: grid; place-items: center;
+      cursor: pointer; transition: background 0.2s ease, transform 0.2s ease;
+      backdrop-filter: blur(6px); border: 0; z-index: 2;
+    }
+    .gallery-08__btn:hover { background: rgba(255, 255, 255, 0.22); transform: scale(1.05); }
+    .gallery-08__btn svg { width: 22px; height: 22px; }
+    .gallery-08__close { top: 20px; right: 20px; }
+    .gallery-08__prev { left: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-08__next { right: 20px; top: 50%; transform: translateY(-50%); }
+    .gallery-08__prev:hover { transform: translateY(-50%) scale(1.05); }
+    .gallery-08__next:hover { transform: translateY(-50%) scale(1.05); }
+    .gallery-08__counter {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.85); font-size: 0.88rem; font-family: var(--font-heading);
+      font-weight: 500; background: rgba(0, 0, 0, 0.5); padding: 6px 14px; border-radius: 999px;
+      backdrop-filter: blur(6px); z-index: 2;
+    }
+    @media (max-width: 700px) {
+      .gallery-08 { padding: 64px 0; }
+      .gallery-08__close { top: 12px; right: 12px; }
+      .gallery-08__prev { left: 8px; }
+      .gallery-08__next { right: 8px; }
+      .gallery-08__counter { bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1a1a1a;color:#e7e5e4;padding:10px 16px;font-family:'Inter',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-08</strong> &nbsp; · &nbsp; Rounded photo grid with hover zoom + accent expand badge. Click any tile for a full-screen lightbox. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-08
+  LAYOUT:   Centered header (eyebrow + headline + section-line + subtext),
+            then a 3-col (2-col mobile) grid of rounded photo tiles. Hover
+            zoom + dark gradient + brand expand badge. Click → lightbox
+            (prev/next, counter, ESC, swipe).
+  CONTENT:  eyebrow + headline + subheadline + gallery_items repeater
+            (3..999), each item = { image }.
+  EDITABLE: 3 header fields + 1 image-repeater.
+  THEME:    Eyebrow pentagon, section-line and expand badge use
+            var(--color-primary). Section bg var(--color-bg).
+-->
+<section id="galeria" class="gallery-08 fade-up">
+  <div class="container">
+
+    <div class="section-head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Projects</span>
+      <h2 data-field="gallery_headline">Gallery</h2>
+      <span class="section-line" aria-hidden="true"></span>
+      <p data-field="gallery_subheadline" data-type="richtext">Samples of work and completed tree removals in the local region. The gallery gives an overview of the quality and safety of our services.</p>
+    </div>
+
+    <div class="gallery-08__grid" data-repeat="gallery_items" data-min="3" data-max="999">
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/2f3e30/e7e5e4?text=Photo+1&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/3a3a3a/e7e5e4?text=Photo+2&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/2f3e30/e7e5e4?text=Photo+3&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/3a3a3a/e7e5e4?text=Photo+4&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/2f3e30/e7e5e4?text=Photo+5&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+      <figure class="gallery-08__item">
+        <img data-field="image" src="https://placehold.co/800x600/3a3a3a/e7e5e4?text=Photo+6&font=lato" alt="" loading="lazy">
+        <span class="gallery-08__badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></span>
+      </figure>
+    </div>
+  </div>
+
+  <div class="gallery-08__lightbox" role="dialog" aria-modal="true" aria-label="Gallery" hidden>
+    <button class="gallery-08__btn gallery-08__close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="gallery-08__btn gallery-08__prev" type="button" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="gallery-08__lightbox-stage"></div>
+    <button class="gallery-08__btn gallery-08__next" type="button" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="gallery-08__counter"><span class="gallery-08__current">1</span> / <span class="gallery-08__total">6</span></div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('.gallery-08');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      var items = Array.from(section.querySelectorAll('.gallery-08__item'));
+      if (!items.length) return;
+
+      // Composer owns tile clicks (field-replace / section-select).
+      if (window !== window.parent) return;
+
+      var lb = section.querySelector('.gallery-08__lightbox');
+      if (!lb) return;
+      // Reparent to <body> — .fade-up's transform makes the section a
+      // containing block for position:fixed descendants.
+      if (lb.parentElement !== document.body) document.body.appendChild(lb);
+
+      var stage = lb.querySelector('.gallery-08__lightbox-stage');
+      var currentEl = lb.querySelector('.gallery-08__current');
+      var totalEl = lb.querySelector('.gallery-08__total');
+      var closeBtn = lb.querySelector('.gallery-08__close');
+      var prevBtn = lb.querySelector('.gallery-08__prev');
+      var nextBtn = lb.querySelector('.gallery-08__next');
+
+      var currentIdx = 0;
+      var lastFocused = null;
+      if (totalEl) totalEl.textContent = String(items.length);
+
+      function show(idx, dir) {
+        currentIdx = (idx + items.length) % items.length;
+        var imgEl = items[currentIdx].querySelector('img');
+        var imgUrl = imgEl ? (imgEl.getAttribute('src') || '').trim() : '';
+        var existing = stage.firstElementChild;
+        var d = dir || 0;
+        var outX = d > 0 ? '-40%' : d < 0 ? '40%' : '0';
+        var inStartX = d > 0 ? '40%' : d < 0 ? '-40%' : '0';
+
+        function swap() {
+          stage.innerHTML = '';
+          if (imgUrl) {
+            var newEl = document.createElement('img');
+            newEl.src = imgUrl;
+            newEl.alt = imgEl ? (imgEl.alt || '') : '';
+            newEl.style.transition = 'none';
+            newEl.style.transform = 'translateX(' + inStartX + ')';
+            newEl.style.opacity = '0';
+            stage.appendChild(newEl);
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                newEl.style.transition = '';
+                newEl.style.transform = 'translateX(0)';
+                newEl.style.opacity = '1';
+              });
+            });
+          }
+          if (currentEl) currentEl.textContent = String(currentIdx + 1);
+        }
+
+        if (existing && d !== 0) {
+          existing.style.transform = 'translateX(' + outX + ')';
+          existing.style.opacity = '0';
+          setTimeout(swap, 320);
+        } else {
+          swap();
+        }
+      }
+
+      function open(idx) {
+        lastFocused = document.activeElement;
+        show(idx);
+        lb.hidden = false;
+        requestAnimationFrame(function () { lb.classList.add('is-open'); });
+        document.body.classList.add('gallery-08-locked');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function close() {
+        lb.classList.remove('is-open');
+        document.body.classList.remove('gallery-08-locked');
+        setTimeout(function () { lb.hidden = true; stage.innerHTML = ''; }, 250);
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }
+
+      items.forEach(function (item, i) {
+        item.style.cursor = 'zoom-in';
+        item.tabIndex = 0;
+        item.setAttribute('role', 'button');
+        item.setAttribute('aria-label', 'Enlarge');
+        item.addEventListener('click', function () { open(i); });
+        item.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); }
+        });
+      });
+
+      if (closeBtn) closeBtn.addEventListener('click', close);
+      if (prevBtn) prevBtn.addEventListener('click', function () { show(currentIdx - 1, -1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { show(currentIdx + 1, 1); });
+      lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(currentIdx - 1, -1);
+        else if (e.key === 'ArrowRight') show(currentIdx + 1, 1);
+      });
+
+      var touchStartX = 0;
+      lb.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) { var step = dx < 0 ? 1 : -1; show(currentIdx + step, step); }
+      }, { passive: true });
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-05 — Coverage band (region + city chips)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-05 — coverage band. Dark full-width strip with a region
+       label on the left and a wrap of city chips on the right, over a
+       faint grid texture + soft accent glow. Faithful port of the
+       pilimestromy coverage band. */
+    .subpage-coverage { background: var(--color-secondary, #1c1917); color: var(--color-light, #faf7f2); padding: 52px 0; position: relative; overflow: hidden; }
+    /* Faint grid texture. */
+    .subpage-coverage::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.4;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    /* Soft accent glow blob. */
+    .subpage-coverage::after {
+      content: ""; position: absolute; top: -80px; right: 25%;
+      width: 288px; height: 288px; border-radius: 999px;
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      filter: blur(60px); pointer-events: none;
+    }
+    .subpage-coverage .wrap {
+      position: relative; z-index: 1;
+      max-width: var(--max-width, 1200px); margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+    }
+    .subpage-coverage .label-side { display: flex; align-items: center; gap: 20px; }
+    .subpage-coverage .pin {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 14px;
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      display: grid; place-items: center; color: var(--color-primary);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+    .subpage-coverage .pin svg { width: 28px; height: 28px; }
+    .subpage-coverage .eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-primary); margin: 0; }
+    .subpage-coverage .region { font-family: var(--font-heading); font-size: clamp(1.3rem, 2.4vw, 1.85rem); font-weight: 800; letter-spacing: -0.01em; color: var(--color-light, #faf7f2); margin: 5px 0 0; }
+    .subpage-coverage .chips { display: flex; flex-wrap: wrap; gap: 10px; max-width: 640px; }
+    .subpage-coverage .chip {
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px; font-size: 0.9rem; font-weight: 500; color: var(--color-light, #faf7f2); transition: all var(--transition);
+    }
+    .subpage-coverage .chip::before { content: ""; width: 5px; height: 5px; border-radius: 999px; background: var(--color-primary); flex-shrink: 0; }
+    .subpage-coverage .chip:hover { background: color-mix(in srgb, var(--color-primary) 16%, transparent); border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); }
+    @media (max-width: 768px) {
+      .subpage-coverage .wrap { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-05</strong> &nbsp; · &nbsp; Dark coverage band — region label + city chips. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-05
+  LAYOUT:   Dark full-width band over a faint grid + accent glow. Left:
+            map-pin icon + region label. Right: wrap of city/area chips.
+            Stacks on mobile.
+  CONTENT:  eyebrow, region label, cities repeater.
+  EDITABLE: eyebrow (text), region (text), cities repeater (city text).
+  THEME:    --color-secondary (band bg), --color-primary (icon, dots),
+            --color-light (text), --font-heading/body.
+  JS:       none.
+-->
+<section id="posobnost" class="subpage-coverage">
+  <div class="wrap fade-up">
+    <div class="label-side">
+      <span class="pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+      <div>
+        <p class="eyebrow" data-field="eyebrow">We operate in</p>
+        <p class="region" data-field="region">Your region and surrounding areas</p>
+      </div>
+    </div>
+    <div class="chips">
+      <div data-repeat="cities" data-min="1" data-max="40" style="display:contents">
+        <span class="chip" data-field="city">City one</span>
+        <span class="chip" data-field="city">City two</span>
+        <span class="chip" data-field="city">City three</span>
+        <span class="chip" data-field="city">City four</span>
+        <span class="chip" data-field="city">City five</span>
+        <span class="chip" data-field="city">City six</span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

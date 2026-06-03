@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-04 — Stacked vertical column</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* reviews-04: vertical stack — testimonials in a single narrow centered
+       column, separated by thin dividers. Reads like a "wall of feedback"
+       you scroll through, magazine-style. Each item shows stars (fixed
+       gold) above a short quote, with author + source on the right of the
+       attribution row.
+
+       Same shared schema as reviews-02 / reviews-03 / reviews-05 so
+       clients can swap freely. */
+    .reviews-04 .reviews-stack {
+      max-width: 720px;
+      margin: 0 auto;
+      display: grid;
+      gap: 0;
+    }
+    .reviews-04 .reviews-stack__item {
+      padding: 36px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .reviews-04 .reviews-stack__item:first-child { padding-top: 0; }
+    .reviews-04 .reviews-stack__item:last-child { border-bottom: none; padding-bottom: 0; }
+    .reviews-04 .reviews-stack__stars {
+      display: inline-flex;
+      gap: 2px;
+      color: #f5b400;
+      margin-bottom: 16px;
+    }
+    .reviews-04 .reviews-stack__stars svg { width: 16px; height: 16px; fill: currentColor; }
+    .reviews-04 .reviews-stack__text {
+      font-family: var(--font-heading);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      line-height: 1.55;
+      letter-spacing: -0.005em;
+      color: var(--color-text);
+      font-weight: 500;
+      margin: 0 0 18px;
+    }
+    .reviews-04 .reviews-stack__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .reviews-04 .reviews-stack__name {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 0.95rem;
+    }
+    .reviews-04 .reviews-stack__source {
+      font-size: 0.82rem;
+      color: var(--color-text-light);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    /* Google review badge — see reviews-01 for the pattern explanation. */
+    .google-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .google-badge__logo {
+      display: block;
+      height: auto;
+      width: auto;
+      max-height: 28px;
+      max-width: 160px;
+    }
+    .google-badge__link {
+      position: absolute;
+      inset: 0;
+      text-indent: -9999px;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .google-badge__link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: reviews-04</strong> &nbsp; · &nbsp; Vertical stacked column, narrow centered, dividers between items. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-04
+  LAYOUT:   Single narrow centered column (max 720px) with reviews stacked
+            top-to-bottom, separated by thin --color-border dividers. Each
+            item: stars + quote (in heading font for editorial weight) +
+            attribution row (author + date on left, source label on right).
+  CONTENT:  eyebrow + headline + reviews_items repeater.
+            Each item = { text, author, date, source }.
+  EDITABLE: 2 top-level fields + 1 repeater (reviews_items, 2..10 default 4).
+  THEME:    Stars fixed gold (#f5b400). Quote uses --color-text in heading
+            font. Author --color-secondary. Date + source --color-text-light.
+            Dividers --color-border.
+  USE FOR:  Established businesses with longer testimonials — the vertical
+            stack lets each review breathe and reads more deliberately than
+            a card grid. Magazine / editorial feel. Different from reviews-02
+            (horizontal motion) and reviews-03 (single featured).
+-->
+<section id="recenzie" class="reviews-04 section-alt fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">What our clients say about us</h2>
+    </div>
+
+    <div class="reviews-stack" data-repeat="reviews_items" data-min="2" data-max="10">
+      <article class="reviews-stack__item" data-item-id-source="author">
+        <div class="reviews-stack__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-stack__text" data-field="text" data-type="richtext">Write the first review here. The vertical layout gives each review room, so feel free to use longer texts (3 to 4 sentences) than in a grid layout.</p>
+        <div class="reviews-stack__meta">
+          <span class="reviews-stack__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-stack__item">
+        <div class="reviews-stack__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-stack__text" data-field="text" data-type="richtext">Write the second review here. Cover different aspects of the cooperation or types of jobs.</p>
+        <div class="reviews-stack__meta">
+          <span class="reviews-stack__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-stack__item">
+        <div class="reviews-stack__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-stack__text" data-field="text" data-type="richtext">Write the third review here, non-standard conditions, an exceptional situation, or a long-term partnership.</p>
+        <div class="reviews-stack__meta">
+          <span class="reviews-stack__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-stack__item">
+        <div class="reviews-stack__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-stack__text" data-field="text" data-type="richtext">Write the fourth review here, a multi-year partnership or a returning client that demonstrates consistent quality.</p>
+        <div class="reviews-stack__meta">
+          <span class="reviews-stack__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the reviews.</p>
+</div>
+
+
+
+</body></html>

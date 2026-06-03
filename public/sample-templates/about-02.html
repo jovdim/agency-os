@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-02 — Split (image left + text right) with highlights list</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-02: same split aesthetic as about-01 but with the columns
+       FLIPPED — image LEFT, text RIGHT — and a highlights list added
+       between the body and the CTAs. The highlights are a small repeater
+       (2-6 short items) for capabilities or service categories. They use
+       a thin horizontal line marker (NOT checkmarks — Peter's "no
+       checkmarks" rule), keeping the editorial feel intact. */
+    .about-02 .container { max-width: 1180px; }
+    .about-02 .split {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .about-02 .split img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+    }
+    /* Document order is text-first (matches about-01) for SEO + mobile
+       readability; `order` swaps to image-LEFT on desktop so the layout
+       reads "see who they are (image) → read about them (text)". */
+    @media (min-width: 800px) {
+      .about-02 .split > .split-text { order: 2; }
+      .about-02 .split > img { order: 1; }
+    }
+    @media (max-width: 800px) {
+      .about-02 .split { grid-template-columns: 1fr; gap: 32px; }
+      .about-02 .split img { aspect-ratio: 4/3; }
+    }
+    .about-02 .split-text h2 {
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      margin-bottom: 22px;
+    }
+    /* Composer compat: TipTap wraps every text-field value in <p> on
+       edit, so the headline ends up as <h2><p>…</p></h2> and the eyebrow
+       as <span class="eyebrow"><p>…</p></span>. Without this override
+       the generic `.split-text p` rule in template-base.css grays them
+       out (color-text-light) and shrinks to 1rem, AND the base
+       `p { margin: 0 0 10px }` adds stray spacing. Restore inherited
+       typography for any <p> nested inside the headline / eyebrow so
+       the editing experience matches the static preview. `display:
+       inline` on the eyebrow's <p> keeps the underline accent on the
+       same line as the text (the eyebrow is inline-block by design). */
+    .about-02 .split-text h2 > p {
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      margin: 0;
+    }
+    .about-02 .split-text .eyebrow > p {
+      display: inline;
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      margin: 0;
+    }
+    .about-02 .split-body {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .about-02 .split-body p { margin: 0 0 1em; }
+    .about-02 .split-body p:last-child { margin: 0; }
+    /* Highlights list — short capability/service bullets between the
+       body text and the CTAs. Custom thin horizontal line marker (16x1.5px
+       in --color-primary) replaces the default disc bullet AND avoids the
+       checkmark icon used by base CSS .feature-list (which Peter banned).
+       Items grow vertically with even gap. */
+    .about-02__highlights {
+      list-style: none;
+      padding: 0;
+      margin: 28px 0 0;
+      display: grid;
+      gap: 12px;
+    }
+    .about-02__highlights li {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+    .about-02__highlights li::before {
+      content: "";
+      flex-shrink: 0;
+      width: 16px;
+      height: 1.5px;
+      background: var(--color-primary);
+    }
+    .about-02 .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-02</strong> &nbsp; · &nbsp; Split layout — image LEFT, text RIGHT — with a highlights list (2-6 short bullets) between the body and CTAs. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-02
+  LAYOUT:   2-column. Image LEFT (portrait 4/5), text RIGHT.
+            Mobile: text first, image below (matches about-01 mobile order).
+  CONTENT:  eyebrow + headline + body (richtext) + highlights list (repeater)
+            + 2 CTAs + image.
+  EDITABLE: 6 top-level fields + 1 repeater (about_highlights, 2..6 items,
+            default 3). Each highlight item = { text }.
+  THEME:    Headings, body text, button colors all inherit theme variables.
+            Highlight markers use --color-primary (thin horizontal line, NOT
+            checkmarks). Eyebrow underline applied automatically by base CSS.
+  USE FOR:  Service businesses that want to show capabilities or service
+            categories alongside the founder/business intro — anywhere
+            "what we do" needs to appear together with "who we are".
+-->
+<section id="o-nas" class="about-02 section-alt fade-up">
+  <div class="container">
+    <div class="split">
+      <div class="split-text">
+        <span class="eyebrow" data-field="about_eyebrow">Who we are</span>
+        <h2 data-field="about_headline">Write the main headline of your about section here</h2>
+        <div class="split-body" data-field="about_body" data-type="richtext"><p>Write a short text about your company here, who you are, how you work, what sets you apart. 2 to 3 paragraphs that build trust without unnecessary marketing phrases are enough.</p></div>
+        <ul class="about-02__highlights" data-repeat="about_highlights" data-min="2" data-max="6">
+          <li><span data-field="text">Write the first benefit here, short, max. 5 to 6 words</span></li>
+          <li><span data-field="text">Write the second benefit of your company here</span></li>
+          <li><span data-field="text">Write the third reason to choose you here</span></li>
+        </ul>
+        <div class="actions">
+          <a class="btn btn-primary" data-field="about_cta_1" data-type="link" href="#kontakt">Primary action</a>
+          <a class="btn btn-outline" data-field="about_cta_2" data-type="link" href="#sluzby">Secondary action</a>
+        </div>
+      </div>
+      <img data-field="about_image" src="https://placehold.co/900x1100/c4bdb1/57534e?text=About+image+(4:5)&font=lato" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the about section.</p>
+</div>
+
+</body>
+</html>

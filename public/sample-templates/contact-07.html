@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact-07 — Two-panel split: primary-color info + dark form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* contact-07 — Visage SK two-panel split. LEFT: primary-color
+       panel with a 2-tone heading, intro paragraph, phone/email/
+       address fields, and an outro paragraph. RIGHT: dark panel
+       with the contact form (name + phone + email + message +
+       submit). Reads as "talk to a real business" with the brand
+       color leading and the form sitting on a deliberately quiet
+       dark backdrop so the white inputs pop.
+       Both panels stack to single-column on mobile. */
+    .contact-07 {
+      background: var(--color-bg-alt, #F5F5F5);
+      padding: 80px 24px;
+    }
+    .contact-07__inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    @media (min-width: 900px) {
+      .contact-07__inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ── LEFT: primary-color panel ── */
+    .contact-07__left {
+      background: var(--color-primary);
+      color: #ffffff;
+      padding: 56px 48px;
+    }
+    @media (max-width: 640px) {
+      .contact-07__left { padding: 36px 28px; }
+    }
+    /* Eyebrow — small white caps with a white square bullet on the
+       primary-color panel. Hideable by clearing the text or via the
+       composer's hide-field toggle. Suppresses the global underline
+       (the bullet IS the visual accent, same convention as the
+       other newly-added templates). */
+    .contact-07__eyebrow {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 16px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .contact-07__eyebrow::after { display: none !important; }
+    .contact-07__eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+    .contact-07__eyebrow:empty { display: none; }
+
+    .contact-07__heading {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: clamp(2rem, 3.4vw, 2.75rem);
+      line-height: 1.15;
+      margin: 0 0 20px;
+    }
+    /* The "us" / accent word renders white on the primary-color
+       panel, with the main word inheriting the page's dark text
+       color so the two-tone reads against the primary backdrop. */
+    .contact-07__heading-main { color: var(--color-text, #1F2024); }
+    .contact-07__heading-accent { color: #ffffff; }
+
+    .contact-07__intro {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      line-height: 1.65;
+      color: #ffffff;
+      margin: 0 0 26px;
+    }
+
+    /* Contact-fact rows — bold label + linked value. */
+    .contact-07__field { margin-bottom: 20px; }
+    .contact-07__field-label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.94rem;
+      color: #ffffff;
+      margin: 0 0 4px;
+    }
+    .contact-07__field-value,
+    .contact-07__field-value a {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      color: #ffffff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .contact-07__field-value a:hover { opacity: 0.85; }
+    .contact-07__address {
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      color: #ffffff;
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    .contact-07__outro {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #ffffff;
+      margin-top: 24px;
+    }
+    .contact-07__outro:empty { display: none; }
+
+    /* ── RIGHT: dark form panel ── */
+    .contact-07__right {
+      background: var(--color-text, #1F2024);
+      padding: 56px 48px;
+      display: flex;
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .contact-07__right { padding: 36px 28px; }
+    }
+    .contact-07__form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .contact-07__form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .contact-07__form-label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #ffffff;
+    }
+    .contact-07__form-input,
+    .contact-07__form-textarea {
+      display: block;
+      width: 100%;
+      background: #ffffff;
+      color: var(--color-text, #1F2024);
+      border: 0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      outline: none;
+      transition: box-shadow 0.2s ease;
+    }
+    .contact-07__form-input::placeholder,
+    .contact-07__form-textarea::placeholder {
+      color: color-mix(in srgb, var(--color-text) 50%, transparent);
+    }
+    .contact-07__form-input:focus,
+    .contact-07__form-textarea:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 40%, transparent);
+    }
+    .contact-07__form-textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .contact-07__form-submit-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .contact-07__form-submit-row .btn.btn-primary {
+      border-radius: 8px;
+    }
+    /* Honeypot — invisible bot trap (per the contact-handler spec). */
+    .contact-07__honeypot {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: contact-07</strong> &nbsp; · &nbsp; Visage-style two-panel contact. LEFT: primary-color panel with intro + phone/email/address. RIGHT: dark panel with form (name + phone + email + message + submit). Stacks on mobile. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:contact:start -->
+<!--
+  TEMPLATE: contact-07
+  LAYOUT:   2-column split. LEFT: primary-color panel with 2-tone
+            heading, intro paragraph, phone/email/address fields,
+            outro line. RIGHT: dark panel with contact form
+            (name + phone + email + message + submit). Stacks on
+            mobile so the primary-color intro reads first.
+  CONTENT:  Left: 2 heading parts + intro + phone + email + address +
+            outro. Right: form (id="contact-form") with name/phone/
+            email/message inputs + submit. Form recipient and enabled
+            flag are composer-only fields stamped onto the <form>
+            by the renderer's Pass 6 (see contact-06 for the
+            pattern; same data-field carriers used here).
+  EDITABLE: Left 7 + form submit label + 2 form settings = 10 fields.
+  THEME:    Primary color drives the left panel background. Dark
+            panel background uses --color-text. White text on both.
+            Form inputs are white with --color-primary focus ring.
+  USE FOR:  Service-driven sites that want a confident split
+            contact section — strong color statement on the left,
+            functional form on the right.
+-->
+<section id="kontakt" class="contact-07">
+  <div class="contact-07__inner">
+    <!-- LEFT: primary-color info panel -->
+    <div class="contact-07__left fade-up">
+      <p class="contact-07__eyebrow" data-field="contact_eyebrow">We are here for you</p>
+      <h2 class="contact-07__heading">
+        <span class="contact-07__heading-main" data-field="contact_heading_main">Contact</span>
+        <span class="contact-07__heading-accent" data-field="contact_heading_accent">us</span>
+      </h2>
+      <p class="contact-07__intro" data-field="contact_intro">We would love to hear from you! Whether you have questions about our services, need a quote, or want to discuss your project ideas, our team is here to help.</p>
+
+      <div class="contact-07__field">
+        <p class="contact-07__field-label">Phone</p>
+        <a class="contact-07__field-value" data-field="contact_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+      </div>
+      <div class="contact-07__field">
+        <p class="contact-07__field-label">Email</p>
+        <a class="contact-07__field-value" data-field="contact_email" data-type="link" href="mailto:">email@your-domain.com</a>
+      </div>
+      <div class="contact-07__field">
+        <p class="contact-07__field-label">Address</p>
+        <p class="contact-07__address" data-field="contact_address">Your address 1, 000 00 City</p>
+      </div>
+
+      <p class="contact-07__outro" data-field="contact_outro">You can also fill out the contact form and we will reply within one working day. Your satisfaction is our priority.</p>
+    </div>
+
+    <!-- RIGHT: dark form panel -->
+    <div class="contact-07__right fade-up">
+      <form id="contact-form" class="contact-07__form" novalidate aria-label="Contact form" onsubmit="return false">
+        <!-- Form recipient (composer-only carriers — never visible).
+             `form_recipient_email` (text) = where visitor submissions
+             are emailed. `form_enabled` (boolean) = on/off switch.
+             Both editable in the composer; renderer's Pass 6 reads
+             them and stamps `data-sk-form-recipient` on this <form>
+             when enabled AND email non-empty. See parser.ts Pass 6 +
+             render.ts doesCompositionHaveActiveContactForm. -->
+        <span data-field="form_recipient_email" data-group="form_settings" hidden></span>
+        <span data-field="form_enabled" data-type="boolean" data-group="form_settings" hidden>true</span>
+
+        <div class="contact-07__form-field">
+          <label for="cf07-name" class="contact-07__form-label">Name*</label>
+          <input id="cf07-name" name="name" type="text" required class="contact-07__form-input" placeholder="Your name" autocomplete="name">
+        </div>
+        <div class="contact-07__form-field">
+          <label for="cf07-phone" class="contact-07__form-label">Phone number*</label>
+          <input id="cf07-phone" name="phone" type="tel" required class="contact-07__form-input" placeholder="Your phone number" autocomplete="tel">
+        </div>
+        <div class="contact-07__form-field">
+          <label for="cf07-email" class="contact-07__form-label">Email*</label>
+          <input id="cf07-email" name="email" type="email" required class="contact-07__form-input" placeholder="Your email address" autocomplete="email">
+        </div>
+        <div class="contact-07__form-field">
+          <label for="cf07-message" class="contact-07__form-label">Message*</label>
+          <textarea id="cf07-message" name="message" required class="contact-07__form-textarea" placeholder="Describe your project for a quote."></textarea>
+        </div>
+
+        <!-- Honeypot — bots fill it, humans don't. The API rejects
+             silently if non-empty (see contact-handler.js spec). -->
+        <input class="contact-07__honeypot" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="contact-07__form-submit-row">
+          <button type="submit" class="btn btn-primary">
+            <span data-field="contact_submit_label">Get a quote</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- SECTION:contact:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Section below — simulates the rest of the page.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

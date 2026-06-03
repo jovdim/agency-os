@@ -1,0 +1,187 @@
+/* nav-03 — floating pill. The nav itself is a rounded capsule that
+       hovers with margin from the page edges and a soft drop-shadow,
+       so it reads as "lifted above" the content rather than "stuck to
+       the top." Modern startup / SaaS landing-page aesthetic.
+
+       Important: the OUTER element is the sticky wrapper (zero padding,
+       transparent background) and the INNER element is the visible pill.
+       Splitting them lets position:sticky work at the wrapper level
+       while the pill itself keeps its rounded shape + margins. */
+
+    .site-nav.nav-floating-pill {
+      /* Override base .site-nav's `background: var(--color-bg)` so the
+         wrapper is transparent — hero/content shows through around the
+         pill, which is the whole point of "floating." */
+      background: transparent;
+      border-bottom: 0;
+      padding: 16px 24px;
+      /* CRITICAL: position: fixed (not sticky) so the wrapper is taken
+         OUT of document flow. The hero section below can then start at
+         the very top of the page and flow UP UNDER the nav, letting
+         the pill float over the hero image. With `position: sticky`,
+         the wrapper takes vertical space and the hero starts below it,
+         producing a white band around the pill instead of the hero
+         showing through — defeating the floating aesthetic.
+
+         Side effect: the hero (and any other top-most section) needs
+         its OWN top padding to keep content from hiding behind the
+         pill. All the hero templates already have enough vertical
+         room above the headline that this works without changes. */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .site-nav.nav-floating-pill .nav-inner {
+      /* The visible pill itself. Max-width + auto margins center it
+         horizontally. Heavy border-radius for the capsule shape; soft
+         shadow + 1px border anchor it visually without being heavy. */
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      max-width: calc(var(--max-width) - 48px);
+      margin: 0 auto;
+      padding: 12px 12px 12px 24px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      box-shadow: 0 6px 24px -8px rgba(0, 0, 0, 0.12),
+                  0 2px 6px -2px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Logo. Slightly smaller than nav-01's 180×44 so the pill stays
+       compact and doesn't outgrow its rounded shape. */
+    .site-nav.nav-floating-pill .logo {
+      display: flex;
+      align-items: center;
+      width: 150px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+    .site-nav.nav-floating-pill .logo img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+
+    /* Link cluster. Sits centered between logo and CTA via margin
+       auto on both sides. Compact gap to keep the pill from sprawling. */
+    .site-nav.nav-floating-pill .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      list-style: none;
+      margin: 0 auto;
+      padding: 0;
+      font-family: var(--font-heading);
+    }
+    .site-nav.nav-floating-pill .nav-links a:not(.nav-cta) {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 4px;
+      border-radius: 6px;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+    /* Pill-shaped hover state — a soft tinted background instead of
+       an underline. Matches the rounded pill aesthetic of the nav. */
+    .site-nav.nav-floating-pill .nav-links a:not(.nav-cta):hover {
+      color: var(--color-primary);
+      background: var(--color-bg-alt);
+    }
+
+    /* CTA — rounded pill in the THEME PRIMARY color so the client's
+       brand accent shows up prominently in the nav. Earlier version
+       used var(--color-text) (dark) which looked OK but didn't react
+       when the user changed primary in the Brand panel; nav-01 / nav-02
+       already use --color-primary on their CTA so consistency wins. */
+    .site-nav.nav-floating-pill .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .site-nav.nav-floating-pill .nav-cta:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown — repositioned because the pill is rounded so the
+       default top:calc(100% + 4px) ends up too close to the rounded
+       corner. We use top:calc(100% + 10px) for more breathing room. */
+    /* No `position: relative` on .has-dropdown — anchor the dropdown
+       to the .site-nav wrapper (matches nav-01) so centering resolves
+       against the full bar width. */
+    .site-nav.nav-floating-pill .has-dropdown .dropdown {
+      top: calc(100% + 10px);
+      border-radius: 12px;
+      box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.18);
+    }
+    /* The hover-bridge in template-base.css uses height:4px but the
+       pill's dropdown sits 10px below the trigger, so we need a wider
+       bridge here to keep the hover continuous. Override the ::before. */
+    .site-nav.nav-floating-pill .has-dropdown .dropdown::before {
+      top: -10px;
+      height: 10px;
+    }
+
+    /* ── Mobile (< 900px) ──
+       Pill shape kept on mobile but compacted. Links collapse into a
+       second floating panel that drops below the pill when hamburger
+       opens. Both pieces keep the rounded floating aesthetic. */
+    @media (max-width: 900px) {
+      .site-nav.nav-floating-pill { padding: 12px 16px; }
+      .site-nav.nav-floating-pill .nav-inner {
+        padding: 10px 10px 10px 18px;
+        gap: 0;
+      }
+      .site-nav.nav-floating-pill .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        gap: 0;
+        margin: 0;
+        padding: 12px 18px;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 18px;
+        box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.18);
+      }
+      .site-nav.nav-floating-pill .nav-links.open { display: flex; }
+      .site-nav.nav-floating-pill .nav-links li { width: 100%; }
+      .site-nav.nav-floating-pill .nav-links a:not(.nav-cta) {
+        padding: 14px 4px;
+        border-bottom: 1px solid var(--color-border);
+        border-radius: 0;
+        font-size: 0.95rem;
+      }
+      .site-nav.nav-floating-pill .nav-links a:not(.nav-cta):hover {
+        background: transparent;
+      }
+      .site-nav.nav-floating-pill .nav-cta {
+        margin-top: 12px;
+        margin-left: auto;
+      }
+      .site-nav.nav-floating-pill .hamburger {
+        display: flex;
+        margin-left: auto;
+      }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-floating-pill .hamburger { display: none; }
+    }

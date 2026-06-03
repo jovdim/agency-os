@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-05 — Numbered grid (big numerals as accent)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* reviews-05: numbered grid. Each card has a big "01 / 02 / 03 ..."
+       numeral in primary color as the design accent, with the quote and
+       attribution below. Numbering is auto-generated via CSS counters
+       (no per-item field needed) so adding/removing reviews keeps the
+       sequence correct without manual editing.
+
+       Same shared schema as reviews-02 / reviews-03 / reviews-04 so
+       clients can swap freely. */
+    .reviews-05 .reviews-numbered {
+      counter-reset: reviews-counter;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .reviews-05 .reviews-numbered__card {
+      counter-increment: reviews-counter;
+      position: relative;
+      padding: 32px 28px 28px;
+      background: var(--color-bg);
+      border-top: 2px solid var(--color-primary);
+      display: flex;
+      flex-direction: column;
+    }
+    .reviews-05 .reviews-numbered__card::before {
+      /* Auto-generated big numeral via CSS counter — pads single digits
+         with a leading zero (01, 02, ... 12) for editorial weight. */
+      content: counter(reviews-counter, decimal-leading-zero);
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 4.5vw, 3.6rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--color-primary);
+      margin-bottom: 18px;
+      display: block;
+    }
+    .reviews-05 .reviews-numbered__text {
+      color: var(--color-text);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin: 0 0 22px;
+      flex: 1;
+    }
+    .reviews-05 .reviews-numbered__meta {
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .reviews-05 .reviews-numbered__name {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 0.95rem;
+    }
+    .reviews-05 .reviews-numbered__source {
+      color: var(--color-text-light);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    /* Google review badge — see reviews-01 for the pattern explanation. */
+    .google-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .google-badge__logo {
+      display: block;
+      height: auto;
+      width: auto;
+      max-height: 28px;
+      max-width: 160px;
+    }
+    .google-badge__link {
+      position: absolute;
+      inset: 0;
+      text-indent: -9999px;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .google-badge__link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: reviews-05</strong> &nbsp; · &nbsp; Numbered grid — big "01 / 02 / 03" numerals via CSS counter as design accent. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-05
+  LAYOUT:   Auto-fit grid (min 300px tile width) — typically 3 cols
+            desktop, 2 cols tablet, 1 col phone. Each card has a big
+            CSS-counter-generated numeral ("01", "02", ...) in primary
+            color above the quote, with a thin top accent line in primary
+            for visual weight. Numbering is automatic — adding / removing
+            items keeps the sequence correct without per-item edits.
+  CONTENT:  eyebrow + headline + reviews_items repeater.
+            Each item = { text, author, date, source }.
+  EDITABLE: 2 top-level fields + 1 repeater (reviews_items, 2..12 default 3).
+  THEME:    Numerals + top accent stripe use --color-primary. Card bg
+            --color-bg. Author --color-secondary. Source / date
+            --color-text-light. Numbering uses decimal-leading-zero so
+            single digits show as 01, 02 instead of 1, 2.
+  USE FOR:  Editorial / studio / agency portfolios where each review
+            represents a distinct project — the numbering implies a
+            curated list rather than a random grab. Different from
+            reviews-02 (motion) and reviews-04 (vertical stack).
+-->
+<section id="recenzie" class="reviews-05 fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">What our clients say about us</h2>
+    </div>
+
+    <div class="reviews-numbered" data-repeat="reviews_items" data-min="2" data-max="12">
+      <article class="reviews-numbered__card" data-item-id-source="author">
+        <p class="reviews-numbered__text" data-field="text" data-type="richtext">Write the first review here, feel free to make it longer, the layout has plenty of room. A specific customer experience works best.</p>
+        <div class="reviews-numbered__meta">
+          <span class="reviews-numbered__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-numbered__card">
+        <p class="reviews-numbered__text" data-field="text" data-type="richtext">Write the second review here. The numbering is generated automatically via a CSS counter, so the order maintains itself when you add or remove reviews.</p>
+        <div class="reviews-numbered__meta">
+          <span class="reviews-numbered__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-numbered__card">
+        <p class="reviews-numbered__text" data-field="text" data-type="richtext">Write the third review here. Choose reviews that form an interesting "list", each a different type of project or a different aspect of the cooperation.</p>
+        <div class="reviews-numbered__meta">
+          <span class="reviews-numbered__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the reviews.</p>
+</div>
+
+
+
+</body></html>

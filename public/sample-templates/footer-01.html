@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-01 — 4-column footer with legal info + agency credit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* footer-01: tighter heading scale + address/legal-meta styling.
+       Background, layout, and link colors come from the base .site-footer
+       and .footer-grid classes — they already use theme variables. */
+    .footer-01 .footer-grid h4 {
+      color: var(--color-light);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .footer-01 address {
+      font-style: normal;
+      color: var(--color-text-on-dark);
+      opacity: 0.7;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .footer-01 address span { display: block; }
+    .footer-01 .legal-meta {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.85rem;
+    }
+    .footer-01 .footer-logo {
+      height: 44px;
+      width: auto;
+      max-width: 220px;
+      object-fit: contain;
+      object-position: left center;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .footer-01 .contact-label {
+      font-size: 0.78rem;
+      color: var(--color-text-on-dark);
+      opacity: 0.5;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 4px;
+    }
+    .footer-01 .contact-label + p { margin: 0; }
+    .footer-01 .contact-label.spaced { margin-top: 12px; }
+    /* ── Socials ── (Peter 2026-05-13: every footer carries
+       Facebook + Instagram. Each is a link field so the composer
+       can hide/restore them per-site via the existing
+       hidden_fields toggle. Same circular-outlined visual as
+       footer-06 so swapping templates keeps the brand-row look
+       consistent.) */
+    .footer-01 .footer-01__socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .footer-01 .footer-01__social {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-01 .footer-01__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-01 .footer-01__social svg {
+      width: 16px;
+      height: 16px;
+    }
+    .footer-01 .agency-credit a {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: footer-01</strong> &nbsp; · &nbsp; 4-column dark footer: brand · legal · contact · quick links. Bottom row: copyright + privacy + agency credit. Background follows Theme → Secondary. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- Spacer (preview-only) so the footer sits at the bottom of the viewport -->
+<div style="min-height:200px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-01
+  LAYOUT:   4-column dark footer + bottom-bar (copyright | privacy | agency credit).
+            Mobile: 2 columns at 800px, 1 column at 500px (handled by base CSS).
+  CONTENT:  Col 1: logo + short description.
+            Col 2: company legal info (name, address, repeater of legal
+                   lines, Company No./Tax ID/VAT ID by default, user can add more).
+            Col 3: contact (phone, email).
+            Col 4: 6 quick links.
+            Bottom: copyright + privacy link + agency credit (label + link).
+  EDITABLE: 14 fields total — 1 image + 8 text + 6 link + 1 longtext.
+  THEME:    Background uses var(--color-secondary). Text uses var(--color-text-on-dark)
+            with opacity for legal/labels. Hover color uses var(--color-primary).
+-->
+<footer id="paticka" class="site-footer footer-01 fade-up">
+  <div class="footer-grid">
+
+    <!-- Col 1: brand -->
+    <div>
+      <img class="footer-logo" data-field="footer_logo" src="https://placehold.co/240x60/e7e5e4/1c1917?text=LOGO&font=lato" alt="Logo">
+      <p data-field="footer_description">Write a short description of your company here. One or two sentences at most about what you do, who you serve, and what makes you different.</p>
+      <div class="footer-01__socials">
+        <a class="footer-01__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+        </a>
+        <a class="footer-01__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Col 2: legal -->
+    <div>
+      <h4 data-field="footer_company_name">Your Company Ltd.</h4>
+      <address>
+        <span data-field="footer_address">1 Main Street, 010 01 City</span>
+        <span data-repeat="footer_legal" data-min="0" data-max="20" style="display:contents">
+          <span class="legal-meta"><span data-field="text">Company No.: xxxxxxxx</span></span>
+          <span class="legal-meta"><span data-field="text">Tax ID: xxxxxxxxxx</span></span>
+          <span class="legal-meta"><span data-field="text">VAT ID: SKxxxxxxxxxx</span></span>
+        </span>
+      </address>
+    </div>
+
+    <!-- Col 3: contact -->
+    <div>
+      <h4>Contact</h4>
+      <p class="contact-label">Phone</p>
+      <p><a data-field="footer_phone" data-type="link" href="">0xxx xxx xxx</a></p>
+      <p class="contact-label spaced">Email</p>
+      <p><a data-field="footer_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a></p>
+    </div>
+
+    <!-- Col 4: quick links -->
+    <div>
+      <h4>Quick links</h4>
+      <ul>
+        <li><a data-field="footer_link_home" data-type="link" href="#domov">Home</a></li>
+        <li><a data-field="footer_link_about" data-type="link" href="#o-nas">About us</a></li>
+        <li><a data-field="footer_link_services" data-type="link" href="#sluzby">Services</a></li>
+        <li><a data-field="footer_link_gallery" data-type="link" href="#galeria">Gallery</a></li>
+        <li><a data-field="footer_link_reviews" data-type="link" href="#recenzie">References</a></li>
+        <li><a data-field="footer_link_contact" data-type="link" href="#kontakt">Contact</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p data-field="footer_copyright">&copy; 2026 Your Company. All rights reserved.</p>
+    <p><a href="privacy.html">Privacy policy</a></p>
+    <p class="agency-credit">Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

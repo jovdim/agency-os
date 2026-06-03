@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-03 — Topical blocks (alternating image/text, numbered)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-03 — alternating image/text topical rows with a big
+       watermark number per row + a green number badge on the image.
+       Numbers are CSS counters (auto 01, 02, 03…) so they stay correct
+       no matter how many rows the operator adds/removes. Faithful port of
+       the pilimestromy topical sections. */
+    .subpage-topical { background: var(--color-bg); padding: 0; counter-reset: topical; }
+    .subpage-topical .row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+      max-width: var(--max-width, 1200px); margin: 0 auto; padding: 64px 32px;
+    }
+    /* Alternating band + image side, driven by position (works in both
+       the composer's display:contents flatten and the published
+       repeater-wrap). */
+    .subpage-topical .topical-row { counter-increment: topical; }
+    /* First row gray, then alternate — matches the reference where the
+       topical sections begin on the gray band (isGray = i % 2 === 0). */
+    .subpage-topical .topical-row:nth-of-type(odd),
+    .subpage-topical [data-sk-repeater-wrap]:nth-of-type(odd) .topical-row {
+      background: var(--color-bg-alt);
+    }
+    @media (min-width: 768px) {
+      .subpage-topical .topical-row:nth-of-type(even) .row > .topical-text,
+      .subpage-topical [data-sk-repeater-wrap]:nth-of-type(even) .topical-row .row > .topical-text { order: 2; }
+      .subpage-topical .topical-row:nth-of-type(even) .row > .topical-media,
+      .subpage-topical [data-sk-repeater-wrap]:nth-of-type(even) .topical-row .row > .topical-media { order: 1; }
+    }
+    .subpage-topical .num-row { display: flex; align-items: baseline; gap: 16px; }
+    .subpage-topical .num-row::before {
+      content: counter(topical, decimal-leading-zero);
+      font-family: var(--font-heading); font-size: clamp(54px, 6vw, 80px);
+      font-weight: 900; line-height: 1; letter-spacing: -0.04em;
+      color: var(--color-primary); opacity: 0.15; user-select: none;
+    }
+    .subpage-topical .num-row .rule { flex: 1; height: 1px; background: var(--color-border); }
+    .subpage-topical h2 {
+      font-family: var(--font-heading); font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;
+      color: var(--color-text); margin: 12px 0 0;
+    }
+    .subpage-topical .accent-line { display: block; width: 48px; height: 3px; background: var(--color-primary); border-radius: 2px; margin: 20px 0 0; }
+    .subpage-topical .body { margin: 24px 0 0; font-size: 1.02rem; line-height: 1.7; color: var(--color-text); }
+    .subpage-topical .body p { margin: 0 0 1em; }
+    .subpage-topical .body p:last-child { margin-bottom: 0; }
+
+    .subpage-topical .topical-media { position: relative; }
+    .subpage-topical .topical-media img {
+      width: 100%; aspect-ratio: 5 / 4; object-fit: cover;
+      border-radius: 16px; box-shadow: var(--shadow-md);
+    }
+    /* Green number badge floating on the image corner — matches the
+       source's shadow-accent-glow chip. Number comes from the same
+       counter so it stays in sync with the watermark. */
+    .subpage-topical .topical-media::after {
+      content: counter(topical, decimal-leading-zero);
+      position: absolute; top: -16px; left: -16px;
+      display: grid; place-items: center;
+      width: 56px; height: 56px; border-radius: 14px;
+      background: var(--color-primary); color: #ffffff;
+      font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem;
+      box-shadow: 0 20px 60px -20px color-mix(in srgb, var(--color-primary) 80%, transparent);
+    }
+    /* On even rows the image sits on the left, so flip the badge to the
+       right corner to keep it on the outer edge like the source. */
+    @media (min-width: 768px) {
+      .subpage-topical .topical-row:nth-of-type(even) .topical-media::after,
+      .subpage-topical [data-sk-repeater-wrap]:nth-of-type(even) .topical-row .topical-media::after {
+        left: auto; right: -16px;
+      }
+    }
+    @media (max-width: 800px) {
+      .subpage-topical .row { grid-template-columns: 1fr; gap: 28px; padding: 48px 20px; }
+      .subpage-topical .topical-media::after { left: -10px; top: -14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-03</strong> &nbsp; · &nbsp; Numbered topical rows, alternating image/text + band backgrounds. Add as many as you need. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-03
+  LAYOUT:   Repeating image/text rows. Each row shows a big watermark
+            number (auto 01, 02, 03…), a heading, an accent rule, a body,
+            and a green number badge on the image. Rows alternate image
+            side + band background by position.
+  CONTENT:  Repeater of topical points (heading, body, image).
+  EDITABLE: topical_blocks repeater — each item: heading (text),
+            body (richtext), image (image).
+  THEME:    --color-primary (number watermark, badge, rule), --color-bg /
+            --color-bg-alt (alternating bands), --font-heading/body.
+  JS:       none — numbers via CSS counters.
+-->
+<section id="ako-pracujeme" class="subpage-topical">
+  <div data-repeat="topical_blocks" data-min="1" data-max="99" style="display:contents">
+    <div class="topical-row fade-up" data-item-id-source="heading">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">First important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write a more detailed description of this point here. Explain when it applies, how you do it and what it means for the customer. A few sentences are fine.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+1&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Second important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the second point here. Be specific, give an example, a process or what sets you apart.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+2&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Third important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the third point here. If the topic is technical, explain it simply and in a practical context for the customer.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+3&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Fourth important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the fourth point here. Mention a specific benefit for the customer or how you solve their most common problem.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+4&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Fifth important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the fifth point here. Add a detail that others in the field tend to leave out and that helps clients decide to choose you.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+5&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Sixth important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the sixth point here. If you have a fact that saves the client time or money, say it right here.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+6&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+    <div class="topical-row fade-up">
+      <div class="row">
+        <div class="topical-text">
+          <div class="num-row"><span class="rule"></span></div>
+          <h2 data-field="heading">Seventh important point</h2>
+          <span class="accent-line"></span>
+          <div class="body" data-field="body" data-type="richtext">
+            <p>Write the description of the seventh point here. The last row usually closes the whole list, so sum up the main message or add a call to action.</p>
+          </div>
+        </div>
+        <div class="topical-media">
+          <img data-field="image" src="https://placehold.co/1000x800/d6d3d1/57534e?text=Photo+7&font=lato" alt="" width="1000" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

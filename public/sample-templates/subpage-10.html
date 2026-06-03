@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subpage-10 — Final CTA (photo background + dual buttons)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* subpage-10 — closing CTA on a photo background with a dark overlay,
+       centered eyebrow + heading + body + two buttons. Adapted from the
+       pilimestromy final CTA. */
+    .subpage-cta { position: relative; overflow: hidden; color: #fff; }
+    .subpage-cta__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .subpage-cta__overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.8) 50%, rgba(5,5,5,0.68) 100%);
+    }
+    .subpage-cta__glow {
+      position: absolute; z-index: 1; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 36rem; height: 36rem; border-radius: 999px;
+      background: color-mix(in srgb, var(--color-primary) 14%, transparent); filter: blur(80px); pointer-events: none;
+    }
+    .subpage-cta__inner {
+      position: relative; z-index: 2; max-width: 720px; margin: 0 auto;
+      padding: 88px 32px; text-align: center;
+    }
+    /* Badge — matches the reference: green-tint pill, green border, and
+       the BRIGHT green (accent-hi) for text + dot so it reads clearly over
+       the dark photo. The dark --color-primary used before looked like dim
+       floating text. accentHi is primary lightened toward white. */
+    .subpage-cta { --accent-hi: color-mix(in srgb, var(--color-primary) 70%, #ffffff); }
+    /* Override the global [data-field="eyebrow"] rule, which forces a
+       COLUMN layout + an ::after underline — that stacked the dot, text,
+       and line into a tall oval. Force a single-row slim pill and remove
+       the leaked underline so it reads like the reference. */
+    .subpage-cta .eyebrow {
+      display: inline-flex !important; flex-direction: row !important; align-items: center;
+      gap: 8px; border-radius: 999px; padding: 6px 16px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 32%, transparent);
+      color: var(--accent-hi); line-height: 1; margin-bottom: 0;
+    }
+    .subpage-cta .eyebrow::after { display: none !important; }
+    .subpage-cta .eyebrow::before {
+      content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--accent-hi);
+      margin: 0; animation: subpage-cta-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes subpage-cta-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+    @media (prefers-reduced-motion: reduce) { .subpage-cta .eyebrow::before { animation: none; } }
+    .subpage-cta h2 {
+      font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.02em; color: #fff; margin: 22px 0 0;
+    }
+    .subpage-cta .body { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.65; color: rgba(255,255,255,0.86); }
+    .subpage-cta .body p { margin: 0 0 0.7em; }
+    .subpage-cta .body p:last-child { margin-bottom: 0; }
+    .subpage-cta .ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 34px 0 0; }
+    .subpage-cta .cta {
+      display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 14px 28px;
+      font-family: var(--font-body); font-size: 1rem; font-weight: 600; text-decoration: none;
+      transition: transform var(--transition), filter var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .subpage-cta .cta-primary { background: var(--color-primary); color: #fff; }
+    .subpage-cta .cta-primary:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .subpage-cta .cta-secondary { border: 1px solid rgba(255,255,255,0.28); color: #fff; }
+    .subpage-cta .cta-secondary:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 12%, transparent); }
+    @media (max-width: 600px) {
+      .subpage-cta__inner { padding: 64px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: subpage-10</strong> &nbsp; · &nbsp; Closing CTA on a photo background — eyebrow + heading + body + two buttons, centered. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:subpage:start -->
+<!--
+  TEMPLATE: subpage-10
+  LAYOUT:   Full-bleed photo background with a dark overlay + soft accent
+            glow. Centered eyebrow pill, heading, body, and two CTA
+            buttons (primary + secondary).
+  CONTENT:  Background photo, eyebrow, heading, body, primary CTA,
+            secondary CTA.
+  EDITABLE: image (image), eyebrow (text), heading (text), body (richtext),
+            cta_primary (link), cta_secondary (link).
+  THEME:    --color-primary (eyebrow, primary CTA, glow), white text on
+            dark overlay, --font-heading/body.
+  JS:       none.
+-->
+<section id="kontaktujte-nas" class="subpage-cta">
+  <img class="subpage-cta__photo" data-field="image" src="https://placehold.co/1920x1080/1c1917/57534e?text=Background+photo" alt="" loading="lazy" decoding="async">
+  <div class="subpage-cta__overlay"></div>
+  <span class="subpage-cta__glow"></span>
+  <div class="subpage-cta__inner fade-up">
+    <span class="eyebrow" data-field="eyebrow">Contact</span>
+    <h2 data-field="heading">Need advice or ready to book?</h2>
+    <div class="body" data-field="body" data-type="richtext">
+      <p>Call or write to us. We'll get back to you, agree on a date and the next steps. Free site visit.</p>
+    </div>
+    <div class="ctas">
+      <a class="cta cta-primary" data-field="cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+      <a class="cta cta-secondary" data-field="cta_secondary" data-type="link" href="#kontakt">Write to us</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:subpage:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-02 — Editorial split (text + 3-photo collage)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* hero-02: editorial split. Refined typography + 2 CTA buttons on
+       the left, asymmetric 3-photo collage on the right (one anchor
+       portrait + two stacked squares). The asymmetric grid is the design
+       move — no rotations, no random offsets, just intentional sizing +
+       a clean gap. */
+    .hero-editorial {
+      padding: 120px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .hero-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 80px;
+      align-items: center;
+    }
+    .hero-editorial__text { max-width: 540px; }
+    .hero-editorial__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 36px;
+    }
+    .hero-editorial h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0 0 28px;
+      color: var(--color-dark);
+      font-weight: 600; /* refined, not maxed out */
+    }
+    .hero-editorial__lede {
+      font-size: 1.15rem;
+      line-height: 1.65;
+      color: var(--color-text-light);
+      margin: 0 0 44px;
+      max-width: 480px;
+    }
+    /* Two-button CTA. The editorial template sits on a light background
+       so the base .btn-primary + .btn-outline styles (dark-on-light)
+       work as-is — no color flips needed. */
+    .hero-editorial__cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    /* The collage: anchor portrait spans both rows on the left, two
+       squares stack on the right. The whole grid keeps a 5/6 outer
+       ratio so the right column looks square-on-square cleanly. */
+    .hero-editorial__collage {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+      aspect-ratio: 5/6;
+    }
+    .hero-editorial__collage figure {
+      margin: 0;
+      overflow: hidden;
+      border-radius: 4px;
+      background: var(--color-bg-alt);
+    }
+    .hero-editorial__collage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .hero-editorial__collage figure:hover img {
+      transform: scale(1.03);
+    }
+    /* Anchor (3:4 portrait) — spans both rows on the left. */
+    .hero-editorial__collage-main {
+      grid-row: 1 / span 2;
+    }
+    @media (max-width: 900px) {
+      .hero-editorial { padding: 80px 0; }
+      .hero-editorial__inner { grid-template-columns: 1fr; gap: 48px; }
+      /* On mobile the asymmetric grid would feel cramped — swap to a
+         simpler 2-column with the anchor on top spanning both. */
+      .hero-editorial__collage {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        aspect-ratio: 4/3;
+        max-width: 640px;
+      }
+      .hero-editorial__collage-main {
+        grid-column: 1 / span 2;
+        grid-row: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: hero-02</strong> &nbsp; · &nbsp; Editorial split — refined headline + 2 CTA buttons + asymmetric 3-photo collage. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-02
+  LAYOUT:   Two-column editorial — text left (eyebrow, headline, lede,
+            2 CTA buttons), asymmetric 3-photo collage right.
+            Collage anatomy: anchor portrait (3:4) spans the left column +
+            both rows; two squares stack on the right column. Subtle
+            zoom-on-hover lifts each tile slightly. Mobile: anchor stretches
+            full-width on top, squares share the row below.
+  HEIGHT:   Auto (content-driven, ~760-880px desktop).
+  CONTENT:  3 images + 3 text fields + 2 link fields.
+  EDITABLE: hero_eyebrow, hero_headline, hero_subheadline,
+            hero_cta_primary, hero_cta_secondary,
+            hero_image_main, hero_image_top, hero_image_bottom.
+  THEME:    Pure body theme (no dark overlay). Headline uses --color-dark,
+            lede uses --color-text-light. Primary CTA tracks --color-primary;
+            outline CTA uses base dark-on-light styling.
+  USE FOR:  Studios, family businesses, craftsmen, professional services,
+            architects, photographers — anywhere multiple photos of real
+            work tell a richer story than a single hero image could.
+-->
+<section id="domov" class="hero-editorial fade-up">
+  <div class="hero-editorial__inner">
+    <div class="hero-editorial__text">
+      <p class="hero-editorial__eyebrow" data-field="hero_eyebrow">Studio · City</p>
+      <h1 data-field="hero_headline">Write the main hero headline here, a short and compelling sentence about your company</h1>
+      <p class="hero-editorial__lede" data-field="hero_subheadline" data-type="richtext">Write a short subheading here, sum up in one sentence what you do and what sets you apart (quality, approach, experience).</p>
+      <div class="hero-editorial__cta">
+        <a class="btn btn-primary" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+        <a class="btn btn-outline" data-field="hero_cta_secondary" data-type="link" href="#kontakt">Contact</a>
+      </div>
+    </div>
+    <div class="hero-editorial__collage">
+      <figure class="hero-editorial__collage-main">
+        <img data-field="hero_image_main" src="https://placehold.co/900x1200/d6cfc4/57534e?text=Image+1+(anchor+3:4)&font=lato" alt="">
+      </figure>
+      <figure>
+        <img data-field="hero_image_top" src="https://placehold.co/700x700/c4bdb1/57534e?text=Image+2+(square)&font=lato" alt="">
+      </figure>
+      <figure>
+        <img data-field="hero_image_bottom" src="https://placehold.co/700x700/b3aca0/57534e?text=Image+3+(square)&font=lato" alt="">
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the hero.</p>
+</div>
+
+</body>
+</html>

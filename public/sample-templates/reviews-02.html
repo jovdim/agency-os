@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-02 — Infinite marquee carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* reviews-02: infinite horizontal marquee. Cards auto-scroll left
+       continuously, looping seamlessly. The seamless loop trick: at runtime
+       the track's children are cloned once (browser-side, NOT in the saved
+       HTML) so the keyframe can translate from 0 → -50% (one full set
+       width) then jump back to 0 — the second copy is in the same visual
+       position as the first when the loop resets, so the user sees no jump.
+
+       In the composer iframe we DON'T clone (the cloned elements would
+       confuse click-to-replace) AND we disable the animation (so the
+       composer preview shows a static, scrollable row). Same `window !==
+       window.parent` iframe-detection pattern as the galleries. */
+    .reviews-02 {
+      overflow: hidden;
+    }
+    .reviews-02__viewport {
+      overflow: hidden;
+      width: 100%;
+      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+    .reviews-02__track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      animation: reviews-02-scroll 50s linear infinite;
+      will-change: transform;
+    }
+    .reviews-02__viewport:hover .reviews-02__track {
+      animation-play-state: paused;
+    }
+    @keyframes reviews-02-scroll {
+      0%   { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+    /* Composer iframe: no clone, no animation. The cards just sit in a
+       row and overflow horizontally — the composer iframe shows them as
+       a normal static preview. */
+    .reviews-02.is-iframe .reviews-02__track {
+      animation: none;
+      transform: none;
+    }
+    .reviews-02__card {
+      flex-shrink: 0;
+      width: 360px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+    }
+    .reviews-02__stars {
+      display: inline-flex;
+      gap: 2px;
+      color: #f5b400;
+      margin-bottom: 14px;
+    }
+    .reviews-02__stars svg { width: 16px; height: 16px; fill: currentColor; }
+    .reviews-02__text {
+      color: var(--color-text);
+      font-size: 0.97rem;
+      line-height: 1.7;
+      margin: 0 0 22px;
+      flex: 1;
+    }
+    .reviews-02__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .reviews-02__name {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 0.95rem;
+    }
+    .reviews-02__source {
+      color: var(--color-text-light);
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    /* Google review badge — real logo image + transparent clickable
+       overlay that goes to the specific review's Google URL. See
+       reviews-01 for the full pattern explanation. */
+    .google-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .google-badge__logo {
+      display: block;
+      height: auto;
+      width: auto;
+      max-height: 28px;
+      max-width: 160px;
+    }
+    .google-badge__link {
+      position: absolute;
+      inset: 0;
+      text-indent: -9999px;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .google-badge__link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    @media (max-width: 600px) {
+      .reviews-02__card { width: 280px; padding: 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reviews-02__track { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: reviews-02</strong> &nbsp; · &nbsp; Infinite horizontal marquee, auto-scroll, pause on hover. Static in composer iframe. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-02
+  LAYOUT:   Infinite horizontal marquee. Cards auto-scroll left at 50s
+            per cycle, pause on hover, soft fade at left/right edges via
+            CSS mask. Seamless loop achieved by cloning items once at
+            runtime (skipped in composer iframe to avoid click-to-replace
+            confusion). Disabled entirely under prefers-reduced-motion.
+  CONTENT:  eyebrow + headline, then a repeater of review items.
+            Each item = { text, author, date, source }.
+  EDITABLE: 2 top-level fields + 1 repeater (reviews_items, 3..12 default 5).
+  THEME:    Card bg = --color-bg, border = --color-border. Stars are
+            fixed gold (#f5b400) — universal expectation. Author name uses
+            --color-secondary; meta text uses --color-text-light.
+  USE FOR:  Service businesses with many short reviews — the constant
+            motion implies "lots of happy customers" without forcing the
+            visitor to scroll. Different from reviews-01 (static 3-card
+            grid) and reviews-04 (vertical stack).
+-->
+<section id="recenzie" class="reviews-02 section-alt fade-up">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">What our clients say about us</h2>
+    </div>
+  </div>
+
+  <div class="reviews-02__viewport">
+    <div class="reviews-02__track" data-repeat="reviews_items" data-min="3" data-max="12">
+      <article class="reviews-02__card" data-item-id-source="author">
+        <div class="reviews-02__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-02__text" data-field="text" data-type="richtext">Write the review text here. A specific customer experience works best: what was done and how the cooperation went.</p>
+        <div class="reviews-02__meta">
+          <span class="reviews-02__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-02__card">
+        <div class="reviews-02__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-02__text" data-field="text" data-type="richtext">Write the second review here. Choose reviews that cover different types of jobs or aspects of the cooperation.</p>
+        <div class="reviews-02__meta">
+          <span class="reviews-02__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-02__card">
+        <div class="reviews-02__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-02__text" data-field="text" data-type="richtext">Write the third review here, something specific, non-standard conditions, or a long-term partnership.</p>
+        <div class="reviews-02__meta">
+          <span class="reviews-02__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-02__card">
+        <div class="reviews-02__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-02__text" data-field="text" data-type="richtext">Write the fourth review here, short and to the point, capturing one specific aspect of the cooperation.</p>
+        <div class="reviews-02__meta">
+          <span class="reviews-02__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+      <article class="reviews-02__card">
+        <div class="reviews-02__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"></path></svg>
+        </div>
+        <p class="reviews-02__text" data-field="text" data-type="richtext">Write the fifth review here, ideally a longer one that develops the whole experience from the start to the end of the cooperation.</p>
+        <div class="reviews-02__meta">
+          <span class="reviews-02__name" data-field="author">Author name</span>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="review_url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section') || document.querySelector('.reviews-02');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+      // In CRM editor / composer iframe: skip cloning + flag the section so
+      // CSS disables the animation. The composer shows a static row.
+      if (window !== window.parent) {
+        section.classList.add('is-iframe');
+        return;
+      }
+      var track = section.querySelector('.reviews-02__track');
+      if (!track || track.dataset.skLooped) return;
+      track.dataset.skLooped = '1';
+      // Clone children once for seamless loop. The keyframe animates from
+      // 0 to -50% (= one full set width), so the second copy is in the same
+      // visual position as the first when the animation resets.
+      var children = Array.from(track.children);
+      children.forEach(function (child) {
+        var clone = child.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        // Strip data-field on clones so the inline editor (live site) doesn't
+        // try to make them editable. Keeps the originals as the only source
+        // of truth for any future content updates.
+        clone.querySelectorAll('[data-field]').forEach(function (el) {
+          el.removeAttribute('data-field');
+        });
+        track.appendChild(clone);
+      });
+    })();
+  </script>
+</section>
+<!-- SECTION:reviews:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the reviews.</p>
+</div>
+
+
+
+</body></html>

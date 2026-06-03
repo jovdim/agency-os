@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-02 — 3-column card grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    .services-02 .container { max-width: 1180px; }
+    .services-02 .head { max-width: 720px; margin: 0 auto 56px; text-align: center; }
+    .services-02 .head h2 {
+      font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .services-02 .head p {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+    .services-02 .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .services-02 .card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .services-02 .card:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .services-02 .card-img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+      background: var(--color-bg-alt);
+    }
+    .services-02 .card-body {
+      padding: 24px 22px 26px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .services-02 .card-title {
+      font-family: var(--font-heading);
+      font-size: 1.18rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 10px;
+      letter-spacing: -0.005em;
+    }
+    .services-02 .card-description {
+      color: var(--color-text-light);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      margin: 0 0 20px;
+      flex: 1;
+    }
+    .services-02 .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: gap var(--transition);
+    }
+    .services-02 .card-link::after {
+      content: "→";
+      transition: transform var(--transition);
+    }
+    .services-02 .card:hover .card-link::after { transform: translateX(4px); }
+    @media (max-width: 900px) {
+      .services-02 .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .services-02 .grid { grid-template-columns: 1fr; gap: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-02</strong> &nbsp; · &nbsp; 3-column card grid with image + title + description + link. Repeater 1-9. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-02
+  LAYOUT:   Centered intro on top + 3-col card grid (collapses to 2 then 1).
+            Each card: image header + title + description + arrow link.
+  CONTENT:  eyebrow + headline + subheadline + repeater of services
+            (1..9, default 6). Each item = { image, title, description, link }.
+            #service-N IDs auto-stamped at runtime via inline script.
+  EDITABLE: 3 top-level + 1 repeater.
+  THEME:    Cards use --color-bg with --color-border outline. Hover lifts
+            with --color-primary border + shadow. Link arrow uses
+            --color-primary. Zero gradients, zero icons.
+-->
+<section id="sluzby" class="services-02 section-alt fade-up">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-field="services_eyebrow">Our services</span>
+      <h2 data-field="services_headline">Solutions ready for your business</h2>
+      <p data-field="services_subheadline" data-type="richtext">Write a short intro here, who your services are intended for and what result the client gains.</p>
+    </div>
+
+    <div class="grid" data-repeat="services" data-min="1" data-max="99">
+      <article class="card" data-item-id-source="title">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+1&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 1</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the first service here. 2 sentences about what you do and who it helps.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+2&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 2</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the second service here. Be specific, say what problem you solve.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+3&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 3</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the third service here. Mention the segments it is best suited for.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+4&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 4</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the fourth service here. A complementary offering or specialization.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+5&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 5</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the fifth service here. A few concrete results the client gets.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+      <article class="card">
+        <img class="card-img" data-field="image" src="https://placehold.co/640x400/d6d3d1/57534e?text=Service+6&amp;font=lato" alt="" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title" data-field="title">Service 6</h3>
+          <p class="card-description" data-field="description" data-type="richtext">Write a description of the sixth service here. A short example or case study works wonders.</p>
+          <a class="card-link" data-field="link" data-type="link" href="#kontakt">Learn more</a>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  </section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+
+
+</body></html>

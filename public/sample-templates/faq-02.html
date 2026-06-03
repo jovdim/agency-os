@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>faq-02 — Editorial split (sticky head left, accordion right)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* faq-02: editorial split. Left column (40%) carries the eyebrow,
+       headline, intro paragraph, and an optional contact line — sticky on
+       desktop so the head stays visible while the visitor scrolls through
+       the questions on the right. Right column (60%) is the accordion list,
+       repeater-driven (vs faq-01's hard-coded 5 questions). Each item is
+       a hairline-divided row — no card chrome, no shadow.
+
+       The accordion JS is the same self-contained IIFE pattern faq-01 uses,
+       with one tweak: it works for any number of children the repeater
+       emitted (faq-01 wires 5 fixed items). Toggling stays optimistic —
+       click flips aria-expanded and toggles .is-open; max-height is set
+       directly from scrollHeight so the animation tracks real content. */
+    .faq-editorial {
+      padding: 120px 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .faq-editorial__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 96px;
+      align-items: start;
+    }
+    /* Left side: editorial header. Sticky on desktop only — sticks 96px
+       below the top so it sits under any sticky navbar comfortably. */
+    .faq-editorial__head {
+      position: sticky;
+      top: 96px;
+      max-width: 380px;
+    }
+    .faq-editorial__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin: 0 0 24px;
+    }
+    .faq-editorial h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 24px;
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+    .faq-editorial__intro {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--color-text-light);
+      margin: 0 0 32px;
+    }
+    .faq-editorial__contact {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      margin: 0;
+      padding-top: 32px;
+      border-top: 1px solid var(--color-border);
+    }
+    .faq-editorial__contact a {
+      color: var(--color-dark);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-dark);
+      transition: opacity 0.2s ease;
+    }
+    .faq-editorial__contact a:hover { opacity: 0.6; }
+
+    /* Right side: accordion list. Each item is a hairline-divided row with
+       generous vertical padding. Question button is left-aligned, full
+       width, with a chevron glyph on the right that rotates when open. */
+    .faq-editorial__list {
+      border-top: 1px solid var(--color-border);
+    }
+    .faq-editorial__item {
+      border-bottom: 1px solid var(--color-border);
+    }
+    .faq-editorial__q {
+      width: 100%;
+      text-align: left;
+      padding: 26px 32px 26px 0;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      letter-spacing: -0.005em;
+      color: var(--color-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+    .faq-editorial__q:hover { color: var(--color-primary); }
+    .faq-editorial__q::after {
+      content: "";
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      margin-top: 6px;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg);
+      transition: transform 0.25s ease;
+    }
+    .faq-editorial__q[aria-expanded="true"]::after {
+      transform: translateY(4px) rotate(225deg);
+    }
+    .faq-editorial__a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .faq-editorial__a-inner {
+      padding: 0 0 26px;
+      color: var(--color-text-light);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    /* Tablet/mobile: drop sticky, stack to single column. The head
+       intentionally stays at the top — keeps the question list as the
+       last block, which is what the visitor scrolled here for. */
+    @media (max-width: 900px) {
+      .faq-editorial { padding: 80px 0; }
+      .faq-editorial__inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .faq-editorial__head {
+        position: static;
+        max-width: none;
+      }
+    }
+    @media (max-width: 640px) {
+      .faq-editorial__q {
+        font-size: 1rem;
+        padding: 22px 28px 22px 0;
+      }
+      .faq-editorial__q::after {
+        margin-top: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: faq-02</strong> &nbsp; · &nbsp; Editorial split — sticky head left, accordion list right. Repeater-driven (1-10 items, 5 default). &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:faq:start -->
+<!--
+  TEMPLATE: faq-02
+  LAYOUT:   2-column editorial split. Left (40%): sticky eyebrow + heading
+            + intro paragraph + a single contact line ("Did not find an answer?
+            Write to us"). Right (60%): accordion list of questions, each
+            a hairline-divided row. Mobile (≤900px): stacks, head goes static.
+  CONTENT:  4 head fields + 1 repeater (faq_items, 1..10 items, 5 by default).
+            Each item = { question, answer }.
+  EDITABLE: 4 top-level fields (3 text/longtext + 1 link) + 2 fields per item.
+  THEME:    Section bg = --color-bg. Hairlines = --color-border.
+            Heading + question = --color-dark, intro/answer = --color-text-light.
+            Question hover = --color-primary. Contact link is bordered with
+            --color-dark and fades on hover.
+  JS:       Self-contained IIFE inside section markers. Wires every
+            `.faq-editorial__q` to toggle aria-expanded + .is-open on the
+            parent item, then sets max-height from scrollHeight for animation.
+            Works for any number of items the repeater emitted.
+  USE FOR:  Pages with 5+ questions where a centered single-column accordion
+            (faq-01) starts to feel like a wall of text. The sticky head
+            keeps context visible and the split breaks the rhythm.
+-->
+<section id="otazky" class="faq-editorial fade-up">
+  <div class="faq-editorial__inner">
+
+    <div class="faq-editorial__head">
+      <p class="faq-editorial__eyebrow" data-field="faq2_eyebrow">Frequently asked questions</p>
+      <h2 data-field="faq2_headline">The questions we get asked most often</h2>
+      <p class="faq-editorial__intro" data-field="faq2_intro" data-type="richtext">We answer directly, without marketing language. If you do not find what you are looking for in the list, get in touch with us, we will be happy to help.</p>
+      <p class="faq-editorial__contact">
+        Did not find an answer? <a data-field="faq2_contact_link" data-type="link" href="#kontakt">Write to us</a>.
+      </p>
+    </div>
+
+    <!--
+      FAQ items repeater. Each child is one row (question button + animated
+      answer panel). data-min=1 so the section has at least one item; data-max=10
+      keeps the column readable — past that, split into a second FAQ section
+      or rethink the page structure.
+    -->
+    <div class="faq-editorial__list" data-repeat="faq_items" data-min="1" data-max="10">
+      <div class="faq-editorial__item" data-item-id-source="question">
+        <button type="button" class="faq-editorial__q" aria-expanded="false" data-field="question">Write here the first question your customers ask most often?</button>
+        <div class="faq-editorial__a"><div class="faq-editorial__a-inner" data-field="answer" data-type="richtext">Write the answer to the first question here. Be specific, state what the customer gets, when, and under what conditions. Two to three sentences are enough.</div></div>
+      </div>
+      <div class="faq-editorial__item">
+        <button type="button" class="faq-editorial__q" aria-expanded="false" data-field="question">Write the second question here?</button>
+        <div class="faq-editorial__a"><div class="faq-editorial__a-inner" data-field="answer" data-type="richtext">Write the answer to the second question here. Answer directly, avoid marketing language, the customer wants a specific piece of information.</div></div>
+      </div>
+      <div class="faq-editorial__item">
+        <button type="button" class="faq-editorial__q" aria-expanded="false" data-field="question">Write the third question here?</button>
+        <div class="faq-editorial__a"><div class="faq-editorial__a-inner" data-field="answer" data-type="richtext">Write the answer to the third question here. If the answer is more complex, use three to four sentences. Do not write long paragraphs, stay concise.</div></div>
+      </div>
+      <div class="faq-editorial__item">
+        <button type="button" class="faq-editorial__q" aria-expanded="false" data-field="question">Write the fourth question here?</button>
+        <div class="faq-editorial__a"><div class="faq-editorial__a-inner" data-field="answer" data-type="richtext">Write the answer to the fourth question here. Try to anticipate what the customer will want to know after the first three questions and answer exactly that.</div></div>
+      </div>
+      <div class="faq-editorial__item">
+        <button type="button" class="faq-editorial__q" aria-expanded="false" data-field="question">Write the fifth question here?</button>
+        <div class="faq-editorial__a"><div class="faq-editorial__a-inner" data-field="answer" data-type="richtext">Write the answer to the fifth question here. The last question should address doubts, for example price, guarantee, or the delivery process.</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      var section = document.currentScript.closest('section');
+      if (!section || section.dataset.skInit) return;
+      section.dataset.skInit = '1';
+
+      // Wire every question button regardless of how many the repeater emitted.
+      // Each button's aria-expanded + parent .is-open class are the source of
+      // truth; the answer panel's max-height is set from real scrollHeight so
+      // animation tracks variable answer length.
+      section.querySelectorAll('.faq-editorial__q').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var item = btn.parentElement;
+          var open = !item.classList.contains('is-open');
+          item.classList.toggle('is-open', open);
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          var panel = btn.nextElementSibling;
+          if (panel) panel.style.maxHeight = open ? panel.scrollHeight + 'px' : '0';
+        });
+      });
+    })();
+  </script>
+</section>
+<!-- SECTION:faq:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the FAQ section.</p>
+</div>
+
+
+
+</body></html>

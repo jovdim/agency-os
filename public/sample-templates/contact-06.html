@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact-06 — Minimalist split: form + map with contact details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* contact-06: minimalist split layout matching the bagerexpress live
+       "Kontakt" section. Left column = short intro paragraph + a clean
+       outline-style form (no card chrome, no headline, just inputs with
+       placeholder labels). Right column = map iframe on top + 3-column
+       info row underneath (company name + address / phone(s) / email).
+       Designed to read as one calm content block without competing
+       headlines or banner art. */
+
+    .contact-06 {
+      /* Generous outer padding so the form / map don't kiss the
+         viewport edges on wide screens — matches the bagerexpress
+         reference where the columns have clear breathing room on both
+         the inside (the gap between them) and the outside. */
+      padding: 96px 80px;
+      background: var(--color-bg);
+      font-family: var(--font-body);
+    }
+    .contact-06__inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* Wide gap between the form (left) and the map+info (right) —
+         100px gives the two halves room to read as separate concerns
+         instead of competing on the same line. */
+      gap: 100px;
+      align-items: start;
+    }
+
+    /* ── LEFT: intro + form ── */
+    .contact-06__intro {
+      color: var(--color-text-light);
+      font-size: 1rem;
+      line-height: 1.65;
+      margin: 0 0 36px;
+      max-width: 480px;
+    }
+    .contact-06__form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    /* Outline inputs — thin border, generous padding, placeholder doubles
+       as label so the form reads as a clean stack. The visible <label>
+       is sr-only so screen readers still announce the field name. */
+    .contact-06__form .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+    .contact-06__form input,
+    .contact-06__form textarea {
+      width: 100%;
+      padding: 16px 18px;
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      color: var(--color-dark);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-text) 18%, transparent);
+      border-radius: 6px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .contact-06__form input::placeholder,
+    .contact-06__form textarea::placeholder {
+      color: var(--color-text-light);
+      opacity: 1;
+    }
+    .contact-06__form input:focus,
+    .contact-06__form textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+    }
+    .contact-06__form textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    /* GDPR row — checkbox + linked label, secondary color. */
+    .contact-06__consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--color-text-light);
+      margin-top: 6px;
+    }
+    .contact-06__consent input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: var(--color-primary);
+    }
+    .contact-06__consent a {
+      color: var(--color-text-light);
+      text-decoration: underline;
+    }
+    .contact-06__consent a:hover {
+      color: var(--color-primary);
+    }
+
+    /* Primary CTA — full-width, primary-colored pill */
+    .contact-06__submit {
+      width: 100%;
+      padding: 16px 24px;
+      margin-top: 8px;
+      background: var(--color-primary);
+      color: #fff;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: filter 0.18s ease, transform 0.18s ease;
+    }
+    .contact-06__submit:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    /* ── RIGHT: map + info row ── */
+    .contact-06__map {
+      width: 100%;
+      height: 400px;
+      line-height: 0;
+      background: var(--color-bg-alt);
+    }
+    .contact-06__map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    /* Info row: 3 columns under the map matching the bagerexpress live —
+         Col 1: company name + address
+         Col 2: Phone section (phones) + Email section (email) stacked
+         Col 3: nav links (vertical list, editable via repeater)
+       Each section inside col 2 gets its own label + values. Vertical
+       gap between phones-block and email-block ≈ 24px so the column
+       reads as two stacked sub-sections rather than one mash-up. */
+    .contact-06__info {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 56px;
+      margin-top: 32px;
+    }
+    .contact-06__col {
+      display: flex;
+      flex-direction: column;
+    }
+    .contact-06__col--stacked > * + .contact-06__label {
+      /* Space between the phone block and the e-mail block in the
+         middle column. */
+      margin-top: 28px;
+    }
+    .contact-06__company-name,
+    .contact-06__label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: var(--color-dark);
+      font-size: 1rem;
+      line-height: 1.3;
+      margin: 0 0 12px;
+    }
+    .contact-06__address {
+      color: var(--color-text-light);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .contact-06__col a {
+      color: var(--color-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .contact-06__col a:hover {
+      color: var(--color-primary);
+    }
+    .contact-06__phones {
+      display: flex;
+      flex-direction: column;
+    }
+    /* Nav-link list: bullet-less vertical stack matching the live
+       reference. Each link reads at the same weight as the other
+       column values, but WITHOUT the underline — it's a quiet
+       jump-link list, not an action call-out. */
+    .contact-06__nav {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .contact-06__nav li {
+      margin: 0;
+    }
+    .contact-06__nav a {
+      text-decoration: none;
+      color: var(--color-dark);
+      line-height: 2;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .contact-06__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    @media (max-width: 1200px) {
+      /* Pull the big desktop padding in a bit on smaller laptops so
+         the form + map don't get pinched too narrow. */
+      .contact-06 { padding: 80px 40px; }
+      .contact-06__inner { gap: 64px; }
+    }
+    @media (max-width: 980px) {
+      .contact-06 { padding: 72px 20px; }
+      .contact-06__inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .contact-06__map { height: 340px; }
+      .contact-06__info {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: contact-06</strong> &nbsp; · &nbsp; Minimalist split — intro + outline form (left) + map + 3-col info (right). Form id is <code>contact-form</code> (required by the global contact handler). &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:contact:start -->
+<!--
+  TEMPLATE: contact-06
+  LAYOUT:   Two-column on desktop. LEFT: intro paragraph + outline-style
+            contact form (no card, no headline — placeholder doubles as
+            label). RIGHT: full-width Google Maps iframe (400px tall) +
+            3-column contact info row below (company name + address /
+            phone(s) / email). Mobile: stacks (intro+form first, map+
+            info below).
+  PLACEMENT: Standalone "Kontakt" section. Typically the last content
+             block before the footer.
+  CONTENT:  intro paragraph + 4 form inputs (Name, Phone, Email,
+            Message) + GDPR consent + submit button (yellow primary
+            pill) + map + company name + address + 2 phone links +
+            1 email link.
+  EDITABLE: 8 fields — contact_intro (richtext) + map_address (map) +
+            map_company_name (text) + map_company_address (text) +
+            map_phone_primary (link, plain-number convention) +
+            map_phone_secondary (link, plain-number convention) +
+            map_email (link, mailto:) + contact_form_submit (text on
+            the button). Form field NAMES (name, email, phone, message,
+            gdpr_consent) are required by the global contact handler —
+            DO NOT rename. Form placeholders (Name, Phone, Email,
+            Message) are hardcoded text.
+  FORM:     id="contact-form" — required by /public/contact-handler.js
+            so the deploy pipeline can pick the form up + send mail to
+            the client's business_email. Submit button uses the same
+            primary color as the rest of the site so it inherits the
+            theme dice.
+  THEME:    Section bg = --color-bg. Form inputs: thin border at 18%
+            text alpha, focused border + glow at --color-primary.
+            Company name + labels: heading font, semibold, --color-dark.
+            Address: --color-text-light. Links: --color-dark with
+            underline, hover --color-primary.
+  USE FOR:  Service businesses that want one quiet, content-first
+            contact block — no marketing banner, no sales pitch
+            headline. Map + form share equal real-estate. Different
+            from contact-01 (dark bg with white form card) and
+            contact-05 (centered single-column).
+-->
+<section id="kontakt" class="contact-06 fade-up">
+  <div class="contact-06__inner">
+
+    <div class="contact-06__left">
+      <p class="contact-06__intro" data-field="contact_intro" data-type="richtext">Whether you are ready to start or just want to ask something, get in touch. A quick reply, clear communication, no pressure.</p>
+
+      <!-- onsubmit="return false" is a defensive HTML-side guard. Blocks
+           native browser submission so the URL never gets nuked with
+           ?name=…&phone=…&email=… query params when contact-handler.js
+           hasn't attached yet (fast clicker / script-still-loading
+           race) or fails to load entirely. Our handler still works:
+           it adds its own listener + calls preventDefault + POSTs to
+           /api/public/contact. Belt + suspenders. -->
+      <form id="contact-form" class="contact-06__form" novalidate aria-label="Contact form" onsubmit="return false">
+        <!-- Form recipient (composer-only carriers — never visible).
+             `form_recipient_email` (text) = where visitor submissions
+             are emailed. `form_enabled` (boolean) = on/off switch.
+             Both editable in the composer; renderer's Pass 6 reads
+             them and stamps `data-sk-form-recipient` on this <form>
+             when enabled AND email non-empty. See parser.ts Pass 6 +
+             render.ts doesCompositionHaveActiveContactForm. -->
+        <span data-field="form_recipient_email" data-group="form_settings" hidden></span>
+        <span data-field="form_enabled" data-type="boolean" data-group="form_settings" hidden>true</span>
+
+        <div>
+          <label for="cf-name" class="sr-only">Name</label>
+          <input type="text" id="cf-name" name="name" required autocomplete="name" placeholder="Name" aria-required="true">
+        </div>
+        <div>
+          <label for="cf-phone" class="sr-only">Phone</label>
+          <input type="tel" id="cf-phone" name="phone" required autocomplete="tel" placeholder="Phone" aria-required="true">
+        </div>
+        <div>
+          <label for="cf-email" class="sr-only">Email</label>
+          <input type="email" id="cf-email" name="email" required autocomplete="email" placeholder="Email" aria-required="true">
+        </div>
+        <div>
+          <label for="cf-message" class="sr-only">Message</label>
+          <textarea id="cf-message" name="message" rows="5" required placeholder="Message" aria-required="true"></textarea>
+        </div>
+
+        <label class="contact-06__consent">
+          <input type="checkbox" name="gdpr_consent" required aria-required="true">
+          <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">processing of personal data</a></span>
+        </label>
+
+        <button type="submit" class="contact-06__submit" data-field="contact_form_submit">Send</button>
+      </form>
+    </div>
+
+    <div class="contact-06__right">
+      <div class="contact-06__map">
+        <iframe
+          data-field="map_address"
+          data-type="map"
+          src="https://maps.google.com/maps?q=London,+UK&t=&z=12&ie=UTF8&iwloc=B&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Map">
+        </iframe>
+      </div>
+
+      <div class="contact-06__info">
+        <div class="contact-06__col">
+          <p class="contact-06__company-name" data-field="map_company_name">Your company name</p>
+          <p class="contact-06__address" data-field="map_company_address">Street and number, city</p>
+        </div>
+
+        <!-- Phone + Email share ONE column (vertical stack) to match
+             the bagerexpress live layout. The `--stacked` modifier
+             triggers extra top-margin on the second label so the two
+             sub-sections read as separate concerns. -->
+        <div class="contact-06__col contact-06__col--stacked">
+          <p class="contact-06__label">Phone</p>
+          <div class="contact-06__phones">
+            <a data-field="map_phone_primary" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+            <a data-field="map_phone_secondary" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+          </div>
+          <p class="contact-06__label">Email</p>
+          <a data-field="map_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+        </div>
+
+        <!-- Quick-jump nav links — repeater so the author can mirror
+             whatever the navbar shows (or pick a subset). Each item is
+             a single link field with label + href; renderer auto-
+             prepends `#` for plain section anchors and `tel:` / `mailto:`
+             for those patterns (see parser.ts buildPhoneHref + similar). -->
+        <div class="contact-06__col">
+          <ul class="contact-06__nav" data-repeat="contact_links" data-min="1" data-max="10">
+            <li><a data-field="label" data-type="link" href="#domov">Home</a></li>
+            <li><a data-field="label" data-type="link" href="#o-nas">About us</a></li>
+            <li><a data-field="label" data-type="link" href="#sluzby">Our services</a></li>
+            <li><a data-field="label" data-type="link" href="#stroje">Our construction machinery</a></li>
+            <li><a data-field="label" data-type="link" href="#galeria">Gallery</a></li>
+            <li><a data-field="label" data-type="link" href="#kontakt">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:contact:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the contact section.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

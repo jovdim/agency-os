@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-04 — Before/After interactive sliders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-04 — interactive before/after sliders in a responsive
+       grid (3-col desktop / 2-col mobile). Each card has an invisible
+       <input type="range"> overlay that drives a CSS variable for the
+       clip position. An expand button in the bottom-left corner opens
+       a full-screen lightbox with the same slider blown up.
+
+       Field schema: gallery_eyebrow / gallery_headline / gallery_subheadline
+       on top, then a repeater of gallery_items with image_before +
+       image_after per slider. */
+
+    .gallery-ba {
+      padding: 96px 24px;
+      background: var(--color-bg);
+    }
+    .gallery-ba__inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .gallery-ba__head {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 56px;
+    }
+    .gallery-ba__head h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.85rem, 3.8vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 14px 0 18px;
+    }
+    .gallery-ba__head h2 > p { margin: 0; font: inherit; color: inherit; }
+    .gallery-ba__sub {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .gallery-ba__sub > p { margin: 0; font: inherit; color: inherit; }
+
+    .gallery-ba__list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px 24px;
+    }
+    /* Publish renderer wraps each repeater child in
+       [data-sk-repeater-wrap]; make those transparent so the grid
+       still applies to .ba directly. */
+    .gallery-ba__list [data-sk-repeater-wrap] {
+      display: contents;
+    }
+
+    .ba {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      overflow: hidden;
+      background: #1c1917;
+      --pos: 50%;
+      user-select: none;
+    }
+    .ba__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* "After" on top, clipped from the right edge as --pos grows. At
+       --pos: 0% it's fully hidden; at 100% fully visible. */
+    .ba__after {
+      clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+    }
+    .ba__label {
+      position: absolute;
+      top: 10px;
+      padding: 3px 8px;
+      font-family: var(--font-heading);
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .ba__label--before { left: 10px; }
+    .ba__label--after { right: 10px; }
+
+    .ba__handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--pos);
+      width: 3px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+      z-index: 4;
+    }
+    .ba__grip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-dark);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.05em;
+    }
+    .ba__grip::before { content: "‹›"; }
+
+    .ba__range {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      opacity: 0;
+      cursor: ew-resize;
+      z-index: 5;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+    }
+    .ba__range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 44px;
+      height: 100%;
+      background: transparent;
+      cursor: ew-resize;
+    }
+    .ba__range::-moz-range-thumb {
+      width: 44px;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      cursor: ew-resize;
+    }
+
+    .ba__expand {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      border: 0;
+      cursor: pointer;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      transition: background 0.2s ease;
+    }
+    .ba__expand:hover { background: rgba(0, 0, 0, 0.7); }
+
+    @media (max-width: 900px) {
+      .gallery-ba__list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px 16px;
+      }
+    }
+    @media (max-width: 480px) {
+      .gallery-ba { padding: 72px 16px; }
+      .ba { aspect-ratio: 4/3; }
+      .ba__grip { width: 36px; height: 36px; font-size: 0.95rem; }
+    }
+
+    /* ── Lightbox ───────────────────────────────────────────────── */
+    .ba-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 10, 9, 0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 56px 24px;
+    }
+    .ba-lightbox.is-open {
+      display: flex;
+      animation: ba-fade 0.2s ease-out;
+    }
+    @keyframes ba-fade { from { opacity: 0; } to { opacity: 1; } }
+    .ba-lightbox__close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background 0.2s ease;
+    }
+    .ba-lightbox__close:hover { background: rgba(255, 255, 255, 0.2); }
+    .ba-lightbox__slider {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      aspect-ratio: 16/10;
+      max-height: calc(100vh - 112px);
+      --pos: 50%;
+      user-select: none;
+      overflow: hidden;
+      background: #1c1917;
+    }
+    .ba-lightbox__slider .ba__grip {
+      width: 56px;
+      height: 56px;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-04</strong> &nbsp; · &nbsp; Before/After interactive sliders with expand-to-lightbox. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-04
+  LAYOUT:   Centered intro (eyebrow + headline + subheadline) above a
+            responsive grid of before/after sliders. Desktop: 3 cols.
+            Mobile: 2 cols. Phone (≤480px): 2 cols with shorter
+            aspect ratio and smaller drag grip.
+  INTERACT: Each slider has an invisible <input type="range"> overlay
+            that drives a CSS variable (--pos) for the clip position
+            on the "after" image. A small expand button in the
+            bottom-left opens a full-screen lightbox with the same
+            slider blown up to 1400px wide. Close via ×, click
+            outside, or Esc.
+  CONTENT:  eyebrow + headline + subheadline + 1-12 sliders. Each
+            slider has 2 images (before / after).
+  EDITABLE: gallery_eyebrow + gallery_headline + gallery_subheadline
+            (text). Repeater gallery_items with image_before +
+            image_after per slider.
+  USE FOR:  Trades where the transformation IS the sales pitch:
+            renovations, painting, landscaping, cleaning, plumbing,
+            tile / floor installers, restoration. Different from
+            gallery-05 (featured hero + thumb rail) and gallery-06
+            (infinite marquee).
+-->
+<section id="galeria" class="gallery-ba fade-up" data-field-order="gallery_eyebrow,gallery_headline,gallery_subheadline,gallery_items">
+  <div class="gallery-ba__inner">
+    <div class="gallery-ba__head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Our work</span>
+      <h2 data-field="gallery_headline">See how things change</h2>
+      <p class="gallery-ba__sub" data-field="gallery_subheadline" data-type="richtext"><p>Slide the center handle left or right to see the before and after of our work.</p></p>
+    </div>
+
+    <div class="gallery-ba__list">
+      <div data-repeat="gallery_items" data-min="1" data-max="12" style="display:contents">
+
+        <div class="ba">
+          <img class="ba__img ba__before" data-field="image_before" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&auto=format&fit=crop" alt="">
+          <img class="ba__img ba__after"  data-field="image_after"  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&auto=format&fit=crop" alt="">
+          <span class="ba__label ba__label--before">Before</span>
+          <span class="ba__label ba__label--after">After</span>
+          <div class="ba__handle"><span class="ba__grip"></span></div>
+          <input class="ba__range" type="range" min="0" max="100" value="50"
+                 oninput="this.closest('.ba').style.setProperty('--pos', this.value + '%')">
+          <button class="ba__expand" type="button" aria-label="Enlarge" onclick="openBaLightbox(this.closest('.ba'))">⤢</button>
+        </div>
+
+        <div class="ba">
+          <img class="ba__img ba__before" data-field="image_before" src="https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=1400&auto=format&fit=crop" alt="">
+          <img class="ba__img ba__after"  data-field="image_after"  src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1400&auto=format&fit=crop" alt="">
+          <span class="ba__label ba__label--before">Before</span>
+          <span class="ba__label ba__label--after">After</span>
+          <div class="ba__handle"><span class="ba__grip"></span></div>
+          <input class="ba__range" type="range" min="0" max="100" value="50"
+                 oninput="this.closest('.ba').style.setProperty('--pos', this.value + '%')">
+          <button class="ba__expand" type="button" aria-label="Enlarge" onclick="openBaLightbox(this.closest('.ba'))">⤢</button>
+        </div>
+
+        <div class="ba">
+          <img class="ba__img ba__before" data-field="image_before" src="https://images.unsplash.com/photo-1564540583246-934409427776?w=1400&auto=format&fit=crop" alt="">
+          <img class="ba__img ba__after"  data-field="image_after"  src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1400&auto=format&fit=crop" alt="">
+          <span class="ba__label ba__label--before">Before</span>
+          <span class="ba__label ba__label--after">After</span>
+          <div class="ba__handle"><span class="ba__grip"></span></div>
+          <input class="ba__range" type="range" min="0" max="100" value="50"
+                 oninput="this.closest('.ba').style.setProperty('--pos', this.value + '%')">
+          <button class="ba__expand" type="button" aria-label="Enlarge" onclick="openBaLightbox(this.closest('.ba'))">⤢</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SECTION:gallery:end -->
+
+<!-- Shared lightbox — populated by JS when an expand button is clicked. -->
+<div class="ba-lightbox" id="ba-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged preview">
+  <button class="ba-lightbox__close" type="button" aria-label="Close" onclick="closeBaLightbox()">×</button>
+  <div class="ba-lightbox__slider ba" style="--pos: 50%">
+    <img class="ba__img ba__before" src="" alt="">
+    <img class="ba__img ba__after" src="" alt="">
+    <span class="ba__label ba__label--before">Before</span>
+    <span class="ba__label ba__label--after">After</span>
+    <div class="ba__handle"><span class="ba__grip"></span></div>
+    <input class="ba__range" type="range" min="0" max="100" value="50"
+           oninput="this.closest('.ba').style.setProperty('--pos', this.value + '%')">
+  </div>
+</div>
+
+<script>
+  function openBaLightbox(srcEl) {
+    var lb = document.getElementById('ba-lightbox');
+    lb.querySelector('.ba__before').src = srcEl.querySelector('.ba__before').src;
+    lb.querySelector('.ba__after').src  = srcEl.querySelector('.ba__after').src;
+    lb.querySelector('.ba-lightbox__slider').style.setProperty('--pos', '50%');
+    lb.querySelector('.ba__range').value = 50;
+    lb.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBaLightbox() {
+    var lb = document.getElementById('ba-lightbox');
+    lb.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('ba-lightbox').addEventListener('click', function (e) {
+    if (e.target === this) closeBaLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeBaLightbox();
+  });
+</script>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

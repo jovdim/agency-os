@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>footer-05 — Dark phone-prominent CTA footer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* footer-05: dark phone-prominent footer. The phone number is rendered
+       headline-sized as the visual anchor — for service trades where the
+       customer's next action after browsing the page is to pick up the
+       phone. Email + address sit smaller below the phone. Bottom row
+       stays minimal: copyright + agency credit on a thin divided strip.
+
+       Dark panel uses --color-secondary so the surface tracks the user's
+       theme while the CTA still pops. */
+    .footer-dark-cta {
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+      padding: 88px 24px 28px;
+      text-align: center;
+      font-family: var(--font-body);
+    }
+    .footer-dark-cta__inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .footer-dark-cta__heading {
+      font-family: var(--font-heading);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--color-light);
+      margin: 0 0 28px;
+      font-weight: 600;
+    }
+    /* Phone — headline-sized link with thick primary underline. Same
+       visual pattern as cta-04 / contact-03 so businesses that pair this
+       footer with one of those CTAs get a consistent phone treatment. */
+    .footer-dark-cta__phone {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--color-light);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 3px solid var(--color-primary);
+      transition: color var(--transition);
+    }
+    .footer-dark-cta__phone:hover {
+      color: var(--color-primary);
+    }
+    .footer-dark-cta__details {
+      margin-top: 36px;
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.78);
+    }
+    .footer-dark-cta__details a {
+      color: rgba(255,255,255,0.92);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .footer-dark-cta__details a:hover {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .footer-dark-cta__details span { white-space: nowrap; }
+    .footer-dark-cta__legal {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-dark-cta__legal span { white-space: nowrap; }
+    /* Socials (FB + IG via hidden_fields toggle) — centered below
+       the legal line. */
+    .footer-dark-cta__socials {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .footer-dark-cta__social {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease,
+                  color 0.2s ease, transform 0.2s ease;
+    }
+    .footer-dark-cta__social:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-dark);
+      transform: translateY(-2px);
+    }
+    .footer-dark-cta__social svg { width: 16px; height: 16px; }
+
+    .footer-dark-cta__bottom {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-dark-cta__bottom p { margin: 0; }
+    .footer-dark-cta__bottom a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-dark-cta__bottom a:hover {
+      color: var(--color-primary);
+    }
+    @media (max-width: 600px) {
+      .footer-dark-cta { padding: 64px 16px 24px; }
+      .footer-dark-cta__details {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .footer-dark-cta__bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: footer-05</strong> &nbsp; · &nbsp; Dark phone-prominent footer — phone number rendered headline-sized as the final action. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<div style="min-height:300px;background:var(--color-bg)"></div>
+
+<!-- SECTION:footer:start -->
+<!--
+  TEMPLATE: footer-05
+  LAYOUT:   Centered dark footer panel. Small heading on top ("We prefer
+            a phone call"), phone number rendered headline-sized as the
+            primary visual element, email + address row below. Thin
+            divided bottom strip with copyright + agency credit.
+  CONTENT:  heading + phone (link, big) + email (link) + address +
+            copyright + agency credit.
+  EDITABLE: 8 fields — footer_heading + footer_phone (link) +
+            footer_email (link) + footer_address + footer_ico + footer_dic +
+            footer_copyright + agency_credit (link).
+  THEME:    Section bg = --color-secondary (dark, theme-tracking).
+            Heading + phone = --color-light. Phone underline = --color-primary.
+            Email + address = white at 78% opacity. Bottom row very muted.
+  USE FOR:  Service trades where the customer prefers to call (plumbers,
+            electricians, gardeners, restaurants for reservations). The
+            footer doubles as a "last-chance phone CTA" before the page
+            ends. Different from footer-01 (heavy 4-col), footer-02
+            (centered), footer-03 (compact 2-col), footer-04 (editorial
+            magazine).
+-->
+<footer id="paticka" class="footer-dark-cta fade-up">
+  <div class="footer-dark-cta__inner">
+    <h2 class="footer-dark-cta__heading" data-field="footer_heading">We prefer a phone call</h2>
+    <a class="footer-dark-cta__phone" data-field="footer_phone" data-type="link" href="">+1 (555) 000-0000</a>
+
+    <div class="footer-dark-cta__details">
+      <a data-field="footer_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+      <span data-field="footer_address">1 Main Street, 010 01 City</span>
+    </div>
+
+    <div class="footer-dark-cta__legal">
+      <span data-field="footer_ico">Company No.: xxxxxxxx</span>
+      <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
+    </div>
+
+    <div class="footer-dark-cta__socials">
+      <a class="footer-dark-cta__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+      </a>
+      <a class="footer-dark-cta__social" data-field="footer_instagram" data-type="link" href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
+
+    <div class="footer-dark-cta__bottom">
+      <p data-field="footer_copyright">© 2026 Your Company. All rights reserved.</p>
+      <p><a data-field="footer_privacy_link" data-type="link" href="privacy.html">Privacy policy</a></p>
+      <p>Website created by <a data-field="agency_credit" data-type="link" href="https://sharkmedia.sk" target="_blank" rel="noopener">sharkmedia.sk</a></p>
+    </div>
+  </div>
+</footer>
+<!-- SECTION:footer:end -->
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+/* nav-05 — bold uppercase navbar. Same horizontal-bar SHAPE as
+       nav-01/nav-02 but with louder typography: uppercase + letter-
+       spacing + heavier weight + animated accent underline on hover.
+       Pairs with nav-06 (glass version) as the "bold uppercase" pair.
+
+       White surface (vs nav-06's glass) makes this the high-contrast,
+       confident variant for clients who want presence without
+       transparency tricks. */
+
+    .site-nav.nav-bold-bar {
+      background: var(--color-bg);
+      color: var(--color-text);
+      border-bottom: 1px solid var(--color-border);
+      /* No position override — inherits position: fixed from base CSS
+         (template-base.css). All 6 navs now share the same fixed-over-
+         hero behavior so the hero gets full 100vh regardless of which
+         nav style is selected. */
+      padding: 0;
+    }
+
+    .site-nav.nav-bold-bar .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 18px 32px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    /* Logo — standard 180×44 envelope (same as nav-01/02). Swapping
+       templates keeps the logo rendering identical. */
+    .site-nav.nav-bold-bar .logo {
+      display: flex;
+      align-items: center;
+      width: 180px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+    .site-nav.nav-bold-bar .logo img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+
+    /* Link cluster — pushed right via margin-left:auto. Tight gap so
+       the cluster reads as one confident group, not a sprawled menu. */
+    .site-nav.nav-bold-bar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+      margin: 0 0 0 auto;
+      padding: 0;
+      font-family: var(--font-heading);
+    }
+
+    /* Link typography — THE personality lever for this template.
+       Uppercase + letter-spacing 0.12em + weight 600 turns a plain bar
+       into a "bold/editorial" one without changing layout. */
+    .site-nav.nav-bold-bar .nav-links a:not(.nav-cta) {
+      position: relative;
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 0;
+      transition: color 0.2s ease;
+    }
+    /* Animated accent underline. Pseudo-element so we can tween the
+       scaleX from 0 → 1, which `text-decoration: underline` can't do.
+       Uses --color-primary so it tracks theme primary changes. */
+    .site-nav.nav-bold-bar .nav-links a:not(.nav-cta)::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: var(--color-primary);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.25s ease;
+    }
+    .site-nav.nav-bold-bar .nav-links a:not(.nav-cta):hover::after {
+      transform: scaleX(1);
+    }
+
+    /* CTA — primary-colour pill with the same uppercase+letter-spaced
+       treatment as the menu links so it reads as the "next step in the
+       same conversation," not a stray button. */
+    .site-nav.nav-bold-bar .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+    .site-nav.nav-bold-bar .nav-cta:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown — light surface, sentence case for actual menu items
+       (uppercase reads as labels but service names need normal case).
+       No position:relative on .has-dropdown — anchored to .site-nav
+       wrapper to match nav-01's correct centering. */
+    .site-nav.nav-bold-bar .has-dropdown .dropdown a {
+      text-transform: none;
+      letter-spacing: 0.02em;
+      font-size: 0.9rem;
+    }
+    .site-nav.nav-bold-bar .has-dropdown .dropdown a::after { content: none; }
+
+    /* ── Mobile (< 900px) ── */
+    @media (max-width: 900px) {
+      .site-nav.nav-bold-bar .nav-inner { padding: 16px 20px; gap: 0; }
+      .site-nav.nav-bold-bar .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: var(--color-bg);
+        padding: 8px 20px 20px;
+        border-bottom: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+      }
+      .site-nav.nav-bold-bar .nav-links.open { display: flex; }
+      .site-nav.nav-bold-bar .nav-links li { width: 100%; }
+      .site-nav.nav-bold-bar .nav-links a:not(.nav-cta) {
+        padding: 14px 0;
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .site-nav.nav-bold-bar .nav-cta {
+        margin-top: 12px;
+        text-align: center;
+        width: 100%;
+        padding: 14px;
+        font-size: 0.85rem;
+      }
+      .site-nav.nav-bold-bar .hamburger { display: flex; margin-left: auto; }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-bold-bar .hamburger { display: none; }
+    }

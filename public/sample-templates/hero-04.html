@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-04 — Centered cinematic + thin info strip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* hero-04: centered cinematic + thin info strip below the CTAs.
+       Same base aesthetic as hero-01 (full-bleed bg + dark overlay + center
+       alignment) but adds a single thin horizontal row of 3 short data
+       points separated by · dots. The strip is 3 SHORT text fields — NOT
+       a stats grid (rule: no stats blocks in heroes). Default Slovak copy
+       uses neutral business facts (location, hours, capability) so it
+       reads as caption-style info, not as marketing claims.
+
+       MIN-HEIGHT: 100vh both desktop and mobile — matches hero-01 (which
+       inherits 100vh from base CSS .hero rule). Earlier draft used 92vh
+       desktop / 88vh mobile and the result felt SHORT compared to hero-01
+       — the next section bled into the viewport. Standardizing on 100vh
+       across all heroes keeps the above-the-fold experience consistent
+       no matter which variant the client picks. */
+    .hero-info-centered {
+      position: relative;
+      min-height: 100vh;
+      background-size: cover;
+      background-position: center;
+      color: var(--color-light);
+      display: flex;
+      align-items: center;
+      padding: 120px 0;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-info-centered::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(12,10,9,0.78), rgba(28,25,23,0.62));
+      z-index: 1;
+    }
+    .hero-info-centered__inner {
+      max-width: 820px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-info-centered__eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin: 0 0 24px;
+    }
+    .hero-info-centered h1 {
+      color: var(--color-light);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px;
+      font-weight: 600;
+    }
+    .hero-info-centered__lede {
+      font-size: 1.15rem;
+      line-height: 1.55;
+      color: var(--color-text-on-dark);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .hero-info-centered__cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
+    /* Outline CTA on a dark hero — flip to white-on-dark, same convention
+       as hero-01 / hero-03. */
+    .hero-info-centered .btn-outline {
+      color: #fff;
+      border-color: #fff;
+      background: transparent;
+    }
+    .hero-info-centered .btn-outline:hover {
+      background: #fff;
+      color: var(--color-secondary);
+    }
+    /* The info strip — single thin row, 3 fields separated by · dividers.
+       Top border + padding visually delimits it from the CTAs above. The
+       dividers are non-editable decorative spans (no data-field) so the
+       parser ignores them; they stay as part of the rendered HTML. */
+    .hero-info-strip {
+      margin-top: 44px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.18);
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+    }
+    .hero-info-strip__divider {
+      opacity: 0.5;
+      font-weight: 400;
+    }
+    @media (max-width: 600px) {
+      /* Keep min-height: 100vh on mobile too — matches hero-01's behavior.
+         Just tighten the inner padding + strip gap so the layout still
+         breathes on a phone. */
+      .hero-info-centered { padding: 100px 0; }
+      .hero-info-strip {
+        gap: 10px;
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: hero-04</strong> &nbsp; · &nbsp; Centered cinematic + thin info strip (3 short data points). &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-04
+  LAYOUT:   Same centered full-bleed cinematic as hero-01 — eyebrow,
+            headline, lede, 2 CTAs centered horizontally — PLUS a thin
+            horizontal info strip below the CTAs (3 short text fields
+            separated by · dividers, with a subtle top border). Strip is
+            for caption-style facts (location, hours, capability), NOT
+            stats (no numbers, no claims, no badges).
+  HEIGHT:   100vh on both desktop and mobile (matches hero-01).
+  CONTENT:  1 background image + 5 text fields + 2 link fields.
+  EDITABLE: hero_bg, hero_eyebrow, hero_headline, hero_subheadline,
+            hero_cta_primary, hero_cta_secondary,
+            hero_strip_1, hero_strip_2, hero_strip_3.
+  THEME:    Headline/lede colors are fixed-light (white-on-dark), driven
+            by the dark gradient overlay. Primary CTA uses --color-primary;
+            outline CTA flips to white-on-dark. Strip uses muted white.
+  USE FOR:  Local services, restaurants, salons — anywhere the visitor
+            wants to immediately see "where, when, what makes you them"
+            without scrolling. Different from hero-01 (clean, no extras)
+            and hero-03 (bottom-left magazine caption).
+-->
+<section id="domov" class="hero-info-centered fade-up" data-field="hero_bg" style="background-image:url('https://placehold.co/1920x1100/57534e/e7e5e4?text=Hero+background+image&font=lato')">
+  <div class="hero-info-centered__inner">
+    <p class="hero-info-centered__eyebrow" data-field="hero_eyebrow">Eyebrow — field · City</p>
+    <h1 data-field="hero_headline">Write your main headline here</h1>
+    <p class="hero-info-centered__lede" data-field="hero_subheadline" data-type="richtext">A short description of your company, at most 2 sentences that grab the visitor's attention.</p>
+    <div class="hero-info-centered__cta">
+      <a class="btn btn-primary" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+      <a class="btn btn-outline" data-field="hero_cta_secondary" data-type="link" href="#kontakt">Secondary action</a>
+    </div>
+    <div class="hero-info-strip">
+      <span data-field="hero_strip_1">Service area</span>
+      <span class="hero-info-strip__divider" aria-hidden="true">·</span>
+      <span data-field="hero_strip_2">Main advantage</span>
+      <span class="hero-info-strip__divider" aria-hidden="true">·</span>
+      <span data-field="hero_strip_3">Second advantage</span>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the hero.</p>
+</div>
+
+</body>
+</html>

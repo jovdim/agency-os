@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gallery-05 — Featured hero + thumbnail rail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* gallery-05 — featured hero photo dominates the section, a row
+       of thumbnails sits below. Clicking any thumbnail fades the
+       hero to that image. Active thumbnail has a primary-colored
+       border; inactives drop to 55% opacity (full opacity on hover).
+       Position counter chip (01 / 06) in the top-right of the hero.
+
+       Inspired by Apple product detail pages and luxury portfolio
+       sites (Hermès, MR PORTER editorials). */
+
+    .gallery-hero {
+      padding: 96px 24px;
+      background: var(--color-bg);
+    }
+    .gallery-hero__inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .gallery-hero__head {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 48px;
+    }
+    .gallery-hero__head h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.85rem, 3.8vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin: 14px 0 18px;
+    }
+    .gallery-hero__head h2 > p { margin: 0; font: inherit; color: inherit; }
+    .gallery-hero__sub {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .gallery-hero__sub > p { margin: 0; font: inherit; color: inherit; }
+
+    .gallery-hero__stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      overflow: hidden;
+      background: #1c1917;
+    }
+    .gallery-hero__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.28s ease;
+    }
+    .gallery-hero__img.is-fading { opacity: 0; }
+
+    .gallery-hero__counter {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #ffffff;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .gallery-hero__thumbs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .gallery-hero__thumbs [data-sk-repeater-wrap] {
+      display: contents;
+    }
+    .gallery-hero__thumb {
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+    .gallery-hero__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease, opacity 0.2s ease;
+    }
+    /* Dimming + the active border only kick in once JS has marked the
+       section `.is-interactive` (live site). In the composer no script
+       runs, so the rail shows every thumbnail at full opacity — a clean
+       grid — instead of all-but-one dimmed with no active thumb. */
+    .gallery-hero.is-interactive .gallery-hero__thumb:not(.is-active) img { opacity: 0.55; }
+    .gallery-hero__thumb:hover img { opacity: 1; transform: scale(1.04); }
+    .gallery-hero.is-interactive .gallery-hero__thumb.is-active::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 3px solid var(--color-primary);
+      pointer-events: none;
+    }
+
+    @media (max-width: 800px) {
+      .gallery-hero { padding: 72px 16px; }
+      .gallery-hero__stage { aspect-ratio: 4/3; }
+      .gallery-hero__thumbs { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: gallery-05</strong> &nbsp; · &nbsp; Featured hero photo with click-to-swap thumbnail rail. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:gallery:start -->
+<!--
+  TEMPLATE: gallery-05
+  LAYOUT:   Centered intro on top + large featured hero photo
+            (aspect 16/10 desktop, 4/3 mobile) + a 6-up thumbnail rail
+            (3-up on mobile) below. The thumb the user clicks becomes
+            the active one (primary border, 100% opacity); the others
+            sit at 55% opacity until hovered. A position chip (01 / N)
+            sits in the top-right corner of the hero.
+  INTERACT: The big stage shows the FIRST gallery image automatically
+            (mirrored at render time via data-sk-mirror-repeater — works
+            in the composer with zero JS). On the published site, clicking
+            any thumbnail fades the stage to that image. There is NO
+            separate hero field: you only upload the gallery images, and
+            the first one is the featured photo.
+  CONTENT:  eyebrow + headline + subheadline + 1-12 images.
+  EDITABLE: gallery_eyebrow + gallery_headline + gallery_subheadline
+            (text). Repeater gallery_images with image per item.
+            Same field convention as gallery-01 / 02 / 03 — swap
+            between any of them is loss-free for images + text.
+  USE FOR:  Curated portfolios where ONE photo at a time gets the
+            spotlight. Different from gallery-04 (before/after
+            sliders in a grid) and gallery-06 (infinite marquee).
+-->
+<section id="galeria" class="gallery-hero fade-up" data-field-order="gallery_eyebrow,gallery_headline,gallery_subheadline,gallery_images">
+  <div class="gallery-hero__inner">
+    <div class="gallery-hero__head">
+      <span class="eyebrow" data-field="gallery_eyebrow">Gallery</span>
+      <h2 data-field="gallery_headline">Selected work from recent months</h2>
+      <p class="gallery-hero__sub" data-field="gallery_subheadline" data-type="richtext"><p>Click any of the photos below for a closer look.</p></p>
+    </div>
+
+    <!-- The big "stage" image is NOT its own field — it mirrors the FIRST
+         gallery image via `data-sk-mirror-repeater`. The renderer copies
+         the first thumbnail's src here at render time (composer + publish),
+         so it shows the first photo with zero JS. The default src below is
+         the first thumbnail's default so it never starts on a placeholder.
+         On the live site the script at the end of the section swaps it on
+         thumbnail click. -->
+    <div class="gallery-hero__stage">
+      <img class="gallery-hero__img" data-sk-mirror-repeater="gallery_images" data-sk-mirror-field="image" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&auto=format&fit=crop" alt="">
+      <span class="gallery-hero__counter">01 / 06</span>
+    </div>
+
+    <div class="gallery-hero__thumbs">
+      <div data-repeat="gallery_images" data-min="1" data-max="12" style="display:contents">
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&auto=format&fit=crop" alt="">
+        </button>
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&auto=format&fit=crop" alt="">
+        </button>
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&auto=format&fit=crop" alt="">
+        </button>
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&auto=format&fit=crop" alt="">
+        </button>
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=400&auto=format&fit=crop" alt="">
+        </button>
+        <button type="button" class="gallery-hero__thumb">
+          <img data-field="image" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&auto=format&fit=crop" alt="">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Click-to-swap rail. INSIDE the section markers so it ships with the
+       published HTML (a script after SECTION:gallery:end is dropped by the
+       parser — that was the original bug where clicks did nothing). The
+       composer never runs section scripts, so this is a live-site
+       enhancement; the big image already shows the first photo there via
+       the server-side mirror. Section-scoped so multiple gallery-05
+       sections on one page never cross-wire. -->
+  <script>
+    (function () {
+      var section = document.currentScript.closest('.gallery-hero');
+      if (!section || section.dataset.skGalleryHeroInit) return;
+      section.dataset.skGalleryHeroInit = '1';
+
+      var heroImg = section.querySelector('.gallery-hero__img');
+      var counter = section.querySelector('.gallery-hero__counter');
+      var thumbs = Array.prototype.slice.call(
+        section.querySelectorAll('.gallery-hero__thumb')
+      );
+      if (!heroImg || !thumbs.length) return;
+
+      // Switch on the active-thumb dimming + border now that JS drives the
+      // rail. Without this class the composer shows a clean, evenly-lit grid.
+      section.classList.add('is-interactive');
+
+      function setActive(idx) {
+        for (var i = 0; i < thumbs.length; i++) {
+          thumbs[i].classList.toggle('is-active', i === idx);
+        }
+        if (counter) {
+          counter.textContent =
+            String(idx + 1).padStart(2, '0') + ' / ' +
+            String(thumbs.length).padStart(2, '0');
+        }
+      }
+
+      thumbs.forEach(function (thumb, idx) {
+        thumb.addEventListener('click', function () {
+          if (thumb.classList.contains('is-active')) return;
+          var img = thumb.querySelector('img');
+          if (!img || !img.getAttribute('src')) return;
+          var nextSrc = img.getAttribute('src');
+          heroImg.classList.add('is-fading');
+          setTimeout(function () {
+            heroImg.setAttribute('src', nextSrc);
+            heroImg.classList.remove('is-fading');
+          }, 200);
+          setActive(idx);
+        });
+      });
+
+      // Mark the first thumbnail featured. The big image already mirrors the
+      // first gallery photo (server-side), so we only set state here.
+      setActive(0);
+    })();
+  </script>
+</section>
+<!-- SECTION:gallery:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact-01 — Dark info column + white form card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    .contact-01 { background: var(--color-secondary); padding: 80px 0; }
+    .contact-01 .grid {
+      max-width: var(--max-width); margin: 0 auto; padding: 0 24px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start;
+    }
+    .contact-01 .info-side { color: #fff; }
+    .contact-01 .info-side h2 { color: #fff; margin-bottom: 12px; }
+    .contact-01 .accent-line { width: 60px; height: 4px; background: var(--color-primary); border-radius: 4px; margin-bottom: 24px; }
+    .contact-01 .info-side .lead { color: rgba(255,255,255,0.65); margin-bottom: 32px; }
+    .contact-01 .info-block { margin-bottom: 24px; color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.7; }
+    .contact-01 .info-block .lbl { color: rgba(255,255,255,0.45); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; display: block; }
+    .contact-01 .info-block strong { color: #fff; display: block; font-weight: 600; font-family: var(--font-heading); margin-bottom: 4px; }
+    /* Phone / email values — match the surrounding body text instead of
+       standing out as Primary. Hover still reveals they're tappable. */
+    .contact-01 .info-block a { color: rgba(255,255,255,0.92); font-family: var(--font-heading); font-weight: 600; display: block; }
+    .contact-01 .info-block a:hover { color: var(--color-primary); text-decoration: underline; }
+    .contact-01 .form-side { background: var(--color-bg); border-radius: 16px; padding: 36px; }
+    .contact-01 .form-side h3 { font-size: 1.4rem; margin-bottom: 20px; }
+    .contact-01 .form-side .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .contact-01 .form-side .form-group { margin-bottom: 14px; }
+    .contact-01 .form-side input, .contact-01 .form-side textarea {
+      background: var(--color-bg-alt); border: 1px solid var(--color-border);
+      border-radius: 8px; padding: 12px 14px;
+    }
+    .contact-01 .form-side button[type="submit"] { width: 100%; border-radius: 999px; }
+    .contact-01 .form-consent { font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 14px; }
+    .contact-01 .form-consent label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+    .contact-01 .form-consent a { color: var(--color-primary); }
+    @media (max-width: 800px) {
+      .contact-01 .grid { grid-template-columns: 1fr; gap: 32px; }
+      .contact-01 .form-side .row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: contact-01</strong> &nbsp; · &nbsp; Dark info column + white form card. Form id is <code>contact-form</code> (required for the contact handler). &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:contact:start -->
+<!--
+  TEMPLATE: contact-01
+  LAYOUT:   2-column on dark bg. Left: contact info. Right: white rounded form card.
+            Mobile: stacks (info first, form below).
+  CONTENT:  headline, intro text, company + address, phone, email, area-of-service, form labels.
+  EDITABLE: 9 fields — 1 longtext + 6 text + 2 link
+  FORM:     id="contact-form" REQUIRED so the global contact-handler.js picks it up.
+            Field names: name, email, phone, message, gdpr_consent (do not rename).
+  THEME:    Section bg uses var(--color-secondary). Form card uses var(--color-bg).
+            Accent line + links + checkbox link use var(--color-primary).
+-->
+<section id="kontakt" class="contact-01 fade-up">
+  <div class="grid">
+
+    <div class="info-side">
+      <h2 data-field="contact_headline">Contact details</h2>
+      <div class="accent-line"></div>
+      <p class="lead" data-field="contact_text" data-type="richtext">Write a short opening sentence here, what the visitor can expect, how quickly you respond, why they should not hesitate to reach out.</p>
+
+      <div class="info-block">
+        <strong data-field="contact_company">Your Company Ltd.</strong>
+        <span data-field="contact_address">Street 1, 010 01 City</span>
+      </div>
+
+      <div class="info-block">
+        <span class="lbl">Phone</span>
+        <a data-field="contact_phone" data-type="link" href="tel:+15550000000">+1 (555) 000-0000</a>
+      </div>
+
+      <div class="info-block">
+        <span class="lbl">Email</span>
+        <a data-field="contact_email" data-type="link" href="mailto:info@example.sk">info@example.sk</a>
+      </div>
+
+      <div class="info-block">
+        <span class="lbl">Service area</span>
+        <span data-field="contact_area">All across the country</span>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <!-- onsubmit="return false" is a defensive HTML-side guard: it
+           blocks native browser submission so the URL never gets nuked
+           with ?name=…&phone=…&email=… query params (which used to
+           leak through when contact-handler.js failed to attach in
+           time, or hadn't deployed). Our handler still works normally —
+           it adds its own submit listener that calls preventDefault +
+           POSTs to /api/public/contact. Belt + suspenders. -->
+      <form id="contact-form" novalidate aria-label="Contact form" onsubmit="return false">
+        <!-- Form recipient (composer-only carriers — never visible).
+             `form_recipient_email` (text) = where visitor submissions
+             are emailed. `form_enabled` (boolean) = on/off switch.
+             Both editable in the composer; renderer's Pass 6 reads
+             them and stamps `data-sk-form-recipient` on this <form>
+             when enabled AND email non-empty. See parser.ts Pass 6 +
+             render.ts doesCompositionHaveActiveContactForm. -->
+        <span data-field="form_recipient_email" data-group="form_settings" hidden></span>
+        <span data-field="form_enabled" data-type="boolean" data-group="form_settings" hidden>true</span>
+
+        <h3 data-field="contact_form_headline">Write to us</h3>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="cf-name">Name *</label>
+            <input type="text" id="cf-name" name="name" required autocomplete="name" aria-required="true">
+          </div>
+          <div class="form-group">
+            <label for="cf-phone">Phone *</label>
+            <input type="tel" id="cf-phone" name="phone" required autocomplete="tel" aria-required="true">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cf-email">Email *</label>
+          <input type="email" id="cf-email" name="email" required autocomplete="email" aria-required="true">
+        </div>
+
+        <div class="form-group">
+          <label for="cf-message">Message *</label>
+          <textarea id="cf-message" name="message" rows="5" required aria-required="true" placeholder="What you need, where and when."></textarea>
+        </div>
+
+        <div class="form-consent">
+          <label>
+            <input type="checkbox" name="gdpr_consent" required aria-required="true">
+            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">processing of personal data</a> *</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" data-field="contact_form_submit">Send</button>
+      </form>
+    </div>
+
+  </div>
+</section>
+<!-- SECTION:contact:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

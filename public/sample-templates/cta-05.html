@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cta-05 — Asymmetric typographic CTA on background image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* cta-05: asymmetric typographic on a full-bleed background image
+       with dark overlay. Oversized display headline takes the left
+       column; supporting line + single primary button sit in the bottom-
+       right area. The asymmetric grid is the design move — image carries
+       the atmosphere, oversized type carries the message, button anchors
+       the action.
+
+       Same 5-field schema as cta-04 (cta_bg + eyebrow + headline + text +
+       button_primary) — clients can swap freely between the two. */
+    .cta-05 {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 140px 24px 120px;
+      color: var(--color-light);
+      overflow: hidden;
+    }
+    .cta-05::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(12,10,9,0.78), rgba(28,25,23,0.72));
+      z-index: 1;
+    }
+    .cta-05__inner {
+      position: relative;
+      z-index: 2;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: 56px;
+      align-items: end;
+    }
+    .cta-05__head {
+      max-width: 760px;
+    }
+    .cta-05 h2 {
+      color: var(--color-light);
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      margin: 24px 0 0;
+      font-weight: 600;
+    }
+    .cta-05__sub {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+      color: rgba(255,255,255,0.85);
+      font-size: 1.1rem;
+      line-height: 1.65;
+      max-width: 520px;
+      margin: 32px 0 0;
+    }
+    /* Single primary button on the right column, end-aligned + bottom-
+       aligned so the statement reads "headline → out to action." */
+    .cta-05__action {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+      align-self: end;
+      justify-self: end;
+    }
+    /* Outline-style button on the dark overlay — white-on-dark per the
+       same convention used on cta-01's secondary button. Hover inverts
+       to white background with secondary-color text. */
+    .cta-05 .btn-primary {
+      padding: 18px 36px;
+      font-size: 1rem;
+    }
+    .cta-05 .btn-primary:hover {
+      background: #fff;
+      color: var(--color-secondary);
+    }
+    @media (max-width: 800px) {
+      .cta-05 { padding: 96px 24px; }
+      .cta-05__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        align-items: start;
+      }
+      .cta-05__sub { grid-column: 1; grid-row: auto; max-width: none; }
+      .cta-05__action { grid-column: 1; grid-row: auto; justify-self: start; }
+      .cta-05__action .btn-primary { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: cta-05</strong> &nbsp; · &nbsp; Asymmetric typographic on bg image + dark overlay. Oversized headline left, primary button bottom-right. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:cta:start -->
+<!--
+  TEMPLATE: cta-05
+  LAYOUT:   Full-bleed background image with dark gradient overlay.
+            Asymmetric grid (1.6fr text / 1fr action). Top: eyebrow +
+            oversized display headline left (spans both rows of the left
+            column). Bottom row: supporting line on the left, single
+            primary button bottom-right. Mobile: stacks linearly.
+  CONTENT:  background image + eyebrow + headline + supporting text + primary CTA.
+  EDITABLE: 5 fields — cta_bg (image) + cta_eyebrow + cta_headline +
+            cta_text (longtext) + cta_button_primary (link).
+  THEME:    Dark gradient overlay (fixed neutral) for text legibility on
+            any image. Heading uses --color-light. Eyebrow underline
+            tracks the global rule. Button = .btn-primary, hover inverts
+            to white-on-dark.
+  USE FOR:  Premium / studio / agency brands where the typography itself
+            carries the call to action and the image adds atmosphere
+            without competing. Different from cta-01 (centered + 2 buttons),
+            cta-02 (dark band, no image) and cta-04 (centered + phone-
+            prominent).
+-->
+<section id="vyzva" class="cta-05 fade-up" data-field="cta_bg" style="background-image:url('https://placehold.co/1920x900/3f3a35/e7e5e4?text=CTA+atmospheric+image&font=lato')">
+  <div class="cta-05__inner">
+    <div class="cta-05__head">
+      <span class="eyebrow" data-field="cta_eyebrow">Ready to start?</span>
+      <h2 data-field="cta_headline">Write your main call to action headline here, a call to action for the customer</h2>
+    </div>
+    <p class="cta-05__sub" data-field="cta_text" data-type="richtext">Write a short text below the headline here, 1 to 2 sentences that reassure the customer about what happens after getting in touch (for example response speed, a free consultation).</p>
+    <div class="cta-05__action">
+      <a class="btn btn-primary" data-field="cta_button_primary" data-type="link" href="#kontakt">Start a conversation</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:cta:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:300px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the CTA.</p>
+</div>
+
+</body>
+</html>

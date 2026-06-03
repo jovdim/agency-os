@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reviews-08 — Dark band, glass review cards (quote + stars + Google badge)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* reviews-08 — dark testimonial band ported from the pilimestromy
+       Testimonials. A darkened photo background (optional) under a heavy
+       Secondary overlay, faint grid + two accent glows, then frosted-glass
+       review cards: quote glyph, gold stars, the review text, an author row
+       and a Google reviews badge. */
+    .reviews-08 {
+      position: relative; overflow: hidden;
+      background: var(--color-secondary); color: var(--color-text-on-dark);
+      padding: 96px 0;
+    }
+    .reviews-08 .reviews-08__bg {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background-size: cover; background-position: center;
+    }
+    .reviews-08 .reviews-08__bg::after {
+      content: ""; position: absolute; inset: 0; background: rgba(15, 15, 15, 0.78);
+    }
+    .reviews-08 .reviews-08__grid-fx {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .4;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .reviews-08 .reviews-08__grid-fx::before,
+    .reviews-08 .reviews-08__grid-fx::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(80px);
+      background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    }
+    .reviews-08 .reviews-08__grid-fx::before { width: 36rem; height: 36rem; top: -8rem; left: -8rem; }
+    .reviews-08 .reviews-08__grid-fx::after { width: 32rem; height: 32rem; bottom: -8rem; right: -8rem; }
+
+    .reviews-08 .container { position: relative; z-index: 2; max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    .reviews-08 .section-head {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      max-width: 760px; margin: 0 auto 56px;
+    }
+    .reviews-08 .eyebrow {
+      display: inline-flex; flex-direction: row; align-items: center; gap: 12px;
+      text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.75rem;
+      font-weight: 600; color: var(--color-primary); margin: 0 0 18px;
+    }
+    .reviews-08 .eyebrow::after { display: none; }
+    .reviews-08 .eyebrow::before {
+      content: ""; width: 16px; height: 16px; flex-shrink: 0;
+      background: var(--color-primary);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    }
+    .reviews-08 .section-head h2 { color: var(--color-light); font-size: clamp(1.8rem, 4vw, 2.75rem); margin: 0; }
+    .reviews-08 .section-head .section-line { display: block; width: 48px; height: 3px; border-radius: 99px; background: var(--color-primary); margin: 20px auto 0; }
+
+    .reviews-08__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    @media (max-width: 900px) { .reviews-08__grid { grid-template-columns: 1fr; gap: 20px; max-width: 460px; margin: 0 auto; } }
+    .reviews-08__grid > [data-sk-repeater-wrap] { display: contents; }
+
+    .reviews-08__card {
+      position: relative; display: flex; flex-direction: column;
+      border-radius: 16px; padding: 32px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(6px);
+      transition: border-color .3s ease, transform .3s ease;
+    }
+    .reviews-08__card:hover { border-color: color-mix(in srgb, var(--color-primary) 40%, transparent); transform: translateY(-4px); }
+    .reviews-08__quote { position: absolute; top: 22px; right: 24px; color: color-mix(in srgb, var(--color-primary) 35%, transparent); }
+    .reviews-08__quote svg { width: 40px; height: 40px; }
+    .reviews-08__stars { display: inline-flex; gap: 2px; color: #f5b400; margin-bottom: 16px; }
+    .reviews-08__stars svg { width: 18px; height: 18px; fill: currentColor; }
+    .reviews-08__text { color: rgba(255, 255, 255, 0.9); font-size: 1rem; line-height: 1.7; margin: 0 0 24px; flex: 1; }
+    .reviews-08__meta {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.10);
+    }
+    .reviews-08__author { display: flex; align-items: center; gap: 12px; }
+    .reviews-08__avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center; color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent);
+    }
+    .reviews-08__avatar svg { width: 18px; height: 18px; }
+    .reviews-08__name { font-weight: 600; color: #fff; font-size: 0.95rem; }
+
+    /* Google review badge — logo image + transparent overlay anchor. */
+    .reviews-08 .google-badge { position: relative; display: inline-flex; align-items: center; line-height: 0; }
+    .reviews-08 .google-badge__logo { display: block; height: auto; width: auto; max-height: 26px; max-width: 150px; }
+    .reviews-08 .google-badge__link { position: absolute; inset: 0; text-indent: -9999px; white-space: nowrap; overflow: hidden; cursor: pointer; }
+    .reviews-08 .google-badge__link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: reviews-08</strong> &nbsp; · &nbsp; Dark band (photo bg + overlay + grid + glows). 3 frosted-glass review cards: quote, gold stars, text, author, Google badge. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:reviews:start -->
+<!--
+  TEMPLATE: reviews-08
+  LAYOUT:   Full-width dark band. Optional darkened photo bg under a heavy
+            Secondary overlay + faint grid + accent glows. Centered header,
+            then a 3-up grid of frosted-glass review cards (1..12 repeater).
+            Mobile: single column.
+  CONTENT:  optional bg image + eyebrow + headline (header), then reviews
+            (text + author + Google review URL each). Stars are fixed 5.
+  EDITABLE: 1 image (bg) + 2 text (header) + repeater of
+            {text(richtext), author(text), url(link)}.
+  THEME:    Band uses var(--color-secondary). Eyebrow pentagon, section-line,
+            glows, quote glyph and avatar tile use var(--color-primary).
+            Card text is fixed-light. Stars #f5b400 (universal gold).
+-->
+<section id="recenzie" class="reviews-08 fade-up">
+  <div class="reviews-08__bg" data-field="reviews_bg" style="background-image:url('https://placehold.co/1920x1080/1a1a1a/57534e?text=Background&font=lato')" aria-hidden="true"></div>
+  <div class="reviews-08__grid-fx" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-field="reviews_eyebrow">Reviews</span>
+      <h2 data-field="reviews_headline">What our clients say about us</h2>
+      <span class="section-line" aria-hidden="true"></span>
+    </div>
+
+    <div class="reviews-08__grid" data-repeat="reviews" data-min="1" data-max="12">
+
+      <article class="reviews-08__card">
+        <span class="reviews-08__quote" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6A5.17 5.17 0 0 0 2 11.17V18h6.83v-6.83H5.5A1.67 1.67 0 0 1 7.17 9.5V6zm10 0A5.17 5.17 0 0 0 12 11.17V18h6.83v-6.83H15.5a1.67 1.67 0 0 1 1.67-1.67V6z"/></svg></span>
+        <div class="reviews-08__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="reviews-08__text" data-field="text" data-type="richtext">Great cooperation, the tree felling went smoothly and safely. Highly recommend.</p>
+        <div class="reviews-08__meta">
+          <div class="reviews-08__author">
+            <span class="reviews-08__avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>
+            <span class="reviews-08__name" data-field="author">Vladimir</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="reviews-08__card">
+        <span class="reviews-08__quote" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6A5.17 5.17 0 0 0 2 11.17V18h6.83v-6.83H5.5A1.67 1.67 0 0 1 7.17 9.5V6zm10 0A5.17 5.17 0 0 0 12 11.17V18h6.83v-6.83H15.5a1.67 1.67 0 0 1 1.67-1.67V6z"/></svg></span>
+        <div class="reviews-08__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="reviews-08__text" data-field="text" data-type="richtext">The rope tree cutting was professional and fast. Reliable service.</p>
+        <div class="reviews-08__meta">
+          <div class="reviews-08__author">
+            <span class="reviews-08__avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>
+            <span class="reviews-08__name" data-field="author">Bozena</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="reviews-08__card">
+        <span class="reviews-08__quote" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6A5.17 5.17 0 0 0 2 11.17V18h6.83v-6.83H5.5A1.67 1.67 0 0 1 7.17 9.5V6zm10 0A5.17 5.17 0 0 0 12 11.17V18h6.83v-6.83H15.5a1.67 1.67 0 0 1 1.67-1.67V6z"/></svg></span>
+        <div class="reviews-08__stars" aria-label="5 out of 5 stars">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+        </div>
+        <p class="reviews-08__text" data-field="text" data-type="richtext">The high-risk tree felling was handled exactly as agreed. I recommend it to everyone.</p>
+        <div class="reviews-08__meta">
+          <div class="reviews-08__author">
+            <span class="reviews-08__avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>
+            <span class="reviews-08__name" data-field="author">Stefan</span>
+          </div>
+          <div class="google-badge">
+            <img src="https://ownvcvrqjdgksdwytskr.supabase.co/storage/v1/object/public/shared-assets/google-reviews-1-.png" alt="Google" class="google-badge__logo">
+            <a data-field="url" data-type="link" href="#" target="_blank" rel="noopener" class="google-badge__link" aria-label="View review on Google">View review on Google</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+<!-- SECTION:reviews:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>services-03 — Zigzag rows, no bullets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* services-03: same alternating-band zigzag layout as services-01,
+       but with the "Services include" bullet list removed. Picks the
+       sister variant whenever a service description is enough on its
+       own and the bullet column would feel like filler, typical for
+       smaller catalogs where the per-row paragraph already covers
+       what services-01 splits into a checklist. */
+
+    /* Section base color is the page default (white). Header + first row
+       render on this color so they read as one continuous block — the
+       alternating cream/gray band pattern only kicks in from the SECOND
+       row onwards via the :nth-of-type rules below. */
+    .services-03 { padding: 0; background: var(--color-bg); }
+    .services-03 .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      padding: 80px 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .services-03 .row img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+    }
+    /* Alternating band backgrounds AND image-side flip are driven by
+       position, not per-item classes — repeater (1..N) flips correctly
+       without the template author having to alternate `class="image-right"`
+       per default item.
+       Two parallel selector sets so both rendering paths work:
+         1. Composer iframe — `display:contents` on [data-repeat] flattens
+            .row-band into the section, so :nth-of-type(even) on .row-band
+            matches the visual row.
+         2. Published HTML — publish renderer wraps each repeater child
+            in <div data-sk-repeater-wrap>; targeting the WRAPPER's
+            :nth-of-type keeps alternation correct after wrapping. */
+    .services-03 .row-band:nth-of-type(even),
+    .services-03 [data-sk-repeater-wrap]:nth-of-type(even) .row-band {
+      background: var(--color-bg-alt);
+    }
+    .services-03 .row-band:nth-of-type(odd),
+    .services-03 [data-sk-repeater-wrap]:nth-of-type(odd) .row-band {
+      background: var(--color-bg);
+    }
+    /* Zigzag starting with IMAGE ON THE RIGHT on Row 1.
+       Mirrors services-01 so the two variants are visually interchangeable
+       — a user swapping between them sees the same flow, just with or
+       without bullets. */
+    @media (min-width: 768px) {
+      .services-03 .row-band:nth-of-type(odd) .row > div:first-child,
+      .services-03 [data-sk-repeater-wrap]:nth-of-type(odd) .row-band .row > div:first-child {
+        order: 2;
+      }
+      .services-03 .row-band:nth-of-type(odd) .row > div:last-child,
+      .services-03 [data-sk-repeater-wrap]:nth-of-type(odd) .row-band .row > div:last-child {
+        order: 1;
+      }
+    }
+    @media (max-width: 800px) {
+      .services-03 .row { grid-template-columns: 1fr; gap: 32px; padding: 56px 24px; }
+    }
+    .services-03 .section-head {
+      padding: 80px 24px 0;
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    /* Hide the eyebrow when empty so authors can run without a
+       "SERVICES"-style label above the title. */
+    .services-03 .section-head .eyebrow:empty {
+      display: none;
+    }
+    /* Small primary-color underline accent below the section title —
+       same treatment as services-01 so the two variants feel like one
+       family. */
+    .services-03 .section-head h2 {
+      position: relative;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+    }
+    .services-03 .section-head h2::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+
+    /* Bigger service title — was default h3 (~1.1rem), now 1.35-1.75rem
+       so it reads as the row's primary heading like services-01. */
+    .services-03 .row h3 {
+      font-family: var(--font-heading);
+      font-size: clamp(1.35rem, 2vw, 1.75rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 14px;
+      color: var(--color-text);
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: services-03</strong> &nbsp; · &nbsp; Zigzag rows with alternating backgrounds — same layout as services-01 but no bullet list per row. &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:services:start -->
+<!--
+  TEMPLATE: services-03
+  LAYOUT:   Sister of services-01 — full-bleed alternating-band rows
+            (var(--color-bg) / var(--color-bg-alt)). Each row is 2-col
+            image+text. Desktop alternation via CSS `order`. Mobile
+            collapses to image-on-top. The DIFFERENCE: no bullet
+            checklist column inside each row — just title + description
+            + CTA. Use when the description alone tells the story.
+  CONTENT:  eyebrow + headline + subheadline, then a repeater of services.
+            Each item = { image, title, description, link }.
+  EDITABLE: 3 top-level (eyebrow + headline + subheadline) + 1 repeater
+            of services (1..99, default 4 items).
+  THEME:    Row backgrounds use var(--color-bg) and var(--color-bg-alt).
+            Buttons use var(--color-primary) via .btn-primary. Title
+            underline accent in var(--color-primary).
+-->
+<section id="sluzby" class="services-03">
+
+  <div class="section-head fade-up">
+    <span class="eyebrow" data-field="services_eyebrow"></span>
+    <h2 data-field="services_headline">Our services</h2>
+    <p data-field="services_subheadline" data-type="richtext">Write a short subtitle here, sum up in one sentence what you offer and what sets you apart (speed, quality, price).</p>
+  </div>
+
+  <!--
+    Services repeater: sales adds/removes service rows from the composer
+    (1..99). Each item has image + title + description + link. Image side
+    (left vs right) and band background alternate by position via CSS
+    :nth-of-type — no per-item classes needed.
+
+    Each row-band carries `data-item-id-source="title"`, which the
+    renderer reads to stamp an `id` slugified from the item's title
+    (e.g. "Excavation work" → id="excavation-work"). Authors can override
+    per-item via the composer's anchor chip, value lands in the
+    reserved `__item_id` key.
+  -->
+  <div data-repeat="services" data-min="1" data-max="99" style="display:contents">
+    <div class="row-band fade-up" data-item-id-source="title">
+      <article class="row">
+        <div><img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Service+1&font=lato" alt="" width="900" height="675" loading="lazy"></div>
+        <div>
+          <h3 data-field="title">First service name</h3>
+          <p data-field="description" data-type="richtext">Write a description of the first service here. 2 to 3 sentences about what you do within this service, who it is for and what the customer gets from it.</p>
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Call us</a>
+        </div>
+      </article>
+    </div>
+    <div class="row-band fade-up">
+      <article class="row">
+        <div><img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Service+2&font=lato" alt="" width="900" height="675" loading="lazy"></div>
+        <div>
+          <h3 data-field="title">Second service name</h3>
+          <p data-field="description" data-type="richtext">Write a description of the second service here. Be specific, state what problem this service solves and what the result is for the customer.</p>
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Call us</a>
+        </div>
+      </article>
+    </div>
+    <div class="row-band fade-up">
+      <article class="row">
+        <div><img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Service+3&font=lato" alt="" width="900" height="675" loading="lazy"></div>
+        <div>
+          <h3 data-field="title">Third service name</h3>
+          <p data-field="description" data-type="richtext">Write a description of the third service here. If your offer differs for various segments, mention it (companies vs. private customers, larger vs. smaller jobs).</p>
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Call us</a>
+        </div>
+      </article>
+    </div>
+    <div class="row-band fade-up">
+      <article class="row">
+        <div><img data-field="image" src="https://placehold.co/900x675/d6d3d1/57534e?text=Service+4&font=lato" alt="" width="900" height="675" loading="lazy"></div>
+        <div>
+          <h3 data-field="title">Fourth service name</h3>
+          <p data-field="description" data-type="richtext">Write a description of the fourth service here. The fourth service is often complementary or specialized, describe it with regard to how it complements the main services.</p>
+          <a class="btn btn-primary" data-field="link" data-type="link" href="#kontakt">Call us</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SECTION:services:end -->
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

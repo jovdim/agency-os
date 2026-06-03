@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about-03 — Split (image left + text right) on grid background with wave edges</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../template-base.css">
+  <style>
+    /* about-03: same flipped split as about-02 (image left, text right) but
+       WITHOUT the highlights list, on a TINTED background with a faint
+       grid texture. The grid uses color-mixed theme tokens so it tracks
+       any color theme.
+
+       Earlier draft (2026-05-11) also had wave-shaped SVG dividers at the
+       top + bottom of the section, filled with --color-bg. Removed because
+       the wave fill HAD to match whichever section sat above/below — and
+       that color is unknowable from inside a single template. When the
+       section above was dark (e.g., a dark hero), the white wave fill
+       created a stark white band between them. Generic templates can't
+       know their neighbors, so the wave was a leaky abstraction — gone. */
+    .about-03 {
+      position: relative;
+      padding: 120px 0;
+      background-color: var(--color-bg-alt);
+      background-image:
+        linear-gradient(to right, color-mix(in srgb, var(--color-text) 4%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--color-text) 4%, transparent) 1px, transparent 1px);
+      background-size: 56px 56px;
+      overflow: hidden;
+    }
+    .about-03 .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1180px;
+    }
+    .about-03 .split {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .about-03 .split img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      /* Subtle shadow so the image lifts off the grid background. */
+      box-shadow: var(--shadow-md);
+    }
+    /* Document order is text-first (matches about-01 / about-02) for SEO
+       + mobile readability; `order` swaps to image-LEFT on desktop. */
+    @media (min-width: 800px) {
+      .about-03 .split > .split-text { order: 2; }
+      .about-03 .split > img { order: 1; }
+    }
+    @media (max-width: 800px) {
+      .about-03 { padding: 80px 0; }
+      .about-03 .split { grid-template-columns: 1fr; gap: 32px; }
+      .about-03 .split img { aspect-ratio: 4/3; }
+    }
+    .about-03 .split-text h2 {
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      margin-bottom: 22px;
+    }
+    .about-03 .split-body {
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .about-03 .split-body p { margin: 0 0 1em; }
+    .about-03 .split-body p:last-child { margin: 0; }
+    .about-03 .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner" style="position:fixed;top:0;left:0;right:0;background:#1c1917;color:#e7e5e4;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;z-index:1000">
+  <strong>TEMPLATE PREVIEW: about-03</strong> &nbsp; · &nbsp; Split image left + text right on a tinted grid background. &nbsp; · &nbsp;
+  <a href="../index.html" style="color:#e7e5e4">← back to template index</a>
+</div>
+
+<!-- SECTION:about:start -->
+<!--
+  TEMPLATE: about-03
+  LAYOUT:   2-column split. Image LEFT (portrait 4/5), text RIGHT.
+            Mobile: text first, image below (matches about-01 / about-02).
+            Section sits on a tinted (--color-bg-alt) background with a
+            faint 56×56px grid texture (4% theme-text color). No wave
+            decorations — earlier attempts at filled-edge waves and
+            stroked decorative waves both looked off and were removed.
+  CONTENT:  eyebrow + headline + body (richtext) + 2 CTAs + image. Same
+            field set as about-01 — about-03 is NOT a superset, just a
+            visually different presentation.
+  EDITABLE: 6 fields — eyebrow + headline + body (richtext) + 2 CTAs + image.
+  THEME:    Background tint, grid line color, wave fill all derived from
+            theme tokens (--color-bg-alt, --color-text, --color-bg) so the
+            section adapts to any color theme. Eyebrow underline applied
+            globally by base CSS.
+  USE FOR:  Anywhere about-01 fits but the page needs more visual rhythm
+            between sections — the wave + grid combination breaks up a
+            sequence of flat sections without going hand-drawn or
+            illustration-heavy.
+-->
+<section id="o-nas" class="about-03 fade-up">
+  <div class="container">
+    <div class="split">
+      <div class="split-text">
+        <span class="eyebrow" data-field="about_eyebrow">Who we are</span>
+        <h2 data-field="about_headline">Write the main headline of your about section here</h2>
+        <div class="split-body" data-field="about_body" data-type="richtext"><p>Write a short text about your company here, who you are, how you work, what sets you apart. 2 to 3 paragraphs that build trust without unnecessary marketing phrases are enough.</p></div>
+        <div class="actions">
+          <a class="btn btn-primary" data-field="about_cta_1" data-type="link" href="#kontakt">Primary action</a>
+          <a class="btn btn-outline" data-field="about_cta_2" data-type="link" href="#sluzby">Secondary action</a>
+        </div>
+      </div>
+      <img data-field="about_image" src="https://placehold.co/900x1100/c4bdb1/57534e?text=About+image+(4:5)&font=lato" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+<!-- SECTION:about:end -->
+
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#1c1917">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">Grey block simulating page content below the about section.</p>
+</div>
+
+</body>
+</html>

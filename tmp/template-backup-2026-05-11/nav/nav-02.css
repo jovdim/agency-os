@@ -1,0 +1,166 @@
+/* nav-02 — same layout as nav-01 (standard sticky bar, logo left,
+       links + CTA right), but the bar itself is frosted glass instead
+       of solid white. Pairs with nav-01 as the "solid + glass" variant
+       of the standard bar. Same companion pattern as nav-03 (pill solid)
+       and nav-04 (pill glass). */
+
+    .site-nav.nav-bar-glass {
+      /* The bar's transparent + backdrop-blur surface. Higher opacity
+         (0.65) than typical glass because text needs to read on busy
+         hero photos behind. The blur softens what's visible so links
+         stay legible. */
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      /* Hair-thin bottom border in the same translucency scheme so the
+         bar has an edge without looking solid. */
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      /* position: fixed (not sticky) so the hero starts at the top of
+         the page and flows up under the nav. Without fixed positioning
+         the glass effect has nothing to blur — you'd just see white. */
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0;
+    }
+
+    /* Browsers without backdrop-filter (older Firefox / very old Safari)
+       get a more opaque white so the nav remains legible without the
+       blur. Modern browsers don't pay this cost. */
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-bar-glass { background: rgba(255, 255, 255, 0.92); }
+    }
+
+    .site-nav.nav-bar-glass .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 14px 32px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    /* Logo — same 180×44 envelope as nav-01 so swapping templates
+       produces visually consistent results. */
+    .site-nav.nav-bar-glass .logo {
+      display: flex;
+      align-items: center;
+      width: 180px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+    .site-nav.nav-bar-glass .logo img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+
+    /* Link cluster — pushed to the right via margin-left:auto on the
+       <ul>. Same gap as nav-01 for visual parity. */
+    .site-nav.nav-bar-glass .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+      margin: 0 0 0 auto;
+      padding: 0;
+      font-family: var(--font-heading);
+    }
+    .site-nav.nav-bar-glass .nav-links a:not(.nav-cta) {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 6px 0;
+      transition: color 0.2s ease;
+    }
+    .site-nav.nav-bar-glass .nav-links a:not(.nav-cta):hover {
+      color: var(--color-primary);
+    }
+
+    /* CTA — primary-coloured solid pill. Same shape & color treatment
+       as nav-01's CTA (which inherits from base .nav-cta). Provides
+       a clear primary action against the glass backdrop. */
+    .site-nav.nav-bar-glass .nav-cta {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+    .site-nav.nav-bar-glass .nav-cta:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown — also frosted to match the parent bar (otherwise
+       opening it reveals a solid white panel that breaks the glass
+       aesthetic). */
+    /* No `position: relative` on .has-dropdown — anchor the dropdown
+       to the .site-nav wrapper (matches nav-01) so centering resolves
+       against the full bar width and the dropdown sits squarely under
+       the trigger instead of being scoped to the narrow <li>. */
+    .site-nav.nav-bar-glass .has-dropdown .dropdown {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-nav.nav-bar-glass .has-dropdown .dropdown {
+        background: rgba(255, 255, 255, 0.97);
+      }
+    }
+
+    /* ── Mobile (< 900px) ──
+       Bar stays glass, links collapse to a frosted overlay below. */
+    @media (max-width: 900px) {
+      .site-nav.nav-bar-glass .nav-inner { padding: 12px 20px; gap: 0; }
+      .site-nav.nav-bar-glass .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        padding: 8px 20px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      @supports not (backdrop-filter: blur(1px)) {
+        .site-nav.nav-bar-glass .nav-links {
+          background: rgba(255, 255, 255, 0.97);
+        }
+      }
+      .site-nav.nav-bar-glass .nav-links.open { display: flex; }
+      .site-nav.nav-bar-glass .nav-links li { width: 100%; }
+      .site-nav.nav-bar-glass .nav-links a:not(.nav-cta) {
+        padding: 14px 0;
+        font-size: 0.95rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      .site-nav.nav-bar-glass .nav-cta {
+        margin-top: 12px;
+        text-align: center;
+        width: 100%;
+        padding: 14px;
+      }
+      .site-nav.nav-bar-glass .hamburger { display: flex; margin-left: auto; }
+    }
+    @media (min-width: 901px) {
+      .site-nav.nav-bar-glass .hamburger { display: none; }
+    }

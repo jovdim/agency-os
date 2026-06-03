@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hero-07 — Centered full-bleed hero with grid + accent-glow dark treatment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_common/preview.css">
+  <style>
+    /* hero-07 — centered full-bleed hero ported from the pilimestromy
+       Hero. Builds on the base .hero (full-bleed bg image + dark gradient
+       overlay + 100vh). Adds the source's signature decorative layer: a
+       faint white grid + two soft accent-color radial glows behind the
+       content. Headline + lede + 2 CTAs are centered. */
+    .hero-07 { text-align: center; }
+    .hero-07 .hero-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-07 h1 {
+      margin-left: auto;
+      margin-right: auto;
+      color: var(--color-light);
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 30px rgba(0, 0, 0, .4);
+    }
+    .hero-07 .lede {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 760px;
+      color: var(--color-text-on-dark);
+    }
+    .hero-07 .hero-cta { justify-content: center; }
+
+    /* Outline CTA on a dark hero — white outline, fills white on hover. */
+    .hero-07 .btn-outline { color: #fff; border-color: rgba(255, 255, 255, .4); }
+    .hero-07 .btn-outline:hover { background: #fff; color: var(--color-secondary); border-color: #fff; }
+
+    /* Decorative layer — grid + accent glows. Sits above the base
+       gradient (::before, z-index 1) and below the content (z-index 2). */
+    .hero-07 .hero-07__decor {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .hero-07 .hero-07__decor::before,
+    .hero-07 .hero-07__decor::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+    .hero-07 .hero-07__decor::before {
+      width: 36rem; height: 36rem;
+      top: -8rem; right: -8rem;
+      background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+    }
+    .hero-07 .hero-07__decor::after {
+      width: 32rem; height: 32rem;
+      bottom: -10rem; left: -10rem;
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
+
+    @media (max-width: 480px) {
+      .hero-07 .hero-inner { max-width: 100%; padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>TEMPLATE PREVIEW: hero-07</strong> &nbsp; · &nbsp; Centered full-bleed hero. Dark gradient + faint grid + accent glows. Headline, lede, 2 CTAs (Call us + WhatsApp). &nbsp; · &nbsp;
+  <a href="../index.html">← back to template index</a>
+</div>
+
+<!-- SECTION:hero:start -->
+<!--
+  TEMPLATE: hero-07
+  LAYOUT:   Full-bleed background image + dark gradient overlay + decorative
+            grid/accent-glow layer. All content centered.
+  HEIGHT:   100vh min (from base .hero class).
+  CONTENT:  background image, headline, sub-headline (lede), 2 CTAs.
+  EDITABLE: 1 image + 1 text + 1 longtext + 2 link-type fields (5 fields).
+  THEME:    Headline/lede colors are fixed-light (white-on-dark) via base CSS.
+            CTA primary uses var(--color-primary). Glows tint var(--color-primary).
+            Secondary CTA stays white-on-dark.
+-->
+<section id="domov" class="hero hero-07 fade-up" data-field="hero_bg" style="background-image:url('https://placehold.co/1920x1080/1a1a1a/57534e?text=Hero+background&font=lato')">
+  <div class="hero-07__decor" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <h1 data-field="hero_headline">Safe and precise arborist services across the region</h1>
+    <p class="lede" data-field="hero_subheadline" data-type="richtext">Rope-assisted tree cutting, high-risk felling and work in demanding terrain, with a free site visit and examples of our work.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" data-field="hero_cta_primary" data-type="link" href="tel:+15550000000">Call us</a>
+      <a class="btn btn-outline" data-field="hero_cta_secondary" data-type="link" href="https://wa.me/421907339732">WhatsApp</a>
+    </div>
+  </div>
+</section>
+<!-- SECTION:hero:end -->
+
+<!-- Spacer (preview-only, stripped on upload) -->
+<div style="padding:80px 24px;background:#f5f3ee;text-align:center;color:#57534e;min-height:400px">
+  <p style="margin:0 0 8px;font-family:'Inter',sans-serif;font-weight:600;color:#1a1a1a">Spacer area (preview-only)</p>
+  <p style="margin:0;font-size:0.9rem">This grey block simulates page content below the hero.</p>
+</div>
+
+<script src="../_common/preview.js"></script>
+</body>
+</html>

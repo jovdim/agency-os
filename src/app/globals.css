@@ -1,0 +1,467 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-destructive-border: var(--destructive-border);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --destructive-bg: oklch(0.99 0.008 27);
+  --destructive-border: oklch(0.88 0.08 27);
+  --success: oklch(0.62 0.17 150);
+  --success-foreground: oklch(0.985 0 0);
+  --success-bg: oklch(0.99 0.01 150);
+  --success-border: oklch(0.86 0.09 150);
+  --warning: oklch(0.72 0.16 70);
+  --warning-foreground: oklch(0.205 0 0);
+  --warning-bg: oklch(0.99 0.012 80);
+  --warning-border: oklch(0.88 0.09 75);
+  --info: oklch(0.6 0.18 250);
+  --info-foreground: oklch(0.985 0 0);
+  --info-bg: oklch(0.99 0.008 250);
+  --info-border: oklch(0.87 0.08 250);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --destructive-bg: oklch(0.185 0.022 27);
+  --destructive-border: oklch(0.4 0.12 27);
+  --success: oklch(0.72 0.18 150);
+  --success-foreground: oklch(0.145 0 0);
+  --success-bg: oklch(0.18 0.018 150);
+  --success-border: oklch(0.42 0.1 150);
+  --warning: oklch(0.8 0.17 75);
+  --warning-foreground: oklch(0.145 0 0);
+  --warning-bg: oklch(0.19 0.022 75);
+  --warning-border: oklch(0.45 0.1 75);
+  --info: oklch(0.72 0.18 250);
+  --info-foreground: oklch(0.145 0 0);
+  --info-bg: oklch(0.18 0.022 250);
+  --info-border: oklch(0.4 0.11 250);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.16 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Playful Alert System — bouncy spring animations
+   Used by: sonner toasts, Alert component, AlertDialog
+   ────────────────────────────────────────────────────────────────────────── */
+
+@keyframes sk-spring-in {
+  0%   { opacity: 0; transform: translateY(-24px) scale(0.85); }
+  60%  { opacity: 1; transform: translateY(4px) scale(1.04); }
+  80%  { transform: translateY(-2px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Tailwind v4's translate-x/y utilities set the modern CSS `translate`
+   property (NOT `transform: translate(...)`). So our keyframes must animate
+   ONLY `transform: scale(...)` — leaving the `translate` property untouched
+   so Tailwind's centering (`translate: -50% -50%`) stays applied throughout
+   the animation. The two properties compose cleanly: translate happens first,
+   then transform-scale on top.
+   Two variants:
+   - sk-dialog-in / sk-dialog-out  → subtle pop (default for <Dialog>)
+   - sk-spring-in-center / sk-spring-out-center → bouncier (AlertDialog "moments") */
+
+@keyframes sk-dialog-in {
+  0%   { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sk-dialog-out {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.97); }
+}
+
+@keyframes sk-spring-in-center {
+  0%   { opacity: 0; transform: scale(0.88); }
+  60%  { opacity: 1; transform: scale(1.02); }
+  80%  { transform: scale(0.995); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sk-spring-out-center {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+
+/* Bind animations via data-slot + data-state so we don't rely on Tailwind
+   arbitrary-value parsing (which has tripped over commas inside
+   cubic-bezier() before). Reduced-motion users get a plain opacity fade. */
+
+[data-slot="dialog-content"][data-state="open"] {
+  animation: sk-dialog-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-slot="dialog-content"][data-state="closed"] {
+  animation: sk-dialog-out 0.16s ease-in both;
+}
+
+[data-slot="alert-dialog-content"][data-state="open"] {
+  animation: sk-spring-in-center 0.42s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+[data-slot="alert-dialog-content"][data-state="closed"] {
+  animation: sk-spring-out-center 0.18s ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-content"][data-state="open"],
+  [data-slot="alert-dialog-content"][data-state="open"] {
+    animation: none;
+  }
+  [data-slot="dialog-content"][data-state="closed"],
+  [data-slot="alert-dialog-content"][data-state="closed"] {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Interactive table rows — applies in TWO ways:
+     1. Auto-detect any <tr class="... cursor-pointer ..."> — covers every
+        existing clickable row in the codebase without any file edits.
+     2. Explicit opt-in via <TableRow interactive> or <tr data-interactive="true">
+        — for rows that should get the polish but don't have cursor-pointer
+        (rare; e.g. rows clicked via a child link rather than the row itself).
+
+   Draws a 3px primary-color accent bar on the first cell via a left-anchored
+   background-image (NOT box-shadow — box-shadow on cells is unreliable when
+   the table uses `border-collapse: collapse`, which all our real list pages
+   do). Grows from 0 → 3px width on hover. No layout shift, no row movement.
+   ────────────────────────────────────────────────────────────────────────── */
+
+tr[data-interactive="true"] > td:first-child,
+tr[data-interactive="true"] > th:first-child,
+tr.cursor-pointer > td:first-child,
+tr.cursor-pointer > th:first-child {
+  background-image: linear-gradient(var(--primary), var(--primary));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0 100%;
+  transition: background-size 200ms ease-out;
+}
+
+tr[data-interactive="true"]:hover > td:first-child,
+tr[data-interactive="true"]:hover > th:first-child,
+tr.cursor-pointer:hover > td:first-child,
+tr.cursor-pointer:hover > th:first-child {
+  background-size: 3px 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  tr[data-interactive="true"] > td:first-child,
+  tr[data-interactive="true"] > th:first-child,
+  tr.cursor-pointer > td:first-child,
+  tr.cursor-pointer > th:first-child {
+    transition: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Interactive dashboard tiles
+   For raw <Link><div>...</div></Link> stat-tile patterns on home pages
+   (e.g. /super, /tech, /client dashboards). Applies the same hover lift
+   + mild spring overshoot the <Card interactive> primitive uses.
+
+   Uses the modern `translate` CSS property (matches Tailwind v4) so it
+   composes cleanly with any other transforms on the element.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tile-interactive {
+  cursor: pointer;
+  transition: translate 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out;
+}
+
+.tile-interactive:hover {
+  translate: 0 -2px;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.5, 1.3, 0.6, 1);
+}
+
+.tile-interactive:active {
+  translate: 0 0;
+  transition-duration: 100ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-interactive,
+  .tile-interactive:hover,
+  .tile-interactive:active {
+    translate: 0 0;
+    transition: none;
+  }
+}
+
+@keyframes sk-spring-out {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-12px) scale(0.92); }
+}
+
+@keyframes sk-icon-pop {
+  0%   { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60%  { transform: scale(1.3) rotate(8deg); opacity: 1; }
+  80%  { transform: scale(0.92) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes sk-wiggle {
+  0%, 100% { transform: rotate(0); }
+  20%      { transform: rotate(-12deg); }
+  40%      { transform: rotate(10deg); }
+  60%      { transform: rotate(-6deg); }
+  80%      { transform: rotate(4deg); }
+}
+
+@keyframes sk-shake {
+  0%, 100%       { transform: translateX(0); }
+  10%, 30%, 50%  { transform: translateX(-4px); }
+  20%, 40%, 60%  { transform: translateX(4px); }
+  70%            { transform: translateX(-2px); }
+  80%            { transform: translateX(2px); }
+}
+
+@keyframes sk-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--sk-glow, transparent); }
+  50%      { box-shadow: 0 0 24px 4px var(--sk-glow, transparent); }
+}
+
+@keyframes sk-check-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* Reusable utility classes */
+.sk-animate-spring-in   { animation: sk-spring-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.sk-animate-spring-out  { animation: sk-spring-out 0.25s ease-in both; }
+.sk-animate-icon-pop    { animation: sk-icon-pop 0.6s cubic-bezier(0.34, 1.8, 0.64, 1) both; }
+.sk-animate-wiggle      { animation: sk-wiggle 0.6s ease-in-out both; }
+.sk-animate-shake       { animation: sk-shake 0.5s ease-in-out both; }
+.sk-animate-check-pop   { animation: sk-check-pop 0.5s cubic-bezier(0.34, 1.8, 0.64, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-animate-spring-in,
+  .sk-animate-spring-out,
+  .sk-animate-icon-pop,
+  .sk-animate-wiggle,
+  .sk-animate-shake,
+  .sk-animate-check-pop {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Sonner toast overrides — bouncy entry + per-variant gradient + icon pop
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-sonner-toaster] {
+  --sk-toast-radius: calc(var(--radius) + 4px);
+}
+
+/* Base toast: bouncy spring-in, soft shadow, rounded */
+[data-sonner-toaster] [data-sonner-toast] {
+  border-radius: var(--sk-toast-radius) !important;
+  border-width: 1px !important;
+  padding: 14px 16px !important;
+  box-shadow:
+    0 10px 30px -10px rgb(0 0 0 / 0.18),
+    0 4px 12px -4px rgb(0 0 0 / 0.10),
+    0 0 0 1px rgb(0 0 0 / 0.02) !important;
+  animation: sk-spring-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-removed="true"] {
+  animation: sk-spring-out 0.22s ease-in both;
+}
+
+/* Icon container — pop in with overshoot */
+[data-sonner-toaster] [data-sonner-toast] [data-icon] {
+  animation: sk-icon-pop 0.6s cubic-bezier(0.34, 1.8, 0.64, 1) both;
+  animation-delay: 0.08s;
+}
+
+/* Per-variant: subtle flat tint + colored border + variant-colored icon */
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+  background: var(--success-bg) !important;
+  border-color: var(--success-border) !important;
+  color: var(--popover-foreground) !important;
+}
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] [data-icon] {
+  color: var(--success) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  background: var(--destructive-bg) !important;
+  border-color: var(--destructive-border) !important;
+  color: var(--popover-foreground) !important;
+}
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--destructive) !important;
+  animation: sk-shake 0.5s ease-in-out 0.1s both, sk-icon-pop 0.5s cubic-bezier(0.34, 1.8, 0.64, 1) both;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
+  background: var(--warning-bg) !important;
+  border-color: var(--warning-border) !important;
+  color: var(--popover-foreground) !important;
+}
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"] [data-icon] {
+  color: var(--warning) !important;
+  animation: sk-wiggle 0.6s ease-in-out 0.15s both, sk-icon-pop 0.5s cubic-bezier(0.34, 1.8, 0.64, 1) both;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="info"] {
+  background: var(--info-bg) !important;
+  border-color: var(--info-border) !important;
+  color: var(--popover-foreground) !important;
+}
+[data-sonner-toaster] [data-sonner-toast][data-type="info"] [data-icon] {
+  color: var(--info) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="loading"] [data-icon] {
+  color: var(--ring) !important;
+  animation: none;
+}
+
+/* Close button — subtle until hover */
+[data-sonner-toaster] [data-sonner-toast] [data-close-button] {
+  background: var(--background) !important;
+  border-color: var(--border) !important;
+  color: var(--muted-foreground) !important;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+[data-sonner-toaster] [data-sonner-toast] [data-close-button]:hover {
+  transform: scale(1.1);
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
