@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { Users } from "lucide-react";
 import {
   LiveClientsTable,
   type LiveClientRow,
@@ -141,16 +142,37 @@ export default async function TechLiveClientsPage() {
     };
   });
 
+  // Total Sales = number of live clients (paying customers). Shown to
+  // tech + super (super's /super/live-clients redirects to this page).
+  const totalSales = normalized.length;
+
   return (
-    <LiveClientsTable
-      rows={normalized}
-      canAddMigrated
-      backHref="/tech"
-      // Tech: row click → unified proposal page (timeline + paid
-      // cards inline below). Same destination the table component
-      // ships as its default, but stated explicitly so the role-
-      // routing intent is visible right here in the page.
-      rowHrefBase="/tech/proposals"
-    />
+    <div className="space-y-4">
+      <div className="flex w-full items-center gap-3 rounded-lg border border-emerald-200/60 bg-emerald-50/40 px-4 py-3 sm:w-fit dark:border-emerald-900/50 dark:bg-emerald-950/20">
+        <div className="rounded-md bg-emerald-100 p-2 dark:bg-emerald-900/40">
+          <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <div>
+          <p className="text-xs font-medium text-muted-foreground">Total Sales</p>
+          <p className="text-2xl font-bold leading-tight tabular-nums">
+            {totalSales}
+          </p>
+          <p className="text-[11px] leading-tight text-muted-foreground">
+            {totalSales === 1 ? "live client" : "live clients"}
+          </p>
+        </div>
+      </div>
+
+      <LiveClientsTable
+        rows={normalized}
+        canAddMigrated
+        backHref="/tech"
+        // Tech: row click → unified proposal page (timeline + paid
+        // cards inline below). Same destination the table component
+        // ships as its default, but stated explicitly so the role-
+        // routing intent is visible right here in the page.
+        rowHrefBase="/tech/proposals"
+      />
+    </div>
   );
 }
