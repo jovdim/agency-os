@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { ClipboardList } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -123,9 +124,31 @@ export default async function SuperSalesOverviewPage() {
     };
   });
 
+  const totalProposalRequests = rows.reduce((s, r) => s + r.pending, 0);
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Salespeople</h1>
+
+      {/* Team-wide proposal-requests banner — mirrors the IT Team page's
+          build-queue banner, but counts proposal requests by salesperson. */}
+      <div className="rounded-lg border bg-card p-4 flex items-center gap-3">
+        <div className="rounded-md p-2 shrink-0 bg-muted">
+          <ClipboardList className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-2xl font-bold tabular-nums">{totalProposalRequests}</p>
+          <p className="text-xs text-muted-foreground">
+            proposal requests across all salespeople
+          </p>
+        </div>
+        <Link
+          href="/super/proposals"
+          className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+        >
+          See proposals →
+        </Link>
+      </div>
 
       <div className="rounded-lg border bg-card overflow-hidden">
         <Table>
