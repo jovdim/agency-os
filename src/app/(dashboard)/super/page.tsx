@@ -67,6 +67,7 @@ export default async function SuperAdminDashboard() {
     // 2) Domain requests (register_new / transfer) sitting longer
     //    than the SLA without a status flip to active.
     { data: staleDomainRequests },
+    { data: confirmedPayments },
   ] = await Promise.all([
     admin.from("proposals").select("id", { count: "exact", head: true }).eq("status", "paid"),
     admin.rpc("proposals_build_queue_count"),
@@ -87,9 +88,21 @@ export default async function SuperAdminDashboard() {
       .lt("updated_at", cutoffDomain)
       .order("updated_at", { ascending: true })
       .limit(ATTENTION_LIMIT),
+    admin.from("payments").select("amount").eq("status", "confirmed"),
   ]);
 
   const pendingProposals = Number(buildQueueCountRaw ?? 0);
+
+  // Total Sales = total revenue: sum of all confirmed payment amounts.
+  const totalSalesAmount = (confirmedPayments ?? []).reduce(
+    (sum, p) => sum + (Number(p.amount) || 0),
+    0,
+  );
+  const totalSalesLabel = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(totalSalesAmount);
 
   // Build a single, type-tagged attention list. Each item knows its
   // own age + where the operator should go to resolve it.
@@ -139,6 +152,12 @@ export default async function SuperAdminDashboard() {
     href: string;
   }> = [
     {
+      label: "Total Sales",
+      value: totalSalesLabel,
+      sublabel: "revenue from paid clients",
+      href: "/super/payments",
+    },
+    {
       label: "Live clients",
       value: String(liveClientCount ?? 0),
       sublabel: "paying customers",
@@ -179,7 +198,7 @@ export default async function SuperAdminDashboard() {
     <div className="space-y-6 max-w-6xl">
       <h1 className="text-2xl font-semibold">Hello, {firstName}</h1>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <Link key={card.label} href={card.href}>
             <div className="tile-interactive rounded-lg border bg-card p-6 hover:shadow-md hover:border-foreground/15 h-full">

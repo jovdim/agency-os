@@ -142,9 +142,9 @@ export default async function TechLiveClientsPage() {
     };
   });
 
-  // Total Sales = number of live clients (paying customers). Shown to
-  // tech + super (super's /super/live-clients redirects to this page).
-  const totalSales = normalized.length;
+  // Count of live clients (paying customers). Shown to tech + super
+  // (super's /super/live-clients redirects to this page).
+  const totalLiveClients = normalized.length;
 
   return (
     <div className="space-y-4">
@@ -153,12 +153,12 @@ export default async function TechLiveClientsPage() {
           <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <p className="text-xs font-medium text-muted-foreground">Total Sales</p>
+          <p className="text-xs font-medium text-muted-foreground">Total Live Clients</p>
           <p className="text-2xl font-bold leading-tight tabular-nums">
-            {totalSales}
+            {totalLiveClients}
           </p>
           <p className="text-[11px] leading-tight text-muted-foreground">
-            {totalSales === 1 ? "live client" : "live clients"}
+            {totalLiveClients === 1 ? "paying customer" : "paying customers"}
           </p>
         </div>
       </div>
