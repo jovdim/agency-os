@@ -143,10 +143,10 @@ export default async function SuperSalesOverviewPage() {
           </p>
         </div>
         <Link
-          href="/super/proposals"
+          href="/tech/proposals"
           className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
         >
-          See proposals →
+          See queue →
         </Link>
       </div>
 

@@ -207,7 +207,7 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
     {
       items: [
         { label: "Overview", href: "/super", icon: <Shield className="h-4 w-4" /> },
-        { label: "Proposals", href: "/super/proposals", icon: <ClipboardList className="h-4 w-4" /> },
+        { label: "Proposals", href: "/tech/proposals", icon: <ClipboardList className="h-4 w-4" /> },
       ],
     },
     {
