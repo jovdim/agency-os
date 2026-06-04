@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { BuyCreditsDialog } from "@/components/payments/buy-credits-dialog";
 
-const CREDIT_PRICE = 1; // 1 unit = 1€ (balance stored in euros)
+const CREDIT_PRICE = 1; // 1 unit = $1 (balance stored in euros)
 // Cost per publish — keep in sync with PUBLISH_COST_EUR in the credits API
 // route. Used to convert balance to "X publishes available" for the UI.
 const PUBLISH_COST_EUR = 12.5;
@@ -87,7 +87,7 @@ function getBalance(site: Site): number {
 }
 
 function toEur(credits: number): string {
-  return (credits * CREDIT_PRICE).toFixed(2) + " €";
+  return (credits * CREDIT_PRICE).toFixed(2) + " $";
 }
 
 export function BalanceClient({ sites, transactions, payments }: Props) {
@@ -104,7 +104,7 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
       <div>
         <h1 className="text-xl font-semibold">Balance and payments</h1>
         <p className="text-sm text-muted-foreground">
-          1 publish = 12.50 €
+          1 publish = $12.50
         </p>
       </div>
 
@@ -230,7 +230,7 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
                   return (
                     <div key={p.id} className="flex items-center justify-between px-4 py-3">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium">{p.amount.toFixed(2)} €</p>
+                        <p className="text-sm font-medium">${p.amount.toFixed(2)}</p>
                         <p className="text-xs text-muted-foreground truncate">
                           {p.sites?.name}
                           {p.description ? ` · ${p.description}` : ""}

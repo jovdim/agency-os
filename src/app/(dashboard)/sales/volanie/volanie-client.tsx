@@ -641,7 +641,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
                   <p className="font-medium text-foreground text-xs">Common objections</p>
                   <p><span className="text-amber-500">→</span> &quot;I already have a website&quot; — &quot;Great! When did you last take a look at it?&quot;</p>
                   <p><span className="text-amber-500">→</span> &quot;I'm not interested&quot; — &quot;I understand. Can I quickly show you what we do?&quot;</p>
-                  <p><span className="text-amber-500">→</span> &quot;It's expensive&quot; — &quot;Our prices start from 149€.&quot;</p>
+                  <p><span className="text-amber-500">→</span> &quot;It's expensive&quot; — &quot;Our prices start from $149.&quot;</p>
                 </div>
               </div>
             )}
@@ -845,7 +845,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
               <p className="mt-0.5">Email: <span className={c.email ? "text-foreground" : "text-amber-500"}>{c.email || "no email"}</span></p>
             </div>
           </DialogHeader>
-          <Textarea value={invoiceMessage} onChange={(e) => setInvoiceMessage(e.target.value)} placeholder="What should be on the invoice? E.g.: Website 149€, GBP 75€..." className="text-sm min-h-20" />
+          <Textarea value={invoiceMessage} onChange={(e) => setInvoiceMessage(e.target.value)} placeholder="What should be on the invoice? E.g.: Website $149, GBP $75..." className="text-sm min-h-20" />
           <DialogFooter>
             <Button variant="ghost" size="sm" onClick={() => setInvoiceOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={() => {
@@ -920,7 +920,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
                   autoFocus
                   className="w-20 h-8 text-lg font-bold text-right bg-transparent border-b border-amber-500/40 focus:border-amber-500 outline-none text-amber-800 dark:text-amber-300 placeholder:text-amber-400/30"
                 />
-                <span className="text-base font-bold text-amber-700 dark:text-amber-400">€</span>
+                <span className="text-base font-bold text-amber-700 dark:text-amber-400">$</span>
               </div>
             </div>
 

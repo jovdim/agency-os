@@ -3,12 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateBySquareQrImage, generateCreditVariableSymbol } from "@/lib/payments/bysquare";
 
-// Per-publish cost in €. Must match COST_PER_CHANGE in
+// Per-publish cost in $. Must match COST_PER_CHANGE in
 // src/components/payments/buy-credits-dialog.tsx and PUBLISH_COST_EUR in
 // the publish + credit-balance API routes. Pre-2026-05-11 this was 12 (a
 // pre-Peter-decision rough number) which made the QR amount disagree
-// with the dialog's preset by 4% — e.g. clicking "25 €" generated a
-// 24 € QR.
+// with the dialog's preset by 4% — e.g. clicking "$25" generated a
+// $24 QR.
 const CREDIT_PRICE_EUR = 12.5;
 
 /**
@@ -86,11 +86,11 @@ export async function POST(req: NextRequest) {
     profile_id: user.id,
     site_id,
     amount,
-    currency: "EUR",
+    currency: "USD",
     payment_method: "bysquare_credit",
     variable_symbol: variableSymbol,
     status: "pending",
-    description: `Pending: ${credits} publishes (${amount} €)`,
+    description: `Pending: ${credits} publishes ($${amount})`,
   });
   if (paymentErr) {
     // We've already burned the BySquare API call — don't fail the

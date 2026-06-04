@@ -21,7 +21,7 @@ export default async function ClientDashboard() {
 
   // Fetch the client's site. We no longer join credit_balances here —
   // the dashboard doesn't surface the balance number anymore (no context
-  // for "25 €" without a per-publish-cost explainer, which lives on
+  // for "$25" without a per-publish-cost explainer, which lives on
   // /client/balance). The bottom "Credits and payments" link is the entry
   // point if they want to see / top it up.
   const { data: sites } = await supabase
@@ -163,7 +163,7 @@ export default async function ClientDashboard() {
         <div className="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-4 py-3">
           <p className="text-sm font-semibold text-red-700 dark:text-red-300">Your services expired{expiryDateStr ? ` on ${expiryDateStr}` : ""}</p>
           <p className="text-xs text-red-600/80 dark:text-red-400/80 mt-1">
-            Contact us to restore your website and services. The price to renew for another year is 49 €.
+            Contact us to restore your website and services. The price to renew for another year is $49.
           </p>
         </div>
       )}
@@ -181,7 +181,7 @@ export default async function ClientDashboard() {
                 {daysRemaining <= 7 ? `Your services expire in ${daysRemaining} days!` : `${daysRemaining} days left until expiration`}
               </p>
               <p className={`text-xs mt-1 ${daysRemaining <= 7 ? "text-red-600/80 dark:text-red-400/80" : "text-amber-600/80 dark:text-amber-400/80"}`}>
-                {expiryDateStr ? `Expiration date: ${expiryDateStr}. ` : ""}Renewal for another year costs just 49 €.
+                {expiryDateStr ? `Expiration date: ${expiryDateStr}. ` : ""}Renewal for another year costs just $49.
               </p>
             </div>
             <span className={`text-lg font-bold shrink-0 ${daysRemaining <= 7 ? "text-red-600" : "text-amber-600"}`}>
@@ -209,7 +209,7 @@ export default async function ClientDashboard() {
 
       {/* Stats row removed: "balance" and "days left" had
           no context on the dashboard — clients can't read a number like
-          "25 €" without knowing it's the credit pool for publishing
+          "$25" without knowing it's the credit pool for publishing
           changes. The expiration counter lives in the "active service"
           banner above (or the warning banners when close to expiry).
           Balance is reachable via the "Credits and payments" link at the

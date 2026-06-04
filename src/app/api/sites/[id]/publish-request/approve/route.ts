@@ -18,7 +18,7 @@ export const revalidate = 0;
  * the proposal pipeline page. This is the ONLY place a client edit
  * actually goes live.
  *
- * Charge model — the 12.50 € was already deducted at submit time
+ * Charge model — the $12.50 was already deducted at submit time
  * (Peter 2026-05-30: charge-at-submit). Approve does NOT charge again.
  * If the publish itself fails, we leave the row as `pending` so IT can
  * retry; if it's truly broken, IT rejects instead, which refunds.
@@ -87,7 +87,7 @@ export async function POST(
     (request.requested_by as string | null) ?? site.owner_id ?? user.id;
 
   // ── Publish ─────────────────────────────────────────────────
-  // No charge here — the 12.50 € was deducted at submit time. If
+  // No charge here — the $12.50 was deducted at submit time. If
   // publishSite throws, we leave the row pending so IT can retry; if
   // they decide it's truly broken, rejecting refunds the client.
   let result;
@@ -125,7 +125,7 @@ export async function POST(
     deploymentUrl: result.url,
     versionId: result.versionId,
     // Echo what was already on the row from the submit-time charge so
-    // the IT-side UI can show "Charged 12,50 €" without a second read.
+    // the IT-side UI can show "Charged $12,50" without a second read.
     charged_amount_eur: Number(request.charged_amount ?? 0),
   });
 }

@@ -1056,7 +1056,7 @@ function buildScriptTags(
   // Hardcoded fallback to the production URL so the widget keeps
   // working even if NEXT_PUBLIC_SITE_URL is unset on Vercel.
   const dashboardOrigin = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://sharkmedia-zone.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://your-app.vercel.app"
   ).replace(/\/$/, "");
   if (showBanner && proposalSlug) {
     tags.push(

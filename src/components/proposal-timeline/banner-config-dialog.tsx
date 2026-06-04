@@ -11,7 +11,7 @@
  * Three editable fields, all prefilled from the proposal row:
  *
  *   - Discount price   (proposals.discount_price)
- *   - Base price       (proposals.base_price, default €299)
+ *   - Base price       (proposals.base_price, default $299)
  *   - Discount expiry  (proposals.discount_expires_at — date only;
  *                       persisted as end-of-day in Slovak time so
  *                       the banner stays "active" through the chosen
@@ -29,7 +29,7 @@
  *      Skipped if no site is linked yet — the flag still saves and
  *      kicks in on the next publish.
  *
- * Validation mirrors the server: discount ≥ €149, base ≥ discount,
+ * Validation mirrors the server: discount ≥ $149, base ≥ discount,
  * expiry must parse. Any failure aborts before the API call so we
  * never half-commit (see feedback_atomic_operations.md).
  *
@@ -174,12 +174,12 @@ export function BannerConfigDialog({
     // ── Client-side validation (mirror of server-side checks) ──
     const discountNum = parseFloat(discount);
     if (!Number.isFinite(discountNum) || discountNum < MIN_DISCOUNT_PRICE) {
-      toast.error(`The discount price must be at least €${MIN_DISCOUNT_PRICE}.`);
+      toast.error(`The discount price must be at least $${MIN_DISCOUNT_PRICE}.`);
       return;
     }
     const baseNum = parseFloat(base);
     if (!Number.isFinite(baseNum) || baseNum < MIN_DISCOUNT_PRICE) {
-      toast.error(`The price after expiry must be at least €${MIN_DISCOUNT_PRICE}.`);
+      toast.error(`The price after expiry must be at least $${MIN_DISCOUNT_PRICE}.`);
       return;
     }
     if (baseNum < discountNum) {
@@ -331,7 +331,7 @@ export function BannerConfigDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="bc-discount" className="text-xs">
-                Discount price (€)
+                Discount price ($)
               </Label>
               <Input
                 id="bc-discount"
@@ -344,12 +344,12 @@ export function BannerConfigDialog({
                 className="font-mono text-sm"
               />
               <p className="text-[11px] text-muted-foreground">
-                Min. €{MIN_DISCOUNT_PRICE}
+                Min. ${MIN_DISCOUNT_PRICE}
               </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="bc-base" className="text-xs">
-                Price after expiry (€)
+                Price after expiry ($)
               </Label>
               <Input
                 id="bc-base"

@@ -701,7 +701,7 @@ export function ClientDetailClient({
         <Card title="Payment">
           <Row icon={<Wallet className="h-4 w-4" />} label="Amount paid">
             <span className="font-medium tabular-nums">
-              €{data.amount_paid.toLocaleString("en-US", {
+              ${data.amount_paid.toLocaleString("en-US", {
                 maximumFractionDigits: 0,
               })}
             </span>
@@ -745,7 +745,7 @@ export function ClientDetailClient({
         <Card title="Credits">
           <Row icon={<Wallet className="h-4 w-4" />} label="Balance">
             <span className="font-medium tabular-nums">
-              €{data.credit_balance.toLocaleString("en-US", {
+              ${data.credit_balance.toLocaleString("en-US", {
                 maximumFractionDigits: 2,
               })}
             </span>
@@ -800,7 +800,7 @@ export function ClientDetailClient({
                       <div className="text-xs text-muted-foreground tabular-nums">
                         {svc.price != null && (
                           <>
-                            €{svc.price.toLocaleString("en-US", {
+                            ${svc.price.toLocaleString("en-US", {
                               maximumFractionDigits: 2,
                             })}
                           </>

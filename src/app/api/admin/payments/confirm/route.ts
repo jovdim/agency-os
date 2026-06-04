@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       site_id: site.id,
       proposal_id: proposal.id,
       amount,
-      currency: "EUR",
+      currency: "USD",
       payment_method: "bank_transfer",
       status: "confirmed",
       description: `Website payment - VS: ${variableSymbol}`,
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
   // 7. Update proposal status to paid + flip the payment banner OFF.
   //    Showing a "pay now" QR on a site whose owner already paid is
   //    the worst possible UX moment — they open the site to admire
-  //    it post-payment and see "still owes €1111". We turn it off
+  //    it post-payment and see "still owes $1111". We turn it off
   //    in the same write that flips status to paid so there's no
   //    window where the row says paid but the banner flag says ON.
   const { error: proposalErr } = await admin
@@ -315,7 +315,7 @@ export async function POST(req: NextRequest) {
   // 13. Initial credit balance is NOT granted here anymore.
   // Per Peter 2026-05-11: the only automatic grant happens when the
   // client zone is activated (POST /api/proposals/[id]/create-client-zone
-  // grants 37.50 € = 3 free publishes), regardless of payment status.
+  // grants $37.50 = 3 free publishes), regardless of payment status.
   // Payment confirmation adds nothing to the credit balance — the
   // client already has their starter balance from activation, and
   // top-ups go through tech grants or Stripe/BySquare (future work).

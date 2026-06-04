@@ -344,7 +344,7 @@ export function CallingPanel({
                 <div className="space-y-1">
                   <p><span className="text-amber-500">→</span> &quot;I already have a website&quot; — &quot;Great! When did you last take a look at it? Most sites need a refresh after 2-3 years.&quot;</p>
                   <p><span className="text-amber-500">→</span> &quot;I'm not interested&quot; — &quot;I understand. Can I quickly show you what we do? It won't take more than 2 minutes.&quot;</p>
-                  <p><span className="text-amber-500">→</span> &quot;It's expensive&quot; — &quot;Our prices start from 149€. And the website pays for itself through new customers.&quot;</p>
+                  <p><span className="text-amber-500">→</span> &quot;It's expensive&quot; — &quot;Our prices start from $149. And the website pays for itself through new customers.&quot;</p>
                 </div>
               </div>
               <div className="rounded-md bg-muted/50 p-2.5 space-y-1.5">

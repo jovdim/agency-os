@@ -57,7 +57,7 @@ export async function ensureClientZone(
   options?: {
     /** User id for audit attribution. Falls back to a system marker. */
     actorUserId?: string;
-    /** Starter credit grant in €. Defaults to 37.50 (3 publishes).
+    /** Starter credit grant in $. Defaults to 37.50 (3 publishes).
      *  Pass 0 to skip the grant. Ignored when balance > 0 already. */
     starterCreditEur?: number;
   },
@@ -305,7 +305,7 @@ export async function ensureClientZone(
         user_id: authUserId,
         amount: starterCreditEur,
         type: "admin_grant",
-        note: `Starter grant: ${Math.round(starterCreditEur / PUBLISH_COST_EUR)} free publishes (${starterCreditEur.toFixed(2)} €) on auto client zone activation`,
+        note: `Starter grant: ${Math.round(starterCreditEur / PUBLISH_COST_EUR)} free publishes ($${starterCreditEur.toFixed(2)}) on auto client zone activation`,
       });
     }
   }

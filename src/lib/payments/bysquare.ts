@@ -20,7 +20,7 @@ function getBankConfig() {
     swift: process.env.BYSQUARE_SWIFT || "GIBASKBX",
     beneficiary:
       process.env.BYSQUARE_BENEFICIARY ||
-      "Shark Media Consulting s. r. o.",
+      "Your Agency Ltd",
     apiKey: process.env.BYSQUARE_API_KEY || "",
   };
 }
@@ -50,7 +50,7 @@ export async function generateBySquareQrImage(
         paymentDueDate: dueDate,
         bankAccounts: [{ iban: config.iban, bic: config.swift }],
         beneficiaryName: config.beneficiary,
-        paymentNote: input.note || "Webstranka - Shark Media",
+        paymentNote: input.note || "Website - Your Agency",
         variableSymbol: input.variableSymbol,
         constantSymbol: "0308",
       },

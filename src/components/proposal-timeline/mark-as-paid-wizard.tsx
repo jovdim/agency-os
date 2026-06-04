@@ -393,7 +393,7 @@ export function MarkAsPaidWizard({
               label="Invoice"
               value={submitResult.invoice_number ?? "—"}
             />
-            <SummaryRow label="Amount" value={`€${amount}`} />
+            <SummaryRow label="Amount" value={`$${amount}`} />
             <SummaryRow
               label="Main domain"
               value={mainDomain.trim() || "Not recorded"}
@@ -401,7 +401,7 @@ export function MarkAsPaidWizard({
             />
             <SummaryRow
               label="Starting credits"
-              value={`€${startingCredits}`}
+              value={`$${startingCredits}`}
             />
             {sendWelcome ? (
               emailFailed ? (
@@ -662,7 +662,7 @@ function Step1Payment(props: {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <FieldShell label="Amount paid (€) *">
+        <FieldShell label="Amount paid ($) *">
           <Input
             type="number"
             min="0"
@@ -753,10 +753,10 @@ function Step1Payment(props: {
           label={
             <span className="flex items-center gap-1.5">
               <Coins className="h-3.5 w-3.5" />
-              Starting credits (€)
+              Starting credits ($)
             </span>
           }
-          hint="Credit balance for change requests + composer publishes. Default €50."
+          hint="Credit balance for change requests + composer publishes. Default $50."
         >
           <Input
             type="number"
@@ -973,7 +973,7 @@ function Step3Review(props: {
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
           Payment
         </p>
-        <SummaryRow label="Amount" value={`€${props.amount}`} />
+        <SummaryRow label="Amount" value={`$${props.amount}`} />
         <SummaryRow label="Paid on" value={props.paidOn} />
         <SummaryRow
           label="Method"
@@ -997,7 +997,7 @@ function Step3Review(props: {
         />
         <SummaryRow
           label="Starting credits"
-          value={`€${props.startingCredits}`}
+          value={`$${props.startingCredits}`}
         />
       </div>
 

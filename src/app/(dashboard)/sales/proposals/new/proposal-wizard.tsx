@@ -234,7 +234,7 @@ export function ProposalWizard({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="price">Price (€)</Label>
+              <Label htmlFor="price">Price ($)</Label>
               <Input
                 id="price"
                 type="number"

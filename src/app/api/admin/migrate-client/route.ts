@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
   const userProvidedSubdomain = rawSubdomain.length > 0;
   // Price is optional — sometimes the historical amount is unknown. We
   // treat missing/blank as "no price recorded" (null prices, no payment
-  // row) rather than coercing to 0, which would read as a real €0 sale.
+  // row) rather than coercing to 0, which would read as a real $0 sale.
   const hasAmount =
     body.amount_paid != null && String(body.amount_paid).trim() !== "";
   const amount_paid: number | null = hasAmount ? Number(body.amount_paid) : null;
@@ -380,7 +380,7 @@ export async function POST(req: NextRequest) {
 
     // ── 6. Payment ──
     // Only when the amount is known. payments.amount is NOT NULL, so a
-    // blank price can't be recorded as a real row — and a €0 confirmed
+    // blank price can't be recorded as a real row — and a $0 confirmed
     // payment would falsely read as a zero-value sale in revenue. When
     // the price is unknown we skip the row entirely; the site is still
     // is_paid = true, so nothing downstream is gated by it. The detail
@@ -393,7 +393,7 @@ export async function POST(req: NextRequest) {
           site_id: createdSiteId,
           proposal_id: createdProposalId,
           amount: amount_paid,
-          currency: "EUR",
+          currency: "USD",
           // We don't know how the original migration was paid; bank
           // transfer is the historical default in Peter's flow. The
           // description tags it as a migration for audit clarity.

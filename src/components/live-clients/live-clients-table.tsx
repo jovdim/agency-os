@@ -634,7 +634,7 @@ function ClientsCard({ rows, counts, rowHrefBase, t }: ClientsCardProps) {
                       <span className="text-xs">
                         {Number.isFinite(row.amount_paid) &&
                         row.amount_paid > 0
-                          ? `€${row.amount_paid.toLocaleString("en-US", {
+                          ? `$${row.amount_paid.toLocaleString("en-US", {
                               maximumFractionDigits: 0,
                             })}`
                           : "—"}

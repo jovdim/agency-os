@@ -128,7 +128,7 @@ export function AlertsDemoClient() {
       variant: "success",
       title: "Payment confirmed",
       description:
-        "The client paid 299 €. The invoice was generated automatically and the website marked as paid.",
+        "The client paid $299. The invoice was generated automatically and the website marked as paid.",
       dismissible: true,
     },
     {
@@ -289,20 +289,20 @@ export function AlertsDemoClient() {
                     sent
                   </span>
                 </TableCell>
-                <TableCell>€299</TableCell>
+                <TableCell>$299</TableCell>
                 <TableCell>2026-05-18</TableCell>
               </TableRow>
               <TableRow
                 interactive
-                onClick={() => toast.success("Opened: Sharkstav")}
+                onClick={() => toast.success("Opened: Acme Construction")}
               >
-                <TableCell className="font-medium">Sharkstav s.r.o.</TableCell>
+                <TableCell className="font-medium">Acme Construction</TableCell>
                 <TableCell>
                   <span className="rounded-full bg-success-bg border border-success-border px-2 py-0.5 text-xs">
                     paid
                   </span>
                 </TableCell>
-                <TableCell>€349</TableCell>
+                <TableCell>$349</TableCell>
                 <TableCell>2026-05-15</TableCell>
               </TableRow>
               <TableRow
@@ -315,7 +315,7 @@ export function AlertsDemoClient() {
                     revision
                   </span>
                 </TableCell>
-                <TableCell>€249</TableCell>
+                <TableCell>$249</TableCell>
                 <TableCell>2026-05-12</TableCell>
               </TableRow>
               <TableRow>
@@ -486,7 +486,7 @@ export function AlertsDemoClient() {
                   <div className="rounded-lg border p-3">
                     <div className="flex justify-between font-semibold">
                       <span>Total due</span>
-                      <span>299,00 €</span>
+                      <span>$299,00</span>
                     </div>
                   </div>
                 </div>

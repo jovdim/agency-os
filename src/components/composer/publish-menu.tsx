@@ -124,8 +124,8 @@ interface CreditInfo {
  *                stays ENABLED but relabeled "Update request";
  *                clicking re-submits with the latest composition,
  *                overrides the prior pending row, and charges another
- *                12.50 € (the first charge is forfeit).
- *   - rejected → IT declined; show the reason + 12.50 € was refunded
+ *                $12.50 (the first charge is forfeit).
+ *   - rejected → IT declined; show the reason + $12.50 was refunded
  *                + let the client re-request.
  * approved / cancelled / overridden requests are historical and
  * reported as null by the credit-balance endpoint.
@@ -383,7 +383,7 @@ export function PublishMenu({
               CLIENT mode → "Request publish". The client can't push live
               directly anymore (Peter 2026-05-29): clicking submits a
               request that an IT/tech admin approves on the proposal
-              pipeline page, and the 12.50 € is charged there at go-live.
+              pipeline page, and the $12.50 is charged there at go-live.
               The button has three states (request / waiting / rejected),
               all handled inside ClientRequestAction.
 
@@ -616,19 +616,19 @@ export function PublishMenu({
  *
  * Clients can't push live directly anymore. This submits a publish
  * request that an IT/tech admin approves on the proposal pipeline
- * page. The 12.50 € is charged AT SUBMIT time (Peter 2026-05-30) —
+ * page. The $12.50 is charged AT SUBMIT time (Peter 2026-05-30) —
  * approve does not re-charge, reject refunds.
  *
  * Three states:
  *   - pending  → button STAYS ENABLED, relabeled "Update request
- *                · €12.50". Clicking overrides the prior pending row
+ *                · $12.50". Clicking overrides the prior pending row
  *                (first charge forfeit) and submits the latest
- *                composition as a fresh request with its own €12.50.
+ *                composition as a fresh request with its own $12.50.
  *                A warning above the button spells this out so the
  *                client knows what re-clicking costs.
  *   - rejected → reason banner + refund confirmation + a fresh
  *                "Request publish" button.
- *   - normal   → "Request publish · €12.50".
+ *   - normal   → "Request publish · $12.50".
  *
  * Paywalls mirror the old direct-publish UI: site_not_paid opens the
  * activation dialog; insufficient_credits disables with a top-up link.
@@ -695,7 +695,7 @@ function ClientRequestAction({
       // immediately, not just notice it next time they open balance.
       if (data.overrode_id) {
         toast.success(
-          "Your previous request was replaced. €12.50 was deducted from your balance.",
+          "Your previous request was replaced. $12.50 was deducted from your balance.",
           { duration: 7000 },
         );
       } else {
@@ -735,7 +735,7 @@ function ClientRequestAction({
             </p>
           )}
           <p className="text-muted-foreground mt-0.5">
-            €12.50 has been refunded to your balance. Edit as needed and
+            $12.50 has been refunded to your balance. Edit as needed and
             send again.
           </p>
         </div>
@@ -748,7 +748,7 @@ function ClientRequestAction({
             You have a request awaiting approval
           </p>
           <p className="text-amber-800/80 dark:text-amber-200/80 mt-0.5">
-            Clicking replaces it with your latest changes (€12.50 fee).
+            Clicking replaces it with your latest changes ($12.50 fee).
             The previous fee is not refunded.
           </p>
         </div>
@@ -762,7 +762,7 @@ function ClientRequestAction({
               insufficient ? "text-destructive" : ""
             }`}
           >
-            {credit.balance.toFixed(2).replace(".", ",")} €
+            ${credit.balance.toFixed(2).replace(".", ",")}
           </span>
         </div>
       )}
@@ -784,7 +784,7 @@ function ClientRequestAction({
             <span>{buttonLabel}</span>
             {credit && (
               <span className="opacity-80 tabular-nums">
-                · {credit.publishCost.toFixed(2).replace(".", ",")} €
+                · ${credit.publishCost.toFixed(2).replace(".", ",")}
               </span>
             )}
           </>

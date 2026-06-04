@@ -687,7 +687,7 @@ export function TechCreateClientForm({ initialContactId }: { initialContactId?: 
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="initial_credits">Initial Balance (€)</Label>
+                <Label htmlFor="initial_credits">Initial Balance ($)</Label>
                 <Input
                   id="initial_credits"
                   type="number"
@@ -701,7 +701,7 @@ export function TechCreateClientForm({ initialContactId }: { initialContactId?: 
                   }
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  1 change = 12,50 €
+                  1 change = $12,50
                 </p>
               </div>
               <div className="space-y-1.5">

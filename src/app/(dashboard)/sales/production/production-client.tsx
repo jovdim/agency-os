@@ -106,7 +106,7 @@ export function ProductionClient({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Revenue</p>
-              <p className="text-3xl font-bold mt-1 text-violet-600 dark:text-violet-400">€{totalRevenue.toLocaleString()}</p>
+              <p className="text-3xl font-bold mt-1 text-violet-600 dark:text-violet-400">${totalRevenue.toLocaleString()}</p>
             </div>
             <div className="rounded-md bg-violet-100 dark:bg-violet-900/30 p-2">
               <Euro className="h-4 w-4 text-violet-600 dark:text-violet-400" />
@@ -205,7 +205,7 @@ export function ProductionClient({
                       {p.town ?? "—"}
                     </td>
                     <td className="py-1.5 px-3 text-right tabular-nums text-muted-foreground">
-                      €{(p.discount_price ?? p.price ?? 0).toLocaleString()}
+                      ${(p.discount_price ?? p.price ?? 0).toLocaleString()}
                     </td>
                     <td className="py-1.5 px-3 text-right text-xs text-muted-foreground whitespace-nowrap">
                       {p.paid_at

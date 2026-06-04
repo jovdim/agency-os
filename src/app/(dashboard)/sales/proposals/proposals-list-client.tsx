@@ -329,7 +329,7 @@ export function ProposalsListClient({
                     </Badge>
                     {price && (
                       <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                        {price} €
+                        ${price}
                       </span>
                     )}
                     {/* Tag chips — clicking toggles the filter (matches

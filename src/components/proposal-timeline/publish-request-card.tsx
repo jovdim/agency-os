@@ -11,8 +11,8 @@
  * the bell badge on the Live Clients list.
  *
  * Charge model (Peter 2026-05-30): the client was already charged
- * 12.50 € at submit. Approve runs publishSite() with NO further
- * charge. Reject refunds the 12.50 € back to the client's balance.
+ * $12.50 at submit. Approve runs publishSite() with NO further
+ * charge. Reject refunds the $12.50 back to the client's balance.
  * Because the charge already happened, IT can always approve — the
  * client's current balance is irrelevant to the approval decision.
  */
@@ -27,11 +27,11 @@ interface Props {
   siteId: string;
   /** ISO timestamp the request was created. */
   createdAt: string;
-  /** Current credit balance on the site, in € (POST-charge — the
-   *  12.50 € has already been deducted at submit). Shown for context
+  /** Current credit balance on the site, in $ (POST-charge — the
+   *  $12.50 has already been deducted at submit). Shown for context
    *  only; not used to gate approval. */
   balance: number;
-  /** Per-publish charge in € (12.50). Already charged at submit. */
+  /** Per-publish charge in $ (12.50). Already charged at submit. */
   publishCost: number;
 }
 
@@ -85,7 +85,7 @@ export function PublishRequestCard({
       const refunded = Number(data.refunded_eur ?? 0);
       toast.success(
         refunded > 0
-          ? `Request rejected. Refunded ${refunded.toFixed(2).replace(".", ",")} € to the client.`
+          ? `Request rejected. Refunded $${refunded.toFixed(2).replace(".", ",")} to the client.`
           : "Request rejected. The client sees the reason in their editor.",
         { duration: 6000 },
       );
@@ -118,9 +118,9 @@ export function PublishRequestCard({
           </div>
 
           <p className="mt-2 text-xs text-muted-foreground">
-            Client already paid {publishCost.toFixed(2).replace(".", ",")} €
+            Client already paid ${publishCost.toFixed(2).replace(".", ",")}
             at submit · Approve to publish, reject to refund · Balance{" "}
-            {balance.toFixed(2).replace(".", ",")} €
+            ${balance.toFixed(2).replace(".", ",")}
           </p>
 
           {rejecting && (

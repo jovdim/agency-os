@@ -32,7 +32,7 @@ import { toast } from "sonner";
  *            once the new site is published.
  *
  * The default amount + credits + paid-on come from the most common
- * case: €299 plan, paid today, €50 starting credits — all overridable.
+ * case: $299 plan, paid today, $50 starting credits — all overridable.
  */
 interface AddMigratedClientDialogProps {
   open: boolean;
@@ -408,7 +408,7 @@ export function AddMigratedClientDialog({
               Payment
             </legend>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field label="Amount paid (€, optional)" htmlFor="mc-amount">
+              <Field label="Amount paid ($, optional)" htmlFor="mc-amount">
                 <Input
                   id="mc-amount"
                   type="number"
@@ -429,7 +429,7 @@ export function AddMigratedClientDialog({
                   disabled={submitting}
                 />
               </Field>
-              <Field label="Starting credits (€)" htmlFor="mc-credits">
+              <Field label="Starting credits ($)" htmlFor="mc-credits">
                 <Input
                   id="mc-credits"
                   type="number"

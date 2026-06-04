@@ -34,7 +34,7 @@ interface MarkAsPaidLauncherProps {
    *  Step 1 so the operator confirms rather than re-types. */
   currentMainDomain?: string | null;
   /** Existing credit_balances.balance — pre-fills the starting credits
-   *  input on Step 1. Default €50 in the wizard if not provided. */
+   *  input on Step 1. Default $50 in the wizard if not provided. */
   currentCreditBalance?: number | null;
 }
 

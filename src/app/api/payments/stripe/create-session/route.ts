@@ -91,10 +91,10 @@ export async function POST(req: NextRequest) {
       profile_id: user.id,
       site_id: site.id,
       amount: amountEur,
-      currency: "EUR",
+      currency: "USD",
       payment_method: "stripe",
       status: "pending",
-      description: `Pending Stripe: ${credits} publishes (${amountEur} €)`,
+      description: `Pending Stripe: ${credits} publishes ($${amountEur})`,
     })
     .select("id")
     .single();

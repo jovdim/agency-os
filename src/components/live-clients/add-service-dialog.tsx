@@ -208,7 +208,7 @@ export function AddServiceDialog({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="svc-price" className="text-xs">
-                  Price (€)
+                  Price ($)
                 </Label>
                 <Input
                   id="svc-price"

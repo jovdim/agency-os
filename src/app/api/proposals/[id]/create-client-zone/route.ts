@@ -78,8 +78,8 @@ export async function POST(
   }
 
   // ── Starter credit validation ───────────────────────────────
-  // Default 37.50 € (3 publishes). Non-negative, multiple of 12.50,
-  // capped at 500 € to catch typos.
+  // Default $37.50 (3 publishes). Non-negative, multiple of 12.50,
+  // capped at $500 to catch typos.
   const PUBLISH_COST_EUR = 12.5;
   const DEFAULT_STARTER_EUR = 37.5;
   let starterCreditEur: number = DEFAULT_STARTER_EUR;
@@ -93,13 +93,13 @@ export async function POST(
     }
     if (raw > 500) {
       return NextResponse.json(
-        { error: "starter_credit_eur must not exceed 500 €" },
+        { error: "starter_credit_eur must not exceed $500" },
         { status: 400 },
       );
     }
     if (Math.round(raw * 100) % Math.round(PUBLISH_COST_EUR * 100) !== 0) {
       return NextResponse.json(
-        { error: `starter_credit_eur must be a multiple of ${PUBLISH_COST_EUR.toFixed(2)} €` },
+        { error: `starter_credit_eur must be a multiple of $${PUBLISH_COST_EUR.toFixed(2)}` },
         { status: 400 },
       );
     }
@@ -413,7 +413,7 @@ export async function POST(
 
   // ── Starter credit grant ──────────────────────────────────
   // Per Peter 2026-05-11: every newly-activated client zone gets a
-  // starter balance (default 37.50 € = 3 free publishes), regardless of
+  // starter balance (default $37.50 = 3 free publishes), regardless of
   // payment status. Tech can override the amount via starter_credit_eur
   // in the request body — useful for VIP clients who get more, or for
   // proposals where the amount was already negotiated separately.
@@ -446,7 +446,7 @@ export async function POST(
       user_id: authUserId,
       amount: starterCreditEur,
       type: "admin_grant",
-      note: `Starter grant: ${Math.round(starterCreditEur / PUBLISH_COST_EUR)} free publishes (${starterCreditEur.toFixed(2)} €) on client zone activation`,
+      note: `Starter grant: ${Math.round(starterCreditEur / PUBLISH_COST_EUR)} free publishes ($${starterCreditEur.toFixed(2)}) on client zone activation`,
     });
     await logAudit({
       userId: user.id,

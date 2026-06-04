@@ -7,16 +7,16 @@ import { PUBLISH_COST_EUR } from "../credit-balance/route";
  * POST /api/sites/[id]/publish-request
  *
  * Client-only. A paid client clicks "Request publish" in the composer.
- * The 12.50 € is charged **at submit time** (Peter 2026-05-30); the
+ * The $12.50 is charged **at submit time** (Peter 2026-05-30); the
  * client doesn't wait for IT to approve before being charged. IT only
  * controls when the publish actually goes live + can refund by
  * rejecting.
  *
  * Override behavior — the client can click submit again at any time
  * while a request is pending. The previous pending row is flipped to
- * `overridden` (forfeit — the 12.50 € is NOT refunded; that's the
+ * `overridden` (forfeit — the $12.50 is NOT refunded; that's the
  * cost of changing their mind) and a fresh pending row is created with
- * its own 12.50 € charge. IT only ever sees the latest pending row.
+ * its own $12.50 charge. IT only ever sees the latest pending row.
  *
  * All of that — gate checks, status flip, insert, balance deduction,
  * audit row — happens in one transaction inside the
@@ -96,7 +96,7 @@ export async function POST(
       const balance = Number(balanceRow?.balance ?? 0);
       return NextResponse.json(
         {
-          error: `Not enough credits — publishing requires ${PUBLISH_COST_EUR.toFixed(2)} €, you have ${balance.toFixed(2)} €.`,
+          error: `Not enough credits — publishing requires $${PUBLISH_COST_EUR.toFixed(2)}, you have $${balance.toFixed(2)}.`,
           code: "INSUFFICIENT_CREDITS",
           balance,
           publish_cost: PUBLISH_COST_EUR,

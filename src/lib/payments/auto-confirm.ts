@@ -294,7 +294,7 @@ export async function checkAndConfirmPayments(): Promise<{
 
             if (confirmRes.ok) {
               results.confirmed++;
-              console.log(`[AutoPay] ✓ Confirmed proposal payment for ${proposal.company_name} (VS: ${payment.variableSymbol}, €${payment.amount})`);
+              console.log(`[AutoPay] ✓ Confirmed proposal payment for ${proposal.company_name} (VS: ${payment.variableSymbol}, $${payment.amount})`);
             } else {
               const errData = await confirmRes.json().catch(() => ({}));
               results.errors.push(`VS ${payment.variableSymbol}: proposal confirm failed — ${(errData as { error?: string }).error || confirmRes.status}`);
@@ -331,7 +331,7 @@ export async function checkAndConfirmPayments(): Promise<{
             if (creditResult.ok) {
               results.confirmed++;
               console.log(
-                `[AutoPay] ✓ Credited ${payment.amount} € to site=${pendingPayment.site_id} (VS: ${payment.variableSymbol})`,
+                `[AutoPay] ✓ Credited $${payment.amount} to site=${pendingPayment.site_id} (VS: ${payment.variableSymbol})`,
               );
             } else {
               results.errors.push(

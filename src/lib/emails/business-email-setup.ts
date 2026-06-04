@@ -43,7 +43,7 @@ export interface BusinessEmailSetupArgs {
  *   1. Notice that the business mailbox was created.
  *   2. Forwarding-to-Gmail explanation.
  *   3. Hostinger login lines.
- *   4. Pitch for the €49 Gmail-integration upsell.
+ *   4. Pitch for the $49 Gmail-integration upsell.
  *   5. Signature + legal company line.
  *
  * Returns Tiptap-shaped HTML so the editor hydrates cleanly. The
@@ -100,7 +100,7 @@ export function buildDefaultBusinessEmailBody({
 
     `<p>Email access: <a href="https://mail.hostinger.com">mail.hostinger.com</a><br>Username: ${be}<br>Password: <strong>${pw}</strong></p>`,
 
-    `<p>If you'd prefer to manage your business emails directly within your Gmail account — including sending messages from the address ${be} — we recommend our add-on service: <a href="${integrationUrl}">Business email integration into Gmail</a> (€49 one-time).</p>`,
+    `<p>If you'd prefer to manage your business emails directly within your Gmail account — including sending messages from the address ${be} — we recommend our add-on service: <a href="${integrationUrl}">Business email integration into Gmail</a> ($49 one-time).</p>`,
 
     `<p><strong>Benefits of the service:</strong></p>`,
     `<ul><li><strong>Professional impression:</strong> Your replies will be sent from your business address.</li><li><strong>Convenience:</strong> You'll be able to manage your business emails directly from your Gmail on your phone — whether you're at the office, on the road, or waiting in line at the checkout.</li><li><strong>"Catch-all" feature:</strong> If someone makes a typo in the username, or uses a different name (e.g. writes ${catchAllExample} instead of ${be}), the message will still reach you.</li></ul>`,

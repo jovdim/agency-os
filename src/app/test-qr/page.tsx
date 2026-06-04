@@ -24,7 +24,7 @@ export default function TestQRPage() {
         <p><strong>IBAN:</strong> SK13 0900 0000 0052 2138 0177</p>
         <p><strong>BIC/SWIFT:</strong> GIBASKBX</p>
         <p><strong>Beneficiary:</strong> [Your Agency]</p>
-        <p><strong>Amount:</strong> €1.00</p>
+        <p><strong>Amount:</strong> $1.00</p>
         <p><strong>Currency:</strong> EUR</p>
         <p><strong>Variable Symbol (VS):</strong> 123456</p>
         <p><strong>Constant Symbol (KS):</strong> 0308</p>

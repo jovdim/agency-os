@@ -2,13 +2,13 @@
  * GET /api/sites/[id]/credit-balance
  *
  * Lightweight read used by the composer's publish menu (client mode)
- * to render the "Zostatok X €" line + the per-publish cost suffix on
+ * to render the "Zostatok X $" line + the per-publish cost suffix on
  * the Publish button. Refetched after every publish so the balance
  * shown reflects the post-charge state.
  *
  * Response: { balance, publish_cost, can_publish, currency, is_paid, paywall_reason }
- *   - balance: current credit balance in € (NUMERIC, 2dp)
- *   - publish_cost: per-publish charge in € (currently fixed 12.50)
+ *   - balance: current credit balance in $ (NUMERIC, 2dp)
+ *   - publish_cost: per-publish charge in $ (currently fixed 12.50)
  *   - can_publish: convenience boolean — true only when the site is paid
  *                  AND balance >= publish_cost. Drives the composer publish
  *                  button enabled-state.
@@ -148,7 +148,7 @@ export async function GET(
     balance,
     publish_cost: PUBLISH_COST_EUR,
     can_publish: canPublish,
-    currency: "EUR",
+    currency: "USD",
     is_paid: isPaid,
     paywall_reason: paywallReason,
     publish_request: publishRequest,

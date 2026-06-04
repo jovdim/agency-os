@@ -433,7 +433,7 @@ export function buildClientWelcomeEmailHtml({
       we're sending you access to the client zone for <strong>${escapeHtml(siteName)}</strong>, where you can manage your website.
     </p>
     <p style="margin:0 0 16px;font-size:14px;color:#333;line-height:1.6">
-      We've added <strong>€50 in credit</strong> to your account, which you can use to send us change requests directly through the client zone.
+      We've added <strong>$50 in credit</strong> to your account, which you can use to send us change requests directly through the client zone.
     </p>
 
     ${customBlock}

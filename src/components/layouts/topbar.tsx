@@ -85,7 +85,7 @@ export function Topbar({
               <button className="flex items-center gap-1.5 text-xs mr-2 px-2.5 py-1.5 rounded-md hover:bg-muted/50 transition-colors">
                 <TrendingUp className="h-3.5 w-3.5 text-violet-500" />
                 <span className="text-muted-foreground">Commission:</span>
-                <span className="font-semibold text-violet-600 dark:text-violet-400">€{commission.total.toFixed(0)}</span>
+                <span className="font-semibold text-violet-600 dark:text-violet-400">${commission.total.toFixed(0)}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-64 p-0">
@@ -101,7 +101,7 @@ export function Topbar({
               <div className="px-4 py-3 space-y-2.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Total earned</span>
-                  <span className="font-semibold text-violet-600 dark:text-violet-400">€{commission.total.toFixed(0)}</span>
+                  <span className="font-semibold text-violet-600 dark:text-violet-400">${commission.total.toFixed(0)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Number of commissions</span>
@@ -110,7 +110,7 @@ export function Topbar({
                 {commission.unpaid > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">To be paid out</span>
-                    <span className="font-medium text-amber-600">€{commission.unpaid.toFixed(0)}</span>
+                    <span className="font-medium text-amber-600">${commission.unpaid.toFixed(0)}</span>
                   </div>
                 )}
                 <div className="flex items-center justify-between text-sm">

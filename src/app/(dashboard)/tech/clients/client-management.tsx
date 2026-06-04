@@ -254,8 +254,8 @@ export function ClientManagement({
       setGrantSuccess(true);
       toast.success(
         grantMode === "subtract"
-          ? `Deducted ${grantAmount.toFixed(2)} €`
-          : `Granted ${grantAmount.toFixed(2)} €`,
+          ? `Deducted $${grantAmount.toFixed(2)}`
+          : `Granted $${grantAmount.toFixed(2)}`,
       );
       router.refresh();
     } catch {
@@ -492,7 +492,7 @@ export function ClientManagement({
                   <div className="flex items-center gap-1.5 text-sm">
                     <Coins className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-muted-foreground">Balance:</span>
-                    <span className="font-medium">{clientSiteInfo[selectedClient.id].credits.toFixed(2).replace(".", ",")} €</span>
+                    <span className="font-medium">${clientSiteInfo[selectedClient.id].credits.toFixed(2).replace(".", ",")}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button
@@ -828,7 +828,7 @@ export function ClientManagement({
                 <div className="space-y-3">
                   <div className="rounded-md border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-3">
                     <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                      {grantMode === "subtract" ? "Deducted" : "Granted"} {grantAmount.toFixed(2)} € successfully
+                      {grantMode === "subtract" ? "Deducted" : "Granted"} ${grantAmount.toFixed(2)} successfully
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => setMode("view")} className="w-full">
@@ -865,13 +865,13 @@ export function ClientManagement({
                       </button>
                     </div>
                     <div>
-                      <label className="text-sm font-medium">Amount (€)</label>
+                      <label className="text-sm font-medium">Amount ($)</label>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Each publish costs 12.50 €. Pick how many publishes
+                        Each publish costs $12.50. Pick how many publishes
                         worth to {grantMode === "subtract" ? "remove" : "grant"}.
                       </p>
                       {/* Quick-pick buttons in publish-cost units. Plus/minus
-                          step by 12.50 € for fine-grained control. */}
+                          step by $12.50 for fine-grained control. */}
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           type="button"
@@ -884,13 +884,13 @@ export function ClientManagement({
                             )
                           }
                           disabled={grantAmount <= 12.5}
-                          aria-label="Decrease by 12.50 €"
+                          aria-label="Decrease by $12.50"
                         >
                           −
                         </Button>
                         <div className="flex-1 rounded-md border bg-muted/30 px-3 py-1.5 text-center">
                           <p className="text-base font-semibold leading-tight">
-                            {grantAmount.toFixed(2)} €
+                            ${grantAmount.toFixed(2)}
                           </p>
                           <p className="text-[10px] text-muted-foreground leading-tight">
                             {Math.round(grantAmount / 12.5)} publish
@@ -908,7 +908,7 @@ export function ClientManagement({
                             )
                           }
                           disabled={grantAmount >= 1000}
-                          aria-label="Increase by 12.50 €"
+                          aria-label="Increase by $12.50"
                         >
                           +
                         </Button>
@@ -923,7 +923,7 @@ export function ClientManagement({
                             className="h-7 text-xs px-2"
                             onClick={() => setGrantAmount(preset)}
                           >
-                            {preset.toFixed(2)} €
+                            ${preset.toFixed(2)}
                           </Button>
                         ))}
                       </div>
@@ -948,8 +948,8 @@ export function ClientManagement({
                     >
                       {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Coins className="h-3.5 w-3.5 mr-1.5" />}
                       {grantMode === "subtract"
-                        ? `Deduct ${grantAmount.toFixed(2)} €`
-                        : `Grant ${grantAmount.toFixed(2)} €`}
+                        ? `Deduct $${grantAmount.toFixed(2)}`
+                        : `Grant $${grantAmount.toFixed(2)}`}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => setMode("view")} className="flex-1">
                       Cancel

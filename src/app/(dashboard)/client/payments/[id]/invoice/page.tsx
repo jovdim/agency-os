@@ -138,10 +138,10 @@ export default async function InvoicePage({
               <tr key={i} className="border-b border-dashed">
                 <td className="py-3">{item.description}</td>
                 <td className="text-right py-3">{item.quantity}×</td>
-                <td className="text-right py-3">€{item.unit_price.toFixed(2)}</td>
+                <td className="text-right py-3">${item.unit_price.toFixed(2)}</td>
                 <td className="text-right py-3">{(item.vat_rate * 100).toFixed(0)}%</td>
                 <td className="text-right py-3 font-medium">
-                  €{item.total.toFixed(2)}
+                  ${item.total.toFixed(2)}
                 </td>
               </tr>
             ))}
@@ -153,15 +153,15 @@ export default async function InvoicePage({
           <div className="w-64 space-y-1">
             <div className="flex justify-between text-muted-foreground">
               <span>Subtotal (excl. VAT)</span>
-              <span>€{subtotal.toFixed(2)}</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>VAT 20%</span>
-              <span>€{invoice.vat_amount.toFixed(2)}</span>
+              <span>${invoice.vat_amount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
               <span>Total due</span>
-              <span>€{invoice.amount.toFixed(2)}</span>
+              <span>${invoice.amount.toFixed(2)}</span>
             </div>
           </div>
         </div>

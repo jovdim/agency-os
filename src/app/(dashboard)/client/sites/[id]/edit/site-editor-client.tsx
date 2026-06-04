@@ -647,7 +647,7 @@ export function SiteEditorClient({
             {/* Balance */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary border border-border">
               <Coins className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-sm font-medium">{credits.toFixed(2)} €</span>
+              <span className="text-sm font-medium">${credits.toFixed(2)}</span>
             </div>
 
             {/* Live site link */}
@@ -707,11 +707,11 @@ export function SiteEditorClient({
                 <div className="flex items-center gap-2 shrink-0">
                   {discountActive && discountPrice && discountPrice < basePrice ? (
                     <>
-                      <span className="line-through text-muted-foreground">{basePrice} €</span>
-                      <span className="font-semibold text-foreground">{activePrice} €</span>
+                      <span className="line-through text-muted-foreground">${basePrice}</span>
+                      <span className="font-semibold text-foreground">${activePrice}</span>
                     </>
                   ) : (
-                    <span className="font-semibold text-foreground">{activePrice} €</span>
+                    <span className="font-semibold text-foreground">${activePrice}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -749,9 +749,9 @@ export function SiteEditorClient({
                       <p className="font-medium text-sm">
                         Price{" "}
                         {discountActive && discountPrice && discountPrice < basePrice && (
-                          <span className="line-through text-muted-foreground">{basePrice} €</span>
+                          <span className="line-through text-muted-foreground">${basePrice}</span>
                         )}{" "}
-                        <span className="text-lg font-bold">{activePrice} €</span>
+                        <span className="text-lg font-bold">${activePrice}</span>
                       </p>
                       <p className="text-muted-foreground">
                         Scan the QR code with your banking app or use the details below.
@@ -900,7 +900,7 @@ export function SiteEditorClient({
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {site.is_paid
-                      ? "Changes will go to the IT technician, costs 12.50 €"
+                      ? "Changes will go to the IT technician, costs $12.50"
                       : "No credit deducted yet, sent after payment"}
                   </div>
                 </div>
@@ -908,12 +908,12 @@ export function SiteEditorClient({
               {site.is_paid && credits < 12.5 && (
                 <div className="mt-2 text-xs text-destructive font-medium flex items-center gap-1.5 pl-12">
                   <Coins className="w-3 h-3" />
-                  Insufficient balance ({credits.toFixed(2)} €)
+                  Insufficient balance (${credits.toFixed(2)})
                 </div>
               )}
               {site.is_paid && credits >= 12.5 && (
                 <div className="mt-1.5 text-xs text-muted-foreground pl-12">
-                  Balance: {credits.toFixed(2)} € → {(credits - 12.5).toFixed(2)} €
+                  Balance: ${credits.toFixed(2)} → ${(credits - 12.5).toFixed(2)}
                 </div>
               )}
             </button>

@@ -96,7 +96,7 @@ export async function POST(
         // Clients no longer publish directly. They submit a request
         // (POST /api/sites/[id]/publish-request) that an IT/tech admin
         // approves on the proposal pipeline page — that approval endpoint
-        // is what runs publishSite() and charges the 12.50 € at go-live.
+        // is what runs publishSite() and charges the $12.50 at go-live.
         // Block any direct call here so a crafted request can't bypass
         // review. (Per Peter 2026-05-29: instant client publishes felt
         // like charging for no work; review justifies the charge.)
@@ -163,7 +163,7 @@ export async function POST(
     // No credit charge here. This route only serves staff publishes
     // now (tech / sales / super / banner-toggle / rollback), which are
     // all free. Client publishes go through the request → approve flow
-    // (/api/sites/[id]/publish-request + .../approve), and the 12.50 €
+    // (/api/sites/[id]/publish-request + .../approve), and the $12.50
     // charge lands in the approve endpoint at go-live. Errors bubble to
     // the outer try/catch below.
     const result = await publishSite(id, user.id, reason, pendingFiles, {

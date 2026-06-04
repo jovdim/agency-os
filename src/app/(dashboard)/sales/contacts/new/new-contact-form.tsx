@@ -128,7 +128,7 @@ export function NewContactForm() {
                 <Input id="company_name" name="company_name" required placeholder="HM Elektro" className="h-8 text-sm" />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="quoted_price" className="text-xs">Web Price (€)</Label>
+                <Label htmlFor="quoted_price" className="text-xs">Web Price ($)</Label>
                 <Input id="quoted_price" name="quoted_price" type="number" min="0" step="1" placeholder="149" className="h-8 text-sm" />
               </div>
               <div className="space-y-1">

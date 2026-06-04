@@ -14,11 +14,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *
  * Magnitude must be a non-zero multiple of 12.50 (the publish cost) so
  * balances stay aligned to whole publishes. Single-call magnitude
- * capped at 1000 € (typo guard).
+ * capped at $1000 (typo guard).
  *
  * Role matrix:
  *   - super_admin / administrator / tech_admin → grant or deduct freely
- *   - sales                                    → grant only, max 50 €
+ *   - sales                                    → grant only, max $50
  *                                                cumulative per client
  */
 const PUBLISH_COST_EUR = 12.5;
@@ -63,27 +63,27 @@ export async function POST(
   // of the publish cost so balances stay aligned to whole publishes.
   if (typeof amount !== "number" || !Number.isFinite(amount) || amount === 0) {
     return NextResponse.json(
-      { error: "Amount must be a non-zero number (in €)" },
+      { error: "Amount must be a non-zero number (in $)" },
       { status: 400 }
     );
   }
   // Floating-point safe modulo on the magnitude.
   if (Math.round(Math.abs(amount) * 100) % Math.round(PUBLISH_COST_EUR * 100) !== 0) {
     return NextResponse.json(
-      { error: `Amount must be a multiple of ${PUBLISH_COST_EUR.toFixed(2)} €` },
+      { error: `Amount must be a multiple of $${PUBLISH_COST_EUR.toFixed(2)}` },
       { status: 400 }
     );
   }
-  // Soft sanity ceiling on the magnitude — a single ±1000 € adjustment
+  // Soft sanity ceiling on the magnitude — a single ±$1000 adjustment
   // is almost certainly a typo.
   if (Math.abs(amount) > 1000) {
     return NextResponse.json(
-      { error: "Adjustment must not exceed 1000 € per call" },
+      { error: "Adjustment must not exceed $1000 per call" },
       { status: 400 }
     );
   }
 
-  // ── Sales role: positive only, cap at 50 € total per client ───
+  // ── Sales role: positive only, cap at $50 total per client ───
   // Sales can hand out small bonus credits but can't take them away.
   if (callerProfile.role === "sales") {
     if (amount < 0) {
@@ -107,7 +107,7 @@ export async function POST(
     if (totalGranted + amount > SALES_GRANT_CAP_EUR) {
       return NextResponse.json(
         {
-          error: `${totalGranted.toFixed(2)} € has already been granted. The maximum is ${SALES_GRANT_CAP_EUR} € per client.`,
+          error: `$${totalGranted.toFixed(2)} has already been granted. The maximum is $${SALES_GRANT_CAP_EUR} per client.`,
         },
         { status: 400 }
       );
@@ -154,7 +154,7 @@ export async function POST(
   if (amount < 0 && currentBalance + amount < -0.005) {
     return NextResponse.json(
       {
-        error: `Cannot deduct ${Math.abs(amount).toFixed(2)} € — current balance is only ${currentBalance.toFixed(2)} €`,
+        error: `Cannot deduct $${Math.abs(amount).toFixed(2)} — current balance is only $${currentBalance.toFixed(2)}`,
       },
       { status: 400 },
     );
@@ -185,7 +185,7 @@ export async function POST(
     user_id: clientId,
     amount,
     type: "admin_grant",
-    note: note || `${verb} ${Math.abs(amount).toFixed(2)} € by ${callerProfile.role}`,
+    note: note || `${verb} $${Math.abs(amount).toFixed(2)} by ${callerProfile.role}`,
   });
 
   return NextResponse.json({

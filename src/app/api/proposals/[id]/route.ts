@@ -135,7 +135,7 @@ export async function PUT(
       const n = parseFloat(String(body.discount_price));
       if (!Number.isFinite(n) || n < MIN_DISCOUNT_PRICE) {
         return NextResponse.json(
-          { error: `The discounted price must be at least €${MIN_DISCOUNT_PRICE}.` },
+          { error: `The discounted price must be at least $${MIN_DISCOUNT_PRICE}.` },
           { status: 400 },
         );
       }
@@ -147,7 +147,7 @@ export async function PUT(
       const n = parseFloat(String(body.base_price));
       if (!Number.isFinite(n) || n < MIN_DISCOUNT_PRICE) {
         return NextResponse.json(
-          { error: `The price after expiry must be at least €${MIN_DISCOUNT_PRICE}.` },
+          { error: `The price after expiry must be at least $${MIN_DISCOUNT_PRICE}.` },
           { status: 400 },
         );
       }

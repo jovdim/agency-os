@@ -11,7 +11,7 @@
  *
  * Why this exists alongside the in-app AI Fill:
  *   - The in-app button burns paid API tokens (Groq/OpenAI/Gemini).
- *   - This flow costs €0 — ChatGPT's free tier does the work.
+ *   - This flow costs $0 — ChatGPT's free tier does the work.
  *   - Same field-walk, same output shape, same apply path → behaviour
  *     of the two flows is otherwise identical.
  *

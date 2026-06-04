@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-// Per-publish cost in € — matches the publish-charge constant in the API
+// Per-publish cost in $ — matches the publish-charge constant in the API
 // (src/app/api/sites/[id]/publish/route.ts) and the publish-menu UI.
 const COST_PER_CHANGE = 12.5;
 
@@ -81,10 +81,10 @@ export function BuyCreditsDialog({ siteId, siteName, onClose }: BuyCreditsDialog
   } | null>(null);
 
   // Custom input is a publish COUNT (positive integer). Client types
-  // "I want 12 publishes" — we multiply by 12.50 € to get the price.
+  // "I want 12 publishes" — we multiply by $12.50 to get the price.
   // Better mental model than typing euros (no "must be multiple of
   // 12.50" gotcha; the count is always inherently a valid quantity).
-  // Cap at 80 publishes (= 1000 €), matching the server cap.
+  // Cap at 80 publishes (= $1000), matching the server cap.
   const MAX_CUSTOM_PUBLISHES = 80;
 
   const customCount = (() => {
@@ -282,7 +282,7 @@ export function BuyCreditsDialog({ siteId, siteName, onClose }: BuyCreditsDialog
                       }`}
                     >
                       {customValid
-                        ? `= €${selected.toFixed(2)}`
+                        ? `= $${selected.toFixed(2)}`
                         : `Maximum is ${MAX_CUSTOM_PUBLISHES} publishes`}
                     </p>
                   )}
@@ -293,10 +293,10 @@ export function BuyCreditsDialog({ siteId, siteName, onClose }: BuyCreditsDialog
               <div className="flex items-baseline justify-between border-y py-3 -mx-5 px-5">
                 <div className="text-xs text-muted-foreground">
                   {publishCount} {pluralPub(publishCount)} ×{" "}
-                  €{COST_PER_CHANGE.toFixed(2)}
+                  ${COST_PER_CHANGE.toFixed(2)}
                 </div>
                 <div className="text-2xl font-semibold tabular-nums">
-                  €{selected}
+                  ${selected}
                 </div>
               </div>
 
@@ -385,7 +385,7 @@ export function BuyCreditsDialog({ siteId, siteName, onClose }: BuyCreditsDialog
 
               <div className="rounded-md border bg-muted/30 px-4 py-3 space-y-2 text-sm">
                 <Row label="IBAN" value={ibanFormatted} mono />
-                <Row label="Amount" value={`€${qrData.amount}`} bold />
+                <Row label="Amount" value={`$${qrData.amount}`} bold />
                 <Row label="VS" value={qrData.variableSymbol} mono />
                 <Row label="Number of publishes" value={String(publishCount)} />
               </div>
@@ -445,7 +445,7 @@ function PresetCard({
           isSelected ? "text-primary" : ""
         }`}
       >
-        {preset.eur} €
+        ${preset.eur}
       </span>
       <span className="text-[10px] text-muted-foreground mt-0.5 leading-tight">
         {preset.publishes} {pluralPub(preset.publishes)}
@@ -484,7 +484,7 @@ function FeaturedPresetCard({
             isSelected ? "text-primary" : ""
           }`}
         >
-          {preset.eur} €
+          ${preset.eur}
         </span>
         <span className="text-xs text-muted-foreground">
           {preset.publishes} {pluralPub(preset.publishes)}

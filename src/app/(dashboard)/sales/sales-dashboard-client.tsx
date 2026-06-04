@@ -1460,7 +1460,7 @@ function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnsw
           <Textarea
             value={invoiceMessage}
             onChange={(e) => setInvoiceMessage(e.target.value)}
-            placeholder="What should be on the invoice? E.g.: Website 149€, GBP 75€, Backlinks 35€..."
+            placeholder="What should be on the invoice? E.g.: Website $149, GBP $75, Backlinks $35..."
             className="text-sm min-h-20"
           />
           <DialogFooter>
@@ -1805,7 +1805,7 @@ function CreateProposalDialog({ open, contact, price: initialPrice, onOpenChange
                 autoFocus
                 className="w-20 h-8 text-lg font-bold text-right bg-transparent border-b border-amber-500/40 focus:border-amber-500 outline-none text-amber-800 dark:text-amber-300 placeholder:text-amber-400/30"
               />
-              <span className="text-base font-bold text-amber-700 dark:text-amber-400">€</span>
+              <span className="text-base font-bold text-amber-700 dark:text-amber-400">$</span>
             </div>
           </div>
 

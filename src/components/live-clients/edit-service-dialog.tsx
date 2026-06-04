@@ -161,7 +161,7 @@ export function EditServiceDialog({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="edit-svc-price" className="text-xs">
-                  Price (€)
+                  Price ($)
                 </Label>
                 <Input
                   id="edit-svc-price"

@@ -519,7 +519,7 @@ export function ContactDetailClient({
                 {(latestProposal.discount_price || latestProposal.price) && Number(latestProposal.discount_price || latestProposal.price) > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Price: </span>
-                    <span className="font-semibold">{latestProposal.discount_price || latestProposal.price} €</span>
+                    <span className="font-semibold">${latestProposal.discount_price || latestProposal.price}</span>
                   </div>
                 )}
                 {latestProposal.requirements && (
@@ -752,7 +752,7 @@ export function ContactDetailClient({
             <Textarea
               value={invoiceNote}
               onChange={(e) => setInvoiceNote(e.target.value)}
-              placeholder="What should be on the invoice? E.g. Website 149€, GBP 75€, Backlinks 35€..."
+              placeholder="What should be on the invoice? E.g. Website $149, GBP $75, Backlinks $35..."
               className="text-sm min-h-16 mb-2"
             />
             <Button
@@ -861,7 +861,7 @@ export function ContactDetailClient({
               </Button>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium">Price (€)</label>
+              <label className="text-xs font-medium">Price ($)</label>
               <Input type="number" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} placeholder="299" className="h-8 text-sm" />
             </div>
             <div className="space-y-1">
@@ -935,11 +935,11 @@ export function ContactDetailClient({
               <label className="text-xs font-medium mb-1 block">Price</label>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Discounted price (€)</label>
+                  <label className="text-[10px] text-muted-foreground">Discounted price ($)</label>
                   <Input type="number" value={proposalDiscountPrice} onChange={(e) => setProposalDiscountPrice(e.target.value)} placeholder="149" min={0} className="h-8 text-sm" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Original price (€)</label>
+                  <label className="text-[10px] text-muted-foreground">Original price ($)</label>
                   <Input type="number" value={proposalBasePrice} onChange={(e) => setProposalBasePrice(e.target.value)} placeholder="299" min={0} className="h-8 text-sm" />
                 </div>
               </div>

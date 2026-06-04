@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Use the actual paid amount from Stripe (in cents → €). Should
+    // Use the actual paid amount from Stripe (in cents → $). Should
     // match payment.amount exactly since we built the session that way,
     // but Stripe is the source of truth for what the customer was
     // actually charged.
@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
     });
 
     console.log(
-      `[Stripe webhook] ✓ Credited ${paidAmountEur} € to site=${payment.site_id} (session=${session.id})`,
+      `[Stripe webhook] ✓ Credited $${paidAmountEur} to site=${payment.site_id} (session=${session.id})`,
     );
 
     return NextResponse.json({ received: true, confirmed: true });

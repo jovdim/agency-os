@@ -24,9 +24,9 @@ import { PublishRequestCard } from "@/components/proposal-timeline/publish-reque
 
 export const dynamic = "force-dynamic";
 
-// Per-publish charge in €. Source of truth is PUBLISH_COST_EUR in
+// Per-publish charge in $. Source of truth is PUBLISH_COST_EUR in
 // src/app/api/sites/[id]/credit-balance/route.ts; mirrored here for the
-// approval card's "will charge X €" line.
+// approval card's "will charge X $" line.
 const PUBLISH_COST_EUR = 12.5;
 
 export default async function ProposalBuildPage({

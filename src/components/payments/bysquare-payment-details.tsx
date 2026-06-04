@@ -56,7 +56,7 @@ export function BySquarePaymentDetails({
   const activePrice = discountActive
     ? discountPrice ?? basePrice ?? 0
     : basePrice ?? 0;
-  const priceLabel = `${activePrice.toFixed(2).replace(".", ",")} €`;
+  const priceLabel = `$${activePrice.toFixed(2).replace(".", ",")}`;
 
   return (
     <div

@@ -176,7 +176,7 @@ export default async function ClientServicesPage() {
                               </Badge>
                               {service.price && (
                                 <span className="text-xs text-muted-foreground">
-                                  €{Number(service.price).toFixed(2)}
+                                  ${Number(service.price).toFixed(2)}
                                 </span>
                               )}
                             </div>

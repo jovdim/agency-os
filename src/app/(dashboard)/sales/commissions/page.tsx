@@ -70,7 +70,7 @@ export default async function CommissionsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              €{totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              ${totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
@@ -81,7 +81,7 @@ export default async function CommissionsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">
-              €{totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              ${totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
@@ -92,7 +92,7 @@ export default async function CommissionsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
-              €{totalPending.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              ${totalPending.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">
               {pendingCommissions.length} commission
@@ -107,7 +107,7 @@ export default async function CommissionsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              €{thisMonthTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              ${thisMonthTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">
               {thisMonth.length} commission{thisMonth.length !== 1 ? "s" : ""}
@@ -160,7 +160,7 @@ export default async function CommissionsPage() {
                     </div>
                     <div className="flex items-center gap-3 ml-4">
                       <span className="text-sm font-bold">
-                        €{Number(commission.amount).toFixed(2)}
+                        ${Number(commission.amount).toFixed(2)}
                       </span>
                       <Badge
                         variant={commission.is_paid ? "default" : "secondary"}

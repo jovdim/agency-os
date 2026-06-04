@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * POST /api/sites/[id]/publish-request/reject
  *
  * IT/tech (or super) rejects a client's pending publish request from
- * the proposal pipeline page. Nothing publishes. The 12.50 € that was
+ * the proposal pipeline page. Nothing publishes. The $12.50 that was
  * charged at submit time is REFUNDED to the client's credit balance
  * (Peter 2026-05-30 — reject = full refund; the only forfeit case is
  * when the client overrides their own pending request).

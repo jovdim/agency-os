@@ -618,7 +618,7 @@ function ClientZoneAction({
   const [revealed, setRevealed] = useState(false);
 
   // Starter credit amount tech grants on first-time activation. Default
-  // 37.50 € (3 free publishes) — tech can step it up/down in 12.50 €
+  // $37.50 (3 free publishes) — tech can step it up/down in $12.50
   // increments before clicking "Create client zone". Subsequent
   // grants/deductions happen inline in the Client zone details card
   // (handleAdjustCredit below).
@@ -658,8 +658,8 @@ function ClientZoneAction({
       }
       toast.success(
         deltaEur > 0
-          ? `Added ${deltaEur.toFixed(2)} €. New balance: ${Number(data?.new_balance ?? 0).toFixed(2)} €.`
-          : `Deducted ${Math.abs(deltaEur).toFixed(2)} €. New balance: ${Number(data?.new_balance ?? 0).toFixed(2)} €.`,
+          ? `Added $${deltaEur.toFixed(2)}. New balance: $${Number(data?.new_balance ?? 0).toFixed(2)}.`
+          : `Deducted $${Math.abs(deltaEur).toFixed(2)}. New balance: $${Number(data?.new_balance ?? 0).toFixed(2)}.`,
       );
       router.refresh();
     } catch (err) {
@@ -792,7 +792,7 @@ function ClientZoneAction({
         const starterAmount = Number(data.starter_credit_amount_eur ?? 0);
         toastMsg =
           starterAmount > 0
-            ? `${baseMsg} Starter ${starterAmount.toFixed(2)} € granted.`
+            ? `${baseMsg} Starter $${starterAmount.toFixed(2)} granted.`
             : baseMsg;
       }
       toast.success(toastMsg);
@@ -817,7 +817,7 @@ function ClientZoneAction({
     const publishesIncluded = Math.round(starterCreditEur / PUBLISH_COST_EUR);
     return (
       <div className="space-y-2">
-        {/* Starter credit chooser. Pre-filled at 37.50 € (3 publishes).
+        {/* Starter credit chooser. Pre-filled at $37.50 (3 publishes).
             Only used on the first-time create — adjustments after that
             happen on the tech client management page. */}
         <div className="rounded-md border bg-muted/30 px-3 py-2 space-y-1.5 max-w-sm">
@@ -842,13 +842,13 @@ function ClientZoneAction({
                   )
                 }
                 disabled={busy || starterCreditEur <= 0}
-                aria-label="Decrease starter by 12.50 €"
+                aria-label="Decrease starter by $12.50"
               >
                 −
               </Button>
               <div className="text-center min-w-17">
                 <p className="text-sm font-semibold leading-tight">
-                  {starterCreditEur.toFixed(2)} €
+                  ${starterCreditEur.toFixed(2)}
                 </p>
                 <p className="text-[10px] text-muted-foreground leading-tight">
                   {publishesIncluded === 0
@@ -867,7 +867,7 @@ function ClientZoneAction({
                   )
                 }
                 disabled={busy || starterCreditEur >= 500}
-                aria-label="Increase starter by 12.50 €"
+                aria-label="Increase starter by $12.50"
               >
                 +
               </Button>
@@ -960,9 +960,9 @@ function ClientZoneDetailsCard({
   onSaveEmail: (email: string) => void | Promise<void>;
   /** Single busy flag covers both reset + save — never run two at once. */
   busy: boolean;
-  /** Current credit balance in € (server-fetched, refreshed via router). */
+  /** Current credit balance in $ (server-fetched, refreshed via router). */
   creditBalance: number;
-  /** Apply a signed delta in €. Positive grants, negative deducts. */
+  /** Apply a signed delta in $. Positive grants, negative deducts. */
   onAdjustCredit: (deltaEur: number) => void | Promise<void>;
   /** True while a credit POST is in flight. */
   busyAdjusting: boolean;
@@ -1140,7 +1140,7 @@ function ClientZoneDetailsCard({
 /**
  * Inline credit-balance editor inside the Client zone details card.
  * The stepper represents the DESIRED new balance (not a delta) — tech
- * scrubs it up or down in 12.50 € steps and clicks Save. The diff
+ * scrubs it up or down in $12.50 steps and clicks Save. The diff
  * against the current balance is computed and sent as a signed delta
  * to the existing /api/admin/clients/[id]/credits endpoint.
  *
@@ -1172,11 +1172,11 @@ function CreditAdjuster({
       <div className="flex items-baseline justify-between">
         <span className="font-semibold text-foreground">Credit balance</span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {balance.toFixed(2).replace(".", ",")} €
+          ${balance.toFixed(2).replace(".", ",")}
         </span>
       </div>
 
-      {/* ± stepper. Sets the desired new balance directly, in 12.50 €
+      {/* ± stepper. Sets the desired new balance directly, in $12.50
           steps. Min 0, max 1000. Save is disabled when nothing changed. */}
       <div className="flex items-center gap-1.5">
         <Button
@@ -1190,13 +1190,13 @@ function CreditAdjuster({
             )
           }
           disabled={busy || amount <= 0}
-          aria-label="Decrease by 12.50 €"
+          aria-label="Decrease by $12.50"
         >
           −
         </Button>
         <div className="flex-1 rounded-md border bg-background px-2 py-1 text-center">
           <p className="text-sm font-semibold leading-tight tabular-nums">
-            {amount.toFixed(2)} €
+            ${amount.toFixed(2)}
           </p>
         </div>
         <Button
@@ -1210,7 +1210,7 @@ function CreditAdjuster({
             )
           }
           disabled={busy || amount >= 1000}
-          aria-label="Increase by 12.50 €"
+          aria-label="Increase by $12.50"
         >
           +
         </Button>
@@ -1225,7 +1225,7 @@ function CreditAdjuster({
             // instead of greying the button out, so the workflow is
             // always "set the value, click Save" with no special case
             // for "but it's already that value."
-            toast.info(`Balance is already ${amount.toFixed(2)} €`);
+            toast.info(`Balance is already $${amount.toFixed(2)}`);
             return;
           }
           void onAdjust(delta);

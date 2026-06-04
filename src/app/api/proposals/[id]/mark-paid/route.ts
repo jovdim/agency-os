@@ -308,7 +308,7 @@ export async function POST(
       site_id: site.id,
       proposal_id: proposal.id,
       amount,
-      currency: "EUR",
+      currency: "USD",
       payment_method: paymentMethod,
       status: "confirmed",
       description,

@@ -142,7 +142,7 @@ export function TechContactDetail({ contact, proposal, deployment }: Props) {
             </div>
           )}
           {contact.quoted_price != null && contact.quoted_price > 0 && (
-            <InfoRow icon={null} label="Quoted" value={`€${Number(contact.quoted_price).toLocaleString()}`} />
+            <InfoRow icon={null} label="Quoted" value={`$${Number(contact.quoted_price).toLocaleString()}`} />
           )}
           {socialLinks.length > 0 && (
             <div className="flex items-start gap-3 px-4 py-2.5">
