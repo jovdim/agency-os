@@ -109,8 +109,7 @@
   LAYOUT:   4-column dark footer + bottom-bar (copyright | privacy | agency credit).
             Mobile: 2 columns at 800px, 1 column at 500px (handled by base CSS).
   CONTENT:  Col 1: logo + short description.
-            Col 2: company legal info (name, address, repeater of legal
-                   lines, Company No./Tax ID/VAT ID by default, user can add more).
+            Col 2: company info (company name + address).
             Col 3: contact (phone, email).
             Col 4: 6 quick links.
             Bottom: copyright + privacy link + agency credit (label + link).
@@ -140,11 +139,6 @@
       <h4 data-field="footer_company_name">Your Company Ltd.</h4>
       <address>
         <span data-field="footer_address">1 Main Street, 010 01 City</span>
-        <span data-repeat="footer_legal" data-min="0" data-max="20" style="display:contents">
-          <span class="legal-meta"><span data-field="text">Company No.: xxxxxxxx</span></span>
-          <span class="legal-meta"><span data-field="text">Tax ID: xxxxxxxxxx</span></span>
-          <span class="legal-meta"><span data-field="text">VAT ID: SKxxxxxxxxxx</span></span>
-        </span>
       </address>
     </div>
 

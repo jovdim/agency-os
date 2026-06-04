@@ -75,16 +75,13 @@
       border-bottom-color: var(--color-primary);
     }
     .footer-dark-cta__details span { white-space: nowrap; }
-    .footer-dark-cta__legal {
+    .footer-dark-cta__company {
       margin-top: 18px;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.5);
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.92);
     }
-    .footer-dark-cta__legal span { white-space: nowrap; }
     /* Socials (FB + IG via hidden_fields toggle) — centered below
        the legal line. */
     .footer-dark-cta__socials {
@@ -166,9 +163,9 @@
             primary visual element, email + address row below. Thin
             divided bottom strip with copyright + agency credit.
   CONTENT:  heading + phone (link, big) + email (link) + address +
-            copyright + agency credit.
-  EDITABLE: 8 fields — footer_heading + footer_phone (link) +
-            footer_email (link) + footer_address + footer_ico + footer_dic +
+            company name + copyright + agency credit.
+  EDITABLE: 7 fields — footer_heading + footer_phone (link) +
+            footer_email (link) + footer_address + footer_company_name +
             footer_copyright + agency_credit (link).
   THEME:    Section bg = --color-secondary (dark, theme-tracking).
             Heading + phone = --color-light. Phone underline = --color-primary.
@@ -190,10 +187,7 @@
       <span data-field="footer_address">1 Main Street, 010 01 City</span>
     </div>
 
-    <div class="footer-dark-cta__legal">
-      <span data-field="footer_ico">Company No.: xxxxxxxx</span>
-      <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
-    </div>
+    <p class="footer-dark-cta__company" data-field="footer_company_name">Your Company Ltd.</p>
 
     <div class="footer-dark-cta__socials">
       <a class="footer-dark-cta__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">

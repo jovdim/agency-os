@@ -16,12 +16,13 @@ import type { LocaleRenderTarget } from "@/lib/i18n/localize";
  * composition into correctly-linked, SEO-tagged HTML — locale anchor
  * prefixes, hreflang alternates, and cross-page anchor qualification
  * scoped to a locale folder.
+ *
+ * The platform serves English (default, root "/") + Spanish ("/es/").
  */
 
 const TARGETS: LocaleRenderTarget[] = [
-  { locale: "sk", prefix: "", isDefault: true },
-  { locale: "de", prefix: "de/", isDefault: false },
-  { locale: "en", prefix: "en/", isDefault: false },
+  { locale: "en", prefix: "", isDefault: true },
+  { locale: "es", prefix: "es/", isDefault: false },
 ];
 
 describe("pageAnchorPrefix", () => {
@@ -31,12 +32,12 @@ describe("pageAnchorPrefix", () => {
   });
 
   it("sub-locale: prefixes the locale folder", () => {
-    expect(pageAnchorPrefix("index.html", "index.html", "/de")).toBe("/de/");
-    expect(pageAnchorPrefix("o-nas.html", "index.html", "/de")).toBe("/de/o-nas");
+    expect(pageAnchorPrefix("index.html", "index.html", "/es")).toBe("/es/");
+    expect(pageAnchorPrefix("o-nas.html", "index.html", "/es")).toBe("/es/o-nas");
   });
 
   it("treats a non-index home path as home", () => {
-    expect(pageAnchorPrefix("home.html", "home.html", "/en")).toBe("/en/");
+    expect(pageAnchorPrefix("home.html", "home.html", "/es")).toBe("/es/");
   });
 });
 
@@ -48,10 +49,9 @@ describe("buildHreflangTags", () => {
       TARGETS,
       "https://acme.sk",
     );
-    expect(tags).toContain('hreflang="sk" href="https://acme.sk"');
-    expect(tags).toContain('hreflang="de" href="https://acme.sk/de"');
-    expect(tags).toContain('hreflang="en" href="https://acme.sk/en"');
-    // x-default points at the default locale (sk → root)
+    expect(tags).toContain('hreflang="en" href="https://acme.sk"');
+    expect(tags).toContain('hreflang="es" href="https://acme.sk/es"');
+    // x-default points at the default locale (en → root)
     expect(tags).toContain('hreflang="x-default" href="https://acme.sk"');
   });
 
@@ -62,9 +62,8 @@ describe("buildHreflangTags", () => {
       TARGETS,
       "https://acme.sk",
     );
-    expect(tags).toContain('hreflang="sk" href="https://acme.sk/o-nas"');
-    expect(tags).toContain('hreflang="de" href="https://acme.sk/de/o-nas"');
-    expect(tags).toContain('hreflang="en" href="https://acme.sk/en/o-nas"');
+    expect(tags).toContain('hreflang="en" href="https://acme.sk/o-nas"');
+    expect(tags).toContain('hreflang="es" href="https://acme.sk/es/o-nas"');
     expect(tags).toContain('hreflang="x-default" href="https://acme.sk/o-nas"');
   });
 
@@ -101,8 +100,8 @@ describe("qualifyCrossPageAnchors — locale scoping", () => {
       page("index.html", `<nav><a href="#kontakt">Kontakt</a></nav>`),
       page("kontakt.html", `<section id="kontakt">Kontakt</section>`),
     ];
-    qualifyCrossPageAnchors(pages, "index.html", "/de");
-    expect(pages[0].html).toContain('href="/de/kontakt#kontakt"');
+    qualifyCrossPageAnchors(pages, "index.html", "/es");
+    expect(pages[0].html).toContain('href="/es/kontakt#kontakt"');
   });
 
   it("leaves a same-page anchor bare (keeps in-page smooth scroll)", () => {
@@ -112,9 +111,9 @@ describe("qualifyCrossPageAnchors — locale scoping", () => {
         `<a href="#kontakt">Kontakt</a><section id="kontakt">x</section>`,
       ),
     ];
-    qualifyCrossPageAnchors(pages, "index.html", "/de");
+    qualifyCrossPageAnchors(pages, "index.html", "/es");
     expect(pages[0].html).toContain('href="#kontakt"');
-    expect(pages[0].html).not.toContain("/de/");
+    expect(pages[0].html).not.toContain("/es/");
   });
 
   it("default locale (no prefix) keeps the historical root-relative form", () => {
@@ -128,20 +127,20 @@ describe("qualifyCrossPageAnchors — locale scoping", () => {
 
   it("leaves an unknown anchor (no hosting page) untouched", () => {
     const pages = [page("index.html", `<a href="#ghost">x</a>`)];
-    qualifyCrossPageAnchors(pages, "index.html", "/de");
+    qualifyCrossPageAnchors(pages, "index.html", "/es");
     expect(pages[0].html).toContain('href="#ghost"');
   });
 });
 
 describe("localePageHref", () => {
-  it("home: '/' for default, '/de' for sub-locale", () => {
+  it("home: '/' for default, '/es' for sub-locale", () => {
     expect(localePageHref(TARGETS[0], "index.html", "index.html")).toBe("/");
-    expect(localePageHref(TARGETS[1], "index.html", "index.html")).toBe("/de");
+    expect(localePageHref(TARGETS[1], "index.html", "index.html")).toBe("/es");
   });
 
-  it("subpage: '/o-nas' default, '/de/o-nas' sub-locale", () => {
+  it("subpage: '/o-nas' default, '/es/o-nas' sub-locale", () => {
     expect(localePageHref(TARGETS[0], "o-nas.html", "index.html")).toBe("/o-nas");
-    expect(localePageHref(TARGETS[1], "o-nas.html", "index.html")).toBe("/de/o-nas");
+    expect(localePageHref(TARGETS[1], "o-nas.html", "index.html")).toBe("/es/o-nas");
   });
 });
 
@@ -171,17 +170,16 @@ describe("injectLanguageSwitcher", () => {
     expect(html).toContain("sk-lang-switcher");
     expect(html).toContain("<details"); // native no-JS dropdown
     expect(html).toContain("sk-lang-menu");
-    expect(html).toContain('href="/"'); // sk home
-    expect(html).toContain('href="/de"'); // de home
-    expect(html).toContain('href="/en"'); // en home
+    expect(html).toContain('href="/"'); // en home (default, root)
+    expect(html).toContain('href="/es"'); // es home
     // full language names + inline-SVG flag per locale in the menu
-    expect(html).toContain("Deutsch");
     expect(html).toContain("English");
+    expect(html).toContain("Español");
     expect(html).toContain("sk-lang-flag");
     // inline SVG flags (real graphics, render on every OS — NOT emoji)
     expect(html).toContain("sk-lang-switcher__flag");
     expect(html).toContain("<svg");
-    expect(html).not.toContain("🇩🇪");
+    expect(html).not.toContain("🇪🇸");
     expect(html).not.toContain("🇬🇧");
     // the old translate-icon + text-code markup is gone
     expect(html).not.toContain("sk-lang-switcher__icon");
@@ -209,8 +207,8 @@ describe("injectLanguageSwitcher", () => {
     // one menu row per locale, injected into the .nav-links overlay list
     const rows = html.match(/class="sk-lang-mobile-item"/g) ?? [];
     expect(rows.length).toBe(TARGETS.length);
-    // the rows carry the locale links (e.g. the de home href)
-    expect(html).toContain('href="/de"');
+    // the rows carry the locale links (e.g. the es home href)
+    expect(html).toContain('href="/es"');
   });
 
   it("on navs WITHOUT a menu: the bar switcher is not mobile-gated and no menu rows are added", () => {
@@ -234,8 +232,8 @@ describe("injectLanguageSwitcher", () => {
     const pages = [navPage("o-nas.html")];
     injectLanguageSwitcher(pages, TARGETS, TARGETS[1], "index.html");
     const html = pages[0].html;
-    // current = de → menu link to the subpage gets aria-current
-    expect(html).toContain('href="/de/o-nas"');
+    // current = es → menu link to the subpage gets aria-current
+    expect(html).toContain('href="/es/o-nas"');
     expect(html).toMatch(/aria-current="true"/);
     // trigger holds the current language's flag as an inline SVG
     expect(html).toMatch(

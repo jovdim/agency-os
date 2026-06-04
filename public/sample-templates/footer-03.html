@@ -61,14 +61,13 @@
       opacity: 0.7;
       margin: 0;
     }
-    .footer-split__legal {
-      margin: 10px 0 0;
-      font-size: 0.85rem;
-      line-height: 1.6;
+    .footer-split__company {
+      margin: 10px 0 2px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.5;
       color: var(--color-text-on-dark);
-      opacity: 0.55;
     }
-    .footer-split__legal span { display: block; }
     .footer-split__right {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -204,10 +203,10 @@
             and utility links stacked. Bottom row: copyright + agency
             credit. Mobile (≤760px): main grid stacks; right's sub-grid
             stays 2-col until ≤480px.
-  CONTENT:  logo + tagline + address + Company No. + Tax ID + phone + email +
+  CONTENT:  logo + tagline + company name + address + phone + email +
             utility links repeater + copyright + agency credit.
-  EDITABLE: 10 fields — footer_logo (image) + footer_description +
-            footer_address + footer_ico + footer_dic + footer_phone (link) +
+  EDITABLE: 9 fields — footer_logo (image) + footer_description +
+            footer_company_name + footer_address + footer_phone (link) +
             footer_email (link) + footer_links (repeater 2..6) +
             footer_copyright + agency_credit (link).
   THEME:    Section bg = --color-bg. Hairlines = --color-border. Tagline +
@@ -223,11 +222,8 @@
       <div class="footer-split__brand">
         <img class="footer-split__logo" data-field="footer_logo" src="https://placehold.co/200x60/e7e5e4/1c1917?text=LOGO&font=lato" alt="Logo">
         <p class="footer-split__tagline" data-field="footer_description">Write a short description of your company here, what you do and what makes you different.</p>
+        <p class="footer-split__company" data-field="footer_company_name">Your Company Ltd.</p>
         <p class="footer-split__address" data-field="footer_address">1 Main Street, 010 01 City</p>
-        <p class="footer-split__legal">
-          <span data-field="footer_ico">Company No.: xxxxxxxx</span>
-          <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
-        </p>
         <div class="footer-split__socials">
           <a class="footer-split__social" data-field="footer_facebook" data-type="link" href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>

@@ -3032,8 +3032,8 @@ export function ComposerClient({
   function toggleLocale(locale: SiteLocale, on: boolean) {
     patchComposition((prev) => {
       const cur: SiteI18n = prev.i18n ?? {
-        default_locale: "sk",
-        enabled_locales: ["sk"],
+        default_locale: "en",
+        enabled_locales: ["en"],
       };
       if (locale === cur.default_locale) return prev; // can't toggle the default off
       const set = new Set(cur.enabled_locales);
@@ -3063,8 +3063,8 @@ export function ComposerClient({
   ) {
     patchComposition((prev) => {
       const cur: SiteI18n = prev.i18n ?? {
-        default_locale: "sk",
-        enabled_locales: ["sk"],
+        default_locale: "en",
+        enabled_locales: ["en"],
       };
       const set = new Set(cur.enabled_locales);
       set.add(locale);
@@ -3897,7 +3897,7 @@ export function ComposerClient({
         mode="translate"
         targetLocaleLabel={LOCALE_LABELS[translateLocale]}
         sourceLocaleLabel={
-          LOCALE_LABELS[composition.i18n?.default_locale ?? "sk"]
+          LOCALE_LABELS[composition.i18n?.default_locale ?? "en"]
         }
         onApply={(snapshot) => {
           applyTranslationImport(translateLocale, snapshot);

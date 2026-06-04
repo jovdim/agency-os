@@ -10,45 +10,31 @@
  * unaffected.
  */
 
-/** Content locales the platform supports. The site's DEFAULT locale is
- *  whichever language its original content was built in — NOT hardcoded to
- *  any one of these. Stored per-site in `SiteI18n.default_locale`. */
-export type SiteLocale = "en" | "cs" | "pl" | "de" | "sk";
+/** Content locales the platform supports. English is the platform default;
+ *  Spanish is the one additional language a site can be translated into. The
+ *  site's DEFAULT locale is whichever language its original content was built
+ *  in — stored per-site in `SiteI18n.default_locale` (defaults to "en"). */
+export type SiteLocale = "en" | "es";
 
-export const SUPPORTED_LOCALES: readonly SiteLocale[] = [
-  "en",
-  "cs",
-  "pl",
-  "de",
-  "sk",
-];
+export const SUPPORTED_LOCALES: readonly SiteLocale[] = ["en", "es"];
 
 /** Full language name for menus / settings — each in its OWN language
  *  (endonym), matching how language pickers conventionally read. */
 export const LOCALE_LABELS: Record<SiteLocale, string> = {
   en: "English",
-  cs: "Čeština",
-  pl: "Polski",
-  de: "Deutsch",
-  sk: "Slovenčina",
+  es: "Español",
 };
 
 /** Short code for the navbar language switcher chip. */
 export const LOCALE_SHORT: Record<SiteLocale, string> = {
   en: "EN",
-  cs: "CS",
-  pl: "PL",
-  de: "DE",
-  sk: "SK",
+  es: "ES",
 };
 
 /** `<html lang="…">` value per locale. */
 export const LOCALE_HTML_LANG: Record<SiteLocale, string> = {
   en: "en",
-  cs: "cs",
-  pl: "pl",
-  de: "de",
-  sk: "sk",
+  es: "es",
 };
 
 /** One translated field value. Structurally identical to the composer's

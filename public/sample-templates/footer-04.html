@@ -112,14 +112,6 @@
       color: var(--color-primary);
       border-bottom-color: var(--color-primary);
     }
-    .footer-editorial__legal {
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      line-height: 1.65;
-      color: rgba(255,255,255,0.55);
-      margin: 6px 0 0;
-    }
-    .footer-editorial__legal span { display: block; }
     /* Socials (FB + IG via hidden_fields toggle) — sits in the
        left CTA column under the button. */
     .footer-editorial__socials {
@@ -202,10 +194,10 @@
             details (phone, email, address) bottom-aligned. Below: hairline
             divider, then copyright + agency credit row. Mobile (≤800px):
             stacks linearly.
-  CONTENT:  oversized heading + CTA button + phone + email + address +
-            copyright + agency credit.
-  EDITABLE: 9 fields — footer_heading + footer_cta (link) + footer_phone (link) +
-            footer_email (link) + footer_address + footer_ico + footer_dic +
+  CONTENT:  oversized heading + CTA button + company name + phone + email +
+            address + copyright + agency credit.
+  EDITABLE: 8 fields — footer_heading + footer_cta (link) + footer_company_name +
+            footer_phone (link) + footer_email (link) + footer_address +
             footer_copyright + agency_credit (link).
   THEME:    Section bg = --color-bg. Heading = --color-dark, contact labels =
             --color-text-light. CTA button = --color-dark bg with light text;
@@ -234,6 +226,10 @@
 
       <div class="footer-editorial__contact">
         <div>
+          <span class="footer-editorial__label">Company</span>
+          <p class="footer-editorial__value" data-field="footer_company_name">Your Company Ltd.</p>
+        </div>
+        <div>
           <span class="footer-editorial__label">Phone</span>
           <p class="footer-editorial__value">
             <a data-field="footer_phone" data-type="link" href="">+1 (555) 000-0000</a>
@@ -248,10 +244,6 @@
         <div>
           <span class="footer-editorial__label">Address</span>
           <p class="footer-editorial__value" data-field="footer_address">1 Main Street, 010 01 City</p>
-          <p class="footer-editorial__legal">
-            <span data-field="footer_ico">Company No.: xxxxxxxx</span>
-            <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
-          </p>
         </div>
       </div>
     </div>

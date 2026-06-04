@@ -373,7 +373,7 @@ export function SuperContactsClient({
               </label>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-64 text-xs">
-              Upload a CSV file with columns: Name, Category, Website, Phone 1/2/3, Email, City, District. Duplicates are automatically skipped by phone number. Max ~50k rows per file.
+              Upload a CSV file with columns: Name, Category, Website, Phone 1/2/3, Email, City, State. Duplicates are automatically skipped by phone number. Max ~50k rows per file.
             </TooltipContent>
           </Tooltip>
           <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setAddContactOpen(true)}>
@@ -467,7 +467,7 @@ export function SuperContactsClient({
                   <TableHead className="w-20">Status</TableHead>
                   <TableHead>Company</TableHead>
                   <TableHead>City</TableHead>
-                  <TableHead>District</TableHead>
+                  <TableHead>State</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Industry</TableHead>
                   <TableHead>Email</TableHead>
@@ -534,7 +534,7 @@ export function SuperContactsClient({
                         <>
                           <TableCell><input value={editForm.company_name} onChange={e => setEditForm(f => ({ ...f, company_name: e.target.value }))} className="h-5 text-[10px] px-1 w-28 bg-transparent border-b border-primary/30 outline-none" /></TableCell>
                           <TableCell><input value={editForm.town} onChange={e => setEditForm(f => ({ ...f, town: e.target.value }))} className="h-5 text-[10px] px-1 w-16 bg-transparent border-b border-primary/30 outline-none" /></TableCell>
-                          <TableCell><span className="text-muted-foreground text-[10px]">{(c as unknown as { district?: string }).district || "—"}</span></TableCell>
+                          <TableCell><span className="text-muted-foreground text-[10px]">{c.state || "—"}</span></TableCell>
                           <TableCell>
                             <div className="space-y-0.5">
                               {((editForm as unknown as { phones: string[] }).phones || []).map((p: string, i: number) => (
@@ -570,7 +570,7 @@ export function SuperContactsClient({
                             {c.town ? <Tooltip><TooltipTrigger asChild><span className="truncate block">{c.town}</span></TooltipTrigger><TooltipContent>{c.town}</TooltipContent></Tooltip> : <span className="text-muted-foreground text-[10px]">No city</span>}
                           </TableCell>
                           <TableCell className="max-w-20">
-                            {(c as unknown as { district?: string }).district ? <Tooltip><TooltipTrigger asChild><span className="truncate block">{(c as unknown as { district?: string }).district}</span></TooltipTrigger><TooltipContent>{(c as unknown as { district?: string }).district}</TooltipContent></Tooltip> : <span className="text-muted-foreground text-[10px]">No district</span>}
+                            {c.state ? <Tooltip><TooltipTrigger asChild><span className="truncate block">{c.state}</span></TooltipTrigger><TooltipContent>{c.state}</TooltipContent></Tooltip> : <span className="text-muted-foreground text-[10px]">No state</span>}
                           </TableCell>
                           <TableCell>
                             {c.phone ? (

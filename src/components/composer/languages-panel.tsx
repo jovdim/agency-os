@@ -46,7 +46,7 @@ export function LanguagesPanel({
   onTranslate,
   onClearTranslation,
 }: Props) {
-  const defaultLocale: SiteLocale = i18n?.default_locale ?? "sk";
+  const defaultLocale: SiteLocale = i18n?.default_locale ?? "en";
   const enabled = new Set(i18n?.enabled_locales ?? [defaultLocale]);
   // Locale whose translation is pending a delete confirmation. Deleting a
   // translation throws away every translated string for that language, so it
@@ -68,8 +68,8 @@ export function LanguagesPanel({
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
           The main language is the language the site is built in and is served
-          at &quot;/&quot;. Additional languages are served at &quot;/de/&quot;,
-          &quot;/en/&quot; and appear in the navbar language switcher.
+          at &quot;/&quot;. Additional languages are served at &quot;/es/&quot;
+          and appear in the navbar language switcher.
         </p>
       </div>
 

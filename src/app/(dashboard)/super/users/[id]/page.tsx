@@ -340,7 +340,7 @@ export default async function UserDetailPage({
               Payments ({allPayments.length})
               {totalPaid > 0 && (
                 <span className="text-xs text-muted-foreground ml-auto">
-                  Total: €{totalPaid.toFixed(2)}
+                  Total: ${totalPaid.toFixed(2)}
                 </span>
               )}
             </CardTitle>
@@ -357,7 +357,7 @@ export default async function UserDetailPage({
                       <span>{p.description || p.payment_method || "Payment"}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">€{Number(p.amount).toFixed(2)}</span>
+                      <span className="font-medium">${Number(p.amount).toFixed(2)}</span>
                       <span className="text-muted-foreground">
                         {formatDistanceToNow(new Date(p.created_at), { addSuffix: true })}
                       </span>
@@ -391,7 +391,7 @@ export default async function UserDetailPage({
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">€{Number(inv.amount).toFixed(2)}</span>
+                      <span className="font-medium">${Number(inv.amount).toFixed(2)}</span>
                       <span className="text-muted-foreground">
                         {new Date(inv.issued_at).toLocaleDateString()}
                       </span>

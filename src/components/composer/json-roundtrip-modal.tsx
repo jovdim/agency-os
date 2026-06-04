@@ -77,7 +77,7 @@ interface Props {
    * keeps the same structure), so only the prompt + apply destination
    * differ. */
   mode?: "fill" | "translate";
-  /** Language to translate INTO (e.g. "Deutsch"). Required for translate mode. */
+  /** Language to translate INTO (e.g. "Español"). Required for translate mode. */
   targetLocaleLabel?: string;
   /** Language the content is currently in (e.g. "English"). Optional. */
   sourceLocaleLabel?: string;

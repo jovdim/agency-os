@@ -139,8 +139,10 @@ export async function POST(req: NextRequest) {
   const cityIdx = findColumnIndex(headers, "Mesto", "City") !== -1
     ? findColumnIndex(headers, "Mesto", "City")
     : isKnownFormat ? 11 : -1;
-  const districtIdx = findColumnIndex(headers, "Okres", "District") !== -1
-    ? findColumnIndex(headers, "Okres", "District")
+  // "State" is the current header; "Okres"/"District" kept as legacy aliases
+  // so previously-exported CSV files still import.
+  const stateIdx = findColumnIndex(headers, "State", "Štát", "Okres", "District") !== -1
+    ? findColumnIndex(headers, "State", "Štát", "Okres", "District")
     : isKnownFormat ? 13 : -1;
 
   if (nameIdx === -1 && !isLeadsFormat) {
@@ -150,7 +152,7 @@ export async function POST(req: NextRequest) {
     }, { status: 400 });
   }
 
-  console.log("[CSV Upload] Column mapping:", { isLeadsFormat, nameIdx, categoryIdx, websiteIdx, phone1Idx, phone2Idx, phone3Idx, email1Idx, cityIdx, districtIdx });
+  console.log("[CSV Upload] Column mapping:", { isLeadsFormat, nameIdx, categoryIdx, websiteIdx, phone1Idx, phone2Idx, phone3Idx, email1Idx, cityIdx, stateIdx });
 
   const phoneIndices = [phone1Idx, phone2Idx, phone3Idx];
   const emailIndices = [email1Idx, email2Idx, email3Idx];
@@ -166,7 +168,7 @@ export async function POST(req: NextRequest) {
     phone: string | null;
     email: string | null;
     town: string | null;
-    district: string | null;
+    state: string | null;
     total_listings: number | null;
     description: string | null;
     services_offered: string | null;
@@ -247,7 +249,7 @@ export async function POST(req: NextRequest) {
         phone,
         email: null,
         town: locParsed.town,
-        district: null,
+        state: null,
         total_listings: totalListings,
         description,
         services_offered: servicesI !== -1 ? cols[servicesI]?.trim() || null : null,
@@ -284,7 +286,7 @@ export async function POST(req: NextRequest) {
         phone,
         email,
         town: cityIdx !== -1 ? cols[cityIdx]?.trim() || null : null,
-        district: districtIdx !== -1 ? cols[districtIdx]?.trim() || null : null,
+        state: stateIdx !== -1 ? cols[stateIdx]?.trim() || null : null,
         total_listings: null,
         description: null,
         services_offered: null,
@@ -345,7 +347,7 @@ export async function POST(req: NextRequest) {
     phone: r.phone,
     email: r.email,
     town: r.town,
-    district: r.district,
+    state: r.state,
     total_listings: r.total_listings,
     description: r.description,
     services_offered: r.services_offered,

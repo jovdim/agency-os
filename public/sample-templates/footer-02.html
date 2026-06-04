@@ -170,11 +170,10 @@
             Bottom row: copyright on the left, agency credit on the right.
             Mobile (≤600px): bottom row stacks centered.
   CONTENT:  logo + tagline + utility links repeater + legal block
-            (company name + address + Company No. + Tax ID) + copyright + agency credit.
-  EDITABLE: 9 fields — footer_logo (image) + footer_description +
+            (company name + address) + copyright + agency credit.
+  EDITABLE: 7 fields — footer_logo (image) + footer_description +
             footer_links (repeater 1..5) + footer_company_name +
-            footer_address + footer_ico + footer_dic + footer_copyright +
-            agency_credit (link).
+            footer_address + footer_copyright + agency_credit (link).
   THEME:    Section bg = --color-bg with --color-border hairlines top, between
             sections, and above bottom row. Tagline = --color-text-light.
             Link labels = --color-dark; bottom row labels = --color-text-light.
@@ -198,11 +197,6 @@
     <div class="footer-centered__legal">
       <p class="footer-centered__company" data-field="footer_company_name">Your Company Ltd.</p>
       <p data-field="footer_address">1 Main Street, 010 01 City</p>
-      <p>
-        <span data-field="footer_ico">Company No.: xxxxxxxx</span>
-        <span class="legal-sep" aria-hidden="true"></span>
-        <span data-field="footer_dic">Tax ID: xxxxxxxxxx</span>
-      </p>
     </div>
 
     <div class="footer-centered__socials">

@@ -4,11 +4,11 @@ import { syncNavDropdownFromServices } from "@/lib/composer/nav-dropdown-sync";
 import type { SiteComposition } from "@/lib/templates/render";
 
 /**
- * Regression: the Sluzby nav dropdown rows are auto-synced copies of the
+ * Regression: the Services nav dropdown rows are auto-synced copies of the
  * services section titles (nav-dropdown-sync.ts). The i18n overlay
  * translates the services section but leaves those stored dropdown copies
- * in the default language — so a /de/ (or /en/) menu showed Slovak dropdown
- * items even though the page itself was German.
+ * in the default language — so a /es/ menu showed English dropdown items
+ * even though the page itself was Spanish.
  *
  * The fix: both the server renderer (render.ts) and the in-composer preview
  * re-run syncNavDropdownFromServices on the LOCALIZED composition, pulling
@@ -66,7 +66,7 @@ function comp(): SiteComposition {
     pages: [
       {
         path: "index.html",
-        label: "Domov",
+        label: "Home",
         sections: [
           {
             id: "sec-services",
@@ -74,8 +74,8 @@ function comp(): SiteComposition {
             order: 0,
             content_overrides: {
               services_items: [
-                { title: "Ploty", desc: "Kvalitné ploty" },
-                { title: "Brány", desc: "Brány na mieru" },
+                { title: "Fences", desc: "Quality fences" },
+                { title: "Gates", desc: "Custom gates" },
               ],
             },
           },
@@ -86,20 +86,20 @@ function comp(): SiteComposition {
       nav_template_id: "tpl-nav",
       nav_overrides: {
         nav_links: [
-          { label: { label: "Domov", href: "/" } },
+          { label: { label: "Home", href: "/" } },
           {
-            // Sluzby menu item: dropdown rows are in "auto" mode (visible
+            // Services menu item: dropdown rows are in "auto" mode (visible
             // label === __auto snapshot), so the sync is allowed to
             // overwrite them with freshly-computed values.
-            label: { label: "Služby", href: "/#sluzby" },
+            label: { label: "Services", href: "/#sluzby" },
             dropdown_items: [
               {
-                label: { label: "Ploty", href: "/#ploty" },
-                __auto: { label: "Ploty", href: "/#ploty" },
+                label: { label: "Fences", href: "/#ploty" },
+                __auto: { label: "Fences", href: "/#ploty" },
               },
               {
-                label: { label: "Brány", href: "/#brany" },
-                __auto: { label: "Brány", href: "/#brany" },
+                label: { label: "Gates", href: "/#brany" },
+                __auto: { label: "Gates", href: "/#brany" },
               },
             ],
           },
@@ -108,24 +108,24 @@ function comp(): SiteComposition {
     },
     seo: {},
     i18n: {
-      default_locale: "sk",
-      enabled_locales: ["sk", "de"],
+      default_locale: "en",
+      enabled_locales: ["en", "es"],
       translations: {
-        de: {
+        es: {
           "sec-services": {
             services_items: [
-              { title: "Zäune", desc: "Hochwertige Zäune" },
-              { title: "Tore", desc: "Tore nach Maß" },
+              { title: "Vallas", desc: "Vallas de calidad" },
+              { title: "Puertas", desc: "Puertas a medida" },
             ],
           },
           // Realistic snapshot: the JSON round-trip exports nav link labels
           // but NOT nested dropdown_items (exportRepeater skips nested
-          // repeaters), so the de __nav carries only the two top-level
+          // repeaters), so the es __nav carries only the two top-level
           // labels — which is exactly why the dropdown needed re-syncing.
           __nav: {
             nav_links: [
-              { label: { label: "Startseite" } },
-              { label: { label: "Leistungen" } },
+              { label: { label: "Inicio" } },
+              { label: { label: "Servicios" } },
             ],
           },
         },
@@ -145,40 +145,40 @@ function dropdownLabels(c: SiteComposition): string[] {
 
 describe("i18n nav dropdown re-sync", () => {
   it("localize alone leaves the dropdown in the default language (documents the bug)", () => {
-    const de = localizeComposition(comp(), "de");
+    const es = localizeComposition(comp(), "es");
     // The services section itself IS translated…
-    const svc = de.pages[0].sections[0].content_overrides!
+    const svc = es.pages[0].sections[0].content_overrides!
       .services_items as Array<{ title: string }>;
-    expect(svc.map((s) => s.title)).toEqual(["Zäune", "Tore"]);
-    // …but the stored dropdown copies are still Slovak (the bug).
-    expect(dropdownLabels(de)).toEqual(["Ploty", "Brány"]);
+    expect(svc.map((s) => s.title)).toEqual(["Vallas", "Puertas"]);
+    // …but the stored dropdown copies are still English (the bug).
+    expect(dropdownLabels(es)).toEqual(["Fences", "Gates"]);
   });
 
   it("re-syncing the localized composition translates the dropdown labels", () => {
-    const de = syncNavDropdownFromServices(
-      localizeComposition(comp(), "de"),
+    const es = syncNavDropdownFromServices(
+      localizeComposition(comp(), "es"),
       templateMap(),
     );
-    expect(dropdownLabels(de)).toEqual(["Zäune", "Tore"]);
+    expect(dropdownLabels(es)).toEqual(["Vallas", "Puertas"]);
   });
 
   it("preserves the top-level nav link translation while fixing the dropdown", () => {
-    const de = syncNavDropdownFromServices(
-      localizeComposition(comp(), "de"),
+    const es = syncNavDropdownFromServices(
+      localizeComposition(comp(), "es"),
       templateMap(),
     );
-    const navLinks = de.shared!.nav_overrides!.nav_links as Array<
+    const navLinks = es.shared!.nav_overrides!.nav_links as Array<
       Record<string, unknown>
     >;
     const topLabels = navLinks.map(
       (l) => (l.label as { label?: string }).label,
     );
-    expect(topLabels).toEqual(["Startseite", "Leistungen"]);
+    expect(topLabels).toEqual(["Inicio", "Servicios"]);
   });
 
   it("does not mutate the base composition", () => {
     const base = comp();
-    syncNavDropdownFromServices(localizeComposition(base, "de"), templateMap());
-    expect(dropdownLabels(base)).toEqual(["Ploty", "Brány"]);
+    syncNavDropdownFromServices(localizeComposition(base, "es"), templateMap());
+    expect(dropdownLabels(base)).toEqual(["Fences", "Gates"]);
   });
 });

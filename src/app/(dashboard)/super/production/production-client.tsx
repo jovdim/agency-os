@@ -20,7 +20,7 @@ import {
   ArrowLeft,
   CheckCircle,
   Clock,
-  Euro,
+  DollarSign,
   Users,
   PenLine,
 } from "lucide-react";
@@ -155,11 +155,11 @@ export function SuperProductionClient({
                 Total Revenue
               </p>
               <p className="text-3xl font-bold mt-1 text-violet-600 dark:text-violet-400">
-                {"\u20AC"}{totalRevenue.toLocaleString()}
+                {"$"}{totalRevenue.toLocaleString()}
               </p>
             </div>
             <div className="rounded-md bg-violet-100 dark:bg-violet-900/30 p-2">
-              <Euro className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              <DollarSign className="h-4 w-4 text-violet-600 dark:text-violet-400" />
             </div>
           </div>
         </div>
@@ -374,7 +374,7 @@ export function SuperProductionClient({
                       {/* Revenue */}
                       <td className="py-1.5 px-3 text-right tabular-nums text-muted-foreground">
                         {revenueAmount > 0
-                          ? `\u20AC${revenueAmount.toLocaleString()}`
+                          ? `$${revenueAmount.toLocaleString()}`
                           : "\u2014"}
                       </td>
 

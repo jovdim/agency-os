@@ -103,6 +103,7 @@ export interface Contact {
   website_url: string | null;
   industry: string | null;
   town: string | null;
+  state: string | null;
   location: string | null;
   status: string;
   assigned_to: string | null;

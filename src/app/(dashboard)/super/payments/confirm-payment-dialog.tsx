@@ -76,7 +76,7 @@ export function ConfirmPaymentDialog({
       }
 
       toast.success(
-        `Payment confirmed for ${proposal.company_name} — €${enteredAmount.toFixed(2)}`,
+        `Payment confirmed for ${proposal.company_name} — $${enteredAmount.toFixed(2)}`,
       );
       onOpenChange(false);
       router.refresh();
@@ -118,7 +118,7 @@ export function ConfirmPaymentDialog({
                 Expected Amount
               </span>
               <span className="text-sm font-medium">
-                €{expectedAmount.toFixed(2)}
+                ${expectedAmount.toFixed(2)}
               </span>
             </div>
             {proposal.contact_person && (
@@ -131,7 +131,7 @@ export function ConfirmPaymentDialog({
 
           {/* Amount input */}
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount Received (€)</Label>
+            <Label htmlFor="amount">Amount Received ($)</Label>
             <Input
               id="amount"
               type="number"
@@ -148,7 +148,7 @@ export function ConfirmPaymentDialog({
             <div className="flex items-start gap-2 rounded-lg border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-950">
               <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Expected €{expectedAmount.toFixed(2)} but entering €
+                Expected ${expectedAmount.toFixed(2)} but entering $
                 {enteredAmount.toFixed(2)}. Are you sure?
               </p>
             </div>

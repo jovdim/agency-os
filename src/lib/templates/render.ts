@@ -496,9 +496,9 @@ export async function renderSite(
       fetched as unknown as Parameters<typeof syncNavDropdownFromServices>[1],
     );
 
-    // <html lang="…"> — the locale's html lang, or "sk" for legacy
-    // single-language sites with no i18n block (preserves prior output).
-    const htmlLang = target.locale ? LOCALE_HTML_LANG[target.locale] : "sk";
+    // <html lang="…"> — the locale's html lang, or "en" for legacy
+    // single-language sites with no i18n block (English is the default).
+    const htmlLang = target.locale ? LOCALE_HTML_LANG[target.locale] : "en";
 
     // Brand logo / favicon are locale-independent, but nav/footer/seo
     // overrides now carry translated content per locale — recompute the
@@ -725,7 +725,7 @@ export function buildHreflangTags(
   };
   const tags: string[] = [];
   for (const t of targets) {
-    const lang = t.locale ? LOCALE_HTML_LANG[t.locale] : "sk";
+    const lang = t.locale ? LOCALE_HTML_LANG[t.locale] : "en";
     tags.push(
       `<link rel="alternate" hreflang="${lang}" href="${escapeHtml(urlFor(t))}">`,
     );
@@ -804,16 +804,12 @@ const LANG_SWITCHER_STYLE = `
  *  Real graphics (NOT emoji), so they render identically on every OS,
  *  including Windows where flag emojis fall back to bare letters
  *  (see git history / the i18n memory). Authored compact + recognizable at
- *  ~15px chip size: DE/PL/CZ are exact; the Union Jack is simplified
- *  (symmetric saltire) and SK carries a stylized double cross to set it
- *  apart from other white/blue/red tricolors. EN → UK flag by convention.
+ *  ~15px chip size: the Union Jack is simplified (symmetric saltire) and
+ *  the Spanish flag is the red-yellow-red bands. EN → UK flag by convention.
  *  Sized + bordered via the `.sk-lang-flag svg` / `__flag svg` CSS above. */
 const LOCALE_FLAG_SVG: Record<SiteLocale, string> = {
   en: `<svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0 60 30M60 0 0 30" stroke="#fff" stroke-width="6"/><path d="M0 0 60 30M60 0 0 30" stroke="#C8102E" stroke-width="3.5"/><path d="M30 0V30M0 15H60" stroke="#fff" stroke-width="10"/><path d="M30 0V30M0 15H60" stroke="#C8102E" stroke-width="6"/></svg>`,
-  cs: `<svg viewBox="0 0 6 4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="6" height="2" fill="#fff"/><rect y="2" width="6" height="2" fill="#D7141A"/><path d="M0 0 3 2 0 4Z" fill="#11457E"/></svg>`,
-  pl: `<svg viewBox="0 0 8 5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="8" height="5" fill="#fff"/><rect y="2.5" width="8" height="2.5" fill="#DC143C"/></svg>`,
-  de: `<svg viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#D00"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg>`,
-  sk: `<svg viewBox="0 0 9 6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="9" height="2" fill="#fff"/><rect y="2" width="9" height="2" fill="#0B4EA2"/><rect y="4" width="9" height="2" fill="#EE1C25"/><path d="M1 1.2H4V3.5Q4 4.7 2.5 5.2Q1 4.7 1 3.5Z" fill="#EE1C25" stroke="#fff" stroke-width="0.22"/><rect x="2.4" y="1.6" width="0.2" height="2.7" fill="#fff"/><rect x="2.1" y="2.15" width="0.8" height="0.22" fill="#fff"/><rect x="1.95" y="3" width="1.1" height="0.24" fill="#fff"/></svg>`,
+  es: `<svg viewBox="0 0 3 2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="3" height="2" fill="#AA151B"/><rect y="0.5" width="3" height="1" fill="#F1BF00"/></svg>`,
 };
 
 /**
@@ -846,7 +842,7 @@ export function injectLanguageSwitcher(
   homePath: string,
 ): void {
   const currentFlag =
-    LOCALE_FLAG_SVG[(currentTarget.locale ?? "sk") as SiteLocale] ?? "";
+    LOCALE_FLAG_SVG[(currentTarget.locale ?? "en") as SiteLocale] ?? "";
 
   for (const page of pages) {
     const $ = loadCheerio(page.html, { xmlMode: false });
@@ -869,7 +865,7 @@ export function injectLanguageSwitcher(
     // in an <li>, for the mobile in-menu list.
     const localeAnchors = targets.map((t) => {
       const href = localePageHref(t, page.path, homePath);
-      const loc = (t.locale ?? "sk") as SiteLocale;
+      const loc = (t.locale ?? "en") as SiteLocale;
       const lang = LOCALE_HTML_LANG[loc];
       const isCurrent = t.locale === currentTarget.locale;
       const current = isCurrent ? ' aria-current="true"' : "";
@@ -1274,8 +1270,8 @@ function wrapPage(args: {
   fontsLinkTag: string;
   bodyHtml: string;
   scriptTags: string[];
-  /** `<html lang="…">` value. Defaults to "sk" so single-language sites
-   *  with no i18n block render exactly as before. */
+  /** `<html lang="…">` value. Defaults to "en" (the platform default) for
+   *  single-language sites with no i18n block. */
   htmlLang?: string;
   /** Extra raw `<head>` markup (currently hreflang alternate links for
    *  multi-locale sites). Empty string for single-language sites. */
@@ -1288,7 +1284,7 @@ function wrapPage(args: {
     : `<link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">`;
-  const lang = args.htmlLang || "sk";
+  const lang = args.htmlLang || "en";
   const headExtra = args.headExtra ? `\n  ${args.headExtra}` : "";
   return `<!DOCTYPE html>
 <html lang="${lang}">

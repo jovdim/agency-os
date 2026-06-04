@@ -30,8 +30,8 @@ export function AddContactDialog({ open, onOpenChange, onCreated, slovak, assign
   const [phones, setPhones] = useState<string[]>([""]);
 
   const labels = slovak
-    ? { title: "New contact", company: "Company", name: "Name", phone: "Phone", city: "City", district: "District", industry: "Industry", email: "Email", website: "Website", links: "Links (FB, Instagram, Google Maps...)", addLink: "Add", notes: "Notes", cancel: "Cancel", create: "Create", creating: "Creating..." }
-    : { title: "Add Contact", company: "Company", name: "Name", phone: "Phone", city: "City", district: "District", industry: "Industry", email: "Email", website: "Website", links: "Links (FB, Instagram, Google Maps...)", addLink: "Add", notes: "Notes", cancel: "Cancel", create: "Add Contact", creating: "Adding..." };
+    ? { title: "New contact", company: "Company", name: "Name", phone: "Phone", city: "City", state: "State", industry: "Industry", email: "Email", website: "Website", links: "Links (FB, Instagram, Google Maps...)", addLink: "Add", notes: "Notes", cancel: "Cancel", create: "Create", creating: "Creating..." }
+    : { title: "Add Contact", company: "Company", name: "Name", phone: "Phone", city: "City", state: "State", industry: "Industry", email: "Email", website: "Website", links: "Links (FB, Instagram, Google Maps...)", addLink: "Add", notes: "Notes", cancel: "Cancel", create: "Add Contact", creating: "Adding..." };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -71,7 +71,7 @@ export function AddContactDialog({ open, onOpenChange, onCreated, slovak, assign
       website_url: (formData.get("website_url") as string)?.trim() || null,
       industry: (formData.get("industry") as string)?.trim().toLowerCase() || null,
       town: (formData.get("town") as string)?.trim().toLowerCase() || null,
-      district: (formData.get("district") as string)?.trim() || null,
+      state: (formData.get("state") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
       social_links: links.filter(l => l.trim()).join("\n") || null,
       source: "manual",
@@ -165,8 +165,8 @@ export function AddContactDialog({ open, onOpenChange, onCreated, slovak, assign
                 <Input name="town" placeholder="Springfield" className="h-8 text-sm" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium">{labels.district}</label>
-                <Input name="district" placeholder="Downtown" className="h-8 text-sm" />
+                <label className="text-xs font-medium">{labels.state}</label>
+                <Input name="state" placeholder="California" className="h-8 text-sm" />
               </div>
               <div className="sm:col-span-2 space-y-1">
                 <label className="text-xs font-medium">{labels.website}</label>

@@ -100,7 +100,7 @@ export default async function SuperAdminDashboard() {
   );
   const totalSalesLabel = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "EUR",
+    currency: "USD",
     maximumFractionDigits: 0,
   }).format(totalSalesAmount);
 

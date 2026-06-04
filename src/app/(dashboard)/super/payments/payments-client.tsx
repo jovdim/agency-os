@@ -310,7 +310,7 @@ export function PaymentsClient({
                       </TableCell>
                       <TableCell>
                         <span className="font-semibold tabular-nums">
-                          €{a.active_price.toFixed(0)}
+                          ${a.active_price.toFixed(0)}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -382,7 +382,7 @@ export function PaymentsClient({
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold tabular-nums">
-                      €{(p.amount ?? 0).toFixed(0)}
+                      ${(p.amount ?? 0).toFixed(0)}
                     </span>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono">

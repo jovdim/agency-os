@@ -916,7 +916,7 @@ export const DEFAULT_TRANSLATION_GUIDE = [
 
 export interface BuildTranslationInstructionsArgs {
   /** Human-readable name of the language to translate INTO (e.g.
-   *  "Deutsch", "English"). Comes from LOCALE_LABELS. */
+   *  "Español", "English"). Comes from LOCALE_LABELS. */
   targetLanguageLabel: string;
   /** Human-readable name of the source language the JSON is currently in
    *  (e.g. "English"). Helps the LLM with direction + tone. Optional. */

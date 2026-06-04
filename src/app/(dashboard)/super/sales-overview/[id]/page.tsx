@@ -111,7 +111,7 @@ export default async function SalespersonDetailPage({
       .eq("assigned_to", id),
     supabase
       .from("contacts")
-      .select("id, company_name, phone, email, website_url, town, district, industry, status, updated_at")
+      .select("id, company_name, phone, email, website_url, town, state, industry, status, updated_at")
       .eq("assigned_to", id)
       .order("updated_at", { ascending: false })
       .limit(500),
