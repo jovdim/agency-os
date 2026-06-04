@@ -271,19 +271,19 @@
     </a>
 
     <ul class="nav-links" id="nav-links-list" data-repeat="nav_links" data-min="1" data-max="12">
-      <li><a data-field="label" data-type="link" href="#domov">Home</a></li>
-      <li><a data-field="label" data-type="link" href="#o-nas">About</a></li>
+      <li><a data-field="label" data-type="link" href="#home">Home</a></li>
+      <li><a data-field="label" data-type="link" href="#about">About</a></li>
       <li>
-        <a data-field="label" data-type="link" href="#sluzby" aria-haspopup="true" aria-expanded="false">Services</a>
+        <a data-field="label" data-type="link" href="#services" aria-haspopup="true" aria-expanded="false">Services</a>
         <ul class="dropdown" aria-label="Service list" data-repeat="dropdown_items" data-min="0" data-max="10">
-          <li><a data-field="label" data-type="link" href="#sluzba-1">Service 1</a></li>
-          <li><a data-field="label" data-type="link" href="#sluzba-2">Service 2</a></li>
-          <li><a data-field="label" data-type="link" href="#sluzba-3">Service 3</a></li>
-          <li><a data-field="label" data-type="link" href="#sluzba-4">Service 4</a></li>
+          <li><a data-field="label" data-type="link" href="#service-1">Service 1</a></li>
+          <li><a data-field="label" data-type="link" href="#service-2">Service 2</a></li>
+          <li><a data-field="label" data-type="link" href="#service-3">Service 3</a></li>
+          <li><a data-field="label" data-type="link" href="#service-4">Service 4</a></li>
         </ul>
       </li>
-      <li><a data-field="label" data-type="link" href="#galeria">Gallery</a></li>
-      <li><a data-field="label" data-type="link" href="#kontakt">Contact</a></li>
+      <li><a data-field="label" data-type="link" href="#gallery">Gallery</a></li>
+      <li><a data-field="label" data-type="link" href="#contact">Contact</a></li>
     </ul>
 
     <!-- Socials: FB + IG. Each is a link field with hide/restore
@@ -339,7 +339,7 @@
         if (!dd) return;
         a.addEventListener('click', function (e) {
           // Mobile: toggle dropdown + preventDefault. Desktop: let the
-          // click navigate to the trigger's href (e.g. #sluzby) — the
+          // click navigate to the trigger's href (e.g. #services) — the
           // hover already opens the dropdown. (Peter 2026-05-15 v4)
           if (window.innerWidth <= 900) {
             e.preventDefault();

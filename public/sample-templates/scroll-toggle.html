@@ -88,7 +88,7 @@
 </div>
 
 <!-- Fake hero so the preview can demo the mode flip -->
-<div id="domov" style="min-height:100vh;background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:1.5rem">
+<div id="home" style="min-height:100vh;background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:1.5rem">
   Fake hero — scroll down to see the arrow flip
 </div>
 <div style="min-height:1400px;background:var(--color-bg-alt);padding:40px 24px;text-align:center;color:#57534e;font-family:'DM Sans',sans-serif">
@@ -123,7 +123,7 @@
               · WhatsApp AND phone    → bottom 120px (112px mobile)
             Don't combine with scroll-top — both want the same slot.
   JS:       Self-contained IIFE. Uses IntersectionObserver on the
-            first section that looks like a hero (id="domov" or first
+            first section that looks like a hero (id="home" or first
             <section>); falls back to a scrollY threshold (~80vh)
             when the API is missing. Toggles .mode-up when the hero
             leaves the viewport. Click dispatches scrollTo top or
@@ -195,7 +195,7 @@
 
     // ── Mode detection: hero in view → mode-down, else mode-up ──
     // Resolve the "hero" element with a graceful cascade:
-    //   1. Explicit id="domov" (set on every hero-XX template by default
+    //   1. Explicit id="home" (set on every hero-XX template by default
     //      after the anchor migration); accept legacy id="hero"
     //      too so widget-equipped sites that haven't been republished
     //      yet keep working.
