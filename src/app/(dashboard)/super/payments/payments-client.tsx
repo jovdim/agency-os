@@ -316,7 +316,7 @@ export function PaymentsClient({
                       <TableCell>
                         <p className="text-xs text-muted-foreground">
                           {a.sent_at
-                            ? new Date(a.sent_at).toLocaleDateString("sk-SK")
+                            ? new Date(a.sent_at).toLocaleDateString("en-US")
                             : "—"}
                         </p>
                         <p
@@ -406,7 +406,7 @@ export function PaymentsClient({
                     )}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {new Date(p.created_at).toLocaleDateString("sk-SK")}
+                    {new Date(p.created_at).toLocaleDateString("en-US")}
                   </TableCell>
                 </TableRow>
               ))}

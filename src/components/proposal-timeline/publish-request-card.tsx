@@ -85,7 +85,7 @@ export function PublishRequestCard({
       const refunded = Number(data.refunded_eur ?? 0);
       toast.success(
         refunded > 0
-          ? `Request rejected. Refunded $${refunded.toFixed(2).replace(".", ",")} to the client.`
+          ? `Request rejected. Refunded $${refunded.toFixed(2)} to the client.`
           : "Request rejected. The client sees the reason in their editor.",
         { duration: 6000 },
       );
@@ -118,9 +118,9 @@ export function PublishRequestCard({
           </div>
 
           <p className="mt-2 text-xs text-muted-foreground">
-            Client already paid ${publishCost.toFixed(2).replace(".", ",")}
+            Client already paid ${publishCost.toFixed(2)}
             at submit · Approve to publish, reject to refund · Balance{" "}
-            ${balance.toFixed(2).replace(".", ",")}
+            ${balance.toFixed(2)}
           </p>
 
           {rejecting && (

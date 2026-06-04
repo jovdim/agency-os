@@ -762,7 +762,7 @@ function ClientRequestAction({
               insufficient ? "text-destructive" : ""
             }`}
           >
-            ${credit.balance.toFixed(2).replace(".", ",")}
+            ${credit.balance.toFixed(2)}
           </span>
         </div>
       )}
@@ -784,7 +784,7 @@ function ClientRequestAction({
             <span>{buttonLabel}</span>
             {credit && (
               <span className="opacity-80 tabular-nums">
-                · ${credit.publishCost.toFixed(2).replace(".", ",")}
+                · ${credit.publishCost.toFixed(2)}
               </span>
             )}
           </>

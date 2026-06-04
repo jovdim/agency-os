@@ -321,8 +321,8 @@ export default async function TechAdminDetailPage({
               <span className="font-semibold text-foreground">
                 {doneInRangeCount}
               </span>{" "}
-              shipped {fromDate.toLocaleDateString("sk-SK")}–
-              {toDate.toLocaleDateString("sk-SK")}
+              shipped {fromDate.toLocaleDateString("en-US")}–
+              {toDate.toLocaleDateString("en-US")}
             </span>
           )}
         </form>

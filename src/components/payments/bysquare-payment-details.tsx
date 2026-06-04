@@ -56,7 +56,7 @@ export function BySquarePaymentDetails({
   const activePrice = discountActive
     ? discountPrice ?? basePrice ?? 0
     : basePrice ?? 0;
-  const priceLabel = `$${activePrice.toFixed(2).replace(".", ",")}`;
+  const priceLabel = `$${activePrice.toFixed(2)}`;
 
   return (
     <div
@@ -117,7 +117,7 @@ export function BySquarePaymentDetails({
           copyValue={activePrice.toFixed(2)}
         />
         <DetailRow
-          label="Variable symbol"
+          label="Reference"
           value={variableSymbol ?? "—"}
           copyValue={variableSymbol ?? undefined}
           mono

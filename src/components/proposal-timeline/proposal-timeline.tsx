@@ -1172,7 +1172,7 @@ function CreditAdjuster({
       <div className="flex items-baseline justify-between">
         <span className="font-semibold text-foreground">Credit balance</span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          ${balance.toFixed(2).replace(".", ",")}
+          ${balance.toFixed(2)}
         </span>
       </div>
 

@@ -492,7 +492,7 @@ export function ClientManagement({
                   <div className="flex items-center gap-1.5 text-sm">
                     <Coins className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-muted-foreground">Balance:</span>
-                    <span className="font-medium">${clientSiteInfo[selectedClient.id].credits.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-medium">${clientSiteInfo[selectedClient.id].credits.toFixed(2)}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button

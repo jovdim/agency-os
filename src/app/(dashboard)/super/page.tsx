@@ -171,7 +171,7 @@ export default async function SuperAdminDashboard() {
     },
     {
       label: "Leads left",
-      value: (leadsLeft ?? 0).toLocaleString("sk-SK"),
+      value: (leadsLeft ?? 0).toLocaleString("en-US"),
       sublabel: "uncalled contacts",
       href: "/super/contacts",
     },

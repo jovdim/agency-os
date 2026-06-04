@@ -201,7 +201,7 @@ export default async function SuperSalesOverviewPage() {
                     )}
                   </TableCell>
                   <TableCell className="text-right py-3 tabular-nums text-base font-medium">
-                    {person.currentLeads.toLocaleString("sk-SK")}
+                    {person.currentLeads.toLocaleString("en-US")}
                   </TableCell>
                   <TableCell className="text-right py-3 tabular-nums text-base font-medium">
                     {person.callsToday}

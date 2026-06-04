@@ -413,7 +413,7 @@ export function InvoiceRequestsClient({ pending, done }: Props) {
                         </span>
                         <span className="mx-1.5 text-muted-foreground/40">·</span>
                         <span className="text-muted-foreground/70">
-                          {new Date(req.created_at).toLocaleDateString("sk-SK")}
+                          {new Date(req.created_at).toLocaleDateString("en-US")}
                         </span>
                       </p>
                     </div>
@@ -504,7 +504,7 @@ export function InvoiceRequestsClient({ pending, done }: Props) {
                             <p className="text-[10px] text-muted-foreground/70 mt-0.5">
                               {new Date(
                                 req.responded_at || req.created_at,
-                              ).toLocaleDateString("sk-SK")}
+                              ).toLocaleDateString("en-US")}
                             </p>
                           </TableCell>
                           <TableCell>
@@ -600,7 +600,7 @@ export function InvoiceRequestsClient({ pending, done }: Props) {
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   from {respondTo.profiles?.full_name} ·{" "}
-                  {new Date(respondTo.created_at).toLocaleDateString("sk-SK")}
+                  {new Date(respondTo.created_at).toLocaleDateString("en-US")}
                 </p>
               </div>
 

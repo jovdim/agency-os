@@ -400,7 +400,7 @@ export function ChangeRequestReviewClient({
                 <p className="text-sm whitespace-pre-wrap">{inlineChanges[0].new_value}</p>
               </div>
               <div className="text-xs text-muted-foreground">
-                Sent {new Date(req.created_at).toLocaleString("sk-SK")}
+                Sent {new Date(req.created_at).toLocaleString("en-US")}
               </div>
             </CardContent>
           </Card>

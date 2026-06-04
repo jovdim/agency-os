@@ -438,7 +438,7 @@ function ProviderModelPicker({
 
 function RecentRow({ g }: { g: RecentGeneration }) {
   const time = new Date(g.created_at);
-  const timeLabel = time.toLocaleString("sk-SK", {
+  const timeLabel = time.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     hour: "2-digit",
