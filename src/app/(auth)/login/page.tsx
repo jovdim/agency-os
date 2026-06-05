@@ -14,6 +14,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Brand } from "@/components/brand";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPageWrapper() {
   return (
@@ -134,7 +136,7 @@ function LoginPage() {
       <div className="w-full max-w-sm">
         <Card>
           <CardContent className="py-12 text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
             <p className="mt-4 text-sm text-muted-foreground">Signing in...</p>
           </CardContent>
         </Card>
@@ -147,10 +149,13 @@ function LoginPage() {
       <div className="flex justify-end mb-4">
         <ThemeToggle />
       </div>
-      <Card>
+      <Card className="border-border/60 shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2">
-            <span className="text-2xl font-bold tracking-tight text-foreground">Your Logo</span>
+            <Brand
+              markClassName="size-9 rounded-lg text-base"
+              wordmarkClassName="text-xl"
+            />
           </div>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>

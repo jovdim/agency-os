@@ -9,11 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../_common/preview.css">
   <style>
-    /* about-09 — split "About us" section ported from the pilimestromy About.
-       Left column: pentagon eyebrow + headline + section-line + body +
-       icon-tile bullet list + 2 CTAs. Right column: a media panel framed
-       by two brand corner-brackets, with a centered play button that opens
-       the configured video URL in a new tab. */
+    /* about-09 — split "About us" section. Left column: pentagon eyebrow +
+       headline + section-line + body + icon-tile bullet list + 2 CTAs.
+       Right column: a media panel framed by two brand corner-brackets that
+       shows the poster image, or an embedded video when a URL is set. */
     .about-09 { padding: 96px 0; }
     .about-09 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
     .about-09 .split {
@@ -84,14 +83,15 @@
             video URL. Mobile: text first, media below.
   CONTENT:  eyebrow + headline + body (richtext) + bullet points (label
             each) + 2 CTAs + a corner-bracket framed embedded video.
-  EDITABLE: 1 text + 1 text (headline) + 1 longtext + repeater of {label}
-            + 2 link CTAs + 1 image (poster fallback) + 1 video URL.
-  VIDEO:    about_video_url is a "video" field (same composer input as the
-            gallery video tiles). The inline script normalises a YouTube
-            watch / youtu.be / Vimeo / raw-id / embed URL into an embedded
-            iframe overlaid on the poster. Empty URL = poster image only.
-            Autoplays muted+looped on the live site; in the composer it
-            loads paused with controls so editing stays quiet.
+  EDITABLE: about_eyebrow + about_headline (text) + about_body (richtext) +
+            about_point_1..3 (text) + about_cta_1/2 (link) +
+            about_image (poster image) + about_video_url (text — embed URL).
+  VIDEO:    about_video_url is a TEXT field — paste any YouTube watch /
+            youtu.be / Vimeo / raw-id / iframe-embed URL and the inline
+            script normalises it into an embedded iframe over the poster.
+            Empty URL = poster image only (so the section works as plain
+            image too). Autoplays muted+looped on the live site; in the
+            composer it loads paused with controls so editing stays quiet.
   THEME:    Eyebrow pentagon, section-line, icon tiles and corner brackets
             all use var(--color-primary). Section uses var(--color-bg-alt)
             via .section-alt.
@@ -102,26 +102,26 @@
 
       <div class="about-09__text">
         <span class="eyebrow" data-field="about_eyebrow">About us</span>
-        <h2 data-field="about_headline">Joseph - Tree Care</h2>
+        <h2 data-field="about_headline">About our company</h2>
         <span class="section-line" aria-hidden="true"></span>
-        <div class="about-body" data-field="about_body" data-type="richtext"><p>Joseph - Tree Care specializes in rope cutting and hazardous tree felling in the region. Using rope-access tree-climbing techniques, it provides safe and efficient solutions.</p></div>
+        <div class="about-body" data-field="about_body" data-type="richtext"><p>Write a short description of your company here — what you do, who you serve, and what makes you different. Two or three sentences works well.</p></div>
 
         <!-- Fixed 3 bullets (NOT a repeater): a data-driven repeater can't
              carry per-item icons and clones the first item's icon onto every
-             row, so the three reference icons (axe / shield-check / map-pin)
+             row, so the three reference icons (check / shield-check / map-pin)
              are baked in by position with editable text labels. -->
         <ul class="about-09__points">
           <li>
-            <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/><path d="M15 13 9 7l4-4 6 6h3a8 8 0 0 1-7 7z"/></svg></span>
-            <span class="label" data-field="about_point_1">SRT rope-access tree-climbing technique</span>
+            <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="label" data-field="about_point_1">Your first key point</span>
           </li>
           <li>
             <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
-            <span class="label" data-field="about_point_2">Safe solutions in demanding terrain</span>
+            <span class="label" data-field="about_point_2">Your second key point</span>
           </li>
           <li>
             <span class="tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-            <span class="label" data-field="about_point_3">We operate across the region</span>
+            <span class="label" data-field="about_point_3">Your third key point</span>
           </li>
         </ul>
 
@@ -136,9 +136,11 @@
         <span class="corner br" aria-hidden="true"></span>
         <div class="frame">
           <img class="about-09__poster" data-field="about_image" src="https://placehold.co/960x540/1a1a1a/e7e5e4?text=Video&font=lato" alt="" loading="lazy">
-          <!-- Video URL carrier (composer-edited, never shown). The inline
-               script turns this into an embedded iframe over the poster. -->
-          <span class="about-09__video" data-field="about_video_url" data-type="video" aria-hidden="true">https://www.youtube.com/embed/-jkdM6VJtEM</span>
+          <!-- Embed-URL carrier (composer-edited via a text field, never shown).
+               Paste any YouTube / Vimeo / iframe-embed URL; the inline script
+               normalises it into an embedded iframe over the poster. Leave it
+               empty to show just the poster image. -->
+          <span class="about-09__video" data-field="about_video_url" data-type="text" aria-hidden="true"></span>
         </div>
       </div>
 

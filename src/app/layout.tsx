@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SK Agency OS",
+  title: "Agency OS",
   description: "Web agency operating system",
 };
 

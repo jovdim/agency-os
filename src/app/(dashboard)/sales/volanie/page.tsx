@@ -61,7 +61,6 @@ export default async function VolaniePage({
 
   // Count today's outcomes
   const todayProposals = (todayLogs || []).filter(l => l.outcome === "send_proposal").length;
-  const todayInvoices = (todayLogs || []).filter(l => l.outcome === "send_invoice").length;
 
   // Merge new + callback, new first
   const allContacts = [...(newContacts || []), ...(callbackContacts || [])];
@@ -95,7 +94,6 @@ export default async function VolaniePage({
       stats={{
         callsToday: processedTodayCount ?? 0,
         proposalsToday: todayProposals,
-        invoicesToday: todayInvoices,
         totalContacts: orderedContacts.length,
       }}
     />

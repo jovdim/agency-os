@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Globe2,
   ExternalLink,
-  AlertCircle,
   Mail,
   Phone,
 } from "lucide-react";
@@ -327,18 +326,12 @@ export default async function DomainsPage() {
         <p className="text-xs text-muted-foreground mt-1">awaiting action</p>
       </div>
 
-      <div className="rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-        <div className="text-sm text-amber-900 dark:text-amber-100 space-y-1">
-          <p className="font-semibold">Manual step required</p>
-          <p className="text-amber-800 dark:text-amber-200">
-            Domain registration / transfer is{" "}
-            <strong>not yet automated</strong>. After you complete the domain
-            registration or transfer, you must{" "}
-            <strong>notify the IT guy</strong> to connect the domain to the
-            client&apos;s website.
-          </p>
-        </div>
+      <div className="space-y-1">
+        <h2 className="text-base font-semibold">Client domains to set up</h2>
+        <p className="text-sm text-muted-foreground">
+          Each client&apos;s requested domain appears below. Register or transfer
+          it, then connect the domain to their website.
+        </p>
       </div>
 
       <DomainTabs

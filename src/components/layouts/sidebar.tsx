@@ -40,6 +40,7 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
+import { Brand } from "@/components/brand";
 
 interface NavItem {
   label: string;
@@ -117,11 +118,6 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
           label: "Live Clients",
           href: "/sales/live-clients",
           icon: <Users className="h-4 w-4" />,
-        },
-        {
-          label: "Invoices",
-          href: "/sales/faktury",
-          icon: <Receipt className="h-4 w-4" />,
         },
         {
           label: "Commissions",
@@ -217,11 +213,6 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
           label: "Domains",
           href: "/super/domains",
           icon: <Globe2 className="h-4 w-4" />,
-        },
-        {
-          label: "Invoice Requests",
-          href: "/super/invoice-requests",
-          icon: <Receipt className="h-4 w-4" />,
         },
         {
           label: "Payments",
@@ -429,7 +420,7 @@ export function Sidebar({
         <div className="flex h-14 items-center border-b px-3 justify-between">
           {!collapsed && (
             <Link href="/" className="flex items-center">
-              <span className="text-base font-bold tracking-tight">Your Logo</span>
+              <Brand />
             </Link>
           )}
           <Button
@@ -516,7 +507,7 @@ export function Sidebar({
  * a simple equality check against it — no per-link pathname logic here.
  *
  * `badge` is an optional unread count. When present (> 0) it renders as a
- * purple pill next to the label when expanded, or a small purple dot in
+ * brand-colored pill next to the label when expanded, or a small brand dot in
  * the top-right of the icon when collapsed. Pass undefined to skip
  * entirely. Currently only the sales "Active" entry uses it.
  */
@@ -552,17 +543,17 @@ function renderNavLink(
         <span className="flex-1 flex items-center justify-between gap-2 min-w-0">
           <span className="truncate">{item.label}</span>
           {hasBadge && (
-            <span className="inline-flex items-center justify-center rounded-full bg-purple-600 px-1.5 min-w-4.5 h-4.5 text-[10px] font-semibold text-white tabular-nums">
+            <span className="inline-flex items-center justify-center rounded-full bg-brand px-1.5 min-w-4.5 h-4.5 text-[10px] font-semibold text-white tabular-nums">
               {badge! > 99 ? "99+" : badge}
             </span>
           )}
         </span>
       )}
-      {/* Collapsed-state dot: small purple circle hugging the icon's top-right
+      {/* Collapsed-state dot: small brand circle hugging the icon's top-right
           so the rep knows "something's new" even when the sidebar is folded. */}
       {collapsed && hasBadge && (
         <span
-          className="absolute top-1 right-1 h-2 w-2 rounded-full bg-purple-600 ring-2 ring-sidebar"
+          className="absolute top-1 right-1 h-2 w-2 rounded-full bg-brand ring-2 ring-sidebar"
           aria-label={`${badge} new`}
         />
       )}

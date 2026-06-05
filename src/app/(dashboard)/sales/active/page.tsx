@@ -14,7 +14,6 @@ export default async function SalesActivePage() {
     activeProposalIdByContact,
     proposalTagsByContact,
     proposalStatusByContact,
-    invoiceStatusByContact,
     updateStateByContact,
     lastPublishedByContact,
   } = await fetchActiveContacts(profile.id);
@@ -28,7 +27,6 @@ export default async function SalesActivePage() {
       activeProposalIdByContact={activeProposalIdByContact}
       proposalTagsByContact={proposalTagsByContact}
       proposalStatusByContact={proposalStatusByContact}
-      invoiceStatusByContact={invoiceStatusByContact}
       updateStateByContact={updateStateByContact}
       lastPublishedByContact={lastPublishedByContact}
     />

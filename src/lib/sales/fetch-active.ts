@@ -81,10 +81,6 @@ export interface FetchActiveResult {
    *  Proposal status pill: `submitted|building|revision` → pending,
    *  `review|sent|viewed` → ready (clickable). */
   proposalStatusByContact: Record<string, string>;
-  /** Map of contact_id -> latest invoice request state.
-   *  `pending` (sales sent, admin not done) | `done` (admin marked done).
-   *  Absent = no invoice request ever sent. */
-  invoiceStatusByContact: Record<string, "pending" | "done">;
   /** Map of contact_id -> three-state attention signal:
    *    - "new"     → first publish, salesperson has never opened it
    *    - "updated" → was already seen, but IT re-published since
@@ -181,7 +177,7 @@ export async function fetchActiveContacts(salesPersonId: string): Promise<FetchA
   );
 
   if (candidateIds.length === 0 && openProposalContactIds.size === 0) {
-    return { contacts: [], outcomes: {}, contactsWithProposals: {}, loggedOutcomes: {}, activeProposalIdByContact: {}, proposalTagsByContact: {}, proposalStatusByContact: {}, invoiceStatusByContact: {}, updateStateByContact: {}, lastPublishedByContact: {}, newCount: 0 };
+    return { contacts: [], outcomes: {}, contactsWithProposals: {}, loggedOutcomes: {}, activeProposalIdByContact: {}, proposalTagsByContact: {}, proposalStatusByContact: {}, updateStateByContact: {}, lastPublishedByContact: {}, newCount: 0 };
   }
 
   // ── Round 2: verify Set A's latest log is still in-progress ──
@@ -216,7 +212,7 @@ export async function fetchActiveContacts(salesPersonId: string): Promise<FetchA
   ]);
 
   if (allCandidateIds.size === 0) {
-    return { contacts: [], outcomes: {}, contactsWithProposals: {}, loggedOutcomes: {}, activeProposalIdByContact: {}, proposalTagsByContact: {}, proposalStatusByContact: {}, invoiceStatusByContact: {}, updateStateByContact: {}, lastPublishedByContact: {}, newCount: 0 };
+    return { contacts: [], outcomes: {}, contactsWithProposals: {}, loggedOutcomes: {}, activeProposalIdByContact: {}, proposalTagsByContact: {}, proposalStatusByContact: {}, updateStateByContact: {}, lastPublishedByContact: {}, newCount: 0 };
   }
 
   // ── Round 3: pull contact records, scoped to this salesperson. ──
@@ -242,31 +238,15 @@ export async function fetchActiveContacts(salesPersonId: string): Promise<FetchA
     loggedOutcomes[c.id] = set ? Array.from(set) : [];
   }
 
-  // ── Round 4: proposals-for-contacts + invoice-requests in parallel ──
-  // Both queries scope by contact id (.in("contact_id", contacts.map(...))),
-  // neither depends on the other's result — used to run sequentially with
-  // an extra round-trip of latency for no reason.
+  // ── Round 4: proposals for these contacts ──
   const contactIds = contacts.map(c => c.id);
-  const [
-    { data: allProposalsForContacts },
-    { data: invoiceRows },
-  ] = contactIds.length > 0
-    ? await Promise.all([
-        admin
-          .from("proposals")
-          .select("id, contact_id, status, updated_at, sales_seen_at")
-          .in("contact_id", contactIds)
-          .order("updated_at", { ascending: false }),
-        admin
-          .from("invoice_requests")
-          .select("contact_id, is_done, created_at")
-          .in("contact_id", contactIds)
-          .order("created_at", { ascending: false }),
-      ])
-    : [
-        { data: [] as { id: string; contact_id: string | null; status: string; updated_at: string; sales_seen_at: string | null }[] },
-        { data: [] as { contact_id: string | null; is_done: boolean; created_at: string }[] },
-      ];
+  const { data: allProposalsForContacts } = contactIds.length > 0
+    ? await admin
+        .from("proposals")
+        .select("id, contact_id, status, updated_at, sales_seen_at")
+        .in("contact_id", contactIds)
+        .order("updated_at", { ascending: false })
+    : { data: [] as { id: string; contact_id: string | null; status: string; updated_at: string; sales_seen_at: string | null }[] };
 
   // Process proposals → contactsWithProposals + chosen (latest open)
   // per contact. Same logic as before: pull all, filter closed-statuses
@@ -293,14 +273,6 @@ export async function fetchActiveContacts(salesPersonId: string): Promise<FetchA
     }
   }
 
-  // Latest invoice request per contact. `pending` (admin hasn't marked
-  // done) vs `done` (admin marked done).
-  const invoiceStatusByContact: Record<string, "pending" | "done"> = {};
-  for (const row of invoiceRows ?? []) {
-    if (!row.contact_id) continue;
-    if (invoiceStatusByContact[row.contact_id]) continue; // keep latest only
-    invoiceStatusByContact[row.contact_id] = row.is_done ? "done" : "pending";
-  }
 
   // ── Round 5: tag assignments + site publish dates in parallel ──
   // Both scope by chosenProposalIds, independent of each other.
@@ -399,7 +371,6 @@ export async function fetchActiveContacts(salesPersonId: string): Promise<FetchA
     activeProposalIdByContact,
     proposalTagsByContact,
     proposalStatusByContact,
-    invoiceStatusByContact,
     updateStateByContact,
     lastPublishedByContact,
     newCount,

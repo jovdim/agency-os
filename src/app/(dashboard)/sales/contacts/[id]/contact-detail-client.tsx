@@ -129,8 +129,6 @@ export function ContactDetailClient({
   const [saving, setSaving]     = useState(false);
   const [contactState, setContactState] = useState<string>(contact.status || "");
   const [deleting, setDeleting] = useState(false);
-  const [invoiceNote, setInvoiceNote] = useState("");
-  const [sendingInvoice, setSendingInvoice] = useState(false);
   const [creatingProposal, setCreatingProposal] = useState(false);
   const [createProposalOpen, setCreateProposalOpen] = useState(false);
   const [proposalServices, setProposalServices] = useState<string[]>(["", "", "", ""]);
@@ -744,65 +742,6 @@ export function ContactDetailClient({
                 </Button>
               </div>
             )}
-          </div>
-
-          {/* Invoice Request */}
-          <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-medium mb-3">Request Invoice</p>
-            <Textarea
-              value={invoiceNote}
-              onChange={(e) => setInvoiceNote(e.target.value)}
-              placeholder="What should be on the invoice? E.g. Website $149, GBP $75, Backlinks $35..."
-              className="text-sm min-h-16 mb-2"
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              disabled={sendingInvoice || !invoiceNote.trim()}
-              onClick={async () => {
-                setSendingInvoice(true);
-                try {
-                  // Primary action: create the invoice_requests row the
-                  // super admin actually sees on /super/invoice-requests.
-                  // Must succeed before we report success to the user.
-                  const reqRes = await fetch(`/api/contacts/${contact.id}/invoice-request`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      company_name: contact.company_name,
-                      message: invoiceNote,
-                    }),
-                  });
-                  if (!reqRes.ok) {
-                    const d = await reqRes.json().catch(() => ({}));
-                    toast.error(d.error || "Error sending request");
-                    return;
-                  }
-                  // Secondary: log the call so contact status flips to
-                  // send_invoice. Best-effort — if this fails the row
-                  // is still in the boss's inbox, that's what matters.
-                  fetch(`/api/contacts/${contact.id}/call-log`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      outcome: "send_invoice",
-                      notes: invoiceNote,
-                    }),
-                  }).catch(() => {});
-
-                  toast.success("Invoice request sent");
-                  setInvoiceNote("");
-                } catch {
-                  toast.error("Error sending request");
-                } finally {
-                  setSendingInvoice(false);
-                }
-              }}
-            >
-              <Send className="h-3.5 w-3.5" />
-              {sendingInvoice ? "Sending..." : "Send Invoice"}
-            </Button>
           </div>
 
           {/* Messages with Tech */}

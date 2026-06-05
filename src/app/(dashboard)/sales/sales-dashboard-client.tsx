@@ -1165,10 +1165,8 @@ function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnsw
   const [historyOpen, setHistoryOpen] = useState(false);
   const [dateDialogOpen, setDateDialogOpen] = useState(false);
   const [customDate, setCustomDate] = useState("");
-  const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [phonePopoverOpen, setPhonePopoverOpen] = useState(false);
   const [emailPopoverOpen, setEmailPopoverOpen] = useState(false);
-  const [invoiceMessage, setInvoiceMessage] = useState("");
   const [neverContactOpen, setNeverContactOpen] = useState(false);
   const [neverContactNote, setNeverContactNote] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -1446,49 +1444,6 @@ function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnsw
           </>
         )}
       </div>
-
-      {/* Invoice dialog — message to admin */}
-      <Dialog open={invoiceDialogOpen} onOpenChange={setInvoiceDialogOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Send invoice</DialogTitle>
-            <div className="text-xs text-muted-foreground">
-              <p>{c.company_name}</p>
-              <p className="mt-0.5">Email: <span className={c.email ? "text-foreground" : "text-amber-500"}>{c.email || "no email"}</span></p>
-            </div>
-          </DialogHeader>
-          <Textarea
-            value={invoiceMessage}
-            onChange={(e) => setInvoiceMessage(e.target.value)}
-            placeholder="What should be on the invoice? E.g.: Website $149, GBP $75, Backlinks $35..."
-            className="text-sm min-h-20"
-          />
-          <DialogFooter>
-            <Button variant="ghost" size="sm" onClick={() => setInvoiceDialogOpen(false)}>Cancel</Button>
-            <Button size="sm" onClick={async () => {
-              if (!invoiceMessage.trim()) return;
-              // Route through the API so super admin gets both the
-              // dashboard row + email notification (same inbox as
-              // domain requests).
-              try {
-                await fetch(`/api/contacts/${c.id}/invoice-request`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    company_name: c.company_name,
-                    message: invoiceMessage,
-                  }),
-                });
-              } catch { /* still proceed with the action */ }
-              setInvoiceDialogOpen(false);
-              handleAction("send_invoice" as CallOutcome, invoiceMessage || undefined);
-              setInvoiceMessage("");
-            }}>
-              Send
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Never contact dialog */}
       <Dialog open={neverContactOpen} onOpenChange={setNeverContactOpen}>

@@ -3,7 +3,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import {
   AlertCircle,
-  Receipt,
   Globe2,
   ArrowRight,
   CheckCircle2,
@@ -12,16 +11,13 @@ import {
 export const dynamic = "force-dynamic";
 
 // Thresholds (in days) above which an item starts showing up in the
-// "Needs your attention" list. Different SLAs for different work
-// streams. Payments intentionally NOT tracked here per Peter — super
-// admin doesn't want overdue payment confirmations on the overview.
-const STALE_INVOICE_REQUEST_DAYS = 2;
+// "Needs your attention" list.
 const STALE_DOMAIN_REQUEST_DAYS = 2;
 const ATTENTION_LIMIT = 8;
 
 interface AttentionItem {
   key: string;
-  category: "invoice" | "domain";
+  category: "domain";
   title: string;
   description: string;
   days: number;
@@ -43,9 +39,6 @@ export default async function SuperAdminDashboard() {
   // Cutoff timestamps for the "needs attention" queries — computed
   // once here so all queries see the same instant.
   const now = Date.now();
-  const cutoffInvoice = new Date(
-    now - STALE_INVOICE_REQUEST_DAYS * 24 * 60 * 60 * 1000,
-  ).toISOString();
   const cutoffDomain = new Date(
     now - STALE_DOMAIN_REQUEST_DAYS * 24 * 60 * 60 * 1000,
   ).toISOString();
@@ -60,12 +53,9 @@ export default async function SuperAdminDashboard() {
     { data: buildQueueCountRaw },
     { count: leadsLeft },
     { count: pendingDomains },
-    { count: invoiceRequestCount },
     // ── Needs your attention sources ───────────────────────────────
-    // 1) Invoice requests still pending past the SLA.
-    { data: staleInvoiceRequests },
-    // 2) Domain requests (register_new / transfer) sitting longer
-    //    than the SLA without a status flip to active.
+    // Domain requests (register_new / transfer) sitting longer than the
+    // SLA without a status flip to active.
     { data: staleDomainRequests },
     { data: confirmedPayments },
   ] = await Promise.all([
@@ -73,14 +63,6 @@ export default async function SuperAdminDashboard() {
     admin.rpc("proposals_build_queue_count"),
     admin.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new"),
     admin.from("sites").select("id", { count: "exact", head: true }).in("domain_status", ["register_new", "transfer"]),
-    admin.from("invoice_requests").select("id", { count: "exact", head: true }).eq("is_done", false),
-    admin
-      .from("invoice_requests")
-      .select("id, company_name, created_at")
-      .eq("is_done", false)
-      .lt("created_at", cutoffInvoice)
-      .order("created_at", { ascending: true })
-      .limit(ATTENTION_LIMIT),
     admin
       .from("sites")
       .select("id, name, requested_domain, domain_status, updated_at")
@@ -107,18 +89,6 @@ export default async function SuperAdminDashboard() {
   // Build a single, type-tagged attention list. Each item knows its
   // own age + where the operator should go to resolve it.
   const attentionItems: AttentionItem[] = [];
-  for (const ir of staleInvoiceRequests ?? []) {
-    const d = daysSince(ir.created_at);
-    attentionItems.push({
-      key: `invoice:${ir.id}`,
-      category: "invoice",
-      title: ir.company_name,
-      description: `Invoice request ${d}d old`,
-      days: d,
-      href: "/super/invoice-requests",
-      actionLabel: "fulfil",
-    });
-  }
   for (const s of staleDomainRequests ?? []) {
     const d = daysSince(s.updated_at);
     const label =
@@ -139,11 +109,7 @@ export default async function SuperAdminDashboard() {
     .filter((i) => i.category === "domain")
     .sort((a, b) => b.days - a.days)
     .slice(0, ATTENTION_LIMIT);
-  const invoiceItems = attentionItems
-    .filter((i) => i.category === "invoice")
-    .sort((a, b) => b.days - a.days)
-    .slice(0, ATTENTION_LIMIT);
-  const hasAttention = domainItems.length + invoiceItems.length > 0;
+  const hasAttention = domainItems.length > 0;
 
   const cards: Array<{
     label: string;
@@ -181,16 +147,9 @@ export default async function SuperAdminDashboard() {
       sublabel: "to handle",
       href: "/super/domains",
     },
-    {
-      label: "Invoice requests",
-      value: String(invoiceRequestCount ?? 0),
-      sublabel: "pending",
-      href: "/super/invoice-requests",
-    },
   ];
 
   const categoryIcon = {
-    invoice: Receipt,
     domain: Globe2,
   } as const;
 
@@ -244,48 +203,6 @@ export default async function SuperAdminDashboard() {
                 </div>
                 <ul className="divide-y">
                   {domainItems.map((item) => {
-                    const Icon = categoryIcon[item.category];
-                    return (
-                      <li key={item.key}>
-                        <Link
-                          href={item.href}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group"
-                        >
-                          <div className="rounded-md p-1.5 shrink-0 bg-muted">
-                            <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium text-sm truncate">
-                              {item.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </div>
-                          <span className="text-xs text-muted-foreground inline-flex items-center gap-1 shrink-0 group-hover:text-foreground transition-colors">
-                            {item.actionLabel}
-                            <ArrowRight className="h-3 w-3" />
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            )}
-
-            {invoiceItems.length > 0 && (
-              <section>
-                <div className="px-4 py-2 bg-muted/30 flex items-center justify-between">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Invoice requests
-                  </h3>
-                  <span className="text-[10px] text-muted-foreground tabular-nums">
-                    {invoiceItems.length}
-                  </span>
-                </div>
-                <ul className="divide-y">
-                  {invoiceItems.map((item) => {
                     const Icon = categoryIcon[item.category];
                     return (
                       <li key={item.key}>

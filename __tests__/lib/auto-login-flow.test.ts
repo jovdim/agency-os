@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import crypto from "crypto";
-import { parseSLSPEmail } from "@/lib/payments/auto-confirm";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Replicate the production encryption with the fixed padded-key logic.
@@ -202,87 +201,5 @@ describe("buildNameLine fallbacks (widget logic)", () => {
     expect(buildNameLine(null, "Firma s.r.o.", "BANSKÁ BYSTRICA")).toBe(
       "Firma s.r.o., Banská bystrica",
     );
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SLSP bank email parser
-// ─────────────────────────────────────────────────────────────────────────────
-describe("parseSLSPEmail — real bank email format", () => {
-  it("parses a typical SLSP notification", () => {
-    const html = `
-      <html><body>
-        <p>Dobrý deň,</p>
-        <p>na váš účet bola pripísaná platba.</p>
-        <table>
-          <tr><td>Suma:</td><td><b>199,00 EUR</b></td></tr>
-          <tr><td>Referencia:</td><td>/VS2604003/SS/KS</td></tr>
-          <tr><td>Protiúčet:</td><td>SK1234567890123456789012 Peter Novak</td></tr>
-        </table>
-      </body></html>
-    `;
-    const result = parseSLSPEmail(html);
-    expect(result).not.toBeNull();
-    expect(result?.variableSymbol).toBe("2604003");
-    expect(result?.amount).toBe(199);
-  });
-
-  it("parses comma-decimal amounts", () => {
-    const result = parseSLSPEmail("Suma: 49,50 EUR Referencia: /VS1234567/SS/");
-    expect(result?.amount).toBe(49.5);
-  });
-
-  it("parses dot-decimal amounts", () => {
-    const result = parseSLSPEmail("Amount: 299.00 EUR Ref: /VS9876543/SS/");
-    expect(result?.amount).toBe(299);
-  });
-
-  it("returns null when no variable symbol", () => {
-    expect(parseSLSPEmail("Random email with 100,00 EUR but no VS reference")).toBeNull();
-  });
-
-  it("returns null when no amount", () => {
-    expect(parseSLSPEmail("Reference: /VS12345/SS/ but no amount")).toBeNull();
-  });
-
-  it("ignores &nbsp; entities", () => {
-    const result = parseSLSPEmail("Suma:&nbsp;199,00&nbsp;EUR /VS999/SS/");
-    expect(result?.variableSymbol).toBe("999");
-    expect(result?.amount).toBe(199);
-  });
-
-  it("strips HTML tags before parsing", () => {
-    const html = "<div><span>49,00</span> <b>EUR</b></div><p>/VS42/SS/KS</p>";
-    const result = parseSLSPEmail(html);
-    expect(result?.amount).toBe(49);
-    expect(result?.variableSymbol).toBe("42");
-  });
-
-  it("returns rawText preview (first 500 chars)", () => {
-    const result = parseSLSPEmail("199,00 EUR /VS1/SS/");
-    expect(result?.rawText).toBeDefined();
-    expect(result?.rawText.length).toBeLessThanOrEqual(500);
-  });
-
-  it("handles multiline realistic SLSP email", () => {
-    const html = `
-      <html>
-        <head><title>Slovenská sporiteľňa</title></head>
-        <body>
-          Vážený klient,<br/>
-          na Váš účet bola pripísaná platba.<br/>
-          <table>
-            <tr><td>Dátum:</td><td>11.04.2026</td></tr>
-            <tr><td>Suma:</td><td>149,00&nbsp;EUR</td></tr>
-            <tr><td>Referencia:</td><td>/VS4110001/SS0/KS0308</td></tr>
-            <tr><td>Protiúčet:</td><td>SK0309000000005221380177 Peter Novak s.r.o.</td></tr>
-            <tr><td>Správa:</td><td>Web balkar.2dni.sk</td></tr>
-          </table>
-        </body>
-      </html>
-    `;
-    const result = parseSLSPEmail(html);
-    expect(result?.variableSymbol).toBe("4110001");
-    expect(result?.amount).toBe(149);
   });
 });

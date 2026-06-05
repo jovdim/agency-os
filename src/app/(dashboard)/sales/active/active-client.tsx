@@ -55,7 +55,6 @@ interface Props {
   activeProposalIdByContact: Record<string, string>;
   proposalTagsByContact: Record<string, ProposalTag[]>;
   proposalStatusByContact: Record<string, string>;
-  invoiceStatusByContact: Record<string, "pending" | "done">;
   /** Three-state attention signal per contact:
    *    - "new"     → first publish, never opened → prominent purple "New" pill
    *    - "updated" → re-published after being seen → minimal muted "Changed" pill
@@ -116,7 +115,6 @@ export function ActiveClient({
   activeProposalIdByContact,
   proposalTagsByContact,
   proposalStatusByContact,
-  invoiceStatusByContact,
   updateStateByContact,
   lastPublishedByContact,
 }: Props) {
@@ -236,7 +234,6 @@ export function ActiveClient({
                   hasProposal={contactsWithProposals[c.id]}
                   proposalId={activeProposalIdByContact[c.id]}
                   proposalStatus={proposalStatusByContact[c.id]}
-                  invoiceStatus={invoiceStatusByContact[c.id]}
                   logged={loggedOutcomes[c.id] ?? []}
                   tags={tagsForContact(c.id)}
                   updateState={updateStateByContact[c.id] ?? null}
@@ -284,7 +281,6 @@ function ActiveRow({
   hasProposal,
   proposalId,
   proposalStatus,
-  invoiceStatus,
   logged,
   tags,
   updateState,
@@ -297,7 +293,6 @@ function ActiveRow({
   hasProposal: boolean | undefined;
   proposalId: string | undefined;
   proposalStatus: string | undefined;
-  invoiceStatus: "pending" | "done" | undefined;
   logged: string[];
   tags: ProposalTag[];
   updateState: ProposalUpdateState;
@@ -309,9 +304,8 @@ function ActiveRow({
   const outcomeLabel = meta ? OUTCOME_LABELS[meta.outcome] ?? meta.outcome : undefined;
   const localMarketLogged = useMemo(() => logged.includes("local_market"), [logged]);
 
-  // 3-state derivations for the right-side status pills
+  // 3-state derivation for the right-side proposal status pill
   const proposalPillState = proposalState(proposalStatus ?? (hasProposal ? "submitted" : undefined));
-  const invoicePillState: "none" | "pending" | "done" = invoiceStatus ?? "none";
 
   return (
     <li
@@ -485,7 +479,6 @@ function ActiveRow({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <InvoiceStatusPill state={invoicePillState} />
         <ProposalStatusPill state={proposalPillState} proposalId={proposalId} />
 
         <Link
@@ -501,27 +494,10 @@ function ActiveRow({
   );
 }
 
-// ── Status pills ───────────────────────────────────────────────────────
-// Both Invoice and Proposal use the same 3-state visual language: gray for
-// "none", amber for "pending", green for "ready/done". Invoice is always
-// passive; Proposal becomes a clickable Link when in the "ready" state so
+// ── Status pill ────────────────────────────────────────────────────────
+// 3-state visual language: gray for "none", amber for "pending", green for
+// "ready". The Proposal pill becomes a clickable Link in the "ready" state so
 // sales can jump straight to the proposal detail.
-
-function InvoiceStatusPill({ state }: { state: "none" | "pending" | "done" }) {
-  const cfg = state === "none"
-    ? { label: "none",    cls: "border-border/40 text-muted-foreground/60" }
-    : state === "pending"
-    ? { label: "pending", cls: "border-amber-500/30 text-amber-700 dark:text-amber-400 bg-amber-500/5" }
-    : { label: "done",    cls: "border-emerald-500/30 text-emerald-700 dark:text-emerald-400 bg-emerald-500/5" };
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium ${cfg.cls}`}
-      title={`Invoice: ${cfg.label}`}
-    >
-      Invoice: {cfg.label}
-    </span>
-  );
-}
 
 function ProposalStatusPill({ state, proposalId }: { state: "none" | "pending" | "ready"; proposalId: string | undefined }) {
   if (state === "none") {

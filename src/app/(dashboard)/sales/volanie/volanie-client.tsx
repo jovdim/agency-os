@@ -33,7 +33,6 @@ import {
   MapPin,
   Mail,
   Skull,
-  Receipt,
   Check,
   Pencil,
   Clock,
@@ -92,7 +91,6 @@ interface Contact {
 interface Stats {
   callsToday: number;
   proposalsToday: number;
-  invoicesToday: number;
   totalContacts: number;
 }
 
@@ -164,8 +162,6 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
   const pendingActions = useRef<Map<string, PendingAction>>(new Map());
 
   // Dialog states
-  const [invoiceOpen, setInvoiceOpen] = useState(false);
-  const [invoiceMessage, setInvoiceMessage] = useState("");
   const [proposalOpen, setProposalOpen] = useState(false);
   const [neverContactOpen, setNeverContactOpen] = useState(false);
   const [neverContactNote, setNeverContactNote] = useState("");
@@ -324,19 +320,6 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
         });
       }
 
-      if (outcome === "send_invoice") {
-        try {
-          const contact = initialContacts.find(c => c.id === contactId);
-          await fetch(`/api/contacts/${contactId}/invoice-request`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              company_name: contact?.company_name || "",
-              message: notes || "",
-            }),
-          });
-        } catch {}
-      }
     } catch {
       toast.error("Network error");
     }
@@ -655,10 +638,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
         <div className="max-w-2xl mx-auto space-y-4">
 
           {/* ── PRIMARY ACTIONS — big, dominant ── */}
-          <div className="grid grid-cols-4 gap-3">
-            <Button variant="outline" className="h-14 gap-2 text-sm font-medium flex-col" onClick={() => setInvoiceOpen(true)}>
-              <Receipt className="h-5 w-5" /> Invoice
-            </Button>
+          <div className="grid grid-cols-3 gap-3">
             <Button className="h-14 gap-2 text-sm font-medium flex-col" onClick={() => {
               setPropServices(c.industry ? [c.industry, "", "", ""] : ["", "", "", ""]);
               setPropPrice("");
@@ -834,28 +814,6 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
       </Dialog>
 
       {/* ══════════ DIALOGS ══════════ */}
-
-      {/* Invoice */}
-      <Dialog open={invoiceOpen} onOpenChange={setInvoiceOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Send invoice</DialogTitle>
-            <div className="text-xs text-muted-foreground">
-              <p>{c.company_name}</p>
-              <p className="mt-0.5">Email: <span className={c.email ? "text-foreground" : "text-amber-500"}>{c.email || "no email"}</span></p>
-            </div>
-          </DialogHeader>
-          <Textarea value={invoiceMessage} onChange={(e) => setInvoiceMessage(e.target.value)} placeholder="What should be on the invoice? E.g.: Website $149, GBP $75..." className="text-sm min-h-20" />
-          <DialogFooter>
-            <Button variant="ghost" size="sm" onClick={() => setInvoiceOpen(false)}>Cancel</Button>
-            <Button size="sm" onClick={() => {
-              setInvoiceOpen(false);
-              handleAction("send_invoice" as CallOutcome, invoiceMessage);
-              setInvoiceMessage("");
-            }}>Send</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Proposal */}
       <Dialog open={proposalOpen} onOpenChange={(v) => { if (!v) { setPropEmailInput(""); setPropEmailSaved(false); setPropEmailEditing(false); setPropTagIds([]); } setProposalOpen(v); }}>

@@ -23,6 +23,8 @@ import {
   Receipt,
 } from "lucide-react";
 import { CommissionRateEditor } from "./commission-rate-editor";
+import { AssignedContactsTable } from "./assigned-contacts-table";
+import { SalespersonStats } from "./salesperson-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +113,7 @@ export default async function SalespersonDetailPage({
       .eq("assigned_to", id),
     supabase
       .from("contacts")
-      .select("id, company_name, phone, email, website_url, town, state, industry, status, updated_at")
+      .select("id, company_name, phone, email, website_url, town, industry, status, updated_at")
       .eq("assigned_to", id)
       .order("updated_at", { ascending: false })
       .limit(500),
@@ -200,58 +202,19 @@ export default async function SalespersonDetailPage({
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {(todayLogs || []).length}
-            </p>
-            <p className="text-xs text-muted-foreground">Calls today</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {(weekLogs || []).length}
-            </p>
-            <p className="text-xs text-muted-foreground">Calls this week</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {allCallsTotal}
-            </p>
-            <p className="text-xs text-muted-foreground">Calls all time</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {(proposals || []).length}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Proposals ({accepted} accepted)
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {proposalsTodayCount}
-            </p>
-            <p className="text-xs text-muted-foreground">Proposals today</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold tabular-nums">
-              {proposalsWeekCount}
-            </p>
-            <p className="text-xs text-muted-foreground">Proposals this week</p>
-          </CardContent>
-        </Card>
-      </div>
+      <SalespersonStats
+        calls={{
+          today: (todayLogs || []).length,
+          week: (weekLogs || []).length,
+          all: allCallsTotal,
+        }}
+        proposals={{
+          today: proposalsTodayCount,
+          week: proposalsWeekCount,
+          all: (proposals || []).length,
+        }}
+        accepted={accepted}
+      />
 
       <Card>
         <CardHeader>
@@ -314,86 +277,11 @@ export default async function SalespersonDetailPage({
             Assigned contacts ({assignedContacts ?? 0})
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Status</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>City</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Industry</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Website</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(contactsList || []).length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="text-center py-8 text-muted-foreground text-sm"
-                  >
-                    No contacts assigned
-                  </TableCell>
-                </TableRow>
-              ) : (
-                (contactsList || []).map((c) => (
-                  <TableRow key={c.id} className="text-xs">
-                    <TableCell>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                        {OUTCOME_LABELS[c.status] || c.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="font-medium truncate max-w-48">
-                      {c.company_name}
-                    </TableCell>
-                    <TableCell>
-                      {c.town || (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {c.phone ? (
-                        <a
-                          href={`tel:${c.phone}`}
-                          className="hover:underline"
-                        >
-                          {c.phone}
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {c.industry || (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {c.email || (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {c.website_url ? (
-                        <a
-                          href={c.website_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:underline truncate max-w-24 block"
-                        >
-                          {c.website_url.replace(/^https?:\/\/(www\.)?/, "")}
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <CardContent className="p-0 pb-2">
+          <AssignedContactsTable
+            contacts={contactsList || []}
+            statusLabels={OUTCOME_LABELS}
+          />
         </CardContent>
       </Card>
     </div>
