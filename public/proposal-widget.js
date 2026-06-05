@@ -171,7 +171,7 @@
     }
 
     var line = parts.filter(Boolean).join(", ");
-    return line || "vašu firmu";
+    return line || "your company";
   }
 
   function formatIban(iban) {
@@ -204,33 +204,33 @@
       expiryDateStr = expires.getDate() + "." + (expires.getMonth() + 1) + "." + expires.getFullYear();
     }
 
-    // Price line — "Cena 299 € 99 € je konečná. Ak máte záujem..."
-    // + "Akciová cena platí ešte X dní"
+    // Price line — "Price $299 $99 is final. If interested..."
+    // + "Discount price valid for X more days"
     var priceHtml = "";
     if (discountActive && discountPrice && basePrice && discountPrice < basePrice) {
       priceHtml =
         '<div style="font-size:14px;font-weight:700;color:#fff;">' +
-          'Cena <span style="text-decoration:line-through;color:rgba(255,255,255,0.4);">' + basePrice + " €</span> " +
-          '<span style="color:#fff;font-weight:800;">' + activePrice + " €</span>" +
-          ' je konečná a platná do <span style="color:rgb(253,224,71);">' + expiryDateStr + "</span>" +
+          'Price <span style="text-decoration:line-through;color:rgba(255,255,255,0.4);">$' + basePrice + "</span> " +
+          '<span style="color:#fff;font-weight:800;">$' + activePrice + "</span>" +
+          ' is final and valid until <span style="color:rgb(253,224,71);">' + expiryDateStr + "</span>" +
         "</div>" +
         '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:400;">' +
-          "Ak máte záujem o spustenie webstránky — naskenujte QR kód bankovou aplikáciou." +
+          "If you would like to launch your website, scan the QR code with your banking app." +
         "</div>" +
         '<div style="font-size:11px;color:#e67e22;margin-top:1px;font-weight:500;">' +
           '<svg style="display:inline;vertical-align:-2px;margin-right:3px;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
             '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' +
           "</svg>" +
-          "Akciová cena platí ešte " + diffDays + " dní" +
+          "Discount price valid for " + diffDays + " more days" +
         "</div>";
     } else {
       priceHtml =
         '<div style="font-size:14px;font-weight:700;color:#fff;">' +
-          "Cena " + '<span style="font-weight:800;">' + activePrice + " €</span>" +
-          " je konečná." +
+          "Price " + '<span style="font-weight:800;">$' + activePrice + "</span>" +
+          " is final." +
         "</div>" +
         '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:400;">' +
-          "Ak máte záujem o spustenie webstránky — naskenujte QR kód bankovou aplikáciou." +
+          "If you would like to launch your website, scan the QR code with your banking app." +
         "</div>";
     }
 
@@ -250,17 +250,17 @@
     var dropdownContent =
       '<div style="max-width:900px;margin:0 auto;padding:10px 20px 12px;text-align:center;">' +
         '<div style="display:inline-block;text-align:left;font-size:13px;color:rgba(255,255,255,0.8);line-height:1.8;">' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Dom\u00e9na a hosting na prv\u00fd rok v cene</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Modern\u00e1 webstr\u00e1nka vr\u00e1tane mobilnej verzie</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Texty, fotky a sekcie uprav\u00edme pod\u013ea va\u0161ich po\u017eiadaviek</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Profesion\u00e1lny firemn\u00fd e-mail (napr. info@firma.sk)</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'SEO optimaliz\u00e1cia a SSL certifik\u00e1t</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Kontaktn\u00fd formul\u00e1r priamo na webstr\u00e1nke</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Napojenie na Google a soci\u00e1lne siete</div>' +
-          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;color:rgb(253,224,71);">' + checkSvg + 'Pred\u013a\u017eenie na \u010fal\u0161\u00ed rok len 49\u00a0\u20ac</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Domain and hosting for the first year included</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Modern website including a mobile version</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Text, photos and sections tailored to your needs</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Professional business email (e.g. info@company.com)</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'SEO optimization and SSL certificate</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Contact form directly on the website</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;">' + checkSvg + 'Google and social media integration</div>' +
+          '<div class="sk-check-item" style="display:flex;align-items:center;gap:6px;color:rgb(253,224,71);">' + checkSvg + 'Renewal for the next year only $49</div>' +
         '</div>' +
         '<div style="margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5;">' +
-          'Po zaplaten\u00ed dostanete e-mail s pr\u00edstupom. Cez v\u00e1\u0161 \u00fa\u010det m\u00f4\u017eete meni\u0165 texty, fotky, prida\u0165 slu\u017eby, \u010doko\u013evek potrebujete.' +
+          'After payment you receive an email with access. Through your account you can change text, photos, add services, whatever you need.' +
         '</div>' +
       '</div>';
 
@@ -274,16 +274,16 @@
 
           // Left side — centered text
           '<div style="flex:1;min-width:0;text-align:center;">' +
-            '<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">N\u00e1vrh web str\u00e1nky pre: <span style="color:rgb(253,224,71);">' + nameLine + '</span></div>' +
+            '<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">Website proposal for: <span style="color:rgb(253,224,71);">' + nameLine + '</span></div>' +
             priceHtml +
             '<div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-top:0px;line-height:1;">' +
-              '<a href="#" id="sk-cta-order" style="font-size:11px;font-weight:600;color:rgb(253,224,71);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">Objedna\u0165 webstr\u00e1nku</a>' +
+              '<a href="#" id="sk-cta-order" style="font-size:11px;font-weight:600;color:rgb(253,224,71);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">Order website</a>' +
               '<span style="color:rgba(255,255,255,0.15);">|</span>' +
-              '<a href="' + (magicLoginUrl || 'https://klient.2dni.sk/login') + '" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">Potrebujem \u00fapravy</a>' +
+              '<a href="' + (magicLoginUrl || 'https://your-app.vercel.app/login') + '" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">I need changes</a>' +
             "</div>" +
             '<div style="margin-top:-1px;">' +
               '<button id="sk-widget-toggle" style="background:none;border:none;padding:2px 0;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;display:inline-flex;align-items:center;gap:4px;">' +
-                '<span class="sk-arrow" style="font-size:7px;">\u25BC</span> viac inform\u00e1ci\u00ed' +
+                '<span class="sk-arrow" style="font-size:7px;">\u25BC</span> more info' +
               '</button>' +
             "</div>" +
           "</div>" +
@@ -294,13 +294,13 @@
               qrHtml +
             "</div>" +
             '<button id="sk-bank-toggle" style="background:none;border:none;font-size:10px;font-weight:500;color:rgba(255,255,255,0.75);cursor:pointer;margin-top:3px;padding:0;text-decoration:underline;">' +
-              'Nem\u00f4\u017eete naskenova\u0165?' +
+              'Cannot scan?' +
             '</button>' +
             '<div id="sk-bank-details" style="max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .3s ease,margin .3s ease;font-size:11px;color:rgba(255,255,255,0.85);text-align:left;line-height:1.6;">' +
               '<div style="margin-bottom:3px;font-weight:500;color:#fff;">' + (data.beneficiary || '') + '</div>' +
               '<div><span style="color:rgba(255,255,255,0.45);">IBAN:</span> ' + formatIban(data.iban) + '</div>' +
               '<div><span style="color:rgba(255,255,255,0.45);">VS:</span> ' + data.variableSymbol + '</div>' +
-              '<div><span style="color:rgba(255,255,255,0.45);">Suma:</span> ' + activePrice + '\u00a0\u20ac</div>' +
+              '<div><span style="color:rgba(255,255,255,0.45);">Amount:</span> $' + activePrice + '</div>' +
             '</div>' +
           "</div>" +
 
@@ -368,11 +368,11 @@
         if (isOpen) {
           details.classList.remove("sk-open");
           toggle.classList.remove("sk-open");
-          toggle.querySelector(".sk-arrow").parentElement.nextSibling.textContent = " Viac informácií";
+          toggle.querySelector(".sk-arrow").parentElement.nextSibling.textContent = " More info";
         } else {
           details.classList.add("sk-open");
           toggle.classList.add("sk-open");
-          toggle.querySelector(".sk-arrow").parentElement.nextSibling.textContent = " Skryť informácie";
+          toggle.querySelector(".sk-arrow").parentElement.nextSibling.textContent = " Hide info";
         }
       });
     }

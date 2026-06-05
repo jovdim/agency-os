@@ -43,3 +43,10 @@ supabase/.temp/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# throwaway dev/maintenance scripts (root-level, prefixed with _)
+/_*.ts
+/_*.tsx
+/_*.mts
+/_*.mjs
+/_*.js

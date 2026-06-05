@@ -3,7 +3,7 @@
 
   // ── Where to POST ──
   // The dashboard origin is derived from this script's own src — it's
-  // always served from the dashboard host (e.g. sharkmedia-zone.vercel
+  // always served from the dashboard host (e.g. your-app.vercel
   // .app), and /api/public/contact lives there. Falls back to the
   // dashboard production URL if anything weird happens with the script
   // tag (defensive: shouldn't ever trigger in practice).
@@ -17,7 +17,7 @@
   }
   var apiBase = thisScript && thisScript.src
     ? thisScript.src.replace(/\/contact-handler\.js.*$/, '')
-    : 'https://sharkmedia-zone.vercel.app';
+    : 'https://your-app.vercel.app';
 
   // Legacy fallback: pre-2026-05-15 builds stamped a `data-email` on
   // the script tag itself (one recipient for the whole site). New

@@ -779,7 +779,7 @@ form button[type="submit"]:hover { background: var(--color-secondary); transform
       opacity 0.18s ease-out,
       transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
       visibility 0s linear 0.22s;
-    /* Long menus (many top-level links + an expanded Sluzby dropdown
+    /* Long menus (many top-level links + an expanded Services dropdown
        with 8-10 services) used to overflow past the viewport bottom
        with no way to reach the hidden items — `position: absolute`
        takes the menu out of the document flow, so the page can't
