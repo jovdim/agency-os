@@ -1229,7 +1229,7 @@ export function PlaceholderField({
             this panel's parent freely without DOM-tree reconciliation
             crashes because there's nothing portaled. */}
         {aiOpen && (
-          <div className="rounded-md border border-border bg-muted/40 p-2.5 space-y-2">
+          <div className="rounded-md border border-border/60 bg-muted/40 p-2.5 space-y-2">
             <Textarea
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
@@ -1312,7 +1312,7 @@ export function PlaceholderField({
           {humanize(fieldKey)}
         </label>
         <div className="flex items-stretch gap-2">
-          <div className="h-14 w-20 shrink-0 rounded border bg-muted/40 overflow-hidden flex items-center justify-center">
+          <div className="h-14 w-20 shrink-0 rounded-md border border-border/60 bg-muted/40 overflow-hidden flex items-center justify-center">
             {previewSrc ? (
               <video
                 src={previewSrc}
@@ -1571,7 +1571,7 @@ export function PlaceholderField({
       const placeholder =
         schema.default ||
         schema.default_href?.replace(/^mailto:/i, "") ||
-        "info@example.sk";
+        "info@example.com";
 
       return (
         <div className={"space-y-1.5" + (fieldHidden ? " opacity-60" : "")}>
@@ -1720,7 +1720,7 @@ export function PlaceholderField({
     return (
       <div
         className={
-          "rounded-md border bg-background p-2 space-y-1.5" +
+          "rounded-md border border-border/60 bg-background p-2 space-y-1.5" +
           (fieldHidden ? " opacity-60" : "")
         }
       >
@@ -2065,7 +2065,7 @@ function MapField({
   }
 
   return (
-    <div className="rounded-md border bg-background p-2 space-y-2">
+    <div className="rounded-md border border-border/60 bg-background p-2 space-y-2">
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <MapPin className="h-3 w-3" />
         <span className="font-medium capitalize">{humanize(fieldKey)}</span>
@@ -2075,7 +2075,7 @@ function MapField({
           input formats are genuinely different UX (text vs two numbers
           vs HTML paste); a single input box trying to handle all three
           would have too many "is this an address or…" judgment calls. */}
-      <div className="grid grid-cols-3 gap-1 rounded border bg-muted/40 p-0.5">
+      <div className="grid grid-cols-3 gap-1 rounded-md border border-border/60 bg-muted/40 p-0.5">
         {(
           [
             { id: "address", label: "Address" },
@@ -2087,9 +2087,9 @@ function MapField({
             key={t.id}
             type="button"
             onClick={() => switchMode(t.id)}
-            className={`text-xs py-1 rounded transition-colors ${
+            className={`text-xs py-1 rounded-md transition-colors ${
               mode === t.id
-                ? "bg-background shadow-sm font-medium"
+                ? "bg-background shadow-sm font-medium text-foreground"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -2138,7 +2138,7 @@ function MapField({
             placeholder='<iframe src="https://www.google.com/maps/embed?pb=…" …></iframe>'
           />
           {embedRaw && (
-            <p className={`text-[10px] ${embedExtracted ? "text-emerald-600" : "text-amber-600"}`}>
+            <p className={`text-[10px] ${embedExtracted ? "text-(--dash-accent-2)" : "text-amber-600 dark:text-amber-400"}`}>
               {embedExtracted
                 ? "✓ Embed URL detected — preview will use it."
                 : "Paste a Google Maps <iframe> snippet or its src URL."}
@@ -2349,7 +2349,7 @@ function ToggleField({
 function ImageThumb({ src }: { src: string }) {
   const display = useDisplayUrl(src);
   return (
-    <div className="w-16 h-12 bg-muted rounded border border-border/60 overflow-hidden shrink-0">
+    <div className="w-16 h-12 bg-muted rounded-md border border-border/60 overflow-hidden shrink-0">
       {display ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={display} alt="" className="w-full h-full object-cover" />

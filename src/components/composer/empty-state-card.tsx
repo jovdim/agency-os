@@ -43,18 +43,18 @@ export function EmptyStateCard({
       {/* The card itself takes pointer events back so the buttons are
           clickable; everything around it stays click-through (lets users
           still scroll the preview iframe behind if they want). */}
-      <div className="pointer-events-auto max-w-md w-full bg-card border rounded-lg shadow-lg p-8 text-center">
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
-          <Sparkles className="h-6 w-6 text-primary" />
+      <div className="pointer-events-auto max-w-md w-full dash-panel p-8 text-center">
+        <div className="dash-chip-pink w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5">
+          <Sparkles className="h-6 w-6" />
         </div>
 
-        <h2 className="text-lg font-semibold mb-2">Start with a full site</h2>
+        <h2 className="text-lg font-semibold tracking-tight mb-2">Start with a full site</h2>
 
         <p className="text-sm text-muted-foreground mb-1 leading-relaxed">
           One click and we'll assemble a complete website. Pick the
           preset that matches the client package.
         </p>
-        <p className="text-xs text-muted-foreground/70 mb-6">
+        <p className="text-xs text-muted-foreground/70 mb-6 tabular-nums">
           Each section gets a random template from the catalog
           ({templateCount} templates across {categoryCount} categories).
           Edit anything afterward.

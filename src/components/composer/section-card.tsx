@@ -186,7 +186,7 @@ export function SectionCard({
 
   if (!template) {
     return (
-      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3">
+      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3.5">
         <p className="text-sm font-medium text-destructive">Template missing</p>
         <p className="text-xs text-muted-foreground mt-1">
           Template id <code>{section.template_id}</code> was deleted.
@@ -205,12 +205,12 @@ export function SectionCard({
     <div
       ref={setRefs}
       style={dragStyle}
-      className={`rounded-lg border bg-card overflow-hidden ${
-        isDragging ? "shadow-lg" : "transition-colors"
+      className={`rounded-xl border dash-hairline bg-card overflow-hidden ${
+        isDragging ? "shadow-(--dash-shadow)" : "transition-colors"
       } ${
         selected
-          ? "border-primary ring-2 ring-primary/30 shadow-md"
-          : "hover:border-primary/40"
+          ? "border-[color-mix(in_oklab,var(--dash-accent)_45%,var(--dash-border))] ring-1 ring-[color-mix(in_oklab,var(--dash-accent)_30%,transparent)] shadow-(--dash-shadow)"
+          : "hover:border-[color-mix(in_oklab,var(--dash-accent)_30%,var(--dash-border))]"
       }`}
     >
       {/* Header — click anywhere here toggles open/closed via selection.
@@ -222,10 +222,10 @@ export function SectionCard({
       <div
         onClick={onSelect}
         title={selected ? "Click to collapse" : "Click to expand"}
-        className={`flex items-center gap-2 px-3 py-2 border-b transition-colors cursor-pointer ${
+        className={`flex items-center gap-2 px-3 py-2 border-b dash-hairline transition-colors cursor-pointer ${
           selected
-            ? "bg-primary/10 hover:bg-primary/20"
-            : "bg-muted/30 hover:bg-muted/60"
+            ? "bg-(--dash-chip-bg) hover:bg-[color-mix(in_oklab,var(--dash-accent)_18%,var(--card))]"
+            : "dash-subhead hover:bg-[color-mix(in_oklab,var(--foreground)_6%,transparent)]"
         }`}
       >
         {/* Drag handle — pointer-down on the grip starts the drag.
@@ -242,7 +242,7 @@ export function SectionCard({
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <span className="text-[10px] uppercase tracking-wide rounded bg-muted px-1.5 py-0.5 font-medium">
+        <span className="dash-chip text-[10px] uppercase tracking-wide rounded-md px-1.5 py-0.5 font-medium">
           {template.category}
         </span>
         {/* Title block — template name on top, section-id chip tucked

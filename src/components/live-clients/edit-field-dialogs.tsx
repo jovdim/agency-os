@@ -233,7 +233,7 @@ export function EditDomainDialog({
               id="ed-domain"
               value={value}
               onChange={(e) => setValue(e.target.value.toLowerCase())}
-              placeholder="balkar.sk"
+              placeholder="yourcompany.com"
               disabled={submitting}
             />
             <p className="text-[11px] text-muted-foreground leading-snug">
@@ -351,7 +351,7 @@ export function EditLoginEmailDialog({
               type="email"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="info@balkar.sk"
+              placeholder="info@yourcompany.com"
               disabled={submitting}
               required
             />

@@ -489,24 +489,24 @@ function FieldGroup({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-md border bg-muted/20 overflow-hidden">
+    <div className="dash-hairline dash-subhead overflow-hidden rounded-lg border">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition-colors text-left"
+        className="dash-row flex w-full items-center gap-2 px-3 py-2.5 text-left"
       >
         {open ? (
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
         ) : (
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
         )}
-        <span className="text-sm font-medium">{title}</span>
-        <span className="text-[10px] text-muted-foreground rounded-full bg-muted px-1.5 py-0.5">
+        <span className="text-sm font-medium tracking-tight">{title}</span>
+        <span className="dash-chip ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums">
           {count}
         </span>
       </button>
       {open && (
-        <div className="px-3 py-3 space-y-2.5 bg-background border-t">
+        <div className="dash-hairline space-y-2.5 border-t bg-background px-3 py-3">
           {children}
         </div>
       )}

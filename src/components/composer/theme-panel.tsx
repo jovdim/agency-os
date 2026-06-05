@@ -67,24 +67,26 @@ export function ThemePanel({ theme, onChange }: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
-    <div className="rounded-lg border bg-card overflow-hidden">
+    <div className="dash-panel overflow-hidden">
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className="w-full flex items-center gap-2 px-3 py-2 border-b bg-muted/40 hover:bg-muted/60 transition-colors"
+        className="dash-row dash-subhead w-full flex items-center gap-2 px-3 py-2.5 border-b dash-hairline"
       >
         {collapsed ? (
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         ) : (
           <ChevronUp className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         )}
-        <Palette className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+        <span className="dash-chip inline-flex h-6 w-6 items-center justify-center rounded-md shrink-0">
+          <Palette className="h-3.5 w-3.5" />
+        </span>
         <span className="text-sm font-medium">Theme</span>
         <div className="ml-auto flex gap-1">
           {THEME_KEYS.map((k) => (
             <span
               key={k}
-              className="h-3.5 w-3.5 rounded-full border border-border/60"
+              className="h-3.5 w-3.5 rounded-full dash-hairline border"
               style={{ background: theme?.[k] || DEFAULTS[k] }}
               title={LABELS[k]}
             />
@@ -103,7 +105,9 @@ export function ThemePanel({ theme, onChange }: Props) {
                 each render. */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold">Typography</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Typography
+                </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
@@ -140,7 +144,7 @@ export function ThemePanel({ theme, onChange }: Props) {
               />
             </div>
 
-            <div className="h-px bg-border" />
+            <div className="h-px dash-hairline border-t" />
 
             {/* Brand mark control lives inside the Navbar slot now (logos
                 belong with the navbar UI, not buried in the Theme tab).
@@ -157,18 +161,21 @@ export function ThemePanel({ theme, onChange }: Props) {
               // dice never looks broken on click.
               const palette = k === "primary" ? PRIMARY_PALETTE : BG_PALETTE;
               return (
-                <div key={k} className="flex items-center gap-2.5 py-1">
+                <div
+                  key={k}
+                  className="dash-row flex items-center gap-2.5 rounded-md px-1.5 py-1.5"
+                >
                   <input
                     type="color"
                     value={value}
                     onChange={(e) => onChange(k, e.target.value)}
-                    className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
+                    className="h-8 w-10 rounded-md dash-hairline border cursor-pointer p-0.5 shrink-0"
                     aria-label={LABELS[k]}
                   />
                   <span className="text-xs font-semibold">
                     {LABELS[k]}
                   </span>
-                  <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+                  <span className="text-[10px] font-mono tabular-nums text-muted-foreground ml-auto">
                     {value}
                   </span>
                   {/* Dice = randomize. No tooltip on purpose — it pops up
@@ -181,7 +188,7 @@ export function ThemePanel({ theme, onChange }: Props) {
                     onClick={() =>
                       onChange(k, pickRandomColor(palette, value))
                     }
-                    className="text-muted-foreground hover:text-primary transition-colors p-0.5 -m-0.5 rounded shrink-0"
+                    className="text-muted-foreground hover:text-(--dash-accent) transition-colors p-0.5 -m-0.5 rounded shrink-0"
                     aria-label={`Randomize ${LABELS[k]}`}
                   >
                     <Dices className="h-3.5 w-3.5" />

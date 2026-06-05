@@ -654,7 +654,7 @@ export function TechCreateClientForm({ initialContactId }: { initialContactId?: 
                 <Input
                   id="business_email"
                   type="email"
-                  placeholder="info@company.sk"
+                  placeholder="info@company.com"
                   value={form.business_email}
                   onChange={(e) => updateField("business_email", e.target.value)}
                 />

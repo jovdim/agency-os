@@ -348,7 +348,7 @@ export function HrefAutocomplete({
               left: rect.left,
               width: rect.width,
             }}
-            className="z-1000 max-h-64 overflow-y-auto rounded-md border bg-popover shadow-lg text-popover-foreground"
+            className="z-1000 max-h-64 overflow-y-auto rounded-xl border dash-hairline bg-popover/95 backdrop-blur-sm shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)] text-popover-foreground p-1"
           >
             {matches.map((entry, idx) => {
               const active = idx === safeIdx;
@@ -371,12 +371,12 @@ export function HrefAutocomplete({
                     commit(entry);
                   }}
                   onMouseEnter={() => setActiveIdx(idx)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-colors ${
-                    active ? "bg-accent text-accent-foreground" : "hover:bg-muted/50"
+                  className={`w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${
+                    active ? "bg-accent text-accent-foreground" : "hover:bg-muted/60"
                   }`}
                 >
-                  <Icon className="h-3 w-3 shrink-0 opacity-60" />
-                  <span className="font-mono shrink-0">{renderedId}</span>
+                  <Icon className={`h-3 w-3 shrink-0 ${active ? "dash-accent" : "opacity-50"}`} />
+                  <span className="font-mono tabular-nums shrink-0">{renderedId}</span>
                   <span className="text-muted-foreground truncate flex-1 min-w-0">
                     {entry.label !== entry.id ? entry.label : ""}
                   </span>

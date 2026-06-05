@@ -188,11 +188,11 @@ export function PagesTabs({
 
   return (
     <>
-      <div className="flex items-center gap-2 border-b bg-card px-3 py-1.5 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b dash-hairline bg-card px-3 py-2 overflow-x-auto">
         {/* Segmented control: home page leads with a house icon and is
             always first; the active page reads as a raised solid segment
             while the rest stay quiet until hovered. */}
-        <div className="inline-flex items-center gap-1 rounded-full bg-muted/60 p-1">
+        <div className="inline-flex items-center gap-1 rounded-full bg-muted/50 p-1">
           {pages.map((p, i) => {
             const isActive = p.path === activePagePath;
             const isHome = p.path === HOME_PATH;
@@ -215,8 +215,11 @@ export function PagesTabs({
                       // Keep room on the right for the × so the label doesn't
                       // shift when it fades in on hover.
                       showRemove ? "pr-2" : "pr-3",
+                      // Active segment lifts on a calm background with a soft
+                      // blurred shadow + a faint violet accent ring/text so it
+                      // reads as selected without any hard outline.
                       isActive
-                        ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+                        ? "bg-background text-foreground shadow-[0_1px_4px_-1px_rgba(0,0,0,0.12)] ring-1 ring-[color-mix(in_oklab,var(--dash-accent)_28%,transparent)] dash-accent"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/60",
                     ].join(" ")}
                   >
@@ -279,7 +282,7 @@ export function PagesTabs({
                 {showDivider && (
                   <span
                     aria-hidden="true"
-                    className="mx-0.5 h-4 w-px shrink-0 self-center bg-border"
+                    className="mx-0.5 h-4 w-px shrink-0 self-center bg-border/70"
                   />
                 )}
               </Fragment>
@@ -292,7 +295,7 @@ export function PagesTabs({
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer"
+            className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer text-muted-foreground hover:text-(--dash-accent) hover:bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
             onClick={() => {
               resetAddState();
               setAdding(true);
@@ -329,7 +332,7 @@ export function PagesTabs({
               <select
                 value={serviceChoice}
                 onChange={(e) => handleServiceChoice(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-(--dash-accent)"
               >
                 <option value="" disabled>
                   Pick a service…

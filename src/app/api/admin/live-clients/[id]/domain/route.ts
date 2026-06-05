@@ -67,7 +67,7 @@ export async function PUT(
     // don't try to be a full domain validator.
     if (!/^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(stripped)) {
       return NextResponse.json(
-        { error: "Domain must be a valid hostname (e.g. balkar.sk)" },
+        { error: "Domain must be a valid hostname (e.g. yourcompany.com)" },
         { status: 400 },
       );
     }

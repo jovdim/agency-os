@@ -65,7 +65,7 @@ export function CategoryPicker({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2.5">
           {ADDABLE_CATEGORIES.map((c) => {
             const enabled = availableCategories.has(c);
             return (
@@ -73,7 +73,7 @@ export function CategoryPicker({
                 key={c}
                 disabled={!enabled}
                 onClick={() => enabled && onPick(c)}
-                className="text-left rounded-md border bg-card p-3 hover:border-primary/50 hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="dash-hairline text-left rounded-xl bg-card px-3.5 py-3 transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:border-(--dash-accent)/50 enabled:hover:shadow-[0_2px_4px_oklch(0_0_0/0.06),0_12px_28px_oklch(0_0_0/0.10)] disabled:opacity-40 disabled:cursor-not-allowed"
                 title={
                   enabled ? "" : `No published ${c} templates — upload one first`
                 }

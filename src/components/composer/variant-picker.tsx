@@ -147,7 +147,7 @@ export function VariantPicker({
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center text-sm text-muted-foreground">
             No published <strong>{category}</strong> templates yet.{" "}
-            <a href="/tech/section-templates" className="text-primary hover:underline">
+            <a href="/tech/section-templates" className="dash-accent font-medium hover:underline">
               Upload one
             </a>
             .
@@ -222,8 +222,10 @@ function VariantCard({
   return (
     <button
       onClick={onPick}
-      className={`text-left rounded-lg border overflow-hidden transition-all hover:border-primary/50 hover:shadow-sm ${
-        isCurrent ? "border-primary ring-2 ring-primary/20" : ""
+      className={`group text-left rounded-xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-(--dash-accent)/50 hover:shadow-[0_2px_4px_oklch(0_0_0/0.06),0_12px_28px_oklch(0_0_0/0.10)] ${
+        isCurrent
+          ? "border-(--dash-accent) ring-2 ring-(--dash-accent)/20"
+          : "dash-hairline"
       } ${isStrip ? "flex items-stretch" : "flex flex-col"}`}
     >
       {previewSrcDoc ? (
@@ -240,7 +242,7 @@ function VariantCard({
             className="relative w-full overflow-hidden bg-background"
           />
           {isCurrent && (
-            <span className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] uppercase rounded bg-primary text-primary-foreground px-1.5 py-0.5 z-10">
+            <span className="dash-chip absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide rounded-full px-2 py-0.5 z-10 backdrop-blur-sm">
               <CheckCircle2 className="h-3 w-3" /> in use
             </span>
           )}
@@ -274,13 +276,13 @@ function VariantCard({
             </div>
           )}
           {isCurrent && (
-            <span className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] uppercase rounded bg-primary text-primary-foreground px-1.5 py-0.5">
+            <span className="dash-chip absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide rounded-full px-2 py-0.5 backdrop-blur-sm">
               <CheckCircle2 className="h-3 w-3" /> in use
             </span>
           )}
         </div>
       )}
-      <div className={isStrip ? "px-3 py-2 w-48 shrink-0 border-l" : "p-2"}>
+      <div className={isStrip ? "dash-hairline px-3 py-2 w-48 shrink-0 border-l" : "p-2.5"}>
         <p className="text-sm font-medium truncate">{template.name}</p>
         {TEMPLATE_DESCRIPTIONS[template.name] ? (
           // Description wins over the field-count fallback when present —

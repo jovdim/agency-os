@@ -151,8 +151,8 @@ export function SeoPanel({
               the home page's SEO and that empty fields inherit it. Favicon
               + the Google-tools section stay site-wide regardless. */}
           {editingPage && (
-            <div className="rounded-md border border-primary/30 bg-primary/5 px-2.5 py-2">
-              <p className="text-[11px] font-medium leading-tight">
+            <div className="rounded-md border border-(--dash-accent)/30 bg-(--dash-accent)/5 px-2.5 py-2">
+              <p className="text-[11px] font-medium leading-tight dash-accent">
                 Editing SEO for: {pageLabel || "this page"}
               </p>
               <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
@@ -189,7 +189,7 @@ export function SeoPanel({
               onBlur={flushTitle}
               placeholder={editingPage ? inheritedTitle || siteName : siteName}
               maxLength={TITLE_MAX + 30}
-              className="w-full px-2.5 py-1.5 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-2.5 py-1.5 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-colors"
             />
             <CharBar value={title.length} max={TITLE_MAX} />
           </FieldGroup>
@@ -203,7 +203,7 @@ export function SeoPanel({
               placeholder="A short description of your site for Google and social media (~150 characters)…"
               rows={3}
               maxLength={DESCRIPTION_MAX + 60}
-              className="w-full px-2.5 py-1.5 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+              className="w-full px-2.5 py-1.5 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-colors resize-y"
             />
             <CharBar value={description.length} max={DESCRIPTION_MAX} />
           </FieldGroup>
@@ -339,11 +339,11 @@ function AdvancedSection({
         brand?.address?.trim()));
 
   return (
-    <div className="rounded-md border border-input">
+    <div className="rounded-md border dash-hairline">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-2.5 py-2 text-left hover:bg-muted/40 transition-colors rounded-md"
+        className="dash-row w-full flex items-center gap-2 px-2.5 py-2 text-left rounded-md"
         aria-expanded={open}
       >
         <ChevronRight

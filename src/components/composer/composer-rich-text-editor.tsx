@@ -225,8 +225,8 @@ export function ComposerRichTextEditor({ value, fallback, onChange, unwrap }: Pr
   if (!editor) return null;
 
   return (
-    <div className="rounded-md border bg-background overflow-hidden">
-      <div className="flex flex-wrap items-center gap-0.5 px-1 py-1 border-b bg-muted/30">
+    <div className="rounded-lg border dash-hairline bg-background overflow-hidden shadow-sm focus-within:border-(--dash-accent)/40 transition-colors">
+      <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1.5 border-b dash-hairline bg-muted/40">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive("bold")}
@@ -322,12 +322,12 @@ function ToolbarButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       disabled={disabled}
-      className={`h-7 w-7 rounded inline-flex items-center justify-center transition-colors ${
+      className={`h-7 w-7 rounded-md inline-flex items-center justify-center transition-colors ${
         disabled
           ? "text-muted-foreground/40 cursor-not-allowed"
           : active
-            ? "bg-muted text-foreground"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            ? "bg-(--dash-accent)/10 text-(--dash-accent)"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
       }`}
     >
       {children}
@@ -336,7 +336,7 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <span className="mx-0.5 inline-block h-4 w-px bg-border" />;
+  return <span className="mx-1 inline-block h-4 w-px bg-border/60" />;
 }
 
 export type { Editor };

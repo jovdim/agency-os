@@ -199,8 +199,10 @@ export function AiGenerateModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="size-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2.5">
+            <span className="dash-chip inline-flex size-7 items-center justify-center rounded-lg">
+              <Sparkles className="size-4" />
+            </span>
             Generate content with AI
           </DialogTitle>
           <DialogDescription>
@@ -221,7 +223,7 @@ export function AiGenerateModal({
           )}
 
           {error && (
-            <div className="rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -269,9 +271,9 @@ export function AiGenerateModal({
               </div>
 
               {/* Services. Title + 1-line description per row. */}
-              <div className="space-y-2">
+              <div className="dash-panel dash-hairline space-y-2 rounded-xl border p-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Services</Label>
+                  <Label className="text-xs font-medium">Services</Label>
                   <span className="text-[11px] text-muted-foreground">
                     Title required, description optional but helps AI
                   </span>
@@ -343,7 +345,7 @@ export function AiGenerateModal({
                   placeholder="e.g. luxury tone, mention 20 percent winter discount, focus on speed"
                   rows={3}
                   disabled={generating}
-                  className="w-full text-sm px-3 py-2 rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                  className="w-full text-sm px-3 py-2 rounded-lg border bg-background transition focus:outline-none focus:ring-2 focus:ring-[--dash-accent]/30 focus:border-[--dash-accent]/40 resize-none disabled:opacity-50"
                 />
               </div>
             </>

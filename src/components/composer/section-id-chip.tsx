@@ -151,7 +151,7 @@ export function SectionIdChip({
               cancel();
             }
           }}
-          className={`bg-background border rounded-sm px-1 outline-none focus:ring-1 focus:ring-primary ${
+          className={`bg-background border dash-hairline rounded-md px-1.5 outline-none transition-colors focus:border-(--dash-accent)/40 focus:ring-1 focus:ring-(--dash-accent)/30 ${
             compact ? "h-5 w-24" : "h-6 w-32"
           }`}
           placeholder="section-id"
@@ -167,7 +167,7 @@ export function SectionIdChip({
   // tooltip explains. Click to override.
   const isAutoDeduped = !!renderedId && renderedId !== intended && intended !== "";
   const colorClass = isOverridden
-    ? "text-primary"
+    ? "dash-accent"
     : isAutoDeduped
       ? "text-amber-500/90"
       : "text-muted-foreground";
@@ -184,7 +184,7 @@ export function SectionIdChip({
         e.stopPropagation();
         setEditing(true);
       }}
-      className={`inline-flex items-center font-mono rounded-sm px-1 hover:bg-muted/60 transition-colors ${
+      className={`inline-flex items-center font-mono rounded-md border border-transparent px-1.5 hover:border-(--dash-border) hover:bg-muted/50 transition-colors ${
         compact ? "text-[10px] py-px" : "text-xs py-0.5"
       } ${colorClass}`}
       title={titleText}

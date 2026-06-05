@@ -46,13 +46,13 @@ export function SiteLockedScreen({ team, since, backHref = "/" }: Props) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-6">
-      <div className="max-w-md w-full rounded-xl border bg-card shadow-sm p-8 space-y-5 text-center">
-        <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
-          <Lock className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+      <div className="dash-panel max-w-md w-full p-8 space-y-5 text-center">
+        <div className="dash-chip mx-auto h-12 w-12 rounded-full flex items-center justify-center">
+          <Lock className="h-5 w-5" />
         </div>
 
         <div className="space-y-1.5">
-          <h1 className="text-lg font-semibold">Currently in use</h1>
+          <h1 className="text-lg font-semibold tracking-tight">Currently in use</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
             <span className="font-medium text-foreground">{team}</span> is
             editing this site right now.

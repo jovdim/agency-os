@@ -1609,7 +1609,7 @@ function DomainInputForm({
   async function handleSave() {
     const trimmed = domain.trim().toLowerCase();
     if (!trimmed) {
-      toast.error("Enter a domain (e.g. yourcompany.sk)");
+      toast.error("Enter a domain (e.g. yourcompany.com)");
       return;
     }
     if (!/^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]?(\.[a-z]{2,})+$/.test(trimmed)) {
@@ -1642,7 +1642,7 @@ function DomainInputForm({
       <Input
         value={domain}
         onChange={(e) => setDomain(e.target.value)}
-        placeholder="yourcompany.sk"
+        placeholder="yourcompany.com"
         className="h-9 max-w-xs"
         disabled={saving}
       />
@@ -2054,11 +2054,11 @@ function BusinessEmailAction({
   const saved = proposal.client_profile;
   // Sensible default mailbox: prefer the contact's existing business
   // email domain → fallback to their personal email's domain → finally
-  // `yourcompany.sk` placeholder. Tech can edit before sending.
+  // `yourcompany.com` placeholder. Tech can edit before sending.
   const contactDomain =
     proposal.contact?.business_email?.split("@")[1] ??
     proposal.contact?.email?.split("@")[1] ??
-    "yourcompany.sk";
+    "yourcompany.com";
 
   const [open, setOpen] = useState(false);
 

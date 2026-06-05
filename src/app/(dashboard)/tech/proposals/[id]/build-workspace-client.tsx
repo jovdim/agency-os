@@ -594,7 +594,7 @@ export function BuildWorkspaceClient({
                       type="email"
                       value={businessEmail}
                       onChange={(e) => setBusinessEmail(e.target.value)}
-                      placeholder="info@client.sk"
+                      placeholder="info@client.com"
                       className="h-8 text-sm"
                     />
                     <p className="text-[11px] text-muted-foreground">

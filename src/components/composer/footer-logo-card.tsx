@@ -166,7 +166,7 @@ export function FooterLogoCard({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="rounded-md border bg-background/40 px-2.5 py-2.5 space-y-2">
+      <div className="dash-panel dash-subhead px-2.5 py-2.5 space-y-2">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
             Footer logo
@@ -175,7 +175,7 @@ export function FooterLogoCard({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="text-muted-foreground hover:text-foreground transition-colors p-0.5 -m-0.5 rounded shrink-0"
+                className="text-muted-foreground hover:text-(--dash-accent) transition-colors p-0.5 -m-0.5 rounded shrink-0"
                 aria-label="What is the footer logo?"
               >
                 <HelpCircle className="h-3 w-3" />
@@ -198,7 +198,7 @@ export function FooterLogoCard({
             visible on user-uploaded PNG/SVG logos. Same treatment as
             BrandSection. */}
         <div
-          className="rounded border bg-muted/40 p-2 flex items-center justify-center min-h-16"
+          className="rounded-md border dash-hairline bg-muted/40 p-2 flex items-center justify-center min-h-16"
           style={{
             backgroundImage:
               "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
@@ -224,7 +224,7 @@ export function FooterLogoCard({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded-md border dash-hairline bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
             >
               {uploading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -239,7 +239,7 @@ export function FooterLogoCard({
             <button
               type="button"
               onClick={resetToBrand}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded-md border dash-hairline bg-background hover:bg-muted/60 transition-colors"
               title="Use the same logo as Brand panel"
             >
               <RefreshCw className="h-3 w-3" />
@@ -249,7 +249,7 @@ export function FooterLogoCard({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded-md border dash-hairline bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
             >
               {uploading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />

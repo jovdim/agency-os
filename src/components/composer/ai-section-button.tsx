@@ -126,8 +126,10 @@ export function AiSectionButton({ siteId, sectionId, onApply }: Props) {
       >
         <div className="space-y-3">
           <div>
-            <h4 className="text-sm font-semibold flex items-center gap-1.5">
-              <Sparkles className="size-3.5 text-primary" />
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <span className="dash-chip">
+                <Sparkles className="size-3.5" />
+              </span>
               Regenerate with AI
             </h4>
             <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -147,7 +149,7 @@ export function AiSectionButton({ siteId, sectionId, onApply }: Props) {
               placeholder="e.g. shorter, more luxury, mention 20% winter discount"
               rows={3}
               disabled={generating}
-              className="w-full text-xs px-2 py-1.5 rounded border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+              className="w-full text-xs px-2.5 py-2 rounded-lg border dash-hairline bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </div>
 

@@ -24,6 +24,7 @@ import {
   Layers,
   Settings,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 
 interface SectionData {
@@ -280,8 +281,12 @@ export function SiteEditorClient({
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{site.name}</h1>
-            <p className="text-sm text-muted-foreground">/{site.slug}</p>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {site.name}
+            </h1>
+            <p className="text-sm text-muted-foreground tabular-nums">
+              /{site.slug}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -328,11 +333,18 @@ export function SiteEditorClient({
       <div className="grid grid-cols-12 gap-4" style={{ minHeight: "600px" }}>
         {/* Section sidebar */}
         <div className="col-span-3">
-          <Card className="h-full">
+          <Card className="dash-panel h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
-                <Layers className="h-4 w-4" />
-                Sections ({sections.length})
+                <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+                  <Layers className="h-4 w-4" />
+                </span>
+                <span>
+                  Sections{" "}
+                  <span className="text-muted-foreground tabular-nums">
+                    ({sections.length})
+                  </span>
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -341,17 +353,17 @@ export function SiteEditorClient({
                   <button
                     key={section.id}
                     onClick={() => setSelectedSectionId(section.id)}
-                    className={`w-full text-left rounded-md px-3 py-2 text-sm transition-colors ${
+                    className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${
                       selectedSectionId === section.id
                         ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
+                        : "dash-row"
                     }`}
                   >
                     <div className="font-medium truncate">
                       {section.label || section.type}
                     </div>
                     <div
-                      className={`text-xs ${
+                      className={`text-xs tabular-nums ${
                         selectedSectionId === section.id
                           ? "text-primary-foreground/70"
                           : "text-muted-foreground"
@@ -373,11 +385,13 @@ export function SiteEditorClient({
 
         {/* Section editor */}
         <div className="col-span-4">
-          <Card className="h-full">
+          <Card className="dash-panel h-full">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
+                  <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+                    <Settings className="h-4 w-4" />
+                  </span>
                   {selectedSection
                     ? selectedSection.label || selectedSection.type
                     : "Select a section"}
@@ -403,7 +417,7 @@ export function SiteEditorClient({
                     <Badge variant="outline" className="text-xs">
                       {selectedSection.type}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground tabular-nums">
                       {Object.keys(selectedSection.fields).length} fields
                     </span>
                   </div>
@@ -428,10 +442,15 @@ export function SiteEditorClient({
 
         {/* Live preview */}
         <div className="col-span-5">
-          <Card className="h-full">
+          <Card className="dash-panel h-full">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Live Preview</CardTitle>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <span className="dash-chip-pink inline-flex h-7 w-7 items-center justify-center rounded-md">
+                    <Eye className="h-4 w-4" />
+                  </span>
+                  Live Preview
+                </CardTitle>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -445,7 +464,7 @@ export function SiteEditorClient({
             </CardHeader>
             <CardContent className="p-2">
               {site.template_id ? (
-                <div className="rounded border overflow-hidden bg-white relative">
+                <div className="rounded-lg border dash-hairline overflow-hidden bg-white relative">
                   <div
                     className="relative w-full"
                     style={{ minHeight: "500px" }}

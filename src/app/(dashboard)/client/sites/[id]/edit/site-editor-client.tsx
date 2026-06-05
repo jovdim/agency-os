@@ -595,7 +595,7 @@ export function SiteEditorClient({
     <>
       <div className="flex flex-col overflow-hidden" style={{ height: "100vh" }}>
         {/* ── Header ── */}
-        <header className="h-11 border-b border-border flex items-center justify-between px-4 shrink-0 bg-card">
+        <header className="h-11 dash-hairline border-b flex items-center justify-between px-4 shrink-0 bg-card">
           <div className="flex items-center gap-2">
             <div className="relative">
               <button
@@ -607,7 +607,7 @@ export function SiteEditorClient({
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40 cursor-pointer" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute top-full left-0 mt-1 z-50 bg-card border border-border rounded-lg shadow-lg py-1.5 min-w-[180px]">
+                  <div className="absolute top-full left-0 mt-1 z-50 dash-panel rounded-xl py-1.5 min-w-[180px]">
                     <button
                       onClick={() => { window.location.href = "/client"; setMenuOpen(false); }}
                       className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
@@ -645,9 +645,9 @@ export function SiteEditorClient({
 
           <div className="flex items-center gap-3">
             {/* Balance */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary border border-border">
-              <Coins className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-sm font-medium">${credits.toFixed(2)}</span>
+            <div className="dash-chip flex items-center gap-1.5 px-2.5 py-1 rounded-full">
+              <Coins className="w-3.5 h-3.5" />
+              <span className="text-sm font-medium tabular-nums">${credits.toFixed(2)}</span>
             </div>
 
             {/* Live site link */}
@@ -667,10 +667,10 @@ export function SiteEditorClient({
             {pendingChanges.length > 0 && (
               <button
                 onClick={() => setShowChangesPanel(!showChangesPanel)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 border border-primary/30 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
+                className="dash-chip flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium hover:brightness-105 transition-[filter]"
               >
                 <Layers className="w-3.5 h-3.5" />
-                {pendingChanges.length} {pendingChanges.length === 1 ? "change" : "changes"}
+                <span className="tabular-nums">{pendingChanges.length}</span> {pendingChanges.length === 1 ? "change" : "changes"}
               </button>
             )}
 
@@ -699,12 +699,12 @@ export function SiteEditorClient({
           const nameLine = [proposal.company_name, proposal.town].filter(Boolean).join(", ");
 
           return (
-            <div className="shrink-0 border-b border-border bg-card">
+            <div className="shrink-0 dash-hairline border-b dash-subhead">
               <div className="px-4 py-1.5 flex items-center justify-between gap-4 text-xs">
                 <span className="text-muted-foreground truncate min-w-0">
                   Proposal for: <span className="text-foreground font-medium">{nameLine}</span>
                 </span>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 tabular-nums">
                   {discountActive && discountPrice && discountPrice < basePrice ? (
                     <>
                       <span className="line-through text-muted-foreground">${basePrice}</span>
@@ -716,13 +716,13 @@ export function SiteEditorClient({
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {isPaid ? (
-                    <span className="inline-flex items-center gap-1 text-emerald-500 font-medium">
+                    <span className="inline-flex items-center gap-1 font-medium text-(--dash-accent-2)">
                       <CheckCircle2 className="w-3.5 h-3.5" /> Paid
                     </span>
                   ) : (
                     <>
                       {discountActive ? (
-                        <span className="inline-flex items-center gap-1 text-amber-500 font-medium">
+                        <span className="inline-flex items-center gap-1 text-amber-500 font-medium tabular-nums">
                           <Clock className="w-3.5 h-3.5" /> {daysLeft} {daysLeft === 1 ? "day" : "days"} left
                         </span>
                       ) : (
@@ -732,7 +732,7 @@ export function SiteEditorClient({
                       )}
                       <button
                         onClick={() => setShowPaymentBanner(!showPaymentBanner)}
-                        className="text-[10px] text-primary hover:underline font-medium"
+                        className="text-[10px] dash-accent hover:underline font-medium"
                       >
                         {showPaymentBanner ? "Hide" : "Pay"}
                       </button>
@@ -743,10 +743,10 @@ export function SiteEditorClient({
 
               {/* Payment banner */}
               {!isPaid && showPaymentBanner && (
-                <div className="px-4 pb-3 pt-1 border-t border-border/50 bg-muted/30">
+                <div className="px-4 pb-3 pt-1 dash-hairline border-t bg-muted/30">
                   <div className="flex items-start gap-6 max-w-2xl mx-auto">
                     <div className="flex-1 text-xs space-y-1.5">
-                      <p className="font-medium text-sm">
+                      <p className="font-medium text-sm tabular-nums">
                         Price{" "}
                         {discountActive && discountPrice && discountPrice < basePrice && (
                           <span className="line-through text-muted-foreground">${basePrice}</span>
@@ -757,12 +757,12 @@ export function SiteEditorClient({
                         Scan the QR code with your banking app or use the details below.
                       </p>
                       <div className="flex gap-4 text-[11px] text-muted-foreground mt-2">
-                        <span>IBAN: <span className="text-foreground font-mono">{(proposal.iban || "SK1309000000005221380177").replace(/(.{4})/g, "$1 ").trim()}</span></span>
-                        <span>VS: <span className="text-foreground font-mono">{proposal.variable_symbol || "—"}</span></span>
+                        <span>IBAN: <span className="text-foreground font-mono tabular-nums">{(proposal.iban || "SK1309000000005221380177").replace(/(.{4})/g, "$1 ").trim()}</span></span>
+                        <span>VS: <span className="text-foreground font-mono tabular-nums">{proposal.variable_symbol || "—"}</span></span>
                       </div>
                     </div>
                     {proposal.qr_image_url && (
-                      <div className="shrink-0 bg-white p-1.5 rounded-lg shadow-sm">
+                      <div className="shrink-0 bg-white p-1.5 rounded-lg dash-panel">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={proposal.qr_image_url} alt="QR" width={80} height={80} />
                       </div>
@@ -854,10 +854,10 @@ export function SiteEditorClient({
           {pendingChanges.length > 0 && !showChangesPanel && (
             <button
               onClick={() => setShowChangesPanel(true)}
-              className="absolute bottom-6 right-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+              className="absolute bottom-6 right-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-[var(--dash-shadow)] hover:bg-primary/90 transition-colors text-sm font-medium"
             >
               <Layers className="w-4 h-4" />
-              {pendingChanges.length} {pendingChanges.length === 1 ? "change" : "changes"}
+              <span className="tabular-nums">{pendingChanges.length}</span> {pendingChanges.length === 1 ? "change" : "changes"}
             </button>
           )}
         </div>
@@ -888,11 +888,11 @@ export function SiteEditorClient({
                 handleSubmit();
               }}
               disabled={isSubmitting || (site.is_paid && credits < 12.5)}
-              className="w-full text-left rounded-lg border-2 border-primary/30 hover:border-primary p-4 transition-colors disabled:opacity-40 disabled:cursor-not-allowed group"
+              className="dash-panel w-full text-left rounded-xl p-4 transition-colors hover:border-(--dash-accent)/40 disabled:opacity-40 disabled:cursor-not-allowed group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Send className="w-4 h-4 text-primary" />
+                <div className="dash-chip w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
+                  <Send className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-foreground">
@@ -906,13 +906,13 @@ export function SiteEditorClient({
                 </div>
               </div>
               {site.is_paid && credits < 12.5 && (
-                <div className="mt-2 text-xs text-destructive font-medium flex items-center gap-1.5 pl-12">
+                <div className="mt-2 text-xs text-destructive font-medium flex items-center gap-1.5 pl-12 tabular-nums">
                   <Coins className="w-3 h-3" />
                   Insufficient balance (${credits.toFixed(2)})
                 </div>
               )}
               {site.is_paid && credits >= 12.5 && (
-                <div className="mt-1.5 text-xs text-muted-foreground pl-12">
+                <div className="mt-1.5 text-xs text-muted-foreground pl-12 tabular-nums">
                   Balance: ${credits.toFixed(2)} → ${(credits - 12.5).toFixed(2)}
                 </div>
               )}
@@ -931,7 +931,7 @@ export function SiteEditorClient({
                 setShowSubmitDialog(false);
                 toast.success("Changes have been saved");
               }}
-              className="w-full text-left rounded-lg border border-border hover:border-muted-foreground/30 p-4 transition-colors group"
+              className="dash-hairline w-full text-left rounded-xl border p-4 transition-colors hover:bg-secondary/50 group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center shrink-0 group-hover:bg-secondary/80 transition-colors">
@@ -959,8 +959,8 @@ export function SiteEditorClient({
       <Dialog open={showDraftSavedDialog} onOpenChange={setShowDraftSavedDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <div className="mx-auto mb-2 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Save className="w-6 h-6 text-primary" />
+            <div className="dash-chip-pink mx-auto mb-2 w-12 h-12 rounded-full flex items-center justify-center">
+              <Save className="w-6 h-6" />
             </div>
             <DialogTitle className="text-center">Changes saved as a draft</DialogTitle>
             <DialogDescription className="text-center">
@@ -969,7 +969,7 @@ export function SiteEditorClient({
           </DialogHeader>
 
           <div className="space-y-3 pt-2">
-            <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+            <div className="dash-hairline rounded-xl border bg-muted/30 p-3 space-y-2">
               <div className="flex items-start gap-2">
                 <Clock className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                 <div className="text-xs text-muted-foreground">

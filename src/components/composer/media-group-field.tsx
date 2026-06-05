@@ -293,12 +293,12 @@ export function MediaGroupField({
           // absolutely-positioned <img>/<video> stays clipped inside
           // the box.
           "relative w-full aspect-4/3 overflow-hidden",
-          "transition-colors border bg-muted/30",
+          "transition-colors border dash-hairline bg-muted/20",
           hasMedia
-            ? "border-border"
-            : "border-dashed border-border/70",
+            ? ""
+            : "border-dashed",
           dragActive &&
-            "border-solid border-primary/70 bg-primary/5 ring-2 ring-primary/20",
+            "border-solid border-(--dash-accent)/60 bg-(--dash-accent)/5 ring-2 ring-(--dash-accent)/20",
         )}
       >
         {/* Filled state — preview fills the well. */}
@@ -342,11 +342,11 @@ export function MediaGroupField({
         {/* Type badge — appears only when media is set so the user can
             tell at a glance what's currently in this slot. */}
         {hasMedia && previewKind && !uploading && (
-          <div className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-background/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium shadow-sm">
+          <div className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full border dash-hairline bg-background/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium shadow-[0_1px_2px_oklch(0_0_0/0.06)]">
             {previewKind === "video" ? (
-              <FileVideo className="h-3 w-3" />
+              <FileVideo className="h-3 w-3 dash-accent" />
             ) : (
-              <ImageIcon className="h-3 w-3" />
+              <ImageIcon className="h-3 w-3 dash-accent" />
             )}
             <span className="capitalize">{previewKind}</span>
           </div>
@@ -356,7 +356,7 @@ export function MediaGroupField({
             backdrop so the previous preview stays visible underneath. */}
         {uploading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/85 backdrop-blur-sm">
-            <Loader2 className="h-6 w-6 animate-spin text-foreground/70" />
+            <Loader2 className="h-6 w-6 animate-spin dash-accent" />
             <span className="text-xs font-medium text-foreground/80">
               {uploadingKind === "video"
                 ? "Uploading video…"
@@ -379,10 +379,11 @@ export function MediaGroupField({
           className={cn(
             "h-9 gap-2 text-xs font-medium",
             // Subtle indicator that this kind is currently set —
-            // primary-tinted ring without going as loud as a filled
+            // accent-tinted ring without going as loud as a filled
             // button (which would compete with the preview's
             // visual hierarchy).
-            hasImage && "ring-1 ring-primary/40 bg-primary/5",
+            hasImage &&
+              "ring-1 ring-(--dash-accent)/35 bg-(--dash-accent)/5 dash-accent",
           )}
         >
           {uploadingKind === "image" ? (
@@ -400,7 +401,8 @@ export function MediaGroupField({
           onClick={() => videoInputRef.current?.click()}
           className={cn(
             "h-9 gap-2 text-xs font-medium",
-            hasVideo && "ring-1 ring-primary/40 bg-primary/5",
+            hasVideo &&
+              "ring-1 ring-(--dash-accent)/35 bg-(--dash-accent)/5 dash-accent",
           )}
         >
           {uploadingKind === "video" ? (

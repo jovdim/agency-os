@@ -61,9 +61,11 @@ export function LanguagesPanel({
 
   return (
     <div className="space-y-5">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2 text-sm font-semibold">
-          <Languages className="h-4 w-4 text-primary" />
+      <div className="space-y-2">
+        <div className="flex items-center gap-2.5 text-sm font-semibold">
+          <span className="dash-chip inline-flex size-8 shrink-0 items-center justify-center rounded-lg">
+            <Languages className="h-4 w-4" />
+          </span>
           Languages
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
@@ -81,7 +83,7 @@ export function LanguagesPanel({
         <select
           value={defaultLocale}
           onChange={(e) => onSetDefault(e.target.value as SiteLocale)}
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          className="w-full rounded-lg border dash-hairline bg-background px-3 py-2 text-sm transition-colors hover:border-(--dash-accent)/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--dash-accent)/30"
         >
           {SUPPORTED_LOCALES.map((loc) => (
             <option key={loc} value={loc}>
@@ -106,7 +108,7 @@ export function LanguagesPanel({
           return (
             <div
               key={loc}
-              className="rounded-md border p-3 space-y-2.5"
+              className="dash-panel dash-row p-3 space-y-2.5"
             >
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -120,12 +122,12 @@ export function LanguagesPanel({
                 </label>
                 {on &&
                   (translated ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                    <span className="dash-chip-pink inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium">
                       <Check className="h-3 w-3" />
                       Translated
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
                       <Loader2 className="h-3 w-3" />
                       Not translated
                     </span>
@@ -158,7 +160,7 @@ export function LanguagesPanel({
               )}
 
               {on && !translated && (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                <p className="rounded-md bg-amber-500/10 px-2 py-1.5 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
                   Until it&apos;s translated, this language version won&apos;t
                   be published.
                 </p>

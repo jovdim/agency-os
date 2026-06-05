@@ -47,18 +47,18 @@ export function PageSidebar({
   // Collapsed state — thin strip with expand button
   if (collapsed) {
     return (
-      <div className="w-9 shrink-0 border-r border-border bg-card flex flex-col items-center py-3">
+      <div className="w-9 shrink-0 border-r dash-hairline bg-card flex flex-col items-center py-3">
         <button
           onClick={onToggleCollapse}
-          className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+          className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
           title="Show pages"
         >
           <PanelLeftOpen className="w-4 h-4" />
         </button>
-        <div className="mt-3">
-          <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+        <div className="mt-3 inline-flex items-center justify-center w-6 h-6 rounded-md dash-chip">
+          <FileText className="w-3.5 h-3.5" />
         </div>
-        <span className="text-[9px] text-muted-foreground mt-1 writing-mode-vertical" style={{ writingMode: "vertical-rl" }}>
+        <span className="text-[9px] text-muted-foreground mt-1.5 tabular-nums writing-mode-vertical" style={{ writingMode: "vertical-rl" }}>
           {pages.length} {pages.length === 1 ? "page" : "pages"}
         </span>
       </div>
@@ -66,15 +66,15 @@ export function PageSidebar({
   }
 
   return (
-    <div className="w-56 shrink-0 border-r border-border bg-card flex flex-col">
+    <div className="w-56 shrink-0 border-r dash-hairline bg-card flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-        <span className="text-[11px] font-medium text-muted-foreground">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b dash-hairline dash-subhead">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
           Pages
         </span>
         <button
           onClick={onToggleCollapse}
-          className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+          className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
           title="Hide"
         >
           <PanelLeftClose className="w-3.5 h-3.5" />
@@ -87,7 +87,7 @@ export function PageSidebar({
           {isLoading ? (
             <div className="space-y-1 px-1">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-8 rounded-md bg-secondary/50 animate-pulse" />
+                <div key={i} className="h-8 rounded-lg bg-secondary/50 animate-pulse" />
               ))}
             </div>
           ) : (
@@ -100,9 +100,9 @@ export function PageSidebar({
                 <button
                   key={page.path}
                   onClick={() => onPageSelect(page.path)}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors text-left ${
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-colors text-left ${
                     isActive
-                      ? "bg-primary/10 text-primary font-medium"
+                      ? "bg-(--dash-chip-bg) dash-accent font-medium"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                   title={page.label}
@@ -114,7 +114,7 @@ export function PageSidebar({
                   )}
                   <span className="leading-tight wrap-break-word">{page.label}</span>
                   {hasChanges && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-(--dash-accent-2) shrink-0" />
                   )}
                 </button>
               );
@@ -124,10 +124,10 @@ export function PageSidebar({
       </ScrollArea>
 
       {/* Bottom actions */}
-      <div className="border-t border-border p-1.5 space-y-0.5">
+      <div className="border-t dash-hairline p-1.5 space-y-0.5">
         <button
           onClick={() => router.push("/client")}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
           Home
@@ -135,7 +135,7 @@ export function PageSidebar({
         <button
           onClick={handleLogout}
           disabled={loggingOut}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
         >
           <LogOut className="w-3.5 h-3.5 shrink-0" />
           {loggingOut ? "Logging out..." : "Log out"}

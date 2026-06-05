@@ -315,7 +315,7 @@ export function PublishMenu({
                 2. Fetched, has version     → real URL + meta
                 3. Fetched, no version      → "Not published yet" (truthful) */}
           {!hasFetched ? (
-            <div className="px-3 py-2.5 border-b bg-muted/30 animate-pulse">
+            <div className="dash-subhead dash-hairline px-3 py-2.5 border-b animate-pulse">
               <div className="flex items-start gap-2">
                 <Globe className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0 mt-0.5" />
                 <div className="min-w-0 flex-1 space-y-1.5">
@@ -326,9 +326,11 @@ export function PublishMenu({
               </div>
             </div>
           ) : stableUrl ? (
-            <div className="px-3 py-2.5 border-b bg-muted/30">
+            <div className="dash-subhead dash-hairline px-3 py-2.5 border-b">
               <div className="flex items-start gap-2">
-                <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                <span className="dash-chip inline-flex h-5 w-5 items-center justify-center rounded-md shrink-0 mt-0.5">
+                  <Globe className="h-3 w-3" />
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
                     Live at
@@ -337,7 +339,7 @@ export function PublishMenu({
                     href={stableUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[12px] font-medium text-primary hover:underline max-w-full"
+                    className="dash-accent inline-flex items-center gap-1 text-[12px] font-medium hover:underline max-w-full"
                     title="Open live site in new tab"
                   >
                     <span className="truncate">
@@ -348,14 +350,14 @@ export function PublishMenu({
                 </div>
               </div>
               {liveVersion && (
-                <p className="text-[10px] text-muted-foreground mt-1.5 ml-5">
+                <p className="text-[10px] text-muted-foreground mt-1.5 ml-7">
                   Last update: {formatRelative(liveVersion.created_at)} ·{" "}
                   {roleToTeam(liveVersion.created_by_role)}
                 </p>
               )}
             </div>
           ) : (
-            <div className="px-3 py-3 border-b bg-muted/30 text-center">
+            <div className="dash-subhead dash-hairline px-3 py-3 border-b text-center">
               <p className="text-[11px] text-muted-foreground">
                 Not published yet
               </p>
@@ -440,7 +442,7 @@ export function PublishMenu({
           <button
             type="button"
             onClick={() => setHistoryExpanded((e) => !e)}
-            className="w-full flex items-center gap-1.5 px-3 py-2 bg-muted/20 hover:bg-muted/30 transition-colors border-b text-left"
+            className="dash-subhead dash-hairline dash-row w-full flex items-center gap-1.5 px-3 py-2 border-b text-left"
             aria-expanded={historyExpanded}
           >
             {historyExpanded ? (
@@ -475,7 +477,7 @@ export function PublishMenu({
                 {versions.map((v, idx) => (
                   <li
                     key={v.id}
-                    className="px-3 py-2.5 border-b border-border/60 last:border-b-0 flex items-start gap-2"
+                    className="dash-row dash-hairline px-3 py-2.5 border-b last:border-b-0 flex items-start gap-2"
                   >
                     <div className="flex-1 min-w-0">
                       {/* Header row: timestamp · author · Live badge */}
@@ -484,7 +486,7 @@ export function PublishMenu({
                           {formatRelative(v.created_at)}
                         </span>
                         {idx === 0 && (
-                          <span className="text-[9px] uppercase rounded bg-primary/15 text-primary px-1 py-0.5 font-semibold">
+                          <span className="dash-chip-pink text-[9px] uppercase rounded px-1.5 py-0.5 font-semibold">
                             Live
                           </span>
                         )}
@@ -500,7 +502,7 @@ export function PublishMenu({
                           href={v.deployment_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1 text-[11px] text-primary hover:underline max-w-full"
+                          className="dash-accent mt-1 inline-flex items-center gap-1 text-[11px] hover:underline max-w-full"
                           title="Open this version in a new tab"
                         >
                           <span className="truncate">
@@ -953,7 +955,7 @@ function SubdomainEditor({
   if (persisted === null) {
     // Still loading — render a skinny skeleton so the popover height is stable.
     return (
-      <div className="px-3 py-2.5 border-b bg-muted/15 animate-pulse">
+      <div className="dash-subhead dash-hairline px-3 py-2.5 border-b animate-pulse">
         <div className="h-2 w-16 rounded bg-muted-foreground/15" />
         <div className="h-7 w-full rounded bg-muted-foreground/10 mt-1.5" />
       </div>
@@ -974,7 +976,7 @@ function SubdomainEditor({
   // tweaking the subdomain anymore. Per Peter 2026-05-10 v2.
   if (customDomainActive && customDomain) {
     return (
-      <div className="px-3 py-2.5 border-b bg-muted/15">
+      <div className="dash-subhead dash-hairline px-3 py-2.5 border-b">
         <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80 font-semibold">
           Primary domain
         </p>
@@ -1004,7 +1006,7 @@ function SubdomainEditor({
   }
 
   return (
-    <div className="px-3 py-2.5 border-b bg-muted/15">
+    <div className="dash-subhead dash-hairline px-3 py-2.5 border-b">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80 font-semibold">
         Subdomain
       </p>
@@ -1015,7 +1017,7 @@ function SubdomainEditor({
           onChange={(e) => onChangeValue(e.target.value.toLowerCase())}
           placeholder="my-site"
           maxLength={50}
-          className="flex-1 min-w-0 px-2 py-1 text-xs rounded-md border border-input bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+          className="flex-1 min-w-0 px-2 py-1 text-xs rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-(--dash-accent)/40"
         />
         <span className="text-[11px] text-muted-foreground whitespace-nowrap">
           .{domain}

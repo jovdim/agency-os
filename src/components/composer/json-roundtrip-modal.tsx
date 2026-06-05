@@ -440,7 +440,9 @@ export function JsonRoundtripModal({
       <DialogContent className="max-w-3xl gap-4">
         <DialogHeader className="space-y-1.5">
           <DialogTitle className="flex items-center gap-2 text-base">
-            <FileJson className="h-4 w-4 text-primary" />
+            <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-lg">
+              <FileJson className="h-4 w-4" />
+            </span>
             {isTranslate
               ? `Translate → ${targetLocaleLabel ?? ""}`
               : "JSON workflow"}
@@ -448,7 +450,7 @@ export function JsonRoundtripModal({
                 tech-admin can't paste the wrong page's JSON. Home
                 round-trips stay clean (the title alone is enough). */}
             {!isTranslate && pageContext && pageContext.kind !== "home" && (
-              <span className="ml-1 inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+              <span className="dash-chip ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium">
                 /{pageContext.pagePath.replace(/\.html$/, "")}
               </span>
             )}
@@ -488,11 +490,11 @@ export function JsonRoundtripModal({
         </DialogHeader>
 
         {/* Tab switcher — pill-style for a softer look than underlines */}
-        <div className="inline-flex items-center gap-1 rounded-md border bg-muted/40 p-0.5 w-fit">
+        <div className="dash-subhead dash-hairline inline-flex w-fit items-center gap-1 rounded-lg border p-1">
           <button
             type="button"
             onClick={() => setTab("export")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
               tab === "export"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -504,7 +506,7 @@ export function JsonRoundtripModal({
           <button
             type="button"
             onClick={() => setTab("import")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
               tab === "import"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -519,17 +521,18 @@ export function JsonRoundtripModal({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div>
-                <span className="font-medium text-foreground">{exportStats.sections}</span> section{exportStats.sections === 1 ? "" : "s"} ·{" "}
-                <span className="font-medium text-foreground">{exportStats.fields}</span> field{exportStats.fields === 1 ? "" : "s"} ready to export
+                <span className="font-medium text-foreground tabular-nums">{exportStats.sections}</span> section{exportStats.sections === 1 ? "" : "s"} ·{" "}
+                <span className="font-medium text-foreground tabular-nums">{exportStats.fields}</span> field{exportStats.fields === 1 ? "" : "s"} ready to export
               </div>
-              <div className="text-[11px] text-amber-600 dark:text-amber-400">
+              <div className="inline-flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400">
+                <AlertCircle className="h-3 w-3" />
                 Don&apos;t add/remove sections between export and import
               </div>
             </div>
 
             {(guideLoading || inputsLoading) ? (
-              <div className="h-105 flex items-center justify-center text-sm text-muted-foreground border rounded-md bg-muted/20">
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <div className="dash-subhead dash-hairline h-105 flex items-center justify-center text-sm text-muted-foreground border rounded-xl">
+                <Loader2 className="dash-accent h-4 w-4 animate-spin mr-2" />
                 Loading copywriting guide + proposal context…
               </div>
             ) : (
@@ -541,7 +544,7 @@ export function JsonRoundtripModal({
                 // instead of growing with content and pushing the
                 // footer offscreen. break-words handles long unbreakable
                 // tokens (URLs in JSON values) cleanly.
-                className="font-mono text-[11px] leading-relaxed h-105 resize-none field-sizing-fixed wrap-break-word overflow-y-auto"
+                className="font-mono text-[11px] leading-relaxed h-105 resize-none field-sizing-fixed wrap-break-word overflow-y-auto rounded-xl"
                 spellCheck={false}
               />
             )}
@@ -605,7 +608,7 @@ export function JsonRoundtripModal({
                   reassures the user something IS happening. */}
               {importRaw.trim() && !importParsed && importErrors.length === 0 && (
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-(--dash-accent) animate-pulse" />
                   Validating…
                 </div>
               )}
@@ -618,15 +621,15 @@ export function JsonRoundtripModal({
               // Same field-sizing fix as the export textarea — without
               // it, pasting a big JSON makes the textarea grow past
               // the modal viewport.
-              className="font-mono text-[11px] leading-relaxed h-90 resize-none field-sizing-fixed wrap-break-word overflow-y-auto"
+              className="font-mono text-[11px] leading-relaxed h-90 resize-none field-sizing-fixed wrap-break-word overflow-y-auto rounded-xl"
               spellCheck={false}
             />
 
             {importErrors.length > 0 && (
-              <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2.5">
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
                 <div className="flex items-center gap-1.5 text-xs font-medium text-destructive mb-1">
                   <AlertCircle className="h-3.5 w-3.5" />
-                  {importErrors.length} problem{importErrors.length === 1 ? "" : "s"} — fix in ChatGPT and re-paste
+                  <span className="tabular-nums">{importErrors.length}</span> problem{importErrors.length === 1 ? "" : "s"} — fix in ChatGPT and re-paste
                 </div>
                 <ul className="text-[11px] text-destructive/90 space-y-0.5 max-h-32 overflow-y-auto font-mono">
                   {importErrors.map((err, i) => (
@@ -637,11 +640,11 @@ export function JsonRoundtripModal({
             )}
 
             {importParsed && importStats && (
-              <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 p-2.5 flex items-center gap-2">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <div className="text-xs">
                   <span className="font-medium text-emerald-700 dark:text-emerald-400">Valid.</span>{" "}
-                  <span className="text-muted-foreground">
+                  <span className="text-muted-foreground tabular-nums">
                     Will update {importStats.fieldsChanged} field{importStats.fieldsChanged === 1 ? "" : "s"} across {importStats.sectionsChanged} section{importStats.sectionsChanged === 1 ? "" : "s"}.
                   </span>
                 </div>

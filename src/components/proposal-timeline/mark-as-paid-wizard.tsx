@@ -77,7 +77,7 @@ interface MarkAsPaidWizardProps {
   currentPassword?: string | null;
   // ── Handover defaults (new) ──
   /** Existing sites.domain — surfaced in Step 1 so operator can confirm
-   *  or edit the customer-facing main domain (e.g. balkar.sk). */
+   *  or edit the customer-facing main domain (e.g. yourcompany.com). */
   currentMainDomain?: string | null;
   /** Existing credit_balances.balance — shows as default in Step 1. */
   currentCreditBalance?: number | null;
@@ -243,7 +243,7 @@ export function MarkAsPaidWizard({
         .replace(/^https?:\/\//, "")
         .replace(/\/.*$/, "");
       if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(cleaned)) {
-        return "Main domain looks invalid (expected e.g. balkar.sk).";
+        return "Main domain looks invalid (expected e.g. yourcompany.com).";
       }
     }
     return null;
@@ -740,12 +740,12 @@ function Step1Payment(props: {
               Main domain
             </span>
           }
-          hint="The customer-facing domain the client uses (e.g. balkar.sk). Leave blank if not decided yet — you can set it later from Live Clients."
+          hint="The customer-facing domain the client uses (e.g. yourcompany.com). Leave blank if not decided yet — you can set it later from Live Clients."
         >
           <Input
             value={props.mainDomain}
             onChange={(e) => props.setMainDomain(e.target.value)}
-            placeholder="balkar.sk"
+            placeholder="yourcompany.com"
             disabled={props.disabled}
           />
         </FieldShell>

@@ -3344,7 +3344,7 @@ export function ComposerClient({
     <AnchorsProvider value={pageAnchors}>
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Top bar */}
-      <header className="h-12 border-b shrink-0 flex items-center justify-between px-4 bg-card">
+      <header className="h-12 border-b dash-hairline shrink-0 flex items-center justify-between px-4 bg-card">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -3355,7 +3355,7 @@ export function ComposerClient({
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          <h1 className="text-sm font-semibold">{siteName}</h1>
+          <h1 className="text-sm font-semibold tracking-tight">{siteName}</h1>
           <SaveIndicator status={saveStatus} />
         </div>
 
@@ -3374,9 +3374,9 @@ export function ComposerClient({
               size="sm"
               className="gap-1.5"
               onClick={() => setAiModalOpen(true)}
-              title="Generate Slovak content with AI for every empty field"
+              title="Generate content with AI for every empty field"
             >
-              <Sparkles className="h-4 w-4 text-primary" />
+              <Sparkles className="h-4 w-4 dash-accent" />
               Generate content
             </Button>
           )}
@@ -3395,7 +3395,7 @@ export function ComposerClient({
               onClick={() => setJsonModalOpen(true)}
               title="Export content as JSON → fill in ChatGPT → import back (free)"
             >
-              <FileJson className="h-4 w-4 text-primary" />
+              <FileJson className="h-4 w-4 dash-accent" />
               JSON workflow
             </Button>
           )}
@@ -3503,7 +3503,7 @@ export function ComposerClient({
             template default white bg, which clashes with dark mode and
             looks broken. The card itself fully replaces the iframe in
             that state — no overlay-over-blank-iframe trickery. */}
-        <div className="flex-1 min-w-0 border-r relative bg-muted/40">
+        <div className="flex-1 min-w-0 border-r dash-hairline relative bg-muted/40">
           {/* Empty-state scaffold card is tech-only — clients should never
               land in the composer with zero sections (the IT person built
               the site for them already). If they somehow do (data bug or
@@ -3528,7 +3528,7 @@ export function ComposerClient({
               the operator eyeball each translated version without
               publishing. Localizes the composition in the previewHtml memo. */}
           {(composition.i18n?.enabled_locales?.length ?? 1) > 1 && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 inline-flex items-center gap-0.5 rounded-md border bg-card/95 backdrop-blur px-1 py-0.5 shadow-sm">
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 inline-flex items-center gap-0.5 rounded-lg border dash-hairline bg-card/95 backdrop-blur px-1 py-0.5 shadow-(--dash-shadow)">
               {composition.i18n!.enabled_locales.map((loc) => {
                 const isDefault = loc === composition.i18n!.default_locale;
                 const active = isDefault
@@ -3548,9 +3548,9 @@ export function ComposerClient({
                         ? LOCALE_LABELS[loc]
                         : `${LOCALE_LABELS[loc]} — not translated yet`
                     }
-                    className={`px-2 py-0.5 rounded text-xs font-semibold transition-colors ${
+                    className={`px-2 py-0.5 rounded-md text-xs font-semibold tabular-nums transition-colors ${
                       active
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-(--dash-accent) text-white"
                         : translated
                           ? "text-muted-foreground hover:text-foreground"
                           : "text-muted-foreground/40 cursor-not-allowed"
@@ -3567,7 +3567,7 @@ export function ComposerClient({
         {/* Right panel — tabbed: Composition (sections + theme) | SEO */}
         <div className="w-96 flex flex-col overflow-hidden shrink-0">
           {/* Tab bar */}
-          <div className="flex shrink-0 border-b bg-card">
+          <div className="flex shrink-0 border-b dash-hairline bg-card">
             <TabButton
               active={rightTab === "composition"}
               onClick={() => setRightTab("composition")}
@@ -3797,7 +3797,7 @@ export function ComposerClient({
                 shouldn't ever land in empty state (IT builds the site
                 first), so they see nothing here either way. */}
             {activePage.sections.length === 0 && !isClientMode && (
-              <div className="rounded-lg border border-dashed bg-muted/20 px-4 py-12 text-center">
+              <div className="rounded-xl border border-dashed dash-hairline bg-muted/20 px-4 py-12 text-center">
                 <p className="text-sm text-muted-foreground">
                   Click a section in the left rail to add it here.
                 </p>
@@ -3922,7 +3922,7 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
   }
   if (status === "saved") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+      <span className="inline-flex items-center gap-1 text-xs text-(--dash-accent-2)">
         <CheckCircle2 className="h-3 w-3" />
         Saved
       </span>
@@ -4023,7 +4023,7 @@ function SharedSlot({
     // rather than telling them about a UI they can't see.
     if (isClientMode) return null;
     return (
-      <div className="rounded-lg border border-dashed bg-muted/20 px-3 py-3 text-xs text-muted-foreground flex items-center gap-2">
+      <div className="rounded-xl border border-dashed dash-hairline bg-muted/20 px-3 py-3 text-xs text-muted-foreground flex items-center gap-2">
         <Plus className="h-3 w-3" />
         Pick a {slot} from the sections panel on the left
       </div>
@@ -4047,19 +4047,19 @@ function SharedSlot({
   return (
     <div
       ref={cardRef}
-      className={`rounded-lg border bg-card overflow-hidden transition-all ${
+      className={`rounded-xl border dash-hairline bg-card overflow-hidden transition-all ${
         selected
-          ? "border-primary ring-2 ring-primary/30 shadow-md"
-          : "hover:border-primary/40"
+          ? "border-[color-mix(in_oklab,var(--dash-accent)_45%,var(--dash-border))] ring-1 ring-[color-mix(in_oklab,var(--dash-accent)_30%,transparent)] shadow-(--dash-shadow)"
+          : "hover:border-[color-mix(in_oklab,var(--dash-accent)_30%,var(--dash-border))]"
       }`}
     >
       {/* Header: click toggles open/closed via selection. Only the X stops propagation. */}
       <div
         onClick={onSelect}
-        className={`flex items-center gap-2 px-3 py-2 border-b transition-colors cursor-pointer ${
+        className={`flex items-center gap-2 px-3 py-2 border-b dash-hairline transition-colors cursor-pointer ${
           selected
-            ? "bg-primary/10"
-            : "bg-muted/40 hover:bg-muted/60"
+            ? "bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
+            : "dash-subhead hover:bg-muted/60"
         }`}
       >
         {expanded ? (
@@ -4068,8 +4068,8 @@ function SharedSlot({
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         )}
         <span
-          className={`text-[10px] uppercase tracking-wide rounded px-1.5 py-0.5 font-semibold ${
-            selected ? "bg-primary text-primary-foreground" : "bg-foreground/10"
+          className={`text-[10px] uppercase tracking-wide rounded-md px-1.5 py-0.5 font-semibold ${
+            selected ? "bg-(--dash-accent) text-white" : "dash-chip"
           }`}
         >
           {slot}
@@ -4209,7 +4209,7 @@ function TabButton({
       onClick={onClick}
       className={`flex-1 px-3 py-2 text-left transition-colors border-b-2 ${
         active
-          ? "border-primary bg-card"
+          ? "border-(--dash-accent) bg-card"
           : "border-transparent bg-muted/30 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
       }`}
     >

@@ -412,12 +412,12 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
   return (
     <div className="flex flex-col h-full bg-muted/20">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-3 py-2 border-b bg-card shrink-0 gap-3">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/60 bg-card/80 backdrop-blur-sm shrink-0 gap-3">
+        <div className="flex items-center gap-1 p-0.5 rounded-lg bg-muted/40 border border-border/50">
           <Button
             variant={viewport === "desktop" ? "secondary" : "ghost"}
             size="sm"
-            className="h-7 gap-1 text-xs"
+            className="h-7 gap-1.5 text-xs rounded-md"
             onClick={() => switchViewport("desktop")}
           >
             <Monitor className="h-3.5 w-3.5" />
@@ -426,7 +426,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
           <Button
             variant={viewport === "mobile" ? "secondary" : "ghost"}
             size="sm"
-            className="h-7 gap-1 text-xs"
+            className="h-7 gap-1.5 text-xs rounded-md"
             onClick={() => switchViewport("mobile")}
           >
             <Smartphone className="h-3.5 w-3.5" />
@@ -443,13 +443,13 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
               type="button"
               title="Zoom (Ctrl/Cmd + scroll to zoom)"
               aria-label="Zoom controls"
-              className="h-7 inline-flex items-center gap-1 px-2 rounded-md text-xs tabular-nums text-muted-foreground hover:text-foreground hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="h-7 inline-flex items-center gap-1 px-2.5 rounded-md border border-border/50 bg-muted/30 text-xs tabular-nums text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {zoomLabel}
               <ChevronDown className="h-3 w-3 opacity-60" />
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-56 p-2">
+          <PopoverContent align="end" className="w-56 p-2 rounded-xl">
             {/* Stepper row */}
             <div className="flex items-center justify-between gap-1">
               <button
@@ -458,7 +458,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
                 disabled={actualScale <= MIN_ZOOM + 0.001}
                 title="Zoom out"
                 aria-label="Zoom out"
-                className="h-7 w-7 inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Minus className="h-3.5 w-3.5" />
               </button>
@@ -471,7 +471,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
                 disabled={actualScale >= MAX_ZOOM - 0.001}
                 title="Zoom in"
                 aria-label="Zoom in"
-                className="h-7 w-7 inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>
@@ -483,7 +483,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
                   key={p}
                   type="button"
                   onClick={() => setZoom(p)}
-                  className={`h-7 rounded text-[11px] tabular-nums font-medium transition-colors ${
+                  className={`h-7 rounded-md text-[11px] tabular-nums font-medium transition-colors ${
                     zoom !== "fit" && Math.abs((zoom as number) - p) < 0.001
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-muted text-muted-foreground hover:text-foreground"
@@ -497,7 +497,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
             <button
               type="button"
               onClick={fitToWidth}
-              className={`mt-2 w-full h-7 rounded text-xs font-medium inline-flex items-center justify-center gap-1.5 transition-colors ${
+              className={`mt-2 w-full h-7 rounded-md text-xs font-medium inline-flex items-center justify-center gap-1.5 transition-colors ${
                 zoom === "fit"
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-muted text-muted-foreground hover:text-foreground"
@@ -529,7 +529,7 @@ export function PreviewPane({ srcDoc, iframeRef }: Props) {
             flexShrink: 0,
             position: "relative",
           }}
-          className="bg-white shadow-xl rounded-sm overflow-hidden ring-1 ring-black/10"
+          className="bg-white shadow-[0_8px_40px_-12px_rgba(0,0,0,0.18)] rounded-lg overflow-hidden ring-1 ring-border/60"
         >
           <iframe
             ref={iframeRef}

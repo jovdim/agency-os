@@ -42,7 +42,7 @@ function TextDiff({ oldValue, newValue }: { oldValue: string; newValue: string }
   const needsExpand = oldValue.length > TEXT_TRUNCATE || newValue.length > TEXT_TRUNCATE;
 
   return (
-    <div className="space-y-1 text-[11px] mt-1">
+    <div className="space-y-1 text-[11px] mt-1.5 rounded-md border border-border/60 bg-secondary/40 px-2 py-1.5">
       <div className="line-through text-muted-foreground wrap-break-word">
         {expanded || !needsExpand ? oldValue : oldValue.slice(0, TEXT_TRUNCATE) + "..."}
       </div>
@@ -52,7 +52,7 @@ function TextDiff({ oldValue, newValue }: { oldValue: string; newValue: string }
       {needsExpand && (
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-          className="text-[10px] text-primary hover:underline font-medium"
+          className="text-[10px] dash-accent hover:underline font-medium"
         >
           {expanded ? "Hide" : "Show full text"}
         </button>
@@ -96,17 +96,17 @@ export function ChangesPanel({
       />
 
       {/* Panel */}
-      <div className={`absolute top-0 right-0 bottom-0 w-80 bg-card border-l border-border shadow-2xl z-40 flex flex-col transition-transform duration-300 ease-out ${
+      <div className={`absolute top-0 right-0 bottom-0 w-80 bg-card border-l border-border shadow-[0_8px_40px_-12px_rgba(0,0,0,0.25)] z-40 flex flex-col transition-transform duration-300 ease-out ${
         visible ? "translate-x-0" : "translate-x-full"
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-          <h3 className="text-sm font-semibold">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border dash-subhead shrink-0">
+          <h3 className="text-sm font-semibold tracking-tight tabular-nums">
             {changes.length} {changes.length === 1 ? "change" : "changes"}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground"
+            className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -137,7 +137,7 @@ export function ChangesPanel({
             {fileNames.map((file) => (
               <div key={file}>
                 {fileNames.length > 1 && (
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 px-1">
+                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5 px-1">
                     {file === "index.html" ? "Home" : file.replace(".html", "")}
                   </div>
                 )}
@@ -145,19 +145,27 @@ export function ChangesPanel({
                   {grouped[file].map((change) => (
                     <div
                       key={change.id}
-                      className="rounded-lg border border-border p-2.5 hover:border-primary/30 transition-colors cursor-pointer overflow-hidden"
+                      className="rounded-xl border border-border bg-card p-2.5 hover:border-[color-mix(in_oklab,var(--dash-accent)_32%,var(--dash-border))] hover:shadow-[0_2px_12px_-6px_rgba(0,0,0,0.15)] transition-all cursor-pointer overflow-hidden"
                       onClick={() => onHighlight(change)}
                     >
                       {/* Header row: icon + label + revert */}
                       <div className="flex items-center gap-2 mb-1">
                         {change.action === "replace_image" ? (
-                          <Image className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <span className="dash-chip flex items-center justify-center w-6 h-6 rounded-md shrink-0">
+                            <Image className="w-3.5 h-3.5" />
+                          </span>
                         ) : change.action === "add_gallery_image" ? (
-                          <Plus className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                          <span className="dash-chip-pink flex items-center justify-center w-6 h-6 rounded-md shrink-0">
+                            <Plus className="w-3.5 h-3.5" />
+                          </span>
                         ) : change.action === "remove_gallery_image" ? (
-                          <Minus className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                          <span className="dash-chip flex items-center justify-center w-6 h-6 rounded-md shrink-0 text-muted-foreground">
+                            <Minus className="w-3.5 h-3.5" />
+                          </span>
                         ) : (
-                          <Type className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span className="dash-chip flex items-center justify-center w-6 h-6 rounded-md shrink-0">
+                            <Type className="w-3.5 h-3.5" />
+                          </span>
                         )}
                         <span className="text-xs font-medium truncate flex-1 min-w-0">
                           {change.action === "add_gallery_image" ? "Photo added"
@@ -169,7 +177,7 @@ export function ChangesPanel({
                             e.stopPropagation();
                             onRevert(change.id);
                           }}
-                          className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 text-[10px] font-medium transition-colors shrink-0"
+                          className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 hover:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-medium transition-colors shrink-0"
                           title="Revert"
                         >
                           <RotateCcw className="w-2.5 h-2.5" />
@@ -187,7 +195,7 @@ export function ChangesPanel({
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             onClick={(e) => { e.stopPropagation(); setPreviewImg(change.new_value); }}
-                            className="relative w-14 h-14 rounded border border-green-300/50 dark:border-green-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-green-400 transition-all"
+                            className="relative w-14 h-14 rounded-md border border-green-300/50 dark:border-green-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-green-400 transition-all"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={change.new_value} alt="New" className="w-full h-full object-cover" />
@@ -200,7 +208,7 @@ export function ChangesPanel({
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             onClick={(e) => { e.stopPropagation(); setPreviewImg(change.old_value); }}
-                            className="relative w-14 h-14 rounded border border-red-300/50 dark:border-red-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-red-400 transition-all opacity-60"
+                            className="relative w-14 h-14 rounded-md border border-red-300/50 dark:border-red-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-red-400 transition-all opacity-60"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={change.old_value} alt="Removed" className="w-full h-full object-cover" />
@@ -214,7 +222,7 @@ export function ChangesPanel({
                           {change.old_value && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setPreviewImg(change.old_value); }}
-                              className="relative w-14 h-14 rounded border border-red-300/50 dark:border-red-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-red-400 transition-all group"
+                              className="relative w-14 h-14 rounded-md border border-red-300/50 dark:border-red-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-red-400 transition-all group"
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={change.old_value} alt="Original" className="w-full h-full object-cover" />
@@ -227,7 +235,7 @@ export function ChangesPanel({
                           {change.new_value && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setPreviewImg(change.new_value); }}
-                              className="relative w-14 h-14 rounded border border-green-300/50 dark:border-green-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-green-400 transition-all group"
+                              className="relative w-14 h-14 rounded-md border border-green-300/50 dark:border-green-700/50 overflow-hidden shrink-0 bg-secondary hover:ring-2 hover:ring-green-400 transition-all group"
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={change.new_value} alt="New" className="w-full h-full object-cover" />
@@ -254,7 +262,7 @@ export function ChangesPanel({
 
         {/* Discard all */}
         {changes.length > 0 && (
-          <div className="px-4 py-3 border-t border-border shrink-0">
+          <div className="px-4 py-3 border-t border-border dash-subhead shrink-0">
             <button
               onClick={onDiscardAll}
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive transition-colors w-full justify-center"
@@ -275,7 +283,7 @@ export function ChangesPanel({
           <div className="relative max-w-[80vw] max-h-[80vh] animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setPreviewImg(null)}
-              className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary z-10"
+              className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors z-10"
             >
               <X className="w-4 h-4" />
             </button>
@@ -283,7 +291,7 @@ export function ChangesPanel({
             <img
               src={previewImg}
               alt="Preview"
-              className="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain"
+              className="max-w-full max-h-[80vh] rounded-xl shadow-[0_8px_60px_-12px_rgba(0,0,0,0.5)] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
           </div>

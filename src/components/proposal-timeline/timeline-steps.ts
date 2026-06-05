@@ -384,11 +384,11 @@ export function deriveSteps(
   steps.push({
     id: "custom_domain",
     label: "Custom domain",
-    description: "Optional. Wire up the .sk domain the client purchased.",
+    description: "Optional. Wire up the domain the client purchased.",
     state: customDomainState,
     hint:
       customDomainState === "pending"
-        ? "Optional — set after the client buys a real .sk."
+        ? "Optional — set after the client buys a real domain."
         : null,
   });
 
@@ -412,7 +412,7 @@ export function deriveSteps(
     doneAt: proposal.business_email_sent_at ?? undefined,
     hint:
       businessEmailState === "pending"
-        ? "Waiting for the custom domain to be active — Hostinger mailbox needs the .sk first."
+        ? "Waiting for the custom domain to be active — the mailbox needs the domain first."
         : businessEmailState === "active"
           ? "Create info@… in Hostinger, then paste the credentials here."
           : null,

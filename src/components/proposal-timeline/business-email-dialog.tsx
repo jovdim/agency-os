@@ -121,7 +121,7 @@ export function BusinessEmailDialog({
   }) {
     return buildDefaultBusinessEmailBody({
       contactPersonalEmail: args.toEmail,
-      businessEmail: args.businessEmail || "info@yourcompany.sk",
+      businessEmail: args.businessEmail || "info@yourcompany.com",
       businessEmailPassword: args.businessEmailPassword || "",
     });
   }
@@ -465,7 +465,7 @@ export function BusinessEmailDialog({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="info@yourcompany.sk"
+                placeholder="info@yourcompany.com"
                 className="font-mono text-sm"
                 disabled={busy}
               />

@@ -207,8 +207,8 @@ export function SectionsRail({
           Icons alone are guess-the-glyph; pairing each with a tiny text
           label below makes the column self-explanatory at a glance for
           new users (and Future-You) without bumping the width past ~72px. */}
-      <aside className="w-18 border-r bg-card flex flex-col items-stretch shrink-0 z-20 overflow-y-auto">
-        <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-1 py-2 text-center border-b-2 border-border">
+      <aside className="w-18 border-r dash-hairline bg-card flex flex-col items-stretch shrink-0 z-20 overflow-y-auto">
+        <div className="dash-subhead text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-1 py-2 text-center border-b dash-hairline">
           Add
         </div>
         {visible.map((cat) => {
@@ -223,10 +223,10 @@ export function SectionsRail({
                 onMouseLeave={scheduleClose}
                 onClick={() => toggleClick(cat.id)}
                 onFocus={() => openCategory(cat.id)}
-                className={`relative w-full px-1 py-2 flex flex-col items-center gap-1 transition-colors border-b border-border ${
+                className={`relative w-full px-1 py-2 flex flex-col items-center gap-1 transition-colors border-b dash-hairline ${
                   isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    ? "dash-chip dash-accent"
+                    : "text-muted-foreground hover:bg-(--dash-subtle) hover:text-foreground"
                 }`}
                 aria-label={`${cat.label} (${count})${cat.workInProgress ? " — work in progress" : ""}`}
                 aria-haspopup="true"
@@ -249,7 +249,7 @@ export function SectionsRail({
                 )}
                 {/* Count chip — only when 2+ templates exist; otherwise noise */}
                 {count > 1 && (
-                  <span className="absolute top-1 right-1 h-3.5 min-w-3.5 px-1 inline-flex items-center justify-center rounded-full bg-foreground/80 text-background text-[9px] font-semibold tabular-nums">
+                  <span className="dash-chip absolute top-1 right-1 h-3.5 min-w-3.5 px-1 inline-flex items-center justify-center rounded-full text-[9px] font-semibold tabular-nums">
                     {count}
                   </span>
                 )}
@@ -262,7 +262,7 @@ export function SectionsRail({
                   combo looked awful). */}
               {cat.dividerAfter && (
                 <div className="py-1" aria-hidden="true">
-                  <div className="border-t border-border/70" />
+                  <div className="border-t dash-hairline" />
                 </div>
               )}
             </div>
@@ -333,9 +333,9 @@ function CategoryPopout({
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="absolute left-full top-0 bottom-0 w-72 border-r bg-card shadow-xl z-30 flex flex-col"
+      className="dash-panel absolute left-full top-0 bottom-0 w-72 rounded-none border-y-0 border-l-0 border-r dash-hairline z-30 flex flex-col"
     >
-      <div className="px-3 py-2.5 border-b shrink-0 flex items-center justify-between gap-2">
+      <div className="dash-subhead px-3 py-2.5 border-b dash-hairline shrink-0 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide truncate">
             {category.label}
@@ -411,7 +411,7 @@ function TemplateCard({
     <li>
       <button
         onClick={onPick}
-        className="group w-full rounded-lg border border-border bg-background hover:border-primary hover:shadow-md hover:-translate-y-0.5 overflow-hidden transition-all text-left flex flex-col"
+        className="dash-card group w-full rounded-lg bg-background hover:-translate-y-0.5 overflow-hidden text-left flex flex-col"
         title={`Add ${template.name}`}
       >
         {previewSrcDoc ? (
@@ -442,7 +442,7 @@ function TemplateCard({
         )}
 
         <div className="px-2.5 py-1.5 flex items-center justify-between gap-2">
-          <p className="text-[11px] font-medium truncate group-hover:text-primary">
+          <p className="text-[11px] font-medium truncate group-hover:text-(--dash-accent)">
             {template.name}
           </p>
           <div className="flex items-center gap-1.5 shrink-0">

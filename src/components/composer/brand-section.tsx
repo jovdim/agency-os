@@ -1,7 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { HelpCircle, Loader2, RefreshCw, RotateCcw, Upload } from "lucide-react";
+import {
+  HelpCircle,
+  ImageIcon,
+  Loader2,
+  Phone,
+  RefreshCw,
+  RotateCcw,
+  Upload,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -190,9 +198,12 @@ export function BrandSection({
     // no provider is guaranteed. delayDuration matches the Theme panel
     // (150ms) for visual consistency between the two sections.
     <TooltipProvider delayDuration={150}>
-    <div className="rounded-md border bg-background/40 px-2.5 py-2.5 space-y-2">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+    <div className="dash-panel px-3 py-3 space-y-2.5">
+      <div className="flex items-center gap-2">
+        <span className="dash-chip inline-flex h-6 w-6 items-center justify-center rounded-md shrink-0">
+          <ImageIcon className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">
           Brand mark
         </span>
         <Tooltip>
@@ -202,7 +213,7 @@ export function BrandSection({
               className="text-muted-foreground hover:text-foreground transition-colors p-0.5 -m-0.5 rounded shrink-0"
               aria-label="What is the brand mark?"
             >
-              <HelpCircle className="h-3 w-3" />
+              <HelpCircle className="h-3.5 w-3.5" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="left" className="max-w-65 text-xs leading-snug">
@@ -218,7 +229,7 @@ export function BrandSection({
       {/* Logo preview — checkerboard backdrop so transparency is visible
           on user-uploaded PNG/SVG logos. */}
       <div
-        className="rounded border bg-muted/40 p-2 flex items-center justify-center min-h-16"
+        className="rounded-md border dash-hairline bg-muted/40 p-2 flex items-center justify-center min-h-16"
         style={{
           backgroundImage:
             "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
@@ -258,7 +269,7 @@ export function BrandSection({
               value={brand.company_text}
               onChange={(e) => onChange({ company_text: e.target.value })}
               placeholder="Company name"
-              className="w-full text-xs px-2 py-1.5 rounded border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background focus:outline-none focus:ring-2 focus:ring-(--dash-accent)/40 focus:border-(--dash-accent)/50 transition-colors"
             />
           </label>
           <div className="flex items-center gap-1.5">
@@ -266,7 +277,7 @@ export function BrandSection({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
+              className="dash-row flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background hover:border-(--dash-accent)/40 transition-colors disabled:opacity-60"
             >
               {uploading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -282,7 +293,7 @@ export function BrandSection({
           <button
             type="button"
             onClick={resetToAuto}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors"
+            className="dash-row flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background hover:border-(--dash-accent)/40 transition-colors"
           >
             <RefreshCw className="h-3 w-3" />
             Reset to auto
@@ -291,7 +302,7 @@ export function BrandSection({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2 py-1.5 rounded border bg-background hover:bg-muted/60 transition-colors disabled:opacity-60"
+            className="dash-row flex-1 inline-flex items-center justify-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background hover:border-(--dash-accent)/40 transition-colors disabled:opacity-60"
           >
             {uploading ? (
               <Loader2 className="h-3 w-3 animate-spin" />
@@ -317,9 +328,12 @@ export function BrandSection({
           address (footer, nav CTA, contact form, map callouts), same
           way company_text propagates to nav + footer logos. Type once
           here, shows everywhere. */}
-      <div className="border-t pt-2 space-y-1.5">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+      <div className="border-t dash-hairline pt-2.5 space-y-1.5">
+        <div className="flex items-center gap-2">
+          <span className="dash-chip inline-flex h-6 w-6 items-center justify-center rounded-md shrink-0">
+            <Phone className="h-3.5 w-3.5" />
+          </span>
+          <span className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">
             Contact info
           </span>
           <Tooltip>
@@ -329,7 +343,7 @@ export function BrandSection({
                 className="text-muted-foreground hover:text-foreground transition-colors p-0.5 -m-0.5 rounded shrink-0"
                 aria-label="What is contact info?"
               >
-                <HelpCircle className="h-3 w-3" />
+                <HelpCircle className="h-3.5 w-3.5" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="left" className="max-w-65 text-xs leading-snug">
@@ -348,7 +362,7 @@ export function BrandSection({
             value={brand.phone ?? ""}
             onChange={(e) => onChange({ phone: e.target.value })}
             placeholder="+1 555 123 4567"
-            className="w-full text-xs px-2 py-1.5 rounded border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background focus:outline-none focus:ring-2 focus:ring-(--dash-accent)/40 focus:border-(--dash-accent)/50 transition-colors"
           />
         </label>
         <label className="block">
@@ -358,7 +372,7 @@ export function BrandSection({
             value={brand.email ?? ""}
             onChange={(e) => onChange({ email: e.target.value })}
             placeholder="info@company.com"
-            className="w-full text-xs px-2 py-1.5 rounded border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background focus:outline-none focus:ring-2 focus:ring-(--dash-accent)/40 focus:border-(--dash-accent)/50 transition-colors"
           />
         </label>
         <label className="block">
@@ -368,7 +382,7 @@ export function BrandSection({
             value={brand.address ?? ""}
             onChange={(e) => onChange({ address: e.target.value })}
             placeholder="123 Main Street, City"
-            className="w-full text-xs px-2 py-1.5 rounded border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full text-xs px-2.5 py-1.5 rounded-md border dash-hairline bg-background focus:outline-none focus:ring-2 focus:ring-(--dash-accent)/40 focus:border-(--dash-accent)/50 transition-colors"
           />
         </label>
       </div>
@@ -447,7 +461,7 @@ function LogoSizeControls({
 
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+      <span className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">
         Logo size
       </span>
       <div
@@ -498,7 +512,7 @@ function LogoSizeControls({
                 setEditing(false);
               }
             }}
-            className="h-5 w-12 text-center text-[10px] font-semibold tabular-nums bg-background border border-input rounded px-0 outline-none focus:border-primary"
+            className="h-5 w-12 text-center text-[10px] font-semibold tabular-nums bg-background border dash-hairline rounded-md px-0 outline-none focus:border-(--dash-accent) focus:ring-1 focus:ring-(--dash-accent)/40 transition-colors"
           />
         ) : (
           <button

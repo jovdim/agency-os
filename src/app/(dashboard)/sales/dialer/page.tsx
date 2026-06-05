@@ -67,19 +67,19 @@ export default function DialerPage() {
   return (
     <div className="fixed inset-0 bg-background flex flex-col z-50">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b">
+      <div className="dash-subhead flex items-center justify-between px-4 py-3 border-b dash-hairline">
         <div className="flex items-center gap-2">
           {started ? (
             connected ? <Wifi className="h-3.5 w-3.5 text-emerald-500" /> : <WifiOff className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
           ) : (
             <Phone className="h-3.5 w-3.5 text-muted-foreground" />
           )}
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs font-medium text-foreground/80">
             {!started ? "Dialer" : connected ? "Connected" : "Connecting..."}
           </span>
-          {callCount > 0 && <span className="text-xs text-muted-foreground">· {callCount}x</span>}
+          {callCount > 0 && <span className="text-xs tabular-nums text-muted-foreground">· {callCount}x</span>}
         </div>
-        <button onClick={handleLogout} className="text-xs text-muted-foreground active:text-foreground flex items-center gap-1">
+        <button onClick={handleLogout} className="text-xs text-muted-foreground active:text-foreground transition-colors flex items-center gap-1">
           <LogOut className="h-3 w-3" /> Log out
         </button>
       </div>
@@ -87,52 +87,52 @@ export default function DialerPage() {
       {/* Main */}
       <div className="flex-1 flex items-center justify-center px-6">
         {!started ? (
-          <div className="flex flex-col items-center gap-6">
-            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <Phone className="h-8 w-8 text-primary" />
+          <div className="dash-panel w-full max-w-xs flex flex-col items-center gap-6 px-8 py-10">
+            <div className="dash-chip h-20 w-20 rounded-full flex items-center justify-center">
+              <Phone className="h-8 w-8" />
             </div>
-            <div className="text-center space-y-1">
-              <p className="text-base font-medium">Get phone ready</p>
+            <div className="text-center space-y-1.5">
+              <p className="text-base font-semibold tracking-tight">Get phone ready</p>
               <p className="text-xs text-muted-foreground">Tap to connect to your computer</p>
             </div>
             <button
               onClick={startListening}
-              className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm active:scale-95 transition-transform"
+              className="px-7 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm shadow-sm active:scale-95 transition-transform"
             >
               Connect
             </button>
           </div>
         ) : dialRequest ? (
-          <div key={animateKey} className="w-full flex flex-col items-center justify-center gap-6" style={{ animation: "bounceIn 0.3s ease-out" }}>
-            {/* Auto-dialed indicator */}
-            <div className="h-16 w-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <PhoneCall className="h-7 w-7 text-emerald-500" />
+          <div key={animateKey} className="dash-panel w-full max-w-xs flex flex-col items-center justify-center gap-6 px-8 py-10" style={{ animation: "bounceIn 0.3s ease-out" }}>
+            {/* Auto-dialed indicator — pink = good news / live call */}
+            <div className="dash-chip-pink h-16 w-16 rounded-full flex items-center justify-center">
+              <PhoneCall className="h-7 w-7" />
             </div>
-            <div className="text-center space-y-1">
-              <p className="text-lg font-bold">{dialRequest.companyName || "Unknown"}</p>
-              <p className="text-sm font-mono text-muted-foreground">{dialRequest.phone}</p>
+            <div className="text-center space-y-1.5">
+              <p className="text-lg font-semibold tracking-tight">{dialRequest.companyName || "Unknown"}</p>
+              <p className="text-sm font-mono tabular-nums text-muted-foreground">{dialRequest.phone}</p>
             </div>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">Calling...</p>
+            <p className="text-xs font-medium" style={{ color: "var(--dash-accent-2)" }}>Calling...</p>
 
             {/* Fallback: if auto-redirect was blocked, tap here */}
             <a
               href={`tel:${dialRequest.phone}`}
-              className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-medium active:scale-95 transition-transform"
+              className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-medium tabular-nums shadow-sm active:scale-95 transition-transform"
             >
               Call {dialRequest.phone}
             </a>
 
             <button
               onClick={() => setDialRequest(null)}
-              className="text-xs text-muted-foreground active:text-foreground mt-4"
+              className="text-xs text-muted-foreground active:text-foreground transition-colors mt-2"
             >
               Close
             </button>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-4">
-            <div className={`h-16 w-16 rounded-full flex items-center justify-center transition-colors duration-500 ${connected ? "bg-emerald-500/10" : "bg-muted/10"}`}>
-              <Phone className={`h-7 w-7 transition-colors duration-500 ${connected ? "text-emerald-500/50" : "text-muted-foreground/30"}`} />
+          <div className="dash-panel w-full max-w-xs flex flex-col items-center gap-5 px-8 py-10">
+            <div className={`h-16 w-16 rounded-full flex items-center justify-center border transition-colors duration-500 ${connected ? "dash-chip" : "bg-muted/20 dash-hairline"}`}>
+              <Phone className={`h-7 w-7 transition-colors duration-500 ${connected ? "" : "text-muted-foreground/30"}`} />
             </div>
             <p className="text-xs text-muted-foreground">
               {connected ? "Waiting for a call..." : "Connecting..."}

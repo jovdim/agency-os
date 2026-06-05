@@ -223,7 +223,7 @@ export function AiSettingsClient({
               setSettings({ ...settings, copywriting_guide: e.target.value })
             }
             className="w-full min-h-100 rounded-md border bg-background px-3 py-2 text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/40"
-            placeholder="Write your Slovak copywriting rules here..."
+            placeholder="Write your copywriting rules here..."
             spellCheck={false}
           />
 

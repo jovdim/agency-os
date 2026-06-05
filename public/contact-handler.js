@@ -71,7 +71,7 @@
       // default and this is the natural place to gate on it.
       var gdprCheckbox = form.querySelector('input[name="gdpr_consent"]');
       if (gdprCheckbox && !gdprCheckbox.checked) {
-        showMessage(form, 'Musíte súhlasiť so spracovaním osobných údajov.', 'error');
+        showMessage(form, 'Please agree to the processing of your personal data.', 'error');
         return;
       }
 
@@ -89,8 +89,8 @@
       if (btn) {
         origText = btn.textContent || btn.value;
         btn.disabled = true;
-        if (btn.textContent !== undefined) btn.textContent = 'Odosielam...';
-        else btn.value = 'Odosielam...';
+        if (btn.textContent !== undefined) btn.textContent = 'Sending...';
+        else btn.value = 'Sending...';
       }
 
       fetch(apiBase + '/api/public/contact', {
@@ -101,14 +101,14 @@
       .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
       .then(function(result) {
         if (result.ok) {
-          showMessage(form, 'Správa bola odoslaná. Ďakujeme!', 'success');
+          showMessage(form, 'Your message has been sent. Thank you!', 'success');
           form.reset();
         } else {
-          showMessage(form, (result.data && result.data.error) || 'Chyba pri odosielaní. Skúste znova.', 'error');
+          showMessage(form, (result.data && result.data.error) || 'Something went wrong. Please try again.', 'error');
         }
       })
       .catch(function() {
-        showMessage(form, 'Chyba pri odosielaní. Skúste znova.', 'error');
+        showMessage(form, 'Something went wrong. Please try again.', 'error');
       })
       .finally(function() {
         if (btn) {

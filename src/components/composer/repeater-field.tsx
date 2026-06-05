@@ -324,7 +324,7 @@ export function RepeaterField({
       <button
         type="button"
         onClick={addItem}
-        className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 px-1 py-1 -mx-1 rounded"
+        className="text-[11px] text-muted-foreground hover:text-(--dash-accent) transition-colors flex items-center gap-1 px-1.5 py-1 -mx-1 rounded-md"
       >
         <Plus className="h-3 w-3" />
         Add {humanize(fieldKey).toLowerCase()}
@@ -333,11 +333,11 @@ export function RepeaterField({
   }
 
   return (
-    <div className="rounded-md border bg-muted/20 overflow-hidden">
+    <div className="rounded-lg border dash-hairline bg-card overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2.5 dash-row text-left"
         aria-expanded={open}
       >
         {open ? (
@@ -346,13 +346,13 @@ export function RepeaterField({
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
         )}
         <span className="text-sm font-medium capitalize">{humanize(fieldKey)}</span>
-        <span className="text-[10px] text-muted-foreground rounded-full bg-muted px-1.5 py-0.5">
+        <span className="dash-chip text-[10px] tabular-nums rounded-full px-2 py-0.5">
           {items.length} / {max}
         </span>
       </button>
 
       {open && (
-        <div className="px-3 py-3 space-y-2 bg-background border-t">
+        <div className="px-3 py-3 space-y-2 bg-background border-t dash-hairline">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -527,21 +527,21 @@ function SortableRepeaterItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="rounded-md border bg-muted/10 overflow-hidden"
+      className="rounded-lg border dash-hairline bg-card overflow-hidden"
     >
       {/* Per-item header: drag handle + index + (optional) anchor chip + delete */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/30 border-b">
+      <div className="flex items-center gap-1 px-2 py-1.5 dash-subhead border-b dash-hairline">
         <button
           type="button"
           {...attributes}
           {...listeners}
-          className="p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing"
+          className="p-1 rounded-md hover:bg-muted cursor-grab active:cursor-grabbing transition-colors"
           title="Drag to reorder"
           aria-label="Drag handle"
         >
           <GripVertical className="h-3 w-3 text-muted-foreground" />
         </button>
-        <span className="text-[10px] font-semibold text-muted-foreground w-5 text-center">
+        <span className="text-[10px] font-semibold tabular-nums text-muted-foreground w-5 text-center">
           {index + 1}
         </span>
         {/* Anchor-id chip — only when the parent repeater's template
@@ -562,7 +562,7 @@ function SortableRepeaterItem({
           type="button"
           onClick={onRemove}
           disabled={atMin}
-          className="p-1 rounded hover:bg-destructive/10 hover:text-destructive disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           title={atMin ? `At minimum (${min})` : "Remove item"}
         >
           <Trash2 className="h-3 w-3" />
@@ -783,7 +783,7 @@ function SortableRepeaterItem({
             blocks.push(
               <div
                 key={`group:${group}`}
-                className="rounded-md border bg-muted/20 px-2.5 py-2 space-y-2"
+                className="rounded-lg border dash-hairline bg-muted/20 px-2.5 py-2 space-y-2"
               >
                 <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                   {humanizeGroup(group)}

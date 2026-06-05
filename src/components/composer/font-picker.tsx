@@ -207,7 +207,7 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between text-xs border rounded px-2.5 py-1.5 bg-background hover:bg-muted/40 transition-colors"
+        className="w-full flex items-center justify-between text-xs dash-hairline border rounded-lg px-3 py-2 bg-background hover:bg-(--dash-subtle) transition-colors"
         style={{ fontFamily: value || undefined }}
       >
         <span className="truncate">{currentName}</span>
@@ -215,9 +215,9 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
       </button>
 
       {open && (
-        <div className="absolute z-50 left-0 right-0 mt-1 bg-popover border rounded-md shadow-lg overflow-hidden">
+        <div className="absolute z-50 left-0 right-0 mt-1.5 bg-popover dash-hairline border rounded-xl shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] overflow-hidden">
           {/* Search bar */}
-          <div className="flex items-center gap-2 px-2.5 py-2 border-b">
+          <div className="flex items-center gap-2 px-3 py-2.5 dash-hairline border-b">
             <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
             <input
               type="text"
@@ -231,12 +231,12 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
 
           {/* Loading / error states */}
           {loading && (
-            <div className="px-2.5 py-3 text-xs text-muted-foreground">
+            <div className="px-3 py-3 text-xs text-muted-foreground">
               Loading fonts…
             </div>
           )}
           {error && (
-            <div className="px-2.5 py-3 text-xs text-red-600">
+            <div className="px-3 py-3 text-xs text-destructive">
               Couldn&apos;t load fonts: {error}. Falling back to defaults.
             </div>
           )}
@@ -249,7 +249,7 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
                 if (!items || items.length === 0) return null;
                 return (
                   <div key={cat}>
-                    <div className="sticky top-0 bg-muted/70 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    <div className="sticky top-0 dash-subhead backdrop-blur px-3 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       {cat.replace("-", " ")}
                     </div>
                     {items.map((f) => {
@@ -264,8 +264,8 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
                           data-preview-font={f.family}
                           onClick={() => handlePick(f)}
                           onMouseEnter={() => ensurePreview(f.family)}
-                          className={`w-full flex items-center justify-between px-2.5 py-2 text-sm text-left hover:bg-muted/60 transition-colors ${
-                            isCurrent ? "bg-muted/40" : ""
+                          className={`dash-row w-full flex items-center justify-between px-3 py-2 text-sm text-left ${
+                            isCurrent ? "bg-(--dash-chip-bg) dash-accent" : ""
                           }`}
                         >
                           {/* Inline font-family so the option renders in
@@ -280,7 +280,7 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
                             {f.family}
                           </span>
                           {isCurrent && (
-                            <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <Check className="h-3.5 w-3.5 dash-accent shrink-0" />
                           )}
                         </button>
                       );
@@ -289,7 +289,7 @@ export function FontPicker({ label, value, onChange, placeholder }: Props) {
                 );
               })}
               {Object.values(groups).every((arr) => arr.length === 0) && (
-                <div className="px-2.5 py-3 text-xs text-muted-foreground">
+                <div className="px-3 py-3 text-xs text-muted-foreground">
                   No fonts match &quot;{search}&quot;.
                 </div>
               )}
