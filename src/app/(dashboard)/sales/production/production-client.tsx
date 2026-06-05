@@ -5,15 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Search,
-  ExternalLink,
-  Globe,
-  Eye,
-  Copy,
-  Euro,
-  Calendar,
-} from "lucide-react";
+import { MagnifyingGlass as Search, ArrowSquareOut as ExternalLink, Globe, Eye, Copy, CurrencyEur as Euro, CalendarBlank as Calendar } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 

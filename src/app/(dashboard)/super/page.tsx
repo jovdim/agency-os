@@ -1,17 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
-import {
-  AlertCircle,
-  Globe2,
-  ArrowRight,
-  CheckCircle2,
-  TrendingUp,
-  Users,
-  Layers,
-  PhoneCall,
-  Inbox,
-} from "lucide-react";
+import { WarningCircle as AlertCircle, GlobeHemisphereWest as Globe2, ArrowRight, CheckCircle as CheckCircle2, TrendUp as TrendingUp, Users, StackSimple as Layers, PhoneCall, Tray as Inbox } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

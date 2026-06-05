@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Users } from "lucide-react";
+import { Users } from "@phosphor-icons/react/ssr";
 import {
   LiveClientsTable,
   type LiveClientRow,

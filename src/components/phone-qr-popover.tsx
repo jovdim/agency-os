@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Phone, Copy, Check, Smartphone } from "lucide-react";
+import { Phone, Copy, Check, DeviceMobile as Smartphone } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import {
   Popover,

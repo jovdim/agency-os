@@ -21,14 +21,7 @@ import {
 } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/email/rich-text-editor";
 import { toast } from "sonner";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  FileText,
-  Mail,
-  Loader2,
-} from "lucide-react";
+import { Plus, PencilSimple as Pencil, Trash as Trash2, FileText, Envelope as Mail, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 import { formatDistanceToNow } from "date-fns";
 
 interface EmailTemplate {

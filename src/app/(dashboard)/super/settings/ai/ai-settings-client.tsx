@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Save, RotateCcw, ExternalLink } from "lucide-react";
+import { CircleNotch as Loader2, FloppyDisk as Save, ArrowCounterClockwise as RotateCcw, ArrowSquareOut as ExternalLink } from "@phosphor-icons/react/ssr";
 import {
   MODELS_BY_PROVIDER,
   PROVIDERS,

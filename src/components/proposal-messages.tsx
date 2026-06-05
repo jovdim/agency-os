@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, AlertTriangle, UserPlus, CheckCircle, MessageSquare } from "lucide-react";
+import { PaperPlaneTilt as Send, CircleNotch as Loader2, Warning as AlertTriangle, UserPlus, CheckCircle, ChatText as MessageSquare } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 interface Message {

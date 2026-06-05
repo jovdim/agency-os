@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Trash2, Tag } from "lucide-react";
+import { Eye, EyeSlash as EyeOff, Trash as Trash2, Tag } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { PreviewFrame } from "@/components/composer/preview-frame";
 import {

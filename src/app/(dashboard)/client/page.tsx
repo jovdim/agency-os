@@ -1,17 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import {
-  Globe,
-  Pencil,
-  Mail,
-  ExternalLink,
-  ListChecks,
-  ArrowRight,
-  MessageSquare,
-  Clock,
-  CalendarCheck,
-  AlertTriangle,
-} from "lucide-react";
+import { Globe, PencilSimple as Pencil, Envelope as Mail, ArrowSquareOut as ExternalLink, ListChecks, ArrowRight, ChatText as MessageSquare, Clock, CalendarCheck, Warning as AlertTriangle } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { UnpaidDomainEmailCard } from "./unpaid-domain-email-card";
 

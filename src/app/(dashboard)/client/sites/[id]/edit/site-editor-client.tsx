@@ -15,19 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Send,
-  Save,
-  Coins,
-  Menu,
-  FileText,
-  CheckCircle2,
-  Clock,
-  Layers,
-  Home,
-  MessageSquare,
-  ExternalLink,
-} from "lucide-react";
+import { PaperPlaneTilt as Send, FloppyDisk as Save, Coins, List as Menu, FileText, CheckCircle as CheckCircle2, Clock, StackSimple as Layers, House as Home, ChatText as MessageSquare, ArrowSquareOut as ExternalLink } from "@phosphor-icons/react/ssr";
 
 interface ProposalInfo {
   company_name: string;

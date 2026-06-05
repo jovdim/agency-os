@@ -5,25 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  ExternalLink,
-  PenLine,
-  Mail,
-  Phone,
-  MapPin,
-  Building2,
-  Globe,
-  Calendar,
-  Receipt,
-  Tag,
-  Wallet,
-  Send,
-  CheckCircle2,
-  Pencil,
-  Plus,
-  X,
-} from "lucide-react";
+import { ArrowLeft, ArrowSquareOut as ExternalLink, PencilSimpleLine as PenLine, Envelope as Mail, Phone, MapPin, Buildings as Building2, Globe, CalendarBlank as Calendar, Receipt, Tag, Wallet, PaperPlaneTilt as Send, CheckCircle as CheckCircle2, PencilSimple as Pencil, Plus, X } from "@phosphor-icons/react/ssr";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import {

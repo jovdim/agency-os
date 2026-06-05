@@ -5,21 +5,7 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Search,
-  Inbox,
-  Hammer,
-  Eye,
-  RotateCcw,
-  Send,
-  ScanEye,
-  CreditCard,
-  Globe,
-  ChevronDown,
-  ChevronUp,
-  Presentation,
-  X,
-} from "lucide-react";
+import { MagnifyingGlass as Search, Tray as Inbox, Hammer, Eye, ArrowCounterClockwise as RotateCcw, PaperPlaneTilt as Send, Scan as ScanEye, CreditCard, Globe, CaretDown as ChevronDown, CaretUp as ChevronUp, Presentation, X } from "@phosphor-icons/react/ssr";
 import { ProposalTagChips, tagPalette } from "@/components/proposal-tags";
 import type { ProposalTag } from "@/types/database";
 import { cn } from "@/lib/utils";

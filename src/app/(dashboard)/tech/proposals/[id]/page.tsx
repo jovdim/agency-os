@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
-import { UserCog } from "lucide-react";
+import { UserGear as UserCog } from "@phosphor-icons/react/ssr";
 import { LegacyWorkspace } from "./legacy-workspace";
 import { ProposalTimeline } from "@/components/proposal-timeline/proposal-timeline";
 import { ClientDetailClient } from "@/components/live-clients/client-detail-client";

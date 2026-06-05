@@ -5,17 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
-import {
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  List,
-  ListOrdered,
-  Link as LinkIcon,
-  RemoveFormatting,
-  Undo,
-  Redo,
-} from "lucide-react";
+import { TextB as Bold, TextItalic as Italic, TextUnderline as UnderlineIcon, List, ListNumbers as ListOrdered, Link as LinkIcon, Eraser as RemoveFormatting, ArrowUUpLeft as Undo, ArrowUUpRight as Redo } from "@phosphor-icons/react/ssr";
 import { useCallback, useEffect, useRef } from "react";
 import { sanitizeRichText, unwrapTipTapWrap } from "@/lib/templates/sanitize";
 

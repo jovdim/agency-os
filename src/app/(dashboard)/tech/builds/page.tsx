@@ -1,7 +1,7 @@
 ﻿import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Hammer } from "lucide-react";
+import { ArrowLeft, Hammer } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { BuildsClient } from "./builds-client";
 

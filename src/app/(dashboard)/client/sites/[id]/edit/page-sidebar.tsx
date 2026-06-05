@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, PanelLeftClose, PanelLeftOpen, FileText, LogOut, ArrowLeft } from "lucide-react";
+import { House as Home, SidebarSimple as PanelLeftClose, Sidebar as PanelLeftOpen, FileText, SignOut as LogOut, ArrowLeft } from "@phosphor-icons/react/ssr";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";

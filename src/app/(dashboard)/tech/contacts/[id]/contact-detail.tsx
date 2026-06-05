@@ -2,21 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Building2,
-  Phone,
-  Mail,
-  MapPin,
-  Globe,
-  Link2,
-  ExternalLink,
-  User,
-  Tag,
-  FileText,
-  StickyNote,
-  CircleDollarSign,
-} from "lucide-react";
+import { ArrowLeft, Buildings as Building2, Phone, Envelope as Mail, MapPin, Globe, LinkSimple as Link2, ArrowSquareOut as ExternalLink, User, Tag, FileText, Note as StickyNote, CurrencyCircleDollar as CircleDollarSign } from "@phosphor-icons/react/ssr";
 
 interface ContactData {
   id: string;

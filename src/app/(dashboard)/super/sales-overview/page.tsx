@@ -10,13 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import {
-  ClipboardList,
-  Users,
-  PhoneCall,
-  CheckCircle2,
-  ArrowRight,
-} from "lucide-react";
+import { ClipboardText as ClipboardList, Users, PhoneCall, CheckCircle as CheckCircle2, ArrowRight } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

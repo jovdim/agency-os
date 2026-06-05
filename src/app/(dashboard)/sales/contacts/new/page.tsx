@@ -1,5 +1,5 @@
 import { requireRole } from "@/lib/auth/guards";
-import { UserPlus } from "lucide-react";
+import { UserPlus } from "@phosphor-icons/react/ssr";
 import { NewContactForm } from "./new-contact-form";
 
 export default async function NewContactPage() {

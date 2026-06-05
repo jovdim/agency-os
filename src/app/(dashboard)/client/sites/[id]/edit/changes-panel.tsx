@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, RotateCcw, Trash2, Send, Image, Type, ArrowRight, ZoomIn, Plus, Minus } from "lucide-react";
+import { X, ArrowCounterClockwise as RotateCcw, Trash as Trash2, PaperPlaneTilt as Send, Image, TextT as Type, ArrowRight, MagnifyingGlassPlus as ZoomIn, Plus, Minus } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

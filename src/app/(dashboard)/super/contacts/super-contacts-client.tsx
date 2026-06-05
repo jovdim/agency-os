@@ -39,7 +39,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Search, UserCheck, Shuffle, Upload, Plus, Loader2, CheckCircle, AlertTriangle, Phone, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { MagnifyingGlass as Search, UserCheck, Shuffle, UploadSimple as Upload, Plus, CircleNotch as Loader2, CheckCircle, Warning as AlertTriangle, Phone, PencilSimple as Pencil, CaretLeft as ChevronLeft, CaretRight as ChevronRight } from "@phosphor-icons/react/ssr";
 import {
   Tooltip,
   TooltipContent,

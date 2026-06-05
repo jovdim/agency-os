@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Brand } from "@/components/brand";
-import { Loader2, AlertCircle } from "lucide-react";
+import { CircleNotch as Loader2, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 
 export default function LoginPageWrapper() {
   return (

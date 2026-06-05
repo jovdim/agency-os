@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Plus, Tag, Loader2, Trash2 } from "lucide-react";
+import { Check, Plus, Tag, CircleNotch as Loader2, Trash as Trash2 } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { TAG_COLORS, tagPalette } from "./tag-palette";

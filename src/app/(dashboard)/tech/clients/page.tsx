@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { TechCreateClientForm } from "./create-client-form";
 import { ClientManagement } from "./client-management";

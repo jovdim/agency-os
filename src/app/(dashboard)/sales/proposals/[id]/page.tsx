@@ -18,7 +18,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
-import { Building2 } from "lucide-react";
+import { Buildings as Building2 } from "@phosphor-icons/react/ssr";
 import { ProposalTimeline } from "@/components/proposal-timeline/proposal-timeline";
 import { ClientDetailClient } from "@/components/live-clients/client-detail-client";
 import { loadClientDetail } from "@/components/live-clients/load-client-detail";

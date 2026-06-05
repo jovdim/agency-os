@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { HelpCircle, Loader2, RefreshCw, Upload } from "lucide-react";
+import { Question as HelpCircle, CircleNotch as Loader2, ArrowsClockwise as RefreshCw, UploadSimple as Upload } from "@phosphor-icons/react/ssr";
 import {
   Tooltip,
   TooltipContent,

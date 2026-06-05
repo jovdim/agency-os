@@ -5,23 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Globe,
-  ArrowRightLeft,
-  ArrowRight,
-  Loader2,
-  CheckCircle,
-  Search,
-  XCircle,
-  AlertCircle,
-  Mail,
-  Copy,
-  Check,
-  Eye,
-  EyeOff,
-  ExternalLink,
-  Clock as ClockIcon,
-} from "lucide-react";
+import { Globe, ArrowsLeftRight as ArrowRightLeft, ArrowRight, CircleNotch as Loader2, CheckCircle, MagnifyingGlass as Search, XCircle, WarningCircle as AlertCircle, Envelope as Mail, Copy, Check, Eye, EyeSlash as EyeOff, ArrowSquareOut as ExternalLink, Clock as ClockIcon } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";

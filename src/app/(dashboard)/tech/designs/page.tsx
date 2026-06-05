@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Eye, Copy, Palette, Building2, MapPin } from "lucide-react";
+import { ArrowLeft, Eye, Copy, Palette, Buildings as Building2, MapPin } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 

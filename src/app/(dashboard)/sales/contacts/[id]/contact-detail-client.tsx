@@ -22,28 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ArrowLeft,
-  Pencil,
-  Save,
-  X,
-  Plus,
-  Globe,
-  Phone,
-  Mail,
-  MapPin,
-  Building2,
-  Link2,
-  MoreHorizontal,
-  Archive,
-  Trash2,
-  Copy,
-  Clock,
-  CheckCircle,
-  Loader2,
-  Send,
-  HelpCircle,
-} from "lucide-react";
+import { ArrowLeft, PencilSimple as Pencil, FloppyDisk as Save, X, Plus, Globe, Phone, Envelope as Mail, MapPin, Buildings as Building2, LinkSimple as Link2, DotsThree as MoreHorizontal, Archive, Trash as Trash2, Copy, Clock, CheckCircle, CircleNotch as Loader2, PaperPlaneTilt as Send, Question as HelpCircle } from "@phosphor-icons/react/ssr";
 import dynamic from "next/dynamic";
 import { ProposalProgress } from "@/components/proposal-progress";
 import { ProposalMessages } from "@/components/proposal-messages";

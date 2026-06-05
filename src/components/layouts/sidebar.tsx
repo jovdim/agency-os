@@ -12,34 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  LayoutDashboard,
-  Globe,
-  CreditCard,
-  Users,
-  Presentation,
-  DollarSign,
-  PhoneCall,
-  ListChecks,
-  Hammer,
-  BarChart3,
-  Building2,
-  Shield,
-  UserCog,
-  Globe2,
-  Receipt,
-  Settings,
-  Pencil,
-  UserPlus,
-  Rocket,
-  ClipboardList,
-  PanelLeftClose,
-  PanelLeftOpen,
-  MessageSquare,
-  CheckCircle,
-  Layers,
-  Activity,
-} from "lucide-react";
+import { SquaresFour as LayoutDashboard, Globe, CreditCard, Users, Presentation, CurrencyDollar as DollarSign, PhoneCall, ListChecks, Hammer, ChartBar as BarChart3, Buildings as Building2, Shield, UserGear as UserCog, GlobeHemisphereWest as Globe2, Receipt, GearSix as Settings, PencilSimple as Pencil, UserPlus, Rocket, ClipboardText as ClipboardList, SidebarSimple as PanelLeftClose, Sidebar as PanelLeftOpen, ChatText as MessageSquare, CheckCircle, StackSimple as Layers, Pulse as Activity } from "@phosphor-icons/react/ssr";
 import { Brand } from "@/components/brand";
 
 interface NavItem {

@@ -17,17 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {
-  Activity,
-  ChevronRight,
-  GitCommitVertical,
-  HelpCircle,
-  Mail,
-  MapPin,
-  Phone,
-  PhoneCall,
-  Search,
-} from "lucide-react";
+import { Pulse as Activity, CaretRight as ChevronRight, GitCommit as GitCommitVertical, Question as HelpCircle, Envelope as Mail, MapPin, Phone, PhoneCall, MagnifyingGlass as Search } from "@phosphor-icons/react/ssr";
 import { PhoneQrPopover } from "@/components/phone-qr-popover";
 import { StateHistoryPopover } from "../state-history-popover";
 import { ProposalTagPicker } from "@/components/proposal-tags/proposal-tag-picker";

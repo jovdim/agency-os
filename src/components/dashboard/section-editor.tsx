@@ -30,7 +30,7 @@ import {
 } from "@/lib/section-registry";
 import { cn } from "@/lib/utils";
 import type { ContentSection, FieldChange, ContentItem } from "@/types/content";
-import { Pencil, Plus, X, Upload, GripVertical, Trash2, Undo2 } from "lucide-react";
+import { PencilSimple as Pencil, Plus, X, UploadSimple as Upload, DotsSixVertical as GripVertical, Trash as Trash2, ArrowUUpLeft as Undo2 } from "@phosphor-icons/react/ssr";
 
 // Field types hidden from client editor — only tech admin can edit these
 const CLIENT_HIDDEN_FIELD_TYPES = ["url", "icon", "color", "boolean"];

@@ -53,7 +53,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Megaphone, AlertCircle, ExternalLink } from "lucide-react";
+import { CircleNotch as Loader2, Megaphone, WarningCircle as AlertCircle, ArrowSquareOut as ExternalLink } from "@phosphor-icons/react/ssr";
 import {
   DEFAULT_BASE_PRICE,
   MIN_DISCOUNT_PRICE,

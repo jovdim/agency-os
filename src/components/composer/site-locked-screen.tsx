@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Lock, RefreshCw } from "lucide-react";
+import { Lock, ArrowsClockwise as RefreshCw } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 
 interface Props {

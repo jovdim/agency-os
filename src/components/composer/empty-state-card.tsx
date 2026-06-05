@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 
 /**

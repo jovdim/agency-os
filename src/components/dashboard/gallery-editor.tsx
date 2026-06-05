@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { ContentItem, FieldChange } from "@/types/content";
-import { ImageIcon, Plus, X, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { Image as ImageIcon, Plus, X, CircleNotch as Loader2, ArrowsClockwise as RefreshCw, Trash as Trash2 } from "@phosphor-icons/react/ssr";
 
 interface GalleryEditorProps {
   sectionId: string;

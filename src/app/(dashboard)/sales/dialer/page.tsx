@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Phone, PhoneCall, LogOut, Wifi, WifiOff } from "lucide-react";
+import { Phone, PhoneCall, SignOut as LogOut, WifiHigh as Wifi, WifiSlash as WifiOff } from "@phosphor-icons/react/ssr";
 
 interface DialRequest {
   phone: string;

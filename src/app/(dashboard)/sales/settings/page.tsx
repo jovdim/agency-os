@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, QrCode, Smartphone, Check, Settings, Link2 } from "lucide-react";
+import { Phone, QrCode, DeviceMobile as Smartphone, Check, GearSix as Settings, LinkSimple as Link2 } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 const DIAL_OPTIONS = [

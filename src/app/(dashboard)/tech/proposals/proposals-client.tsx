@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, X, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { MagnifyingGlass as Search, X, CaretDown as ChevronDown, CaretLeft as ChevronLeft, CaretRight as ChevronRight } from "@phosphor-icons/react/ssr";
 import { ProposalTagChips } from "@/components/proposal-tags/proposal-tag-chips";
 import type { ProposalTag } from "@/types/database";
 

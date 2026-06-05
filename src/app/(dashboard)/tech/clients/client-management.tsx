@@ -11,24 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Globe,
-  Pencil,
-  KeyRound,
-  Loader2,
-  Copy,
-  Check,
-  User,
-  Building2,
-  Phone,
-  Mail,
-  Calendar,
-  LinkIcon,
-  Coins,
-  RefreshCw,
-  Send,
-  Eye,
-} from "lucide-react";
+import { Globe, PencilSimple as Pencil, Key as KeyRound, CircleNotch as Loader2, Copy, Check, User, Buildings as Building2, Phone, Envelope as Mail, CalendarBlank as Calendar, Link as LinkIcon, Coins, ArrowsClockwise as RefreshCw, PaperPlaneTilt as Send, Eye } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 

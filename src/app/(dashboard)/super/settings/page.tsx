@@ -1,5 +1,5 @@
 import { requireRole } from "@/lib/auth/guards";
-import { Settings2, Wrench } from "lucide-react";
+import { Sliders as Settings2, Wrench } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

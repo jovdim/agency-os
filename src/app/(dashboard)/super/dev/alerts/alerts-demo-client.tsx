@@ -3,13 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Sparkles,
-  Rocket,
-  HeartIcon,
-  TrashIcon,
-} from "lucide-react";
+import { ArrowLeft, Sparkle as Sparkles, Rocket, Heart as HeartIcon, Trash as TrashIcon } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

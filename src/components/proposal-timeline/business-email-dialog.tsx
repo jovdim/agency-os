@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RichTextEditor } from "@/components/email/rich-text-editor";
 import { toast } from "sonner";
-import { Loader2, Replace, Send } from "lucide-react";
+import { CircleNotch as Loader2, Swap as Replace, PaperPlaneTilt as Send } from "@phosphor-icons/react/ssr";
 import {
   buildBusinessEmailSetupHtml,
   buildDefaultBusinessEmailBody,

@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ArrowLeft, Hammer } from "lucide-react";
+import { ArrowLeft, Hammer } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TechProposalsClient } from "./proposals-client";

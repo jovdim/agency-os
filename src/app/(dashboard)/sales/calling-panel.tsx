@@ -6,25 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  X,
-  Phone,
-  XCircle,
-  ChevronDown,
-  ChevronUp,
-  Calendar,
-  Clock,
-  Skull,
-  Send,
-  Globe,
-  MapPin,
-  Building2,
-  User,
-  StickyNote,
-  Lightbulb,
-  Save,
-  Check,
-} from "lucide-react";
+import { X, Phone, XCircle, CaretDown as ChevronDown, CaretUp as ChevronUp, CalendarBlank as Calendar, Clock, Skull, PaperPlaneTilt as Send, Globe, MapPin, Buildings as Building2, User, Note as StickyNote, Lightbulb, FloppyDisk as Save, Check } from "@phosphor-icons/react/ssr";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

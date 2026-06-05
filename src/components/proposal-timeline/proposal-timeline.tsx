@@ -3,32 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  AlertCircle,
-  ArrowLeft,
-  AtSign,
-  Check,
-  CheckCircle2,
-  Circle,
-  Clock,
-  Copy,
-  Eye,
-  EyeOff,
-  ExternalLink,
-  Globe,
-  Loader2,
-  Mail,
-  MapPin,
-  Megaphone,
-  MessageCircle,
-  Phone,
-  RotateCcw,
-  Send,
-  Settings,
-  Sparkles,
-  UserPlus,
-  X,
-} from "lucide-react";
+import { WarningCircle as AlertCircle, ArrowLeft, At as AtSign, Check, CheckCircle as CheckCircle2, Circle, Clock, Copy, Eye, EyeSlash as EyeOff, ArrowSquareOut as ExternalLink, Globe, CircleNotch as Loader2, Envelope as Mail, MapPin, Megaphone, ChatCircle as MessageCircle, Phone, ArrowCounterClockwise as RotateCcw, PaperPlaneTilt as Send, GearSix as Settings, Sparkle as Sparkles, UserPlus, X } from "@phosphor-icons/react/ssr";
 import {
   type DomainSetupStatus,
   isInProgress as isDomainSetupInProgress,

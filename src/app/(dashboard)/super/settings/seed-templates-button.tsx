@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkle as Sparkles, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 
 export function SeedTemplatesButton() {
   const [seeding, setSeeding] = useState(false);

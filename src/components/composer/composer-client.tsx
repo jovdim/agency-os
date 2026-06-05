@@ -3,19 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Loader2,
-  AlertCircle,
-  Plus,
-  X,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  FileJson,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle as CheckCircle2, CircleNotch as Loader2, WarningCircle as AlertCircle, Plus, X, CaretDown as ChevronDown, CaretUp as ChevronUp, ArrowSquareOut as ExternalLink, FileCode as FileJson, Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import {
   DndContext,

@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Sparkles } from "lucide-react";
+import { Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import { AiSettingsClient } from "@/app/(dashboard)/super/settings/ai/ai-settings-client";
 
 export const dynamic = "force-dynamic";

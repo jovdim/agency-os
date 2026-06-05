@@ -2,16 +2,8 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import {
-  CircleCheckIcon,
-  InfoIcon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-  XIcon,
-  type LucideIcon,
-} from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { CheckCircle as CircleCheckIcon, Info as InfoIcon, WarningOctagon as OctagonXIcon, Warning as TriangleAlertIcon, X as XIcon } from "@phosphor-icons/react/ssr";
+import type { Icon as LucideIcon } from "@phosphor-icons/react";import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
   "relative w-full overflow-hidden rounded-xl border px-4 py-3.5 text-sm shadow-sm transition-colors [&>svg]:pointer-events-none [&>svg]:shrink-0",

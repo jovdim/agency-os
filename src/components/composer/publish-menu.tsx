@@ -26,18 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Rocket,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  RotateCcw,
-  Loader2,
-  Globe,
-  Check,
-  Clock,
-  AlertCircle,
-} from "lucide-react";
+import { Rocket, CaretDown as ChevronDown, CaretRight as ChevronRight, ArrowSquareOut as ExternalLink, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2, Globe, Check, Clock, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { SiteActivationDialog } from "@/components/payments/site-activation-dialog";
 

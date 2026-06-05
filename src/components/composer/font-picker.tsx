@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Search, Check } from "lucide-react";
+import { CaretDown as ChevronDown, MagnifyingGlass as Search, Check } from "@phosphor-icons/react/ssr";
 import type { GoogleFont } from "@/lib/composer/google-fonts";
 import { extractFontName } from "@/lib/templates/theme";
 

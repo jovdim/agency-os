@@ -5,17 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Globe,
-  CreditCard,
-  Send,
-  Clock,
-  CheckCircle,
-  XCircle,
-  ExternalLink,
-  RefreshCw,
-  Pencil,
-} from "lucide-react";
+import { Globe, CreditCard, PaperPlaneTilt as Send, Clock, CheckCircle, XCircle, ArrowSquareOut as ExternalLink, ArrowsClockwise as RefreshCw, PencilSimple as Pencil } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 
 interface SiteDetailClientProps {

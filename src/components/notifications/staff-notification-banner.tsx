@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { CheckCircle2, X, Globe, Mail } from "lucide-react";
+import { CheckCircle as CheckCircle2, X, Globe, Envelope as Mail } from "@phosphor-icons/react/ssr";
 import type { UserRole } from "@/types/database";
 
 /**

@@ -20,7 +20,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Bell, Check, X, ExternalLink, Loader2 } from "lucide-react";
+import { Bell, Check, X, ArrowSquareOut as ExternalLink, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 interface Props {

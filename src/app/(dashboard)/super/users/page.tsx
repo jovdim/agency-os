@@ -19,23 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  UserPlus,
-  Search,
-  Pencil,
-  CheckCircle,
-  Loader2,
-  Shield,
-  Hammer,
-  PhoneCall,
-  Star,
-  Users as UsersIcon,
-  Copy,
-  Eye,
-  EyeOff,
-  AtSign,
-  Phone,
-} from "lucide-react";
+import { UserPlus, MagnifyingGlass as Search, PencilSimple as Pencil, CheckCircle, CircleNotch as Loader2, Shield, Hammer, PhoneCall, Star, Users as UsersIcon, Copy, Eye, EyeSlash as EyeOff, At as AtSign, Phone } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import type { UserRole, Profile } from "@/types/database";

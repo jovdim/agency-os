@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkle as Sparkles, ArrowRight } from "@phosphor-icons/react/ssr";
 import { BuildWorkspaceClient } from "./build-workspace-client";
 
 /**

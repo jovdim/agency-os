@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, ChevronRight, Loader2, X, Image as ImageIcon, Info } from "lucide-react";
+import { Warning as AlertTriangle, CheckCircle as CheckCircle2, CaretRight as ChevronRight, CircleNotch as Loader2, X, Image as ImageIcon, Info } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import type { SiteSeo, PageSeo } from "@/lib/templates/seo";
 import type { SiteBrand } from "@/lib/composer/brand";

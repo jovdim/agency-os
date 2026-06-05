@@ -8,16 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Send,
-  Phone,
-  Mail,
-  Globe,
-  MapPin,
-  Building2,
-  ExternalLink,
-} from "lucide-react";
+import { ArrowLeft, PaperPlaneTilt as Send, Phone, Envelope as Mail, Globe, MapPin, Buildings as Building2, ArrowSquareOut as ExternalLink } from "@phosphor-icons/react/ssr";
 
 interface Contact {
   id: string;

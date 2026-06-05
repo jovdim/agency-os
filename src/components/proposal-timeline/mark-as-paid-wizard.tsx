@@ -20,21 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Loader2,
-  Wallet,
-  Globe,
-  Coins,
-  Mail,
-  CheckCircle2,
-  AlertTriangle,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-  Send,
-  RefreshCw,
-  XCircle,
-} from "lucide-react";
+import { CircleNotch as Loader2, Wallet, Globe, Coins, Envelope as Mail, CheckCircle as CheckCircle2, Warning as AlertTriangle, Eye, CaretLeft as ChevronLeft, CaretRight as ChevronRight, PaperPlaneTilt as Send, ArrowsClockwise as RefreshCw, XCircle } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 /**

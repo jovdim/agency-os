@@ -18,7 +18,7 @@
  */
 
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Envelope as Mail } from "@phosphor-icons/react/ssr";
 import { SiteActivationDialog } from "@/components/payments/site-activation-dialog";
 
 interface UnpaidDomainEmailCardProps {

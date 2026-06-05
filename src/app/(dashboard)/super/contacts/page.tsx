@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SuperContactsClient } from "./super-contacts-client";
-import { Users, UserCheck, UserX } from "lucide-react";
+import { Users, UserCheck, UserMinus as UserX } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

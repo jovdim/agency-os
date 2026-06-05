@@ -24,14 +24,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  X,
-  Check,
-  Clock,
-  ArrowRight,
-  ArrowLeft,
-} from "lucide-react";
+import { CircleNotch as Loader2, X, Check, Clock, ArrowRight, ArrowLeft } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 // Per-publish cost in $ — matches the publish-charge constant in the API

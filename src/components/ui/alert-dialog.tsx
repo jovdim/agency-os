@@ -3,15 +3,8 @@
 import * as React from "react"
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
-import {
-  CircleCheckIcon,
-  InfoIcon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-  type LucideIcon,
-} from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { CheckCircle as CircleCheckIcon, Info as InfoIcon, WarningOctagon as OctagonXIcon, Warning as TriangleAlertIcon } from "@phosphor-icons/react/ssr";
+import type { Icon as LucideIcon } from "@phosphor-icons/react";import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
 function AlertDialog({

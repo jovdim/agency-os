@@ -6,26 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Rocket,
-  FileCode,
-  Globe,
-  Copy,
-  Loader2,
-  Send,
-  Phone,
-  Mail,
-  MapPin,
-  Building2,
-  Link2,
-  ExternalLink,
-  Hammer,
-  UserPlus,
-  CheckCircle,
-  AlertCircle,
-  GitBranch,
-} from "lucide-react";
+import { ArrowLeft, Rocket, FileCode, Globe, Copy, CircleNotch as Loader2, PaperPlaneTilt as Send, Phone, Envelope as Mail, MapPin, Buildings as Building2, LinkSimple as Link2, ArrowSquareOut as ExternalLink, Hammer, UserPlus, CheckCircle, WarningCircle as AlertCircle, GitBranch } from "@phosphor-icons/react/ssr";
 import { ProposalProgress } from "@/components/proposal-progress";
 import { ProposalMessages } from "@/components/proposal-messages";
 

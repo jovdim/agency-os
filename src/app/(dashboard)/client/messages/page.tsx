@@ -1,13 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import {
-  MessageSquare,
-  LifeBuoy,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  CornerDownRight,
-} from "lucide-react";
+import { ChatText as MessageSquare, Lifebuoy as LifeBuoy, Clock, CheckCircle as CheckCircle2, XCircle, ArrowElbowDownRight as CornerDownRight } from "@phosphor-icons/react/ssr";
 import { ClientMessageForm } from "./client-message-form";
 
 export const dynamic = "force-dynamic";

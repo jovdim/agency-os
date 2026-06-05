@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Sparkles } from "lucide-react";
+import { CircleNotch as Loader2, Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import type { AiOverrides } from "./ai-generate-modal";
 
 /**

@@ -22,13 +22,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronDown,
-  ChevronRight,
-  GripVertical,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { CaretDown as ChevronDown, CaretRight as ChevronRight, DotsSixVertical as GripVertical, Plus, Trash as Trash2 } from "@phosphor-icons/react/ssr";
 import {
   DndContext,
   closestCenter,

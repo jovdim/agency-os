@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, XCircle } from "lucide-react";
+import { Plus, XCircle } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 interface AddContactDialogProps {

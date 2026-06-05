@@ -11,23 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SitePreview } from "@/components/dashboard/site-preview";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  XCircle,
-  ExternalLink,
-  FileText,
-  Image as ImageIcon,
-  Plus,
-  Minus,
-  ArrowUpDown,
-  ArrowRight,
-  Pencil,
-  Eye,
-  CheckCheck,
-  AlertTriangle,
-  MessageSquare,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle as CheckCircle2, XCircle, ArrowSquareOut as ExternalLink, FileText, Image as ImageIcon, Plus, Minus, ArrowsDownUp as ArrowUpDown, ArrowRight, PencilSimple as Pencil, Eye, Checks as CheckCheck, Warning as AlertTriangle, ChatText as MessageSquare } from "@phosphor-icons/react/ssr";
 
 interface FieldChange {
   section_id: string;

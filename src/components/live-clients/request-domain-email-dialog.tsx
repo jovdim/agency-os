@@ -13,13 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Globe,
-  ArrowRightLeft,
-  Mail,
-  Info,
-} from "lucide-react";
+import { CircleNotch as Loader2, Globe, ArrowsLeftRight as ArrowRightLeft, Envelope as Mail, Info } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 /**

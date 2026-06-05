@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Sparkles,
-  Users,
-  CalendarCheck,
-  Layers,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkle as Sparkles, Users, CalendarCheck, StackSimple as Layers } from "@phosphor-icons/react/ssr";
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {

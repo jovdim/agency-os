@@ -11,19 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  Globe,
-  Copy,
-  ExternalLink,
-  Search,
-  X,
-  ArrowLeft,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Users,
-  PenLine,
-} from "lucide-react";
+import { Globe, Copy, ArrowSquareOut as ExternalLink, MagnifyingGlass as Search, X, ArrowLeft, CheckCircle, Clock, CurrencyDollar as DollarSign, Users, PencilSimpleLine as PenLine } from "@phosphor-icons/react/ssr";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 

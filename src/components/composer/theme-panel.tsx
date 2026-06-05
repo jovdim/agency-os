@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Dices,
-  HelpCircle,
-  Palette,
-} from "lucide-react";
+import { CaretDown as ChevronDown, CaretUp as ChevronUp, DiceFive as Dices, Question as HelpCircle, Palette } from "@phosphor-icons/react/ssr";
 import {
   Tooltip,
   TooltipContent,

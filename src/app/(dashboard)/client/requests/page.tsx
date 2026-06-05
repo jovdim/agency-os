@@ -4,15 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDistanceToNow } from "date-fns";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import {
-  ClipboardList,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  FileEdit,
-  ArrowRight,
-  Inbox,
-} from "lucide-react";
+import { ClipboardText as ClipboardList, Clock, CheckCircle as CheckCircle2, XCircle, NotePencil as FileEdit, ArrowRight, Tray as Inbox } from "@phosphor-icons/react/ssr";
 
 const STATUS_STYLE: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",

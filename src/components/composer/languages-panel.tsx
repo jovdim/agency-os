@@ -19,7 +19,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
-import { Languages, Check, Loader2, Trash2 } from "lucide-react";
+import { Translate as Languages, Check, CircleNotch as Loader2, Trash as Trash2 } from "@phosphor-icons/react/ssr";
 import {
   SUPPORTED_LOCALES,
   LOCALE_LABELS,

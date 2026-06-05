@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight, LifeBuoy } from "lucide-react";
+import { ShieldCheck, ArrowRight, Lifebuoy as LifeBuoy } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

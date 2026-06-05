@@ -20,7 +20,7 @@
  */
 
 import { useState } from "react";
-import { Copy, Check, Sparkles } from "lucide-react";
+import { Copy, Check, Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 

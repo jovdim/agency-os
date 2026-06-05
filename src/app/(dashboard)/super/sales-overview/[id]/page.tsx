@@ -10,20 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Phone,
-  PhoneOff,
-  XCircle,
-  ThumbsDown,
-  Send,
-  MapPin,
-  Ban,
-  Mail,
-  Receipt,
-  BarChart3,
-  Percent,
-  Users,
-} from "lucide-react";
+import { Phone, PhoneSlash as PhoneOff, XCircle, ThumbsDown, PaperPlaneTilt as Send, MapPin, Prohibit as Ban, Envelope as Mail, Receipt, ChartBar as BarChart3, Percent, Users } from "@phosphor-icons/react/ssr";
 import { CommissionRateEditor } from "./commission-rate-editor";
 import { AssignedContactsTable } from "./assigned-contacts-table";
 import { SalespersonStats } from "./salesperson-stats";

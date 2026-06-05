@@ -25,25 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Phone,
-  ChevronDown,
-  XCircle,
-  Send,
-  MapPin,
-  Mail,
-  Skull,
-  Check,
-  Pencil,
-  Clock,
-  Calendar,
-  Globe,
-  ArrowRight,
-  ArrowLeft,
-  Plus,
-  GitCommitVertical,
-  User,
-} from "lucide-react";
+import { Phone, CaretDown as ChevronDown, XCircle, PaperPlaneTilt as Send, MapPin, Envelope as Mail, Skull, Check, PencilSimple as Pencil, Clock, CalendarBlank as Calendar, Globe, ArrowRight, ArrowLeft, Plus, GitCommit as GitCommitVertical, User } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import { PhoneQrPopover } from "@/components/phone-qr-popover";
 import { StateHistoryPopover } from "@/app/(dashboard)/sales/state-history-popover";

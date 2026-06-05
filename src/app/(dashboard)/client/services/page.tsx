@@ -1,13 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import {
-  ShoppingBag,
-  Globe,
-  Calendar,
-  AlertTriangle,
-  CheckCircle,
-} from "lucide-react";
+import { ShoppingBag, Globe, CalendarBlank as Calendar, Warning as AlertTriangle, CheckCircle } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

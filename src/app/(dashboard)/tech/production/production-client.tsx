@@ -4,16 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  ExternalLink,
-  Search,
-  ArrowLeft,
-  Pencil,
-  Clock,
-  ChevronDown,
-  X,
-  Globe2,
-} from "lucide-react";
+import { ArrowSquareOut as ExternalLink, MagnifyingGlass as Search, ArrowLeft, PencilSimple as Pencil, Clock, CaretDown as ChevronDown, X, GlobeHemisphereWest as Globe2 } from "@phosphor-icons/react/ssr";
 import { format } from "date-fns";
 
 type DateFilter = "all" | "week" | "month" | "custom";

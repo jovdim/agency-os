@@ -17,15 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Save,
-  ExternalLink,
-  Layers,
-  Settings,
-  RefreshCw,
-  Eye,
-} from "lucide-react";
+import { ArrowLeft, FloppyDisk as Save, ArrowSquareOut as ExternalLink, StackSimple as Layers, GearSix as Settings, ArrowsClockwise as RefreshCw, Eye } from "@phosphor-icons/react/ssr";
 
 interface SectionData {
   id: string;

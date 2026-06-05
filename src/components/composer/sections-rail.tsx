@@ -1,23 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  FileText,
-  HelpCircle,
-  Images,
-  Info,
-  Mail,
-  MapPin,
-  Megaphone,
-  Menu,
-  MousePointer,
-  PanelBottom,
-  Sparkles,
-  Star,
-  Workflow,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { FileText, Question as HelpCircle, Images, Info, Envelope as Mail, MapPin, Megaphone, List as Menu, Cursor as MousePointer, SquareHalfBottom as PanelBottom, Sparkle as Sparkles, Star, FlowArrow as Workflow, Wrench } from "@phosphor-icons/react/ssr";
+import type { Icon as LucideIcon } from "@phosphor-icons/react";
 import type { SectionTemplate } from "./variant-picker";
 import {
   renderInBrowser,

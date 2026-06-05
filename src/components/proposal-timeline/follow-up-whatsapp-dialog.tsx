@@ -37,7 +37,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { MessageCircle, Loader2, AlertCircle } from "lucide-react";
+import { ChatCircle as MessageCircle, CircleNotch as Loader2, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 
 /**
  * Default Slovak WhatsApp follow-up — shorter than the initial-send

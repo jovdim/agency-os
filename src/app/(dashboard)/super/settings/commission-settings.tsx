@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save } from "lucide-react";
+import { CircleNotch as Loader2, FloppyDisk as Save } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 interface SalesPerson {

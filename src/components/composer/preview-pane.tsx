@@ -31,14 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Smartphone,
-  Monitor,
-  Minus,
-  Plus,
-  Maximize2,
-  ChevronDown,
-} from "lucide-react";
+import { DeviceMobile as Smartphone, Monitor, Minus, Plus, ArrowsOut as Maximize2, CaretDown as ChevronDown } from "@phosphor-icons/react/ssr";
 
 interface Props {
   /** Full HTML document to render in the iframe. Updated synchronously by the composer. */

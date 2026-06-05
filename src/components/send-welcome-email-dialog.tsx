@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Eye, Send, RefreshCw } from "lucide-react";
+import { CircleNotch as Loader2, Eye, PaperPlaneTilt as Send, ArrowsClockwise as RefreshCw } from "@phosphor-icons/react/ssr";
 
 interface SendWelcomeEmailDialogProps {
   open: boolean;

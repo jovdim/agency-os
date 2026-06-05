@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Hammer, CheckCircle2, Rocket, Users, ArrowRight } from "lucide-react";
+import { Hammer, CheckCircle as CheckCircle2, Rocket, Users, ArrowRight } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

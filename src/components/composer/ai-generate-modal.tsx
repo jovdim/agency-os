@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { CircleNotch as Loader2, Plus, Sparkle as Sparkles, Trash as Trash2 } from "@phosphor-icons/react/ssr";
 
 /**
  * AI Generate modal , global "✨ Generate content" button opens this.

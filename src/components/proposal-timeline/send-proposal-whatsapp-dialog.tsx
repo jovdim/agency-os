@@ -40,12 +40,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import {
-  MessageCircle,
-  Loader2,
-  RotateCcw,
-  AlertCircle,
-} from "lucide-react";
+import { ChatCircle as MessageCircle, CircleNotch as Loader2, ArrowCounterClockwise as RotateCcw, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 
 /**
  * Default Slovak WhatsApp message — mirrors the email dialog's

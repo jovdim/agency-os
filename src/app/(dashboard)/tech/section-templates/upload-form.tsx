@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Loader2 } from "lucide-react";
+import { UploadSimple as Upload, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 const CATEGORIES = [

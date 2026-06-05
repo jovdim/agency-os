@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ArrowLeft, Send, Search } from "lucide-react";
+import { ArrowLeft, PaperPlaneTilt as Send, MagnifyingGlass as Search } from "@phosphor-icons/react/ssr";
 
 interface Contact {
   id: string;

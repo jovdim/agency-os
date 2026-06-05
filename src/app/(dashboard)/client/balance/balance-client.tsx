@@ -4,16 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Wallet,
-  ArrowUpRight,
-  ArrowDownRight,
-  Receipt,
-  Plus,
-  Rocket,
-  CreditCard,
-  History,
-} from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownRight, Receipt, Plus, Rocket, CreditCard, ClockCounterClockwise as History } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { BuyCreditsDialog } from "@/components/payments/buy-credits-dialog";
 

@@ -4,23 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  User,
-  Building2,
-  Mail,
-  Phone,
-  Globe2,
-  ExternalLink,
-  Calendar,
-  CreditCard,
-  FileText,
-  Coins,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from "lucide-react";
+import { ArrowLeft, User, Buildings as Building2, Envelope as Mail, Phone, GlobeHemisphereWest as Globe2, ArrowSquareOut as ExternalLink, CalendarBlank as Calendar, CreditCard, FileText, Coins, Clock, CheckCircle, XCircle, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 

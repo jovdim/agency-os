@@ -4,7 +4,7 @@ import { UploadForm } from "./upload-form";
 import { TemplateCard } from "./template-card";
 import { loadTemplateBodies, loadBaseCss } from "@/lib/templates/load-bodies";
 import type { TemplateBody } from "@/lib/templates/render-browser";
-import { Layers, FolderTree, AlertCircle, Inbox } from "lucide-react";
+import { StackSimple as Layers, TreeStructure as FolderTree, WarningCircle as AlertCircle, Tray as Inbox } from "@phosphor-icons/react/ssr";
 
 // Cache-busting trio (Peter 2026-05-16): force-dynamic alone leaves
 // Next.js caching Supabase Storage fetches inside loadTemplateBodies

@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/email/rich-text-editor";
 import { toast } from "sonner";
-import { Send, Loader2, Mail, RotateCcw, AlertCircle } from "lucide-react";
+import { PaperPlaneTilt as Send, CircleNotch as Loader2, Envelope as Mail, ArrowCounterClockwise as RotateCcw, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 
 const DEFAULT_SUBJECT = "Website for {company}, Your Agency";
 

@@ -5,17 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Button } from "@/components/ui/button";
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading2,
-  LinkIcon,
-  Undo,
-  Redo,
-  RemoveFormatting,
-} from "lucide-react";
+import { TextB as Bold, TextItalic as Italic, List, ListNumbers as ListOrdered, TextHTwo as Heading2, Link as LinkIcon, ArrowUUpLeft as Undo, ArrowUUpRight as Redo, Eraser as RemoveFormatting } from "@phosphor-icons/react/ssr";
 import { useCallback } from "react";
 
 interface RichTextEditorProps {

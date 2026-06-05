@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { X } from "lucide-react";
+import { X } from "@phosphor-icons/react/ssr";
 import { tagPalette } from "@/components/proposal-tags";
 import { cn } from "@/lib/utils";
 import type { ProposalTag } from "@/types/database";

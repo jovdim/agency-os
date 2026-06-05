@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Inbox, History, ArrowRight, Hammer, CheckCircle2 } from "lucide-react";
+import { Tray as Inbox, ClockCounterClockwise as History, ArrowRight, Hammer, CheckCircle as CheckCircle2 } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ProposalTagChips } from "@/components/proposal-tags/proposal-tag-chips";

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, X, MessageSquare, Loader2, Play } from "lucide-react";
+import { Check, X, ChatText as MessageSquare, CircleNotch as Loader2, Play } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 
 interface DomainRequestActionsProps {

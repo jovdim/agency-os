@@ -38,7 +38,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Hash, FileText } from "lucide-react";
+import { Hash, FileText } from "@phosphor-icons/react/ssr";
 import { Input } from "@/components/ui/input";
 import { useAnchors } from "./anchors-context";
 import { slugifyAnchorId } from "@/lib/templates/slugify";

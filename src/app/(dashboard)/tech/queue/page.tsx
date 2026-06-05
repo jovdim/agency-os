@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Inbox, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Tray as Inbox, Clock, CheckCircle as CheckCircle2, XCircle } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { QueueClient } from "./queue-client";
 

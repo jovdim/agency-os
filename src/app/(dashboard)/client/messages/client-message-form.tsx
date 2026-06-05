@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Send, Loader2, CheckCircle } from "lucide-react";
+import { PaperPlaneTilt as Send, CircleNotch as Loader2, CheckCircle } from "@phosphor-icons/react/ssr";
 
 export function ClientMessageForm({ siteId }: { siteId: string }) {
   const router = useRouter();

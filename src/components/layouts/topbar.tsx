@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LogOut, TrendingUp, Info } from "lucide-react";
+import { SignOut as LogOut, TrendUp as TrendingUp, Info } from "@phosphor-icons/react/ssr";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import type { UserRole } from "@/types/database";
 

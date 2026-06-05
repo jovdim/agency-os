@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Lock } from "lucide-react";
+import { ArrowsClockwise as RefreshCw, Lock } from "@phosphor-icons/react/ssr";
 
 const MIN_DESKTOP_WIDTH = 1280;
 

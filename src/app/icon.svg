@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  App favicon. Mirrors <BrandMark> in src/components/brand.tsx:
+  App favicon. Mirrors the BrandMark in src/components/brand.tsx:
   a solid brand-violet rounded tile with the brand initial in white.
-  Brand color = --brand (oklch(0.62 0.15 287)) → #8275db.
+  Brand color is the app brand token oklch(0.62 0.15 287), i.e. #8275db.
   White-label note: if BRAND_NAME or the brand color change in brand.tsx,
-  update the letter / fill here to match (this is a static asset, so it
-  can't read those values at build time).
+  update the letter and fill here to match (static asset, so it can't read
+  those values at build time).
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" rx="14" fill="#8275db"/>

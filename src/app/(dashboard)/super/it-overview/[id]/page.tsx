@@ -4,7 +4,7 @@ import { fetchLastActiveFor, lastActiveLabel } from "@/lib/auth/last-active";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Hammer, CheckCircle2, Clock, CalendarRange, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Hammer, CheckCircle as CheckCircle2, Clock, CalendarBlank as CalendarRange, X } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

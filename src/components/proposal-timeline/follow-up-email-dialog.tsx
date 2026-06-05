@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/email/rich-text-editor";
 import { toast } from "sonner";
-import { Send, Loader2, Mail, Save, Trash2, Pencil, Check, X } from "lucide-react";
+import { PaperPlaneTilt as Send, CircleNotch as Loader2, Envelope as Mail, FloppyDisk as Save, Trash as Trash2, PencilSimple as Pencil, Check, X } from "@phosphor-icons/react/ssr";
 
 
 interface EmailTemplate {

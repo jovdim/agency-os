@@ -4,13 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronDown,
-  ChevronUp,
-  GripVertical,
-  Trash2,
-  Replace,
-} from "lucide-react";
+import { CaretDown as ChevronDown, CaretUp as ChevronUp, DotsSixVertical as GripVertical, Trash as Trash2, Swap as Replace } from "@phosphor-icons/react/ssr";
 import { type FieldSchema, type FieldValue } from "./placeholder-field";
 import { FieldsList } from "./fields-list";
 import { VariantPicker, type SectionTemplate } from "./variant-picker";

@@ -7,21 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  GitCommitVertical,
-  Loader2,
-  Phone,
-  XCircle,
-  Ban,
-  FileText,
-  Mail,
-  Receipt,
-  MapPin,
-  Clock,
-  StickyNote,
-  Skull,
-  Circle,
-} from "lucide-react";
+import { GitCommit as GitCommitVertical, CircleNotch as Loader2, Phone, XCircle, Prohibit as Ban, FileText, Envelope as Mail, Receipt, MapPin, Clock, Note as StickyNote, Skull, Circle } from "@phosphor-icons/react/ssr";
 import { formatDistanceToNow, format } from "date-fns";
 
 interface LogEntry {

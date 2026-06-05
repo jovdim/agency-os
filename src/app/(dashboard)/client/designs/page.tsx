@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Eye, Palette, MapPin, Sparkles } from "lucide-react";
+import { ArrowLeft, Eye, Palette, MapPin, Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";

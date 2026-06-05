@@ -1,13 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  Loader2,
-  Trash2,
-  ImagePlus,
-  FileVideo,
-  ImageIcon,
-} from "lucide-react";
+import { CircleNotch as Loader2, Trash as Trash2, ImageSquare as ImagePlus, FileVideo, Image as ImageIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";

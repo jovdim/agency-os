@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
+import { Wallet } from "@phosphor-icons/react/ssr";
 import { MarkAsPaidWizard } from "./mark-as-paid-wizard";
 
 /**

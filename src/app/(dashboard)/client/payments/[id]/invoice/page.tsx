@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { Printer } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

@@ -4,13 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Search,
-  Archive,
-  ArchiveRestore,
-  Trash2,
-  FileText,
-} from "lucide-react";
+import { MagnifyingGlass as Search, Archive, TrayArrowUp as ArchiveRestore, Trash as Trash2, FileText } from "@phosphor-icons/react/ssr";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";

@@ -1,13 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import {
-  DollarSign,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  Banknote,
-} from "lucide-react";
+import { CurrencyDollar as DollarSign, TrendUp as TrendingUp, Clock, CheckCircle, Money as Banknote } from "@phosphor-icons/react/ssr";
 
 export const dynamic = "force-dynamic";
 

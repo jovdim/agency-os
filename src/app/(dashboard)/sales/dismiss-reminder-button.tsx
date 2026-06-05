@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Loader2 } from "lucide-react";
+import { X, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 
 export function DismissReminderButton({ reminderId }: { reminderId: string }) {

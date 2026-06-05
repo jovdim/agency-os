@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Home, Plus, X } from "lucide-react";
+import { House as Home, Plus, X } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import type { CompositionPage } from "@/lib/templates/render";
 

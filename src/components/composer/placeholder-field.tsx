@@ -4,23 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Eye,
-  EyeOff,
-  Image as ImageIcon,
-  Loader2,
-  Mail as MailIcon,
-  Maximize2,
-  MapPin,
-  MessageCircle as WhatsappIcon,
-  MoveHorizontal,
-  Phone as PhoneIcon,
-  RotateCcw,
-  Sparkles,
-  Video as VideoIcon,
-  X,
-  Link as LinkIcon,
-} from "lucide-react";
+import { Eye, EyeSlash as EyeOff, Image as ImageIcon, CircleNotch as Loader2, Envelope as MailIcon, ArrowsOut as Maximize2, MapPin, ChatCircle as WhatsappIcon, ArrowsHorizontal as MoveHorizontal, Phone as PhoneIcon, ArrowCounterClockwise as RotateCcw, Sparkle as Sparkles, VideoCamera as VideoIcon, X, Link as LinkIcon } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import {
   Dialog,

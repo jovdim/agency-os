@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkle as Sparkles } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AiSettingsClient } from "./ai-settings-client";

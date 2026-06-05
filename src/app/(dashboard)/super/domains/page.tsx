@@ -1,13 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Badge } from "@/components/ui/badge";
-import {
-  Globe2,
-  ExternalLink,
-  Mail,
-  Phone,
-  ArrowRight,
-} from "lucide-react";
+import { GlobeHemisphereWest as Globe2, ArrowSquareOut as ExternalLink, Envelope as Mail, Phone, ArrowRight } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { DomainRequestActions } from "./domain-request-actions";

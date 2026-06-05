@@ -7,19 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import {
-  UserPlus,
-  Loader2,
-  CheckCircle,
-  Copy,
-  Check,
-  Search,
-  X,
-  Mail,
-  Send,
-  Eye,
-  RefreshCw,
-} from "lucide-react";
+import { UserPlus, CircleNotch as Loader2, CheckCircle, Copy, Check, MagnifyingGlass as Search, X, Envelope as Mail, PaperPlaneTilt as Send, Eye, ArrowsClockwise as RefreshCw } from "@phosphor-icons/react/ssr";
 
 export function TechCreateClientForm({ initialContactId }: { initialContactId?: string }) {
   const router = useRouter();

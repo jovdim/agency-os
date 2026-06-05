@@ -11,16 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-  AlertCircle,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  CheckCircle2,
-  Copy,
-  Download,
-  FileJson,
-  Loader2,
-} from "lucide-react";
+import { WarningCircle as AlertCircle, ArrowLineDown as ArrowDownToLine, ArrowLineUp as ArrowUpFromLine, CheckCircle as CheckCircle2, Copy, DownloadSimple as Download, FileCode as FileJson, CircleNotch as Loader2 } from "@phosphor-icons/react/ssr";
 import type { SiteComposition } from "@/lib/templates/render";
 import {
   buildExportSnapshot,

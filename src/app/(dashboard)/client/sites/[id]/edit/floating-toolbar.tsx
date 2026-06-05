@@ -1,6 +1,6 @@
 "use client";
 
-import { X, RotateCcw, Check } from "lucide-react";
+import { X, ArrowCounterClockwise as RotateCcw, Check } from "@phosphor-icons/react/ssr";
 
 interface FloatingToolbarProps {
   section?: string | null;

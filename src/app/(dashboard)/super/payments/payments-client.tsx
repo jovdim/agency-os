@@ -10,13 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  TrendingUp,
-  XCircle,
-  Search,
-  CheckCircle2,
-  Receipt,
-} from "lucide-react";
+import { TrendUp as TrendingUp, XCircle, MagnifyingGlass as Search, CheckCircle as CheckCircle2, Receipt } from "@phosphor-icons/react/ssr";
 
 interface PaymentRow {
   id: string;

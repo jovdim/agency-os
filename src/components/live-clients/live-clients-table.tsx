@@ -4,18 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  ExternalLink,
-  Search,
-  PenLine,
-  CheckCircle,
-  ChevronDown,
-  X,
-  Users,
-  Plus,
-  ArrowLeft,
-  Bell,
-} from "lucide-react";
+import { ArrowSquareOut as ExternalLink, MagnifyingGlass as Search, PencilSimpleLine as PenLine, CheckCircle, CaretDown as ChevronDown, X, Users, Plus, ArrowLeft, Bell } from "@phosphor-icons/react/ssr";
 import { format } from "date-fns";
 import { AddMigratedClientDialog } from "./add-migrated-client-dialog";
 

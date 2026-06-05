@@ -1,6 +1,6 @@
 "use client";
 
-import { UserPlus, Hammer, Globe, Pencil, CreditCard } from "lucide-react";
+import { UserPlus, Hammer, Globe, PencilSimple as Pencil, CreditCard } from "@phosphor-icons/react/ssr";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,

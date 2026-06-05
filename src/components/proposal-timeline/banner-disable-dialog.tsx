@@ -32,7 +32,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, EyeOff, AlertCircle } from "lucide-react";
+import { CircleNotch as Loader2, EyeSlash as EyeOff, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 import type { TimelineProposal, TimelineSite } from "./timeline-steps";
 
 interface BannerDisableDialogProps {
