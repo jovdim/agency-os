@@ -24,7 +24,11 @@ export default async function TechNewProposalPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    // Calm, centered single-column form shell matching the redesigned dashboard
+    // surfaces (dash-root namespace + generous breathing room). The form's own
+    // chrome (header, contact card, field cards, actions) lives in
+    // TechProposalForm; this wrapper just frames it.
+    <div className="dash-root mx-auto w-full max-w-4xl py-2 sm:py-4">
       <TechProposalForm contact={contact} />
     </div>
   );

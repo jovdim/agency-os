@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Mail,
   Phone,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -112,49 +113,61 @@ export default async function DomainsPage() {
   const renderRequestCard = (site: DomainSite) => {
     const profile = profileMap.get(site.owner_id) || null;
     const label = STATUS_LABELS[site.domain_status] || site.domain_status;
+    const isActive = site.domain_status === "active";
     const requesterId =
       (site as { domain_requested_by?: string | null }).domain_requested_by ?? null;
     const requester = requesterId ? requesterMap.get(requesterId) ?? null : null;
 
     return (
-      <div key={site.id} className="rounded-lg border px-5 py-4 space-y-4">
+      <div key={site.id} className="dash-card p-5 space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">{site.name}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {site.domain_decided_at
-                ? `Requested ${formatDistanceToNow(new Date(site.domain_decided_at), { addSuffix: true })}`
-                : ""}
-              {requester && (
-                <>
-                  {site.domain_decided_at ? " · " : ""}
-                  by{" "}
-                  <span className="text-foreground font-medium">
-                    {requester.full_name || "Staff"}
-                  </span>
-                  {requester.role && (
-                    <span className="ml-1 text-[10px] uppercase tracking-wide opacity-70">
-                      ({requester.role.replace(/_/g, " ")})
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            <span
+              className={`${isActive ? "dash-chip-pink" : "dash-chip"} mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg`}
+            >
+              <Globe2 className="h-4 w-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold">{site.name}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {site.domain_decided_at
+                  ? `Requested ${formatDistanceToNow(new Date(site.domain_decided_at), { addSuffix: true })}`
+                  : ""}
+                {requester && (
+                  <>
+                    {site.domain_decided_at ? " · " : ""}
+                    by{" "}
+                    <span className="text-foreground font-medium">
+                      {requester.full_name || "Staff"}
                     </span>
-                  )}
-                </>
-              )}
-              {!requester && site.domain_decided_at && (
-                <span className="ml-1 text-[10px] uppercase tracking-wide opacity-70">
-                  by client
-                </span>
-              )}
-            </p>
+                    {requester.role && (
+                      <span className="ml-1 text-[10px] uppercase tracking-wide opacity-70">
+                        ({requester.role.replace(/_/g, " ")})
+                      </span>
+                    )}
+                  </>
+                )}
+                {!requester && site.domain_decided_at && (
+                  <span className="ml-1 text-[10px] uppercase tracking-wide opacity-70">
+                    by client
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
           <Badge
             variant="outline"
-            className="bg-muted text-muted-foreground border-border"
+            className={
+              isActive
+                ? "bg-(--dash-chip-bg-2) text-(--dash-accent-2) border-(--dash-accent-2)/30"
+                : "bg-muted text-muted-foreground border-border"
+            }
           >
             {label}
           </Badge>
         </div>
 
-        <div className="rounded-md bg-muted/40 px-4 py-3 space-y-3">
+        <div className="dash-hairline rounded-lg border bg-muted/30 px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               Client
@@ -162,16 +175,16 @@ export default async function DomainsPage() {
             {site.proposal_id ? (
               <Link
                 href={`/tech/proposals/${site.proposal_id}`}
-                className="text-xs hover:underline"
+                className="dash-accent inline-flex items-center gap-1 text-xs font-medium hover:underline"
               >
-                View proposal →
+                View proposal <ArrowRight className="h-3 w-3" />
               </Link>
             ) : (
               <Link
                 href={`/super/users/${site.owner_id}`}
-                className="text-xs hover:underline"
+                className="dash-accent inline-flex items-center gap-1 text-xs font-medium hover:underline"
               >
-                View client →
+                View client <ArrowRight className="h-3 w-3" />
               </Link>
             )}
           </div>
@@ -194,7 +207,7 @@ export default async function DomainsPage() {
             {profile?.email && (
               <a
                 href={`mailto:${profile.email}`}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs hover:bg-background transition-colors"
+                className="dash-hairline inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs transition-colors hover:bg-muted/60"
               >
                 <Mail className="h-3 w-3 text-muted-foreground" />
                 {profile.email}
@@ -203,13 +216,13 @@ export default async function DomainsPage() {
             {profile?.phone ? (
               <a
                 href={`tel:${profile.phone}`}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs hover:bg-background transition-colors"
+                className="dash-hairline inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs transition-colors hover:bg-muted/60"
               >
                 <Phone className="h-3 w-3 text-muted-foreground" />
                 {profile.phone}
               </a>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-dashed text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-dashed px-2.5 py-1 text-xs text-muted-foreground">
                 <Phone className="h-3 w-3" />
                 No phone
               </span>
@@ -274,11 +287,18 @@ export default async function DomainsPage() {
     );
   };
 
+  const emptyState = (message: string) => (
+    <div className="dash-panel flex flex-col items-center justify-center px-4 py-14 text-center">
+      <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+        <Globe2 className="h-5 w-5" />
+      </span>
+      <p className="text-sm font-medium">{message}</p>
+    </div>
+  );
+
   const queueContent =
     queueRequests.length === 0 ? (
-      <p className="py-8 text-center text-sm text-muted-foreground">
-        No new requests
-      </p>
+      emptyState("No new requests")
     ) : (
       <div className="space-y-4">
         {queueRequests.map((site) => renderRequestCard(site))}
@@ -287,9 +307,7 @@ export default async function DomainsPage() {
 
   const inProgressContent =
     inProgressRequests.length === 0 ? (
-      <p className="py-8 text-center text-sm text-muted-foreground">
-        Nothing being processed
-      </p>
+      emptyState("Nothing being processed")
     ) : (
       <div className="space-y-4">
         {inProgressRequests.map((site) => renderRequestCard(site))}
@@ -298,9 +316,7 @@ export default async function DomainsPage() {
 
   const doneContent =
     doneRequests.length === 0 ? (
-      <p className="py-8 text-center text-sm text-muted-foreground">
-        No completed requests yet
-      </p>
+      emptyState("No completed requests yet")
     ) : (
       <div className="space-y-4">
         {doneRequests.slice(0, 20).map((site) => renderRequestCard(site))}
@@ -315,24 +331,38 @@ export default async function DomainsPage() {
   const pendingCount = queueRequests.length + inProgressRequests.length;
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <h1 className="text-2xl font-semibold">Domain Management</h1>
+    <div className="dash-root max-w-5xl space-y-8">
+      {/* Clean page header — title + one-line subtitle on the left, the live
+          pending count promoted to a compact stat tile on the right. No
+          gradient: this is an operational list page, not a greeting surface. */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Operations
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Domain Management
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Each client&apos;s requested domain appears below. Register or
+            transfer it, then connect the domain to their website.
+          </p>
+        </div>
 
-      <div className="rounded-lg border bg-card p-6 max-w-xs">
-        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-          Pending
-        </p>
-        <p className="text-4xl font-bold mt-2 tabular-nums">{pendingCount}</p>
-        <p className="text-xs text-muted-foreground mt-1">awaiting action</p>
-      </div>
-
-      <div className="space-y-1">
-        <h2 className="text-base font-semibold">Client domains to set up</h2>
-        <p className="text-sm text-muted-foreground">
-          Each client&apos;s requested domain appears below. Register or transfer
-          it, then connect the domain to their website.
-        </p>
-      </div>
+        <div className="dash-card flex shrink-0 items-center gap-3 p-4 sm:w-56">
+          <span className="dash-chip inline-flex h-10 w-10 items-center justify-center rounded-lg">
+            <Globe2 className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-3xl font-bold leading-none tabular-nums">
+              {pendingCount}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              pending · awaiting action
+            </p>
+          </div>
+        </div>
+      </header>
 
       <DomainTabs
         queueContent={queueContent}

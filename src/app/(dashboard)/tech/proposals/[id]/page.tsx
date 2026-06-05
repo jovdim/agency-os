@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
+import { UserCog } from "lucide-react";
 import { LegacyWorkspace } from "./legacy-workspace";
 import { ProposalTimeline } from "@/components/proposal-timeline/proposal-timeline";
 import { ClientDetailClient } from "@/components/live-clients/client-detail-client";
@@ -341,7 +342,20 @@ export default async function ProposalBuildPage({
           header + back button so it nests cleanly under the timeline
           above. */}
       {clientDetail && (
-        <div className="border-t mt-6 pt-6">
+        <div className="dash-hairline mt-8 border-t pt-8">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="dash-chip inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+              <UserCog className="h-5 w-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="dash-subhead text-[11px] uppercase tracking-wider text-muted-foreground">
+                Client zone
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Domain &amp; business-email setup, payment and credits for this client
+              </p>
+            </div>
+          </div>
           <ClientDetailClient
             data={clientDetail}
             composerPathPrefix="/tech"

@@ -20,6 +20,13 @@ export default async function SuperPaymentsPage() {
   const confirmed = all.filter((p) => p.status === "confirmed");
   const failed = all.filter((p) => p.status === "failed");
 
+  // Total revenue = sum of confirmed payment amounts — the focal "good news"
+  // metric the payments page leads with.
+  const revenue = confirmed.reduce(
+    (sum, p) => sum + (Number(p.amount) || 0),
+    0,
+  );
+
   // Normalize payments for client component
   const normalizedPayments = all.map((p) => {
     const profile = p.profiles as {
@@ -49,6 +56,7 @@ export default async function SuperPaymentsPage() {
       stats={{
         confirmed: confirmed.length,
         failed: failed.length,
+        revenue,
       }}
     />
   );

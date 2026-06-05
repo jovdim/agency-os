@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AiSettingsClient } from "./ai-settings-client";
@@ -93,20 +93,39 @@ export default async function AiSettingsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+    <div className="dash-root max-w-5xl space-y-8">
+      {/* Clean page header — a quiet Back link, then eyebrow + title with a
+          violet icon chip + one-line subtitle. No gradient: this is a settings
+          editor, not a dashboard greeting. */}
+      <div className="space-y-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="-ml-2 h-8 gap-1.5 text-muted-foreground"
+        >
           <Link href="/super/settings">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
+            <ArrowLeft className="h-4 w-4" />
+            Back to settings
           </Link>
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold">AI content generation</h1>
-          <p className="text-sm text-muted-foreground">
-            The Slovak copywriting guide every AI generation reads from. One
-            edit applies to every site immediately.
-          </p>
+
+        <div className="flex items-start gap-3.5">
+          <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+            <Sparkles className="h-5 w-5" />
+          </span>
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Settings
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              AI content generation
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              The Slovak copywriting guide every AI generation reads from. One
+              edit applies to every site immediately.
+            </p>
+          </div>
         </div>
       </div>
 

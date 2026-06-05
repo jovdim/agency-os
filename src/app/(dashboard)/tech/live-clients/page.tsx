@@ -147,21 +147,41 @@ export default async function TechLiveClientsPage() {
   const totalLiveClients = normalized.length;
 
   return (
-    <div className="space-y-4">
-      <div className="flex w-full items-center gap-3 rounded-lg border border-emerald-200/60 bg-emerald-50/40 px-4 py-3 sm:w-fit dark:border-emerald-900/50 dark:bg-emerald-950/20">
-        <div className="rounded-md bg-emerald-100 p-2 dark:bg-emerald-900/40">
-          <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-        </div>
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Total Live Clients</p>
-          <p className="text-2xl font-bold leading-tight tabular-nums">
-            {totalLiveClients}
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — eyebrow + title + one-line subtitle on the
+          left, the focal "live clients" count promoted into a pink stat
+          inset on the right. Pink because a growing paying-customer
+          roster is the page's good-news metric. No gradient hero here:
+          a header band is enough for a roster page. */}
+      <section className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Tech · Roster
           </p>
-          <p className="text-[11px] leading-tight text-muted-foreground">
-            {totalLiveClients === 1 ? "paying customer" : "paying customers"}
+          <h1 className="text-3xl font-bold tracking-tight">Live Clients</h1>
+          <p className="text-sm text-muted-foreground">
+            Every paying customer — organic and migrated. Open a row to
+            manage their site, payment, and credits.
           </p>
         </div>
-      </div>
+
+        <div className="dash-card flex items-center gap-4 px-5 py-4 sm:shrink-0">
+          <span className="dash-chip-pink inline-flex h-12 w-12 items-center justify-center rounded-xl">
+            <Users className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Total live clients
+            </p>
+            <p className="text-3xl font-bold leading-tight tabular-nums">
+              {totalLiveClients}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {totalLiveClients === 1 ? "paying customer" : "paying customers"}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <LiveClientsTable
         rows={normalized}

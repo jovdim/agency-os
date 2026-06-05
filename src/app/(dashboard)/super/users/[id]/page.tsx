@@ -137,32 +137,79 @@ export default async function UserDetailPage({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/super/users">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">{profile.full_name || "Unknown"}</h1>
-          <p className="text-sm text-muted-foreground">
-            {profile.company_name && `${profile.company_name} · `}
-            {profile.role === "client" ? "Client" : profile.role} · Joined {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
-          </p>
+    <div className="dash-root space-y-8 max-w-5xl">
+      {/* Back link */}
+      <Button variant="ghost" size="sm" asChild className="-ml-2 h-8 text-muted-foreground">
+        <Link href="/super/users">
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back to users
+        </Link>
+      </Button>
+
+      {/* Page header — avatar chip + identity + status, on a soft panel */}
+      <div className="dash-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex items-center gap-4">
+          <span className="dash-chip inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+            <User className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {profile.role === "client" ? "Client" : profile.role}
+            </p>
+            <h1 className="truncate text-2xl font-bold tracking-tight">{profile.full_name || "Unknown"}</h1>
+            <p className="text-sm text-muted-foreground">
+              {profile.company_name && `${profile.company_name} · `}
+              Joined {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
+            </p>
+          </div>
         </div>
-        <Badge variant={profile.is_active ? "default" : "destructive"} className="text-xs">
+        <Badge variant={profile.is_active ? "default" : "destructive"} className="self-start text-xs sm:self-auto">
           {profile.is_active ? "Active" : "Inactive"}
         </Badge>
+      </div>
+
+      {/* Financial summary — quiet stat tiles. Pink marks the positive "paid" total. */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="dash-card p-5">
+          <span className="dash-chip-pink inline-flex h-9 w-9 items-center justify-center rounded-lg">
+            <Coins className="h-4 w-4" />
+          </span>
+          <p className="mt-4 text-2xl font-bold tabular-nums">${totalPaid.toFixed(2)}</p>
+          <p className="mt-1 text-sm font-medium">Total paid</p>
+        </div>
+        <div className="dash-card p-5">
+          <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+            <Globe2 className="h-4 w-4" />
+          </span>
+          <p className="mt-4 text-2xl font-bold tabular-nums">{allSites.length}</p>
+          <p className="mt-1 text-sm font-medium">Sites</p>
+        </div>
+        <div className="dash-card p-5">
+          <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+            <CreditCard className="h-4 w-4" />
+          </span>
+          <p className="mt-4 text-2xl font-bold tabular-nums">{allPayments.length}</p>
+          <p className="mt-1 text-sm font-medium">Payments</p>
+        </div>
+        <div className="dash-card p-5">
+          <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+            <FileText className="h-4 w-4" />
+          </span>
+          <p className="mt-4 text-2xl font-bold tabular-nums">{allInvoices.length}</p>
+          <p className="mt-1 text-sm font-medium">Invoices</p>
+        </div>
       </div>
 
       {/* Contact info + linked contact */}
       <div className="grid gap-5 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Profile</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
+              <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+                <User className="h-3.5 w-3.5" />
+              </span>
+              Profile
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
@@ -197,7 +244,12 @@ export default async function UserDetailPage({
         {contact && (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Linked Contact (CRM)</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+                  <Building2 className="h-3.5 w-3.5" />
+                </span>
+                Linked Contact (CRM)
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
@@ -225,7 +277,7 @@ export default async function UserDetailPage({
               {contact.website_url && (
                 <div className="flex items-center gap-2 text-sm">
                   <Globe2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <a href={contact.website_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  <a href={contact.website_url} target="_blank" rel="noopener noreferrer" className="dash-accent hover:underline">
                     {contact.website_url}
                   </a>
                 </div>
@@ -243,8 +295,10 @@ export default async function UserDetailPage({
       {/* Sites */}
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Globe2 className="h-4 w-4" />
+          <CardTitle className="flex items-center gap-2 text-base">
+            <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+              <Globe2 className="h-3.5 w-3.5" />
+            </span>
             Sites ({allSites.length})
           </CardTitle>
         </CardHeader>
@@ -258,7 +312,7 @@ export default async function UserDetailPage({
                 const credits = creditMap.get(site.id) ?? 0;
                 const ds = domainStatusLabels[site.domain_status || "none"] || domainStatusLabels.none;
                 return (
-                  <div key={site.id} className="rounded-lg border px-5 py-4 space-y-3">
+                  <div key={site.id} className="dash-hairline space-y-3 rounded-xl border px-5 py-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold">{site.name}</p>
@@ -291,7 +345,7 @@ export default async function UserDetailPage({
                             href={`https://${dep.subdomain}.pages.dev`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline font-medium flex items-center gap-1"
+                            className="dash-accent hover:underline font-medium flex items-center gap-1"
                           >
                             {dep.subdomain}.pages.dev
                             <ExternalLink className="h-3 w-3" />
@@ -305,7 +359,7 @@ export default async function UserDetailPage({
                             href={site.site_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline font-medium flex items-center gap-1"
+                            className="dash-accent hover:underline font-medium flex items-center gap-1"
                           >
                             Visit
                             <ExternalLink className="h-3 w-3" />
@@ -317,7 +371,7 @@ export default async function UserDetailPage({
                     {site.requested_domain && (
                       <div className="text-xs">
                         <span className="text-muted-foreground">Requested: </span>
-                        <span className="font-medium text-primary">{site.requested_domain}</span>
+                        <span className="dash-accent font-medium">{site.requested_domain}</span>
                         {site.domain_notes && (
                           <span className="text-muted-foreground italic ml-2">— {site.domain_notes}</span>
                         )}
@@ -336,10 +390,12 @@ export default async function UserDetailPage({
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
+              <span className="dash-chip-pink inline-flex h-7 w-7 items-center justify-center rounded-md">
+                <CreditCard className="h-3.5 w-3.5" />
+              </span>
               Payments ({allPayments.length})
               {totalPaid > 0 && (
-                <span className="text-xs text-muted-foreground ml-auto">
+                <span className="ml-auto text-xs font-medium text-(--dash-accent-2) tabular-nums">
                   Total: ${totalPaid.toFixed(2)}
                 </span>
               )}
@@ -349,15 +405,15 @@ export default async function UserDetailPage({
             {allPayments.length === 0 ? (
               <p className="py-6 text-center text-xs text-muted-foreground">No payments</p>
             ) : (
-              <div className="space-y-2">
+              <div className="dash-hairline divide-y">
                 {allPayments.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50 last:border-0">
+                  <div key={p.id} className="dash-row flex items-center justify-between rounded-md px-1 text-xs py-2">
                     <div className="flex items-center gap-2">
                       {paymentStatusIcon(p.status)}
                       <span>{p.description || p.payment_method || "Payment"}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">${Number(p.amount).toFixed(2)}</span>
+                      <span className="font-semibold tabular-nums">${Number(p.amount).toFixed(2)}</span>
                       <span className="text-muted-foreground">
                         {formatDistanceToNow(new Date(p.created_at), { addSuffix: true })}
                       </span>
@@ -372,7 +428,9 @@ export default async function UserDetailPage({
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <FileText className="h-4 w-4" />
+              <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+                <FileText className="h-3.5 w-3.5" />
+              </span>
               Invoices ({allInvoices.length})
             </CardTitle>
           </CardHeader>
@@ -380,9 +438,9 @@ export default async function UserDetailPage({
             {allInvoices.length === 0 ? (
               <p className="py-6 text-center text-xs text-muted-foreground">No invoices</p>
             ) : (
-              <div className="space-y-2">
+              <div className="dash-hairline divide-y">
                 {allInvoices.map((inv) => (
-                  <div key={inv.id} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50 last:border-0">
+                  <div key={inv.id} className="dash-row flex items-center justify-between rounded-md px-1 text-xs py-2">
                     <div className="flex items-center gap-2">
                       <FileText className="h-3.5 w-3.5 text-muted-foreground" />
                       <span className="font-medium">{inv.invoice_number}</span>
@@ -391,7 +449,7 @@ export default async function UserDetailPage({
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">${Number(inv.amount).toFixed(2)}</span>
+                      <span className="font-semibold tabular-nums">${Number(inv.amount).toFixed(2)}</span>
                       <span className="text-muted-foreground">
                         {new Date(inv.issued_at).toLocaleDateString()}
                       </span>
@@ -408,7 +466,9 @@ export default async function UserDetailPage({
       <Card>
         <CardHeader className="pb-4">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
+            <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
+              <AlertCircle className="h-3.5 w-3.5" />
+            </span>
             Change Requests ({allChangeRequests.length})
           </CardTitle>
         </CardHeader>
@@ -416,7 +476,7 @@ export default async function UserDetailPage({
           {allChangeRequests.length === 0 ? (
             <p className="py-6 text-center text-xs text-muted-foreground">No change requests</p>
           ) : (
-            <div className="space-y-2">
+            <div className="dash-hairline divide-y">
               {allChangeRequests.map((cr) => {
                 const statusColors: Record<string, string> = {
                   pending: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
@@ -424,7 +484,7 @@ export default async function UserDetailPage({
                   rejected: "bg-red-500/15 text-red-600 border-red-500/30",
                 };
                 return (
-                  <div key={cr.id} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50 last:border-0">
+                  <div key={cr.id} className="dash-row flex items-center justify-between rounded-md px-1 text-xs py-2">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className={`text-xs h-5 ${statusColors[cr.status] || ""}`}>
                         {cr.status}

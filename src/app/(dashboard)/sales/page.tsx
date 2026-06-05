@@ -177,20 +177,30 @@ export default async function SalesDashboard() {
     ])
   );
 
-  const contactsWithProposals: Record<string, boolean> = {};
+  // Maps contact_id → proposal_id (most recent active proposal) so the
+  // "Proposal" button on each contact row can deep-link straight to the
+  // proposal page instead of the contact page.
+  const contactsWithProposals: Record<string, string> = {};
   if (visibleContactIds.length > 0) {
     const { data: activeProposals } = await admin
       .from("proposals")
-      .select("contact_id, status")
+      .select("id, contact_id, status, created_at")
       .in("contact_id", visibleContactIds)
-      .not("status", "in", "(paid,archived,accepted)");
+      .not("status", "in", "(paid,archived,accepted)")
+      .order("created_at", { ascending: false });
     for (const p of activeProposals ?? []) {
-      if (p.contact_id) contactsWithProposals[p.contact_id] = true;
+      // desc order → first seen per contact is the most recent
+      if (p.contact_id && !contactsWithProposals[p.contact_id]) {
+        contactsWithProposals[p.contact_id] = p.id;
+      }
     }
   }
 
+  const firstName = profile.full_name?.trim().split(/\s+/)[0] || "there";
+
   return (
     <SalesDashboardClient
+      firstName={firstName}
       handoverProposals={(handoverProposals ?? []).map(p => ({
         ...p,
         contacts: Array.isArray(p.contacts) ? p.contacts[0] : p.contacts,

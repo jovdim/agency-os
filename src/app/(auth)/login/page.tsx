@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Brand } from "@/components/brand";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn, AlertCircle } from "lucide-react";
 
 export default function LoginPageWrapper() {
   return (
@@ -135,9 +135,16 @@ function LoginPage() {
     return (
       <div className="w-full max-w-sm">
         <Card>
-          <CardContent className="py-12 text-center">
-            <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-            <p className="mt-4 text-sm text-muted-foreground">Signing in...</p>
+          <CardContent className="flex flex-col items-center py-14 text-center">
+            <div className="dash-chip flex size-11 items-center justify-center rounded-xl">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+            <p className="mt-4 text-sm font-medium text-foreground">
+              Signing you in
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Verifying your secure link…
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -146,21 +153,30 @@ function LoginPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <div className="flex justify-end mb-4">
+      <div className="mb-4 flex items-center justify-between">
+        <Brand
+          markClassName="size-7 rounded-md text-sm"
+          wordmarkClassName="text-base"
+        />
         <ThemeToggle />
       </div>
-      <Card className="border-border/60 shadow-2xl">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-2">
-            <Brand
-              markClassName="size-9 rounded-lg text-base"
-              wordmarkClassName="text-xl"
-            />
+      <Card className="shadow-xl shadow-black/[0.04]">
+        <CardHeader className="space-y-3 pb-2">
+          <div className="dash-chip flex size-11 items-center justify-center rounded-xl">
+            <LogIn className="h-5 w-5" />
           </div>
-          <CardDescription>Sign in to your account</CardDescription>
+          <div className="space-y-1">
+            <p className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+              Welcome back
+            </p>
+            <CardTitle className="text-xl">Sign in to your account</CardTitle>
+            <CardDescription>
+              Enter your credentials to continue.
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+        <CardContent className="pt-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="identifier">Username or Email</Label>
               <Input
@@ -188,10 +204,20 @@ function LoginPage() {
               />
             </div>
             {error && (
-              <p className="text-sm text-destructive">{error}</p>
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </form>
         </CardContent>

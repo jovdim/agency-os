@@ -4,6 +4,7 @@ import { UploadForm } from "./upload-form";
 import { TemplateCard } from "./template-card";
 import { loadTemplateBodies, loadBaseCss } from "@/lib/templates/load-bodies";
 import type { TemplateBody } from "@/lib/templates/render-browser";
+import { Layers, FolderTree, AlertCircle, Inbox } from "lucide-react";
 
 // Cache-busting trio (Peter 2026-05-16): force-dynamic alone leaves
 // Next.js caching Supabase Storage fetches inside loadTemplateBodies
@@ -60,11 +61,17 @@ export default async function SectionTemplatesPage() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm">
-        Failed to load templates: {error.message}
-        <p className="text-xs text-muted-foreground mt-2">
-          Did you apply migration <code>00042_template_library.sql</code>?
-        </p>
+      <div className="dash-panel flex items-start gap-3 border-destructive/40 p-5 text-sm">
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 text-destructive">
+          <AlertCircle className="h-4 w-4" />
+        </span>
+        <div className="space-y-1">
+          <p className="font-medium">Failed to load templates</p>
+          <p className="text-muted-foreground">{error.message}</p>
+          <p className="text-xs text-muted-foreground">
+            Did you apply migration <code>00042_template_library.sql</code>?
+          </p>
+        </div>
       </div>
     );
   }
@@ -89,36 +96,76 @@ export default async function SectionTemplatesPage() {
   const templateBodies = await loadTemplateBodies(admin, templates ?? []);
   const baseCss = loadBaseCss();
 
+  const categoryCount = Object.keys(grouped).length;
+
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold">Section template library</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Reusable sections used by the proposal composer.{" "}
-            {total > 0
-              ? `${total} template${total === 1 ? "" : "s"} across ${Object.keys(grouped).length} categories.`
-              : "No templates uploaded yet."}
-          </p>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — icon chip + eyebrow + title, with at-a-glance
+          counts on the right. No gradient: this is a maintenance surface. */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+            <Layers className="h-5 w-5" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Template library
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight">Section templates</h1>
+            <p className="text-sm text-muted-foreground">
+              Reusable sections used by the proposal composer.
+            </p>
+          </div>
         </div>
-      </div>
+
+        {total > 0 && (
+          <div className="flex shrink-0 gap-3">
+            <div className="dash-card flex items-center gap-3 px-4 py-3">
+              <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+                <Layers className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-2xl font-bold leading-none tabular-nums">
+                  {total}
+                </p>
+                <p className="mt-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Template{total === 1 ? "" : "s"}
+                </p>
+              </div>
+            </div>
+            <div className="dash-card flex items-center gap-3 px-4 py-3">
+              <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+                <FolderTree className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-2xl font-bold leading-none tabular-nums">
+                  {categoryCount}
+                </p>
+                <p className="mt-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  {categoryCount === 1 ? "Category" : "Categories"}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
 
       <UploadForm />
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {CATEGORY_ORDER.map((category) => {
           const items = grouped[category];
           if (!items || items.length === 0) return null;
 
           return (
-            <section key={category} className="space-y-3">
-              <div className="flex items-baseline justify-between">
-                <h2 className="text-base font-semibold">
-                  {CATEGORY_LABELS[category] ?? category}{" "}
-                  <span className="text-muted-foreground text-xs font-normal ml-1">
-                    {items.length}
-                  </span>
+            <section key={category} className="space-y-4">
+              <div className="dash-hairline flex items-baseline justify-between border-b pb-2.5">
+                <h2 className="text-sm font-semibold uppercase tracking-wider">
+                  {CATEGORY_LABELS[category] ?? category}
                 </h2>
+                <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+                  {items.length}
+                </span>
               </div>
               <div
                 className={
@@ -144,11 +191,16 @@ export default async function SectionTemplatesPage() {
         })}
 
         {total === 0 && (
-          <div className="rounded-lg border bg-card px-6 py-12 text-center">
-            <p className="text-sm text-muted-foreground">
-              Upload your first template using the form above. The HTML can be
-              a full preview file (with <code>SECTION:&lt;category&gt;:start</code> markers)
-              or a section fragment.
+          <div className="dash-panel flex flex-col items-center gap-3 px-6 py-14 text-center">
+            <span className="dash-chip inline-flex h-12 w-12 items-center justify-center rounded-xl">
+              <Inbox className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-medium">No templates yet</p>
+            <p className="max-w-md text-sm text-muted-foreground">
+              Upload your first template using the form above. The HTML can be a
+              full preview file (with{" "}
+              <code>SECTION:&lt;category&gt;:start</code> markers) or a section
+              fragment.
             </p>
           </div>
         )}

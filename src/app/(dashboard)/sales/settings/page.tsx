@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, QrCode, Smartphone, Check } from "lucide-react";
+import { Phone, QrCode, Smartphone, Check, Settings, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 const DIAL_OPTIONS = [
@@ -45,15 +44,25 @@ export default function SalesSettingsPage() {
   if (!loaded) return null;
 
   return (
-    <div className="space-y-6 max-w-xl">
-      <h1 className="text-xl font-semibold">Settings</h1>
+    <div className="space-y-6 max-w-2xl">
+      {/* Page header */}
+      <div className="flex items-start gap-3">
+        <div className="dash-chip">
+          <Settings className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground">Personal preferences for how you work and call contacts.</p>
+        </div>
+      </div>
 
       <Card>
         <CardHeader className="pb-3">
+          <p className="dash-subhead">Dialing</p>
           <CardTitle className="text-base">Dialing numbers</CardTitle>
-          <p className="text-xs text-muted-foreground">How you want to call contacts from your computer</p>
+          <p className="text-xs text-muted-foreground">How you want to call contacts from your computer.</p>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2.5">
           {DIAL_OPTIONS.map(opt => {
             const Icon = opt.icon;
             const isActive = preference === opt.value;
@@ -62,14 +71,20 @@ export default function SalesSettingsPage() {
                 key={opt.value}
                 disabled={saving}
                 onClick={() => save(opt.value)}
-                className={`w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${isActive ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"}`}
+                className={`group w-full flex items-center gap-3.5 rounded-xl border p-3.5 text-left transition-colors disabled:opacity-60 ${isActive ? "border-(--dash-accent)/40 bg-(--dash-accent)/5" : "border-border hover:bg-muted/40"}`}
               >
-                <Icon className={`h-5 w-5 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${isActive ? "text-primary" : ""}`}>{opt.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{opt.description}</p>
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${isActive ? "bg-(--dash-accent)/12 text-(--dash-accent)" : "bg-muted text-muted-foreground group-hover:text-foreground"}`}>
+                  <Icon className="h-4.5 w-4.5" />
                 </div>
-                {isActive && <Check className="h-4 w-4 text-primary shrink-0" />}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium ${isActive ? "dash-accent" : ""}`}>{opt.label}</p>
+                  <p className="text-xs text-muted-foreground leading-snug">{opt.description}</p>
+                </div>
+                {isActive && (
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--dash-accent)/12 text-(--dash-accent)">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                )}
               </button>
             );
           })}
@@ -79,16 +94,19 @@ export default function SalesSettingsPage() {
       {preference !== "qr" && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Phone — connection</CardTitle>
+            <p className="dash-subhead">Connection</p>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Link2 className="h-4 w-4 text-muted-foreground" />
+              Phone connection
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Open this page on your phone and keep it open.</p>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Open this page on your phone and keep it open:
-            </p>
-            <div className="mt-2 rounded-md bg-muted px-3 py-2 font-mono text-sm select-all">
+          <CardContent className="space-y-2">
+            <div className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2.5 font-mono text-sm select-all break-all">
+              <Smartphone className="h-4 w-4 shrink-0 text-muted-foreground" />
               {typeof window !== "undefined" ? `${window.location.origin}/sales/dialer` : "/sales/dialer"}
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground">
               When you click a number on your computer, it appears automatically on your phone.
             </p>
           </CardContent>

@@ -337,51 +337,66 @@ export function ChangeRequestReviewClient({
 
   return (
     <>
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/tech/queue")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Review Change Request</h1>
-            <p className="text-sm text-muted-foreground">
-              {siteName} · #{req.id.slice(0, 8)}
-            </p>
+    <div className="dash-root space-y-6">
+      {/* Clean page header — back affordance, icon chip, eyebrow, title +
+          one-line subtitle. No gradient: this is an operational review
+          screen, so a quiet header reads better than a hero band. */}
+      <div className="space-y-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/tech/queue")}
+          className="-ml-2 h-7 px-2 text-muted-foreground"
+        >
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back
+        </Button>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="dash-chip mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+              <FileText className="h-5 w-5" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Change request
+              </p>
+              <h1 className="text-2xl font-bold tracking-tight">
+                Review Change Request
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {siteName}
+                <span className="mx-1.5 text-muted-foreground/50">·</span>
+                <span className="font-mono text-xs">#{req.id.slice(0, 8)}</span>
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge
-            variant={
-              req.status === "pending"
-                ? "secondary"
-                : req.status === "approved"
-                  ? "default"
-                  : "destructive"
-            }
-          >
-            {req.status}
-          </Badge>
-          {siteId && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() =>
-                window.open(`/api/render/site/${siteId}`, "_blank")
+          <div className="flex items-center gap-2">
+            <Badge
+              variant={
+                req.status === "pending"
+                  ? "secondary"
+                  : req.status === "approved"
+                    ? "default"
+                    : "destructive"
               }
+              className="capitalize"
             >
-              <ExternalLink className="h-4 w-4" />
-              Preview Site
-            </Button>
-          )}
+              {req.status}
+            </Badge>
+            {siteId && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() =>
+                  window.open(`/api/render/site/${siteId}`, "_blank")
+                }
+              >
+                <ExternalLink className="h-4 w-4" />
+                Preview Site
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -390,13 +405,15 @@ export function ChangeRequestReviewClient({
         <div className="max-w-2xl space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-2.5">
+                <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                  <MessageSquare className="h-4 w-4" />
+                </span>
                 <CardTitle className="text-base">Client Message</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border bg-muted/30 p-4">
+              <div className="dash-panel rounded-lg p-4">
                 <p className="text-sm whitespace-pre-wrap">{inlineChanges[0].new_value}</p>
               </div>
               <div className="text-xs text-muted-foreground">
@@ -409,14 +426,14 @@ export function ChangeRequestReviewClient({
           {isPending && (
             <Card>
               <CardContent className="pt-6 space-y-3">
-                <div>
+                <div className="space-y-1.5">
                   <Label className="text-xs">Admin note / reply (optional)</Label>
                   <Textarea
                     placeholder="Write a reply or note..."
                     value={adminNote}
                     onChange={(e) => setAdminNote(e.target.value)}
                     rows={3}
-                    className="mt-1 text-sm"
+                    className="text-sm"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -443,18 +460,20 @@ export function ChangeRequestReviewClient({
           )}
         </div>
       ) : isInlineFormat && siteUrl ? (
-        <div className="flex gap-4" style={{ height: "calc(100vh - 140px)" }}>
+        <div className="flex flex-col gap-4 lg:flex-row" style={{ minHeight: "calc(100vh - 200px)" }}>
           {/* Left: Full website preview */}
-          <div className="flex-1 rounded-lg border overflow-hidden flex flex-col">
+          <div className="dash-card flex flex-1 flex-col overflow-hidden p-0">
             {/* Page tabs — show when changes span multiple pages */}
             {changePages.length > 1 && (
-              <div className="flex items-center gap-1 px-3 py-1.5 border-b bg-card shrink-0">
-                <span className="text-[10px] text-muted-foreground mr-1">Page:</span>
+              <div className="dash-subhead flex shrink-0 items-center gap-1.5 border-b px-3 py-2 dash-hairline">
+                <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Page
+                </span>
                 {changePages.map((page) => (
                   <button
                     key={page}
                     onClick={() => { setPreviewPage(page); setReviewReady(false); }}
-                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+                    className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                       previewPage === page
                         ? "bg-primary text-primary-foreground"
                         : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -465,7 +484,7 @@ export function ChangeRequestReviewClient({
                 ))}
               </div>
             )}
-            <div className="flex-1 overflow-hidden">
+            <div className="min-h-[60vh] flex-1 overflow-hidden lg:min-h-0">
               <SitePreview
                 siteId={siteId}
                 siteUrl={siteUrl}
@@ -477,18 +496,23 @@ export function ChangeRequestReviewClient({
           </div>
 
           {/* Right: Changes list + actions */}
-          <div className="w-80 shrink-0 flex flex-col gap-3">
+          <div className="flex w-full shrink-0 flex-col gap-3 lg:w-80">
             {/* Action buttons */}
             {isPending && (
               <Card>
-                <CardContent className="p-3 space-y-2">
-                  <div className="text-xs text-muted-foreground mb-1">
-                    {selectedChanges.size}/{req.changes.length} selected
+                <CardContent className="space-y-2.5 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Review
+                    </span>
+                    <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                      {selectedChanges.size}/{req.changes.length} selected
+                    </span>
                   </div>
                   <Button
                     onClick={() => handleAction("approve")}
                     disabled={processing || selectedChanges.size === 0}
-                    className="gap-1.5 w-full h-9 text-sm"
+                    className="h-9 w-full gap-1.5 text-sm"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     {processing ? "Processing..." : `Approve ${selectedChanges.size}`}
@@ -497,7 +521,7 @@ export function ChangeRequestReviewClient({
                     variant="destructive"
                     onClick={() => handleAction("reject")}
                     disabled={processing}
-                    className="gap-1.5 w-full h-9 text-sm"
+                    className="h-9 w-full gap-1.5 text-sm"
                   >
                     <XCircle className="h-3.5 w-3.5" />
                     Reject (Refund)
@@ -514,7 +538,15 @@ export function ChangeRequestReviewClient({
             )}
 
             {/* Changes list */}
-            <div className="flex-1 overflow-y-auto space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Changes
+              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {inlineChanges.length}
+              </span>
+            </div>
+            <div className="flex-1 space-y-2 overflow-y-auto lg:max-h-[calc(100vh-240px)]">
               {inlineChanges.map((change, i) => {
                 const isSelected = selectedChanges.has(i);
                 const isText = change.action === "update_text";
@@ -522,8 +554,12 @@ export function ChangeRequestReviewClient({
                 return (
                   <div
                     key={change.id || i}
-                    className={`rounded-lg border p-3 cursor-pointer transition-colors hover:border-primary/40 ${
+                    className={`dash-card cursor-pointer p-3 ${
                       isPending && !isSelected ? "opacity-40" : ""
+                    } ${
+                      isPending && isSelected
+                        ? "border-(--dash-accent)/40"
+                        : ""
                     }`}
                     onMouseEnter={() => highlightInPreview(change)}
                     onClick={() => {
@@ -535,40 +571,46 @@ export function ChangeRequestReviewClient({
                       {isPending && (
                         <Checkbox checked={isSelected} onCheckedChange={() => toggleChange(i)} className="mt-0.5" />
                       )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          {isText
-                            ? <Pencil className="w-3 h-3 text-blue-400 shrink-0" />
-                            : <ImageIcon className="w-3 h-3 text-purple-400 shrink-0" />
-                          }
-                          <span className="text-xs font-medium truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex items-center gap-1.5">
+                          <span
+                            className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${
+                              isText ? "dash-chip" : "dash-chip-pink"
+                            }`}
+                          >
+                            {isText
+                              ? <Pencil className="h-3 w-3" />
+                              : <ImageIcon className="h-3 w-3" />
+                            }
+                          </span>
+                          <span className="truncate text-xs font-medium">
                             {change.element_preview || change.field || change.element_tag || "Element"}
                           </span>
                           {change.file_path !== "index.html" && (
-                            <Badge variant="outline" className="text-[9px] py-0 px-1">{change.file_path.replace(".html", "")}</Badge>
+                            <Badge variant="outline" className="px-1 py-0 text-[9px]">{change.file_path.replace(".html", "")}</Badge>
                           )}
                         </div>
                         {isText && (
                           <TextDiff oldValue={change.old_value} newValue={change.new_value} />
                         )}
                         {!isText && (change.old_value || change.new_value) && (
-                          <div className="flex items-center gap-2 mt-1.5">
+                          <div className="mt-1.5 flex items-center gap-2">
                             {change.old_value && (
-                              <button onClick={(e) => { e.stopPropagation(); setPreviewImg(change.old_value); }} className="flex-1 min-w-0 text-left">
-                                <div className="text-[9px] text-red-500 font-medium mb-0.5">Original</div>
-                                <div className="h-16 rounded border border-red-300 dark:border-red-700 overflow-hidden bg-secondary hover:ring-2 hover:ring-red-400 transition-all">
+                              <button onClick={(e) => { e.stopPropagation(); setPreviewImg(change.old_value); }} className="min-w-0 flex-1 text-left">
+                                <div className="mb-0.5 text-[9px] font-medium text-muted-foreground">Original</div>
+                                <div className="h-16 overflow-hidden rounded-md border bg-secondary transition-all hover:ring-2 hover:ring-(--dash-accent)/40">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img src={change.old_value} alt="Old" className="w-full h-full object-cover" />
+                                  <img src={change.old_value} alt="Old" className="h-full w-full object-cover" />
                                 </div>
                               </button>
                             )}
-                            <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                            <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" />
                             {change.new_value && (
-                              <button onClick={(e) => { e.stopPropagation(); setPreviewImg(change.new_value); }} className="flex-1 min-w-0 text-left">
-                                <div className="text-[9px] text-green-500 font-medium mb-0.5">New</div>
-                                <div className="h-16 rounded border border-green-300 dark:border-green-700 overflow-hidden bg-secondary hover:ring-2 hover:ring-green-400 transition-all">
+                              <button onClick={(e) => { e.stopPropagation(); setPreviewImg(change.new_value); }} className="min-w-0 flex-1 text-left">
+                                <div className="mb-0.5 text-[9px] font-medium text-(--dash-accent-2)">New</div>
+                                <div className="h-16 overflow-hidden rounded-md border bg-secondary transition-all hover:ring-2 hover:ring-(--dash-accent-2)/40">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img src={change.new_value} alt="New" className="w-full h-full object-cover" />
+                                  <img src={change.new_value} alt="New" className="h-full w-full object-cover" />
                                 </div>
                               </button>
                             )}
@@ -595,8 +637,10 @@ export function ChangeRequestReviewClient({
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                    <FileText className="h-4 w-4" />
+                  </span>
                   Requested Changes ({req.changes.length})
                 </CardTitle>
                 {isPending && req.changes.length > 1 && (
@@ -604,7 +648,7 @@ export function ChangeRequestReviewClient({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 text-xs gap-1"
+                      className="h-7 gap-1 text-xs"
                       onClick={selectAll}
                     >
                       <CheckCheck className="h-3 w-3" />
@@ -637,8 +681,8 @@ export function ChangeRequestReviewClient({
                       return (
                         <div
                           key={change.id || i}
-                          className={`rounded-lg border p-4 space-y-3 transition-colors cursor-pointer hover:border-primary/30 ${
-                            isPending && !isSelected ? "opacity-50 bg-muted/30" : ""
+                          className={`dash-card cursor-pointer space-y-3 p-4 ${
+                            isPending && !isSelected ? "opacity-50" : ""
                           }`}
                           onMouseEnter={() => highlightInPreview(change)}
                         >
@@ -704,9 +748,9 @@ export function ChangeRequestReviewClient({
                     return (
                       <div
                         key={i}
-                        className={`rounded-lg border p-4 space-y-3 transition-colors ${
+                        className={`dash-card space-y-3 p-4 ${
                           isPending && !isSelected
-                            ? "opacity-50 bg-muted/30"
+                            ? "opacity-50"
                             : ""
                         }`}
                       >
@@ -756,11 +800,19 @@ export function ChangeRequestReviewClient({
           {isPending && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Review Action</CardTitle>
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                    <CheckCheck className="h-4 w-4" />
+                  </span>
+                  Review Action
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                  {selectedChanges.size} of {req.changes.length} change
+                <div className="dash-panel rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                  <span className="font-medium tabular-nums text-foreground">
+                    {selectedChanges.size}
+                  </span>{" "}
+                  of {req.changes.length} change
                   {req.changes.length !== 1 ? "s" : ""} selected
                 </div>
 
@@ -804,10 +856,15 @@ export function ChangeRequestReviewClient({
           {!isPending && req.admin_note && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Admin Note</CardTitle>
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                    <MessageSquare className="h-4 w-4" />
+                  </span>
+                  Admin Note
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm">{req.admin_note}</p>
+                <div className="dash-panel rounded-lg p-3 text-sm">{req.admin_note}</div>
               </CardContent>
             </Card>
           )}
@@ -817,18 +874,18 @@ export function ChangeRequestReviewClient({
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex justify-between">
+            <CardContent className="space-y-1 text-sm">
+              <div className="dash-row flex items-center justify-between rounded-md px-2 py-1.5">
                 <span className="text-muted-foreground">Site</span>
                 <span className="font-medium">{siteName}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="dash-row flex items-center justify-between rounded-md px-2 py-1.5">
                 <span className="text-muted-foreground">Changes</span>
-                <span className="font-medium">{req.changes.length}</span>
+                <span className="font-medium tabular-nums">{req.changes.length}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="dash-row flex items-center justify-between rounded-md px-2 py-1.5">
                 <span className="text-muted-foreground">Submitted</span>
-                <span className="font-medium">
+                <span className="font-medium tabular-nums">
                   {new Date(req.created_at).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -837,7 +894,7 @@ export function ChangeRequestReviewClient({
                   })}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="dash-row flex items-center justify-between rounded-md px-2 py-1.5">
                 <span className="text-muted-foreground">Status</span>
                 <Badge
                   variant={
@@ -847,7 +904,7 @@ export function ChangeRequestReviewClient({
                         ? "default"
                         : "destructive"
                   }
-                  className="text-xs"
+                  className="text-xs capitalize"
                 >
                   {req.status}
                 </Badge>
@@ -856,7 +913,7 @@ export function ChangeRequestReviewClient({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full gap-2 mt-2"
+                  className="mt-3 w-full gap-2"
                   onClick={() =>
                     window.open(`/api/render/site/${siteId}`, "_blank")
                   }
@@ -875,13 +932,13 @@ export function ChangeRequestReviewClient({
     {/* Image preview lightbox */}
     {previewImg && (
       <div
-        className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center cursor-pointer"
+        className="fixed inset-0 z-[100] flex cursor-pointer items-center justify-center bg-black/70 backdrop-blur-sm"
         onClick={() => setPreviewImg(null)}
       >
-        <div className="relative max-w-[80vw] max-h-[80vh]">
+        <div className="relative max-h-[80vh] max-w-[80vw]">
           <button
             onClick={() => setPreviewImg(null)}
-            className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary z-10"
+            className="absolute -right-3 -top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card hover:bg-secondary"
           >
             <XCircle className="w-4 h-4" />
           </button>

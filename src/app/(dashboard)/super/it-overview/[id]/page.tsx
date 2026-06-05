@@ -4,7 +4,7 @@ import { fetchLastActiveFor, lastActiveLabel } from "@/lib/auth/last-active";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Hammer, CheckCircle2, Clock, CalendarRange, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Hammer, CheckCircle2, Clock, CalendarRange, X } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -161,23 +161,78 @@ export default async function TechAdminDetailPage({
     toInput && parseDateInput(toInput) ? toInput : fmt(defaultTo);
   const active = lastActiveLabel(lastActiveIso);
 
+  // Per-tech stat tiles. Quiet violet chips for operational counts; the pink
+  // chip + accent value marks "Done today" as the good-news metric. The team
+  // build queue tile links out to the shared build queue.
+  const stats: Array<{
+    label: string;
+    sublabel: string;
+    value: number;
+    icon: typeof Hammer;
+    chip: string;
+    accent?: boolean;
+    href?: string;
+  }> = [
+    {
+      label: "Done today",
+      sublabel: "published since midnight",
+      value: doneTodayCount,
+      icon: CheckCircle2,
+      chip: "dash-chip-pink",
+      accent: true,
+    },
+    {
+      label: "Done this week",
+      sublabel: "last 7 days",
+      value: doneThisWeekCount,
+      icon: Clock,
+      chip: "dash-chip",
+    },
+    {
+      label: "Total done",
+      sublabel: "live sites all-time",
+      value: shipped.length,
+      icon: CheckCircle2,
+      chip: "dash-chip",
+    },
+    {
+      label: "Team build queue",
+      sublabel: "pending to create",
+      value: teamPending,
+      icon: Hammer,
+      chip: "dash-chip",
+      href: "/tech/proposals",
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — eyebrow + name + role/activity line, with a Back
+          link and avatar chip. No gradient; the per-tech detail is the focus. */}
+      <div className="flex flex-col gap-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="-ml-2 h-8 w-fit gap-1 text-muted-foreground"
+        >
           <Link href="/super/it-overview">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
+            <ArrowLeft className="h-4 w-4" />
+            Back to IT overview
           </Link>
         </Button>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 bg-muted text-muted-foreground">
+        <div className="flex items-center gap-4">
+          <div className="dash-chip flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
             {getInitials(person.full_name)}
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold">{person.full_name}</h1>
-            <p className="text-xs">
+          <div className="flex flex-col gap-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              IT overview
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {person.full_name}
+            </h1>
+            <p className="text-sm">
               {active.isActive ? (
                 <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -193,140 +248,124 @@ export default async function TechAdminDetailPage({
         </div>
       </div>
 
-      {/* Stat row */}
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-        <div className="rounded-lg border bg-card p-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+      {/* Stat tiles — soft cards with icon chips. "Done today" reads pink as the
+          good-news metric; the build-queue tile links to the shared queue. */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          const inner = (
+            <>
+              <div className="flex items-center justify-between">
+                <span
+                  className={`${stat.chip} inline-flex h-9 w-9 items-center justify-center rounded-lg`}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                {stat.href && (
+                  <ArrowRight className="dash-accent h-4 w-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                )}
+              </div>
               <p
-                className={`text-2xl font-bold ${
-                  doneTodayCount > 0
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-muted-foreground"
+                className={`mt-4 text-3xl font-bold tabular-nums${
+                  stat.accent && stat.value > 0 ? " text-(--dash-accent-2)" : ""
                 }`}
               >
-                {doneTodayCount}
+                {stat.value.toLocaleString("en-US")}
               </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                Done today
-              </p>
+              <p className="mt-1 text-sm font-medium">{stat.label}</p>
+              <p className="text-xs text-muted-foreground">{stat.sublabel}</p>
+            </>
+          );
+          return stat.href ? (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="dash-card group block p-5"
+            >
+              {inner}
+            </Link>
+          ) : (
+            <div key={stat.label} className="dash-card p-5">
+              {inner}
             </div>
-            <div className="rounded-md p-1.5 shrink-0 bg-muted">
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </div>
-        <div className="rounded-lg border bg-card p-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-2xl font-bold text-muted-foreground">
-                {doneThisWeekCount}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                Done this week
-              </p>
-            </div>
-            <div className="rounded-md p-1.5 shrink-0 bg-muted">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </div>
-        <div className="rounded-lg border bg-card p-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-2xl font-bold">{shipped.length}</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                Total done
-              </p>
-            </div>
-            <div className="rounded-md p-1.5 shrink-0 bg-muted">
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </div>
-        <Link
-          href="/tech/proposals"
-          className="rounded-lg border bg-card p-3 hover:border-foreground/15 hover:shadow-sm transition-all"
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-2xl font-bold">{teamPending}</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                Team build queue
-                <span className="block text-[10px] mt-0.5">
-                  pending to create
-                </span>
-              </p>
-            </div>
-            <div className="rounded-md p-1.5 shrink-0 bg-muted">
-              <Hammer className="h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-        </Link>
+          );
+        })}
       </div>
 
-      {/* Custom range — collapsed disclosure. Closed by default so it
-          doesn't compete with the stat cards for attention. Opens
-          inline when clicked; auto-opens if a range is already
-          applied (so the operator sees the current filter without
-          having to expand it manually). Pure HTML <details>, no JS. */}
-      <details open={hasRange} className="text-sm group">
-        <summary className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer select-none list-none">
-          <CalendarRange className="h-3.5 w-3.5" />
-          <span className="group-open:hidden">Custom range</span>
-          <span className="hidden group-open:inline">Hide range filter</span>
-        </summary>
-        <form
-          className="mt-2 flex items-end gap-2 flex-wrap"
-          action=""
-          method="get"
-        >
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">From</label>
-            <input
-              type="date"
-              name="from"
-              defaultValue={fromValue}
-              className="h-8 rounded-md border bg-background px-2 text-xs"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">To</label>
-            <input
-              type="date"
-              name="to"
-              defaultValue={toValue}
-              className="h-8 rounded-md border bg-background px-2 text-xs"
-            />
-          </div>
-          <Button type="submit" size="sm" className="h-8 text-xs">
-            Apply
-          </Button>
-          {hasRange && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-8 gap-1 text-xs text-muted-foreground"
+      {/* Custom range — soft panel with an eyebrow header. Collapsed disclosure
+          inside: closed by default so it doesn't compete with the stat tiles,
+          auto-opens when a range is already applied. Pure HTML <details>, no JS. */}
+      <section className="dash-panel overflow-hidden">
+        <div className="dash-hairline flex items-center gap-2 border-b px-5 py-3.5">
+          <CalendarRange className="dash-accent h-4 w-4" />
+          <h2 className="text-xs font-semibold uppercase tracking-wider">
+            Custom range
+          </h2>
+        </div>
+        <div className="p-5">
+          <details open={hasRange} className="group text-sm">
+            <summary className="inline-flex cursor-pointer select-none list-none items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+              <CalendarRange className="h-3.5 w-3.5" />
+              <span className="group-open:hidden">Filter by date range</span>
+              <span className="hidden group-open:inline">Hide range filter</span>
+            </summary>
+            <form
+              className="mt-3 flex flex-wrap items-end gap-2"
+              action=""
+              method="get"
             >
-              <Link href={`/super/it-overview/${id}`}>
-                <X className="h-3 w-3" />
-                Clear
-              </Link>
-            </Button>
-          )}
-          {hasRange && fromDate && toDate && (
-            <span className="text-xs text-muted-foreground self-center">
-              <span className="font-semibold text-foreground">
-                {doneInRangeCount}
-              </span>{" "}
-              shipped {fromDate.toLocaleDateString("en-US")}–
-              {toDate.toLocaleDateString("en-US")}
-            </span>
-          )}
-        </form>
-      </details>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  From
+                </label>
+                <input
+                  type="date"
+                  name="from"
+                  defaultValue={fromValue}
+                  className="dash-hairline h-9 rounded-md border bg-background px-2.5 text-xs"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  To
+                </label>
+                <input
+                  type="date"
+                  name="to"
+                  defaultValue={toValue}
+                  className="dash-hairline h-9 rounded-md border bg-background px-2.5 text-xs"
+                />
+              </div>
+              <Button type="submit" size="sm" className="h-9 text-xs">
+                Apply
+              </Button>
+              {hasRange && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="h-9 gap-1 text-xs text-muted-foreground"
+                >
+                  <Link href={`/super/it-overview/${id}`}>
+                    <X className="h-3 w-3" />
+                    Clear
+                  </Link>
+                </Button>
+              )}
+              {hasRange && fromDate && toDate && (
+                <span className="self-center text-xs text-muted-foreground">
+                  <span className="font-semibold text-(--dash-accent-2) tabular-nums">
+                    {doneInRangeCount}
+                  </span>{" "}
+                  shipped {fromDate.toLocaleDateString("en-US")}–
+                  {toDate.toLocaleDateString("en-US")}
+                </span>
+              )}
+            </form>
+          </details>
+        </div>
+      </section>
     </div>
   );
 }

@@ -263,29 +263,35 @@ export function ContactDetailClient({
   const isArchived     = contactState === "archived";
 
   return (
-    <div className="space-y-5 max-w-5xl">
-      {/* ── Header ── */}
-      <div className="flex items-center gap-3">
+    <div className="dash-root space-y-6 max-w-5xl">
+      {/* ── Header ── back link sits above a clean title block: a violet icon
+          chip, the company name, and the contact person as a one-line subtitle.
+          No gradient hero — this is a working detail page, so a calm header
+          reads best (matches the rest of the redesigned surfaces). */}
+      <div className="space-y-3">
         <Link href="/sales/contacts">
-          <Button variant="ghost" size="sm" className="gap-1.5 -ml-2">
+          <Button variant="ghost" size="sm" className="gap-1.5 -ml-2 text-muted-foreground">
             <ArrowLeft className="h-4 w-4" />
             Contacts
           </Button>
         </Link>
-        <div className="h-4 w-px bg-border" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold truncate">{contact.company_name}</h1>
-            {isArchived && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                <Archive className="h-3 w-3" /> Archived
-              </span>
-            )}
+        <div className="flex items-start gap-3">
+          <span className="dash-chip mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+            <Building2 className="h-5 w-5" />
+          </span>
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight truncate">{contact.company_name}</h1>
+              {isArchived && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                  <Archive className="h-3 w-3" /> Archived
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {contact.contact_person || "Sales contact"}
+            </p>
           </div>
-          {contact.contact_person && (
-            <p className="text-sm text-muted-foreground">{contact.contact_person}</p>
-          )}
-        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -320,14 +326,15 @@ export function ContactDetailClient({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-5">
         {/* ── LEFT: Contact details ── */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-lg border bg-card">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <span className="text-sm font-medium">Contact Details</span>
+          <div className="dash-card overflow-hidden p-0">
+            <div className="dash-subhead dash-hairline flex items-center justify-between gap-2 border-b px-4 py-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact Details</span>
               {!editing ? (
                 <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => setEditing(true)}>
                   <Pencil className="h-3 w-3" /> Edit
@@ -483,8 +490,13 @@ export function ContactDetailClient({
         <div className="lg:col-span-3 space-y-4">
 
           {/* Pipeline */}
-          <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-medium mb-4">Proposal Pipeline</p>
+          <div className="dash-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="dash-chip inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
+                <Send className="h-3.5 w-3.5" />
+              </span>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Proposal Pipeline</p>
+            </div>
             <ProposalProgress
               status={latestProposal?.status ?? null}
               hasProposal={!!latestProposal}
@@ -501,9 +513,9 @@ export function ContactDetailClient({
 
             {/* Proposal details — services, price, requirements */}
             {latestProposal && (
-              <div className="mt-3 rounded-md border bg-muted/30 px-3 py-2.5 space-y-2 text-xs">
+              <div className="mt-4 dash-hairline rounded-lg border bg-muted/30 px-3 py-2.5 space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground font-medium">Proposal</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Proposal</span>
                   <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5 gap-1" onClick={() => setEditProposalOpen(true)}>
                     <Pencil className="h-3 w-3" /> Edit
                   </Button>
@@ -517,7 +529,7 @@ export function ContactDetailClient({
                 {(latestProposal.discount_price || latestProposal.price) && Number(latestProposal.discount_price || latestProposal.price) > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Price: </span>
-                    <span className="font-semibold">${latestProposal.discount_price || latestProposal.price}</span>
+                    <span className="font-semibold tabular-nums text-(--dash-accent-2)">${latestProposal.discount_price || latestProposal.price}</span>
                   </div>
                 )}
                 {latestProposal.requirements && (
@@ -558,17 +570,17 @@ export function ContactDetailClient({
 
             {latestProposal && (
               <TooltipProvider delayDuration={150}>
-              <div className="mt-3 space-y-2">
+              <div className="mt-4 space-y-2">
                 {/* ── Handover: Send Proposal ── */}
-                <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-2.5">
+                <div className="dash-hairline rounded-lg border bg-(--dash-chip-bg) p-2.5">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-(--dash-accent)">
                         Send Proposal to Client
                       </p>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button type="button" className="text-primary/60 hover:text-primary">
+                          <button type="button" className="text-(--dash-accent) opacity-60 hover:opacity-100 transition-opacity">
                             <HelpCircle className="h-3 w-3" />
                           </button>
                         </TooltipTrigger>
@@ -606,7 +618,7 @@ export function ContactDetailClient({
                 </div>
 
                 {/* ── Standalone: Follow-up (for nudging after handover) ── */}
-                <div className="rounded-lg border bg-muted/20 p-2.5">
+                <div className="dash-hairline rounded-lg border bg-muted/20 p-2.5">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1">
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -731,7 +743,11 @@ export function ContactDetailClient({
             )}
 
             {!latestProposal && (
-              <div className="mt-3 text-center">
+              <div className="mt-4 flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed dash-hairline py-8 text-center">
+                <span className="dash-chip inline-flex h-10 w-10 items-center justify-center rounded-xl">
+                  <Plus className="h-5 w-5" />
+                </span>
+                <p className="text-xs text-muted-foreground">No proposal yet for this contact.</p>
                 <Button
                   size="sm"
                   className="gap-1.5"

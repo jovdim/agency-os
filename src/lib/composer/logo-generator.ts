@@ -11,9 +11,15 @@
  *
  * Visual reference: SAFI-STAV (erik website proposal/SAFI-STAV/images/logo.svg)
  *   - Rounded square icon on the left, brand color background, single
- *     letter in white serif type
- *   - Company name to the right in matching serif, dark text
+ *     letter in white sans-serif type
+ *   - Company name to the right in matching sans-serif, dark text
  *   - Per Peter's spec: NO subtitle line, single letter only
+ *
+ * Font note: the logo SVG is loaded via `<img src="data:...">`, an
+ * ISOLATED rendering context where the host page's Google/web fonts do
+ * NOT apply — only system-installed fonts resolve. So the wordmark uses a
+ * modern system-UI sans stack (see LOGO_FONT_FAMILY) that renders cleanly
+ * on every OS and stays neutral enough to pair with any site we build.
  *
  * Pure module — no React, no DOM, no Supabase. Imported by both the
  * server renderer (render.ts) and the browser renderer (render-browser.ts).
@@ -44,6 +50,23 @@ const NAME_AVG_CHAR_WIDTH = 22;
 // (Á/Č/Ď/Ľ/Ň/Š/Ť/Ž), and italic-style serif slants that can poke past
 // the nominal advance width of the last glyph.
 const NAME_END_BUFFER = 30;
+
+// Font stack for the auto-logo wordmark + monogram. Because the SVG is
+// loaded via `<img src="data:...">` (an isolated context with no access to
+// the page's Google/web fonts), this MUST be a system-font stack — only
+// fonts installed on the viewer's OS will render. This modern system-UI
+// sans stack resolves to SF Pro (macOS/iOS), Segoe UI (Windows), Roboto
+// (Android/ChromeOS), then Helvetica/Arial elsewhere — all clean, neutral
+// sans-serifs that suit any industry without clashing with the body font.
+// Single-quote names with spaces: the SVG attribute is double-quoted.
+const LOGO_FONT_FAMILY =
+  "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+
+// Subtle negative tracking on the wordmark so it reads as an intentional,
+// designed mark rather than default UI text. Negative only — it makes the
+// text NARROWER than the (over-)estimated viewBox width, so it can never
+// introduce clipping.
+const NAME_LETTER_SPACING = -0.5;
 
 /** Single hex color or any CSS color string the SVG runtime accepts. */
 export interface LogoBuildOptions {
@@ -91,8 +114,8 @@ export function buildLogoSvg(options: LogoBuildOptions): string {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${HEIGHT}" width="${width}" height="${HEIGHT}">`,
     `<rect x="0" y="${iconY}" width="${ICON_SIZE}" height="${ICON_SIZE}" rx="${ICON_RADIUS}" fill="${escapeXml(primary)}"/>`,
-    `<text x="${iconLetterCenterX}" y="${letterBaselineY}" font-family="'Playfair Display', Georgia, serif" font-size="22" font-weight="700" text-anchor="middle" fill="${letterFg}">${escapeXml(iconLetter)}</text>`,
-    `<text x="${nameX}" y="${nameBaselineY}" font-family="'Playfair Display', Georgia, serif" font-size="${NAME_FONT_SIZE}" font-weight="700" fill="#1c1917">${escapeXml(text)}</text>`,
+    `<text x="${iconLetterCenterX}" y="${letterBaselineY}" font-family="${LOGO_FONT_FAMILY}" font-size="22" font-weight="700" text-anchor="middle" fill="${letterFg}">${escapeXml(iconLetter)}</text>`,
+    `<text x="${nameX}" y="${nameBaselineY}" font-family="${LOGO_FONT_FAMILY}" font-size="${NAME_FONT_SIZE}" font-weight="700" letter-spacing="${NAME_LETTER_SPACING}" fill="#1c1917">${escapeXml(text)}</text>`,
     `</svg>`,
   ].join("");
 }
@@ -113,7 +136,7 @@ export function buildFaviconSvg(options: FaviconBuildOptions): string {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">`,
     `<rect width="64" height="64" rx="12" fill="${escapeXml(primary)}"/>`,
-    `<text x="32" y="44" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="700" text-anchor="middle" fill="${fg}">${escapeXml(letter)}</text>`,
+    `<text x="32" y="44" font-family="${LOGO_FONT_FAMILY}" font-size="32" font-weight="700" text-anchor="middle" fill="${fg}">${escapeXml(letter)}</text>`,
     `</svg>`,
   ].join("");
 }

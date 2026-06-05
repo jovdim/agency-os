@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SuperContactsClient } from "./super-contacts-client";
+import { Users, UserCheck, UserX } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -77,9 +78,86 @@ export default async function SuperContactsPage({
     else unassignedCount = n;
   }
 
+  // Assigned = everything that already has an owner. Derived from the same
+  // RPC totals the dropdown uses, so the header reads in lockstep with the
+  // filters below.
+  const assignedCount = Math.max(0, grandTotal - unassignedCount);
+
+  // At-a-glance header stats. Quiet violet/neutral icon chips only — none of
+  // these are "good news / revenue" metrics, so no pink accent here.
+  const headerStats: {
+    label: string;
+    value: number;
+    icon: typeof Users;
+    chip: string;
+    iconClass: string;
+  }[] = [
+    {
+      label: "Total",
+      value: grandTotal,
+      icon: Users,
+      chip: "dash-chip",
+      iconClass: "dash-accent",
+    },
+    {
+      label: "Assigned",
+      value: assignedCount,
+      icon: UserCheck,
+      chip: "dash-chip",
+      iconClass: "dash-accent",
+    },
+    {
+      label: "Unassigned",
+      value: unassignedCount,
+      icon: UserX,
+      chip: "bg-muted",
+      iconClass: "text-muted-foreground",
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Contact Management (Super Admin)</h1>
+    <div className="dash-root space-y-8">
+      {/* Clean page header — no gradient on a sub-page. Eyebrow + title +
+          one-line subtitle on the left; compact context stats on the right so
+          the operator sees the size of the database before touching filters. */}
+      <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Super Admin
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Contact Management</h1>
+          <p className="text-sm text-muted-foreground">
+            Browse the full contacts database and assign leads across your sales team.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:items-stretch sm:gap-3">
+          {headerStats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <div
+                key={stat.label}
+                className="dash-card flex items-center gap-3 px-3.5 py-3 sm:px-4"
+              >
+                <span
+                  className={`${stat.chip} inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg`}
+                >
+                  <Icon className={`${stat.iconClass} h-4 w-4`} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-lg font-bold leading-tight tabular-nums">
+                    {stat.value.toLocaleString()}
+                  </p>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    {stat.label}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </header>
+
       <SuperContactsClient
         contacts={contacts ?? []}
         salesPeople={salesPeople ?? []}

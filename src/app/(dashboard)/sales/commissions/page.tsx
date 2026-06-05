@@ -1,6 +1,5 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   DollarSign,
@@ -57,129 +56,176 @@ export default async function CommissionsPage() {
     0,
   );
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Commissions</h1>
+  const fmt = (n: number) =>
+    n.toLocaleString("en-US", { minimumFractionDigits: 2 });
 
-      {/* Summary cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${totalEarned.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Paid Out</CardTitle>
-            <CheckCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
-              ${totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">
-              ${totalPending.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {pendingCommissions.length} commission
-              {pendingCommissions.length !== 1 ? "s" : ""}
+  return (
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Hero band — the page's single gradient surface. Title on the left, the
+          focal Total Earned metric in a frosted inset on the right (the only
+          pink hero chip — earnings are the good-news number). */}
+      <section className="dash-hero relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Earnings
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Commissions</h1>
+          <p className="text-sm text-muted-foreground">
+            Everything you&apos;ve earned across your closed proposals.
+          </p>
+        </div>
+
+        <div className="dash-hero-metric flex items-center gap-4 px-5 py-4">
+          <span className="dash-chip-pink inline-flex h-12 w-12 items-center justify-center rounded-xl">
+            <TrendingUp className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Total earned
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${thisMonthTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {thisMonth.length} commission{thisMonth.length !== 1 ? "s" : ""}
+            <p className="text-3xl font-bold leading-tight tabular-nums">
+              ${fmt(totalEarned)}
             </p>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-muted-foreground">
+              across {allCommissions.length} commission
+              {allCommissions.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stat tiles — Paid Out keeps the pink good-news accent; Pending and
+          This Month stay operational violet. */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="dash-card block p-5">
+          <div className="flex items-center justify-between">
+            <span className="dash-chip-pink inline-flex h-9 w-9 items-center justify-center rounded-lg">
+              <CheckCircle className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="mt-4 text-3xl font-bold tabular-nums text-(--dash-accent-2)">
+            ${fmt(totalPaid)}
+          </p>
+          <p className="mt-1 text-sm font-medium">Paid out</p>
+          <p className="text-xs text-muted-foreground">
+            {paidCommissions.length} commission
+            {paidCommissions.length !== 1 ? "s" : ""} settled
+          </p>
+        </div>
+
+        <div className="dash-card block p-5">
+          <div className="flex items-center justify-between">
+            <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+              <Clock className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="mt-4 text-3xl font-bold tabular-nums">
+            ${fmt(totalPending)}
+          </p>
+          <p className="mt-1 text-sm font-medium">Pending</p>
+          <p className="text-xs text-muted-foreground">
+            {pendingCommissions.length} commission
+            {pendingCommissions.length !== 1 ? "s" : ""} awaiting payout
+          </p>
+        </div>
+
+        <div className="dash-card block p-5">
+          <div className="flex items-center justify-between">
+            <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
+              <DollarSign className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="mt-4 text-3xl font-bold tabular-nums">
+            ${fmt(thisMonthTotal)}
+          </p>
+          <p className="mt-1 text-sm font-medium">This month</p>
+          <p className="text-xs text-muted-foreground">
+            {thisMonth.length} commission{thisMonth.length !== 1 ? "s" : ""}
+          </p>
+        </div>
       </div>
 
-      {/* Commission history */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Banknote className="h-4 w-4" />
-            Commission History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allCommissions.length === 0 ? (
-            <div className="py-12 text-center">
-              <DollarSign className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-              <p className="text-muted-foreground">No commissions yet</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Commissions will appear here when your proposals generate
-                payments.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {allCommissions.map((commission) => {
-                const proposal = commission.proposals as {
-                  company_name: string;
-                  industry: string | null;
-                } | null;
-
-                return (
-                  <div
-                    key={commission.id}
-                    className="flex items-center justify-between rounded-lg border px-4 py-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium">
-                        {proposal?.company_name || "Unknown"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {proposal?.industry || "General"} •{" "}
-                        {new Date(commission.created_at).toLocaleDateString(
-                          "en-US",
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 ml-4">
-                      <span className="text-sm font-bold">
-                        ${Number(commission.amount).toFixed(2)}
-                      </span>
-                      <Badge
-                        variant={commission.is_paid ? "default" : "secondary"}
-                        className={
-                          commission.is_paid
-                            ? "bg-emerald-500/15 text-emerald-600 border-emerald-500/30"
-                            : "bg-yellow-500/15 text-yellow-600 border-yellow-500/30"
-                        }
-                      >
-                        {commission.is_paid ? "Paid" : "Pending"}
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+      {/* Commission history — a dash-panel list section with header, and rows
+          carrying an icon chip + title/desc + amount + status badge. */}
+      <section className="dash-panel flex flex-col overflow-hidden">
+        <div className="dash-hairline flex items-center justify-between gap-2 border-b px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <Banknote className="dash-accent h-4 w-4" />
+            <h2 className="text-xs font-semibold uppercase tracking-wider">
+              Commission history
+            </h2>
+          </div>
+          {allCommissions.length > 0 && (
+            <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+              {allCommissions.length}
+            </span>
           )}
-        </CardContent>
-      </Card>
+        </div>
+
+        {allCommissions.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
+            <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+              <DollarSign className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-medium">No commissions yet</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Commissions will appear here when your proposals generate payments.
+            </p>
+          </div>
+        ) : (
+          <ul className="dash-hairline divide-y">
+            {allCommissions.map((commission) => {
+              const proposal = commission.proposals as {
+                company_name: string;
+                industry: string | null;
+              } | null;
+
+              return (
+                <li
+                  key={commission.id}
+                  className="dash-row flex items-center gap-3 px-5 py-3.5"
+                >
+                  <span
+                    className={`${commission.is_paid ? "dash-chip-pink" : "dash-chip"} inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg`}
+                  >
+                    {commission.is_paid ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : (
+                      <Clock className="h-4 w-4" />
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">
+                      {proposal?.company_name || "Unknown"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {proposal?.industry || "General"} •{" "}
+                      {new Date(commission.created_at).toLocaleDateString(
+                        "en-US",
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <span className="text-sm font-bold tabular-nums">
+                      ${Number(commission.amount).toFixed(2)}
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        commission.is_paid
+                          ? "bg-(--dash-accent-2)/12 text-(--dash-accent-2) border-transparent"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {commission.is_paid ? "Paid" : "Pending"}
+                    </Badge>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

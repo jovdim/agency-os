@@ -86,103 +86,118 @@ export function ArchiveClient({
   }
 
   return (
-    <div className="space-y-4 max-w-5xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold flex items-center gap-2">
+    <div className="dash-root max-w-6xl space-y-6">
+      {/* Clean page header — icon chip + eyebrow + title + one-line count.
+          No hero gradient on this operational list; a quiet violet chip
+          carries the identity instead. */}
+      <header className="flex items-center gap-3">
+        <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
           <Archive className="h-5 w-5" />
-          Archive
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {initialContacts.length} archived contact{initialContacts.length !== 1 ? "s" : ""}
-        </p>
-      </div>
+        </span>
+        <div className="space-y-0.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Sales pipeline
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Archive</h1>
+          <p className="text-sm text-muted-foreground">
+            <span className="tabular-nums">{initialContacts.length}</span> archived
+            contact{initialContacts.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+      </header>
 
       {/* Search */}
       {initialContacts.length > 0 && (
         <div className="relative max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search..."
+            placeholder="Search company, contact, industry, town..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 h-8 text-sm"
+            className="pl-9"
           />
         </div>
       )}
 
-      {/* Table */}
+      {/* List */}
       {filtered.length === 0 ? (
-        <div className="rounded-md border py-16 text-center">
-          <FileText className="h-10 w-10 mx-auto text-muted-foreground/30 mb-2" />
-          <p className="text-sm text-muted-foreground">
-            {search ? "No contacts match your search." : "No archived contacts."}
+        <div className="dash-panel dash-hairline flex flex-col items-center justify-center px-6 py-16 text-center">
+          <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+            <FileText className="h-5 w-5" />
+          </span>
+          <p className="text-sm font-medium">
+            {search ? "No matches" : "No archived contacts"}
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {search
+              ? "Nothing matches your current search."
+              : "Archived contacts will show up here."}
           </p>
         </div>
       ) : (
-        <div className="rounded-md border overflow-hidden">
+        <div className="dash-panel dash-hairline overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b bg-muted/60 text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="py-2 px-3 text-right font-medium w-8">#</th>
-                  <th className="py-2 px-3 text-left font-medium min-w-44">Company</th>
-                  <th className="py-2 px-3 text-left font-medium min-w-28">Contact</th>
-                  <th className="py-2 px-3 text-left font-medium min-w-28">Industry</th>
-                  <th className="py-2 px-3 text-left font-medium min-w-24">Town</th>
-                  <th className="py-2 px-3 text-right font-medium min-w-28">Archived</th>
-                  <th className="py-2 px-3 text-center font-medium w-24">Actions</th>
+                <tr className="dash-subhead dash-hairline border-b text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2.5 px-4 text-right font-semibold w-8">#</th>
+                  <th className="py-2.5 px-4 text-left font-semibold min-w-44">Company</th>
+                  <th className="py-2.5 px-4 text-left font-semibold min-w-28">Contact</th>
+                  <th className="py-2.5 px-4 text-left font-semibold min-w-28">Industry</th>
+                  <th className="py-2.5 px-4 text-left font-semibold min-w-24">Town</th>
+                  <th className="py-2.5 px-4 text-right font-semibold min-w-28">Archived</th>
+                  <th className="py-2.5 px-4 text-center font-semibold w-24">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="dash-hairline divide-y">
                 {filtered.map((c, idx) => (
                   <tr
                     key={c.id}
                     data-interactive="true"
-                    className="border-b last:border-0 hover:bg-muted/40 transition-colors cursor-pointer"
+                    className="dash-row cursor-pointer"
                     onClick={() => router.push(`/sales/contacts/${c.id}`)}
                   >
-                    <td className="py-1.5 px-3 text-right text-muted-foreground tabular-nums text-xs">
+                    <td className="py-3 px-4 text-right text-muted-foreground tabular-nums text-xs">
                       {idx + 1}
                     </td>
-                    <td className="py-1.5 px-3">
-                      <span className="font-medium hover:text-primary transition-colors truncate block max-w-44">
+                    <td className="py-3 px-4">
+                      <span className="font-semibold transition-colors hover:text-(--dash-accent) truncate block max-w-44">
                         {c.company_name}
                       </span>
                     </td>
-                    <td className="py-1.5 px-3 text-muted-foreground truncate max-w-28">
+                    <td className="py-3 px-4 text-muted-foreground truncate max-w-28">
                       {c.contact_person ?? "—"}
                     </td>
-                    <td className="py-1.5 px-3 text-muted-foreground truncate max-w-28">
+                    <td className="py-3 px-4 text-muted-foreground truncate max-w-28">
                       {c.industry ?? "—"}
                     </td>
-                    <td className="py-1.5 px-3 text-muted-foreground truncate max-w-24">
+                    <td className="py-3 px-4 text-muted-foreground truncate max-w-24">
                       {c.town ?? "—"}
                     </td>
-                    <td className="py-1.5 px-3 text-right text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="py-3 px-4 text-right text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                       {formatDistanceToNow(new Date(c.updated_at), { addSuffix: true })}
                     </td>
-                    <td className="py-1.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-3 px-4 text-center" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-center gap-0.5">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 w-7 p-0"
+                          className="h-8 w-8 p-0"
                           title="Restore contact"
                           disabled={actionLoading === c.id}
                           onClick={() => handleRestore(c.id)}
                         >
-                          <ArchiveRestore className="h-3.5 w-3.5" />
+                          <ArchiveRestore className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                           title="Delete permanently"
                           disabled={actionLoading === c.id}
                           onClick={() => handleDelete(c.id, c.company_name)}
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>

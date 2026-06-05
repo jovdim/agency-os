@@ -10,6 +10,9 @@ import {
   ArrowDownRight,
   Receipt,
   Plus,
+  Rocket,
+  CreditCard,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 import { BuyCreditsDialog } from "@/components/payments/buy-credits-dialog";
@@ -98,57 +101,64 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
   // How many publishes that euro balance buys at the current per-publish cost.
   const publishesAvailable = Math.floor(totalCredits / PUBLISH_COST_EUR);
 
-  return (
-    <div className="space-y-5 max-w-3xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold">Balance and payments</h1>
-        <p className="text-sm text-muted-foreground">
-          1 publish = $12.50
-        </p>
-      </div>
+  // The buy dialog needs a site_id + name. Since there's always exactly
+  // one site, take the first; defensive null otherwise so the page still
+  // renders for an edge case where the site row is missing (would never
+  // happen in production). Hoisted out of the JSX so both the hero CTA and
+  // any future top-up entry points can share it.
+  const onlySite = sites[0] ?? null;
+  const hasBalance = totalCredits > 0;
 
-      {/* Total balance — single card, "Top up" lives here too. Per Peter
-          2026-05-11 every client owns exactly 1 site, so the previous
-          "Balance by site" per-site breakdown was just visual noise.
-          See project_one_site_per_client.md memory. */}
-      {(() => {
-        // The buy dialog needs a site_id + name. Since there's always
-        // exactly one site, take the first; defensive null otherwise so
-        // the page still renders for an edge case where the site row is
-        // missing (would never happen in production).
-        const onlySite = sites[0] ?? null;
-        return (
-          <div className="rounded-xl border bg-card p-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Your balance</p>
-                <p className={`text-3xl font-bold mt-1 ${totalCredits > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>
-                  {toEur(totalCredits)}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {publishesAvailable} {publishesAvailable === 1 ? "publish" : "publishes"} available
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-2 shrink-0">
-                <div className="rounded-xl p-3 bg-emerald-500/10">
-                  <Wallet className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                {onlySite && (
-                  <Button
-                    size="sm"
-                    className="h-8 text-xs gap-1.5"
-                    onClick={() => setBuyDialog({ siteId: onlySite.id, siteName: onlySite.name })}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Top up balance
-                  </Button>
-                )}
-              </div>
-            </div>
+  return (
+    <div className="dash-root max-w-3xl space-y-8">
+      {/* Hero band — the page's single gradient surface. Balance is the
+          focal metric and the only "good news" number on the page, so it
+          lives in the frosted inset with the pink chip. Per Peter 2026-05-11
+          every client owns exactly 1 site, so the previous "Balance by site"
+          per-site breakdown was just visual noise — a single total reads
+          cleaner. See project_one_site_per_client.md memory. */}
+      <section className="dash-hero relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Balance and payments
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Your balance</h1>
+          <p className="text-sm text-muted-foreground">
+            Top up to publish website changes — 1 publish = $12.50.
+          </p>
+        </div>
+
+        <div className="dash-hero-metric flex w-full shrink-0 items-center gap-4 px-5 py-4 sm:w-auto">
+          <span className="dash-chip-pink inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+            <Wallet className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Available
+            </p>
+            <p
+              className={`text-3xl font-bold leading-tight tabular-nums ${
+                hasBalance ? "text-(--dash-accent-2)" : "text-muted-foreground"
+              }`}
+            >
+              {toEur(totalCredits)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {publishesAvailable} {publishesAvailable === 1 ? "publish" : "publishes"} available
+            </p>
           </div>
-        );
-      })()}
+          {onlySite && (
+            <Button
+              size="sm"
+              className="h-8 shrink-0 gap-1.5 text-xs"
+              onClick={() => setBuyDialog({ siteId: onlySite.id, siteName: onlySite.name })}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Top up
+            </Button>
+          )}
+        </div>
+      </section>
 
       {/* Tabs — Payments first (Peter 2026-05-30): the user came here
           to top up, so the most relevant view after dialog close is
@@ -160,62 +170,106 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
         </TabsList>
 
         <TabsContent value="transactions">
-          <div className="rounded-xl border bg-card overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <span className="text-sm font-semibold">Transactions</span>
-              <span className="text-xs text-muted-foreground">{transactions.length}</span>
+          <div className="dash-panel overflow-hidden">
+            <div className="dash-hairline flex items-center justify-between gap-2 border-b px-5 py-3.5">
+              <div className="flex items-center gap-2">
+                <History className="dash-accent h-4 w-4" />
+                <h2 className="text-xs font-semibold uppercase tracking-wider">
+                  Transactions
+                </h2>
+              </div>
+              <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+                {transactions.length}
+              </span>
             </div>
             {transactions.length === 0 ? (
-              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                No transactions yet.
+              <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+                <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+                  <History className="h-5 w-5" />
+                </span>
+                <p className="text-sm font-medium">No transactions yet</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Your publish history will appear here.
+                </p>
               </div>
             ) : (
-              <div className="divide-y">
+              <ul className="dash-hairline divide-y">
                 {transactions.map((tx) => {
                   const isPositive = tx.amount > 0;
                   return (
-                    <div key={tx.id} className="flex items-center justify-between px-4 py-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className={`rounded-full p-1.5 shrink-0 ${
-                          isPositive
-                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                            : "bg-red-500/10 text-red-600 dark:text-red-400"
-                        }`}>
-                          {isPositive ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
-                        </div>
+                    <li
+                      key={tx.id}
+                      className="dash-row flex items-center justify-between gap-3 px-5 py-3.5"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        {/* Pink chip = money in (positive); violet chip =
+                            operational spend. Keeps the brand-accent rule:
+                            pink only for good news. */}
+                        <span
+                          className={`${
+                            isPositive ? "dash-chip-pink" : "dash-chip"
+                          } inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg`}
+                        >
+                          {isPositive ? (
+                            <ArrowUpRight className="h-4 w-4" />
+                          ) : (
+                            <ArrowDownRight className="h-4 w-4" />
+                          )}
+                        </span>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium">{TX_TYPE_LABEL[tx.type] ?? tx.type}</p>
-                          <p className="text-xs text-muted-foreground truncate">{tx.sites?.name}</p>
+                          <p className="truncate text-sm font-semibold">
+                            {TX_TYPE_LABEL[tx.type] ?? tx.type}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {tx.sites?.name}
+                          </p>
                         </div>
                       </div>
-                      <div className="text-right shrink-0 ml-3">
-                        <p className={`text-sm font-bold ${isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+                      <div className="ml-3 shrink-0 text-right">
+                        <p
+                          className={`text-sm font-bold tabular-nums ${
+                            isPositive ? "text-(--dash-accent-2)" : ""
+                          }`}
+                        >
                           {isPositive ? "+" : ""}{toEur(Math.abs(tx.amount))}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground tabular-nums">
                           {new Date(tx.created_at).toLocaleDateString("en-GB")}
                         </p>
                       </div>
-                    </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="payments">
-          <div className="rounded-xl border bg-card overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <span className="text-sm font-semibold">Payments</span>
-              <span className="text-xs text-muted-foreground">{payments.length}</span>
+          <div className="dash-panel overflow-hidden">
+            <div className="dash-hairline flex items-center justify-between gap-2 border-b px-5 py-3.5">
+              <div className="flex items-center gap-2">
+                <CreditCard className="dash-accent h-4 w-4" />
+                <h2 className="text-xs font-semibold uppercase tracking-wider">
+                  Payments
+                </h2>
+              </div>
+              <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+                {payments.length}
+              </span>
             </div>
             {payments.length === 0 ? (
-              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                No payments yet.
+              <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+                <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+                  <CreditCard className="h-5 w-5" />
+                </span>
+                <p className="text-sm font-medium">No payments yet</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Top up your balance to get started.
+                </p>
               </div>
             ) : (
-              <div className="divide-y">
+              <ul className="dash-hairline divide-y">
                 {payments.map((p) => {
                   // Credit topups don't get an invoice (Peter 2026-05-30 —
                   // intentional, not a Slovak-law-requiring transaction).
@@ -228,41 +282,51 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
                     (Array.isArray(p.invoices) ? p.invoices[0] : null);
                   const isPending = p.status === "pending";
                   return (
-                    <div key={p.id} className="flex items-center justify-between px-4 py-3">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium">${p.amount.toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {p.sites?.name}
-                          {p.description ? ` · ${p.description}` : ""}
-                          {" · "}
-                          {new Date(p.created_at).toLocaleDateString("en-GB")}
-                        </p>
-                        {/* Reassurance line for pending bank transfers —
-                            without it, a client who just paid sees
-                            "Pending" and worries something is wrong. */}
-                        {isPending && (
-                          <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5">
-                            Will be credited within 60 minutes of the bank receiving the payment.
+                    <li
+                      key={p.id}
+                      className="dash-row flex items-center justify-between gap-3 px-5 py-3.5"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                          <Rocket className="h-4 w-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold tabular-nums">
+                            ${p.amount.toFixed(2)}
                           </p>
-                        )}
+                          <p className="truncate text-xs text-muted-foreground">
+                            {p.sites?.name}
+                            {p.description ? ` · ${p.description}` : ""}
+                            {" · "}
+                            {new Date(p.created_at).toLocaleDateString("en-GB")}
+                          </p>
+                          {/* Reassurance line for pending bank transfers —
+                              without it, a client who just paid sees
+                              "Pending" and worries something is wrong. */}
+                          {isPending && (
+                            <p className="mt-0.5 text-[11px] text-amber-700 dark:text-amber-400">
+                              Will be credited within 60 minutes of the bank receiving the payment.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0 ml-3">
-                        <span className={`text-[10px] rounded-full px-2 py-0.5 font-medium ${PAYMENT_STATUS_STYLE[p.status] ?? "bg-muted"}`}>
+                      <div className="ml-3 flex shrink-0 items-center gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${PAYMENT_STATUS_STYLE[p.status] ?? "bg-muted text-muted-foreground"}`}>
                           {PAYMENT_STATUS_LABEL[p.status] ?? p.status}
                         </span>
                         {invoice && (
                           <Link href={`/client/payments/${p.id}/invoice`} target="_blank">
-                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                            <Button variant="outline" size="sm" className="h-7 gap-1 text-xs">
                               <Receipt className="h-3 w-3" />
                               Invoice
                             </Button>
                           </Link>
                         )}
                       </div>
-                    </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             )}
           </div>
         </TabsContent>

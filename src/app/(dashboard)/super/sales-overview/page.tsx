@@ -10,7 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { ClipboardList } from "lucide-react";
+import {
+  ClipboardList,
+  Users,
+  PhoneCall,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -126,61 +132,170 @@ export default async function SuperSalesOverviewPage() {
 
   const totalProposalRequests = rows.reduce((s, r) => s + r.pending, 0);
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Salespeople</h1>
+  // Team-wide roll-ups for the stat tiles. Derived purely from the rows
+  // already computed above — no extra queries. Paid is the "good news"
+  // metric and gets the pink accent; everything else stays operational.
+  const teamLeads = rows.reduce((s, r) => s + r.currentLeads, 0);
+  const teamCallsToday = rows.reduce((s, r) => s + r.callsToday, 0);
+  const teamPaid = rows.reduce((s, r) => s + r.paid, 0);
 
-      {/* Team-wide proposal-requests banner — mirrors the IT Team page's
-          build-queue banner, but counts proposal requests by salesperson. */}
-      <div className="rounded-lg border bg-card p-4 flex items-center gap-3">
-        <div className="rounded-md p-2 shrink-0 bg-muted">
-          <ClipboardList className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-2xl font-bold tabular-nums">{totalProposalRequests}</p>
-          <p className="text-xs text-muted-foreground">
-            proposal requests across all salespeople
-          </p>
-        </div>
-        <Link
-          href="/tech/proposals"
-          className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-        >
-          See queue →
-        </Link>
+  const stats: Array<{
+    label: string;
+    value: number;
+    sublabel: string;
+    href: string;
+    icon: typeof Users;
+    chip: string;
+    accent?: boolean;
+  }> = [
+    {
+      label: "Proposal requests",
+      value: totalProposalRequests,
+      sublabel: "in the build queue",
+      href: "/tech/proposals",
+      icon: ClipboardList,
+      chip: "dash-chip",
+    },
+    {
+      label: "Current leads",
+      value: teamLeads,
+      sublabel: "active across the team",
+      href: "/super/contacts",
+      icon: Users,
+      chip: "dash-chip",
+    },
+    {
+      label: "Calls today",
+      value: teamCallsToday,
+      sublabel: "logged since midnight",
+      href: "/super/sales-overview",
+      icon: PhoneCall,
+      chip: "dash-chip",
+    },
+    {
+      label: "Paid proposals",
+      value: teamPaid,
+      sublabel: "converted to clients",
+      href: "/super/payments",
+      icon: CheckCircle2,
+      chip: "dash-chip-pink",
+      accent: true,
+    },
+  ];
+
+  return (
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — title + one-line subtitle on the left, no gradient
+          needed here. The salespeople roster is the focus of this page. */}
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Sales overview
+        </p>
+        <h1 className="text-3xl font-bold tracking-tight">Salespeople</h1>
+        <p className="text-sm text-muted-foreground">
+          Per-person activity, pipeline, and conversions across the team.
+        </p>
       </div>
 
-      <div className="rounded-lg border bg-card overflow-hidden">
+      {/* Team-wide stat tiles. Quiet violet chips for operational numbers; the
+          pink chip + accent value marks Paid proposals as the good-news metric. */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="dash-card group block p-5"
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`${stat.chip} inline-flex h-9 w-9 items-center justify-center rounded-lg`}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                <ArrowRight className="dash-accent h-4 w-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+              </div>
+              <p
+                className={`mt-4 text-3xl font-bold tabular-nums${
+                  stat.accent ? " text-(--dash-accent-2)" : ""
+                }`}
+              >
+                {stat.value.toLocaleString("en-US")}
+              </p>
+              <p className="mt-1 text-sm font-medium">{stat.label}</p>
+              <p className="text-xs text-muted-foreground">{stat.sublabel}</p>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Roster — wrapped in a soft panel with an eyebrow header so it reads as
+          a deliberate section rather than a bare table. */}
+      <section className="dash-panel overflow-hidden">
+        <div className="dash-hairline flex items-center justify-between gap-2 border-b px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <Users className="dash-accent h-4 w-4" />
+            <h2 className="text-xs font-semibold uppercase tracking-wider">
+              Team roster
+            </h2>
+          </div>
+          <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+            {rows.length}
+          </span>
+        </div>
+
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/40 hover:bg-muted/40">
-              <TableHead className="py-3">Name</TableHead>
-              <TableHead className="py-3">Last active</TableHead>
-              <TableHead className="text-right py-3">Current leads</TableHead>
-              <TableHead className="text-right py-3">Calls today</TableHead>
-              <TableHead className="text-right py-3">Proposal requests</TableHead>
-              <TableHead className="text-right py-3 pr-6">Paid</TableHead>
+            <TableRow className="dash-hairline border-b hover:bg-transparent">
+              <TableHead className="py-3 pl-5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Last active
+              </TableHead>
+              <TableHead className="py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Current leads
+              </TableHead>
+              <TableHead className="py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Calls today
+              </TableHead>
+              <TableHead className="py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Proposal requests
+              </TableHead>
+              <TableHead className="py-3 pr-5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Paid
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-12 text-sm text-muted-foreground"
-                >
-                  No salespeople yet.
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={6} className="py-14">
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+                      <Users className="h-5 w-5" />
+                    </span>
+                    <p className="text-sm font-medium">No salespeople yet</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Active sales reps will appear here.
+                    </p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               rows.map((person) => (
-                <TableRow key={person.id} data-interactive="true" className="hover:bg-muted/30">
-                  <TableCell className="py-3">
+                <TableRow
+                  key={person.id}
+                  data-interactive="true"
+                  className="dash-row"
+                >
+                  <TableCell className="py-3 pl-5">
                     <Link
                       href={`/super/sales-overview/${person.id}`}
-                      className="flex items-center gap-3 group"
+                      className="group flex items-center gap-3"
                     >
-                      <div className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 bg-muted text-muted-foreground">
+                      <div className="dash-chip flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                         {getInitials(person.full_name)}
                       </div>
                       <span className="font-medium group-hover:underline">
@@ -200,24 +315,30 @@ export default async function SuperSalesOverviewPage() {
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right py-3 tabular-nums text-base font-medium">
+                  <TableCell className="py-3 text-right text-base font-medium tabular-nums">
                     {person.currentLeads.toLocaleString("en-US")}
                   </TableCell>
-                  <TableCell className="text-right py-3 tabular-nums text-base font-medium">
+                  <TableCell className="py-3 text-right text-base font-medium tabular-nums">
                     {person.callsToday}
                   </TableCell>
-                  <TableCell className="text-right py-3 tabular-nums text-base font-medium">
+                  <TableCell className="py-3 text-right text-base font-medium tabular-nums">
                     {person.pending}
                   </TableCell>
-                  <TableCell className="text-right py-3 pr-6 tabular-nums text-base font-medium">
-                    {person.paid}
+                  <TableCell className="py-3 pr-5 text-right text-base font-semibold tabular-nums">
+                    {person.paid > 0 ? (
+                      <span className="text-(--dash-accent-2)">
+                        {person.paid}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">0</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
-      </div>
+      </section>
     </div>
   );
 }

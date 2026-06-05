@@ -378,10 +378,14 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
   if (contacts.length === 0) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-120px)]">
-        <div className="text-center space-y-3">
-          <Phone className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-          <p className="text-lg font-medium">No contacts to call</p>
-          <p className="text-sm text-muted-foreground">All contacts have been processed. Today: {processed} calls.</p>
+        <div className="dash-card max-w-sm px-8 py-10 text-center space-y-3">
+          <span className="dash-chip mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl">
+            <Phone className="h-6 w-6" />
+          </span>
+          <p className="text-lg font-semibold">No contacts to call</p>
+          <p className="text-sm text-muted-foreground">
+            All contacts have been processed. Today: <span className="font-semibold text-foreground tabular-nums">{processed}</span> calls.
+          </p>
         </div>
       </div>
     );
@@ -391,42 +395,54 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
-      {/* Stats bar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/20 shrink-0">
-        <div className="flex items-center gap-6 text-sm">
-          <div className="flex items-center gap-1.5">
-            <span className="text-muted-foreground">Calls:</span>
-            <span className="font-bold text-emerald-600">{processed}</span>
+      {/* Stats bar — calling queue header */}
+      <div className="flex items-center justify-between gap-4 px-5 py-3 border-b dash-hairline dash-subhead shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+            <Phone className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground leading-none">Calling queue</p>
+            <p className="text-sm font-semibold leading-tight mt-0.5">Today&apos;s session</p>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-muted-foreground">Proposals:</span>
-            <span className="font-bold text-cyan-600">{proposals}</span>
+        </div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="dash-panel flex items-center gap-2 rounded-lg px-3 py-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground hidden sm:inline">Calls</span>
+            <span className="text-sm font-bold tabular-nums dash-accent">{processed}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-muted-foreground">Remaining:</span>
-            <span className="font-medium">{contacts.length}</span>
+          <div className="dash-panel flex items-center gap-2 rounded-lg px-3 py-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground hidden sm:inline">Proposals</span>
+            <span className="text-sm font-bold tabular-nums text-(--dash-accent-2)">{proposals}</span>
+          </div>
+          <div className="dash-panel flex items-center gap-2 rounded-lg px-3 py-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground hidden sm:inline">Remaining</span>
+            <span className="text-sm font-semibold tabular-nums">{contacts.length}</span>
           </div>
         </div>
       </div>
 
       {/* Main content */}
       <div className="flex-1 overflow-y-auto flex justify-center">
-        <div className="w-full max-w-2xl px-6 py-4 space-y-4 my-auto">
+        <div className="w-full max-w-2xl px-6 py-6 space-y-4 my-auto">
           {/* Company info + edit + state history */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">{c.company_name}</h1>
-              <button onClick={openEditModal} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Edit contact">
+          <div className="dash-card p-5 space-y-3">
+            <div className="flex items-start gap-3">
+              <span className="dash-chip mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                <Globe className="h-5 w-5" />
+              </span>
+              <h1 className="text-2xl font-bold leading-tight min-w-0 flex-1">{c.company_name}</h1>
+              <button onClick={openEditModal} className="shrink-0 p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Edit contact">
                 <Pencil className="w-4 h-4" />
               </button>
               <StateHistoryPopover contactId={c.id} companyName={c.company_name}>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-amber-700 dark:text-amber-400 border border-amber-500/40 hover:border-amber-500 hover:bg-amber-500/10 transition-colors"
+                  className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground border dash-hairline hover:border-(--dash-accent) hover:text-foreground hover:bg-(--dash-subtle) transition-colors"
                   title="View activity history"
                 >
                   <GitCommitVertical className="h-3.5 w-3.5" />
-                  Activity history
+                  <span className="hidden sm:inline">Activity history</span>
                 </button>
               </StateHistoryPopover>
             </div>
@@ -440,7 +456,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
               )}
               {c.contact_person && <span className="flex items-center gap-1"><User className="w-3 h-3" /> {c.contact_person}</span>}
             </div>
-            {c.notes && <p className="text-sm text-muted-foreground bg-muted/30 rounded px-3 py-2">{c.notes}</p>}
+            {c.notes && <p className="text-sm text-muted-foreground dash-subhead rounded-lg px-3 py-2">{c.notes}</p>}
 
             {/* Services offered (from CSV lead data) */}
             {c.services_offered && (
@@ -497,9 +513,12 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
             )}
           </div>
 
+          {/* Contact panel — phone + email */}
+          <div className="dash-card p-5 space-y-3">
+
           {/* Push-to-phone status */}
           {pushStatus === "sent" && (
-            <div className="text-[11px] text-emerald-500 flex items-center gap-1">
+            <div className="text-[11px] text-(--dash-accent-2) flex items-center gap-1">
               <Check className="w-3 h-3" /> Sent to phone
             </div>
           )}
@@ -607,8 +626,10 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
             )}
           </div>
 
+          </div>
+
           {/* Sales hints */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button onClick={() => setShowHints(!showHints)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <span>💡</span>
               <span className="font-medium">Calling helpers</span>
@@ -616,15 +637,15 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
             </button>
             {showHints && (
               <div className="mt-2 space-y-2 text-[11px] text-muted-foreground">
-                <div className="rounded-md bg-muted/30 p-2.5 space-y-1.5">
-                  <p className="font-medium text-foreground text-xs">Opening script</p>
+                <div className="dash-panel rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground text-xs uppercase tracking-wider">Opening script</p>
                   <p>&quot;Hello, I'm calling from [Your Agency]. We noticed your business and would love to help you with a website. Do you have a minute?&quot;</p>
                 </div>
-                <div className="rounded-md bg-muted/30 p-2.5 space-y-1.5">
-                  <p className="font-medium text-foreground text-xs">Common objections</p>
-                  <p><span className="text-amber-500">→</span> &quot;I already have a website&quot; — &quot;Great! When did you last take a look at it?&quot;</p>
-                  <p><span className="text-amber-500">→</span> &quot;I'm not interested&quot; — &quot;I understand. Can I quickly show you what we do?&quot;</p>
-                  <p><span className="text-amber-500">→</span> &quot;It's expensive&quot; — &quot;Our prices start from $149.&quot;</p>
+                <div className="dash-panel rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground text-xs uppercase tracking-wider">Common objections</p>
+                  <p><span className="dash-accent">→</span> &quot;I already have a website&quot; — &quot;Great! When did you last take a look at it?&quot;</p>
+                  <p><span className="dash-accent">→</span> &quot;I'm not interested&quot; — &quot;I understand. Can I quickly show you what we do?&quot;</p>
+                  <p><span className="dash-accent">→</span> &quot;It's expensive&quot; — &quot;Our prices start from $149.&quot;</p>
                 </div>
               </div>
             )}
@@ -634,7 +655,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
       </div>
 
       {/* ── FIXED BOTTOM — Actions ── */}
-      <div className="shrink-0 border-t bg-card px-6 py-4">
+      <div className="shrink-0 border-t dash-hairline bg-card px-6 py-4">
         <div className="max-w-2xl mx-auto space-y-4">
 
           {/* ── PRIMARY ACTIONS — big, dominant ── */}
@@ -690,7 +711,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
             >
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {currentIndex + 1} / {contacts.length}
             </span>
             <Button
@@ -703,7 +724,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
           </div>
 
           {/* ── SECONDARY ACTIONS — small, separated ── */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <div className="flex items-center justify-between pt-2 border-t dash-hairline">
             {/* Left — Do not contact */}
             <Button size="sm" variant="ghost" className="h-7 text-[11px] gap-1 text-red-400" onClick={() => setNeverContactOpen(true)}>
               <Skull className="h-3 w-3" /> Do not contact

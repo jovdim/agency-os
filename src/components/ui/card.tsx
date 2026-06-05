@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-interactive={interactive ? "true" : undefined}
       className={cn(
-        "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm",
+        "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-[var(--dash-shadow)]",
         // Interactive cards: subtle lift + shadow grow on hover with a mild
         // spring on the way IN (overshoot) and a smooth ease on the way OUT.
         // The hover: variant swaps the timing function so we don't double-bounce

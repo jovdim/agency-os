@@ -43,58 +43,53 @@ const ACTIVE_STATUSES = [
   "viewed",
 ];
 
+// Calm, two-tone status map. Icons inherit their tint from the surrounding
+// chip (dash-chip = violet for operational, dash-chip-pink = pink for the one
+// positive "paid" stage) — no per-status rainbow. The pipeline badge stays
+// neutral/muted for every operational stage; only "paid" carries the pink
+// accent, matching the approved /super reference.
+const NEUTRAL_BADGE = "bg-muted text-muted-foreground border-border";
+const PAID_BADGE =
+  "bg-(--dash-chip-bg-2) text-(--dash-accent-2) border-(--dash-accent-2)/30";
+
 const STATUS_CONFIG: Record<
   string,
-  { label: string; icon: React.ReactNode; color: string; iconBg: string; badgeClass: string }
+  { label: string; icon: React.ReactNode; badgeClass: string }
 > = {
   submitted: {
     label: "Waiting to Build",
-    icon: <Inbox className="h-4 w-4 text-purple-600 dark:text-purple-400" />,
-    color: "text-purple-600 dark:text-purple-400",
-    iconBg: "bg-purple-100 dark:bg-purple-900/30",
-    badgeClass: "bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30",
+    icon: <Inbox className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   building: {
     label: "In Progress",
-    icon: <Hammer className="h-4 w-4 text-orange-600 dark:text-orange-400" />,
-    color: "text-orange-600 dark:text-orange-400",
-    iconBg: "bg-orange-100 dark:bg-orange-900/30",
-    badgeClass: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30",
+    icon: <Hammer className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   review: {
     label: "Under Review",
-    icon: <Eye className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />,
-    color: "text-cyan-600 dark:text-cyan-400",
-    iconBg: "bg-cyan-100 dark:bg-cyan-900/30",
-    badgeClass: "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30",
+    icon: <Eye className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   revision: {
     label: "Needs Revision",
-    icon: <RotateCcw className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />,
-    color: "text-yellow-600 dark:text-yellow-400",
-    iconBg: "bg-yellow-100 dark:bg-yellow-900/30",
-    badgeClass: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/30",
+    icon: <RotateCcw className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   sent: {
     label: "Sent to Client",
-    icon: <Send className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
-    color: "text-blue-600 dark:text-blue-400",
-    iconBg: "bg-blue-100 dark:bg-blue-900/30",
-    badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30",
+    icon: <Send className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   viewed: {
     label: "Client Viewed",
-    icon: <ScanEye className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
-    color: "text-amber-600 dark:text-amber-400",
-    iconBg: "bg-amber-100 dark:bg-amber-900/30",
-    badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+    icon: <ScanEye className="h-4 w-4" />,
+    badgeClass: NEUTRAL_BADGE,
   },
   paid: {
     label: "Paid",
-    icon: <CreditCard className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
-    color: "text-emerald-600 dark:text-emerald-400",
-    iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
-    badgeClass: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+    icon: <CreditCard className="h-4 w-4" />,
+    badgeClass: PAID_BADGE,
   },
 };
 
@@ -197,29 +192,43 @@ export default async function SuperProposalsPage({
   const grandTotal = (proposals ?? []).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/super">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Proposals Pipeline</h1>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — title, one-line status subtitle, Back action on
+          the left. No gradient: this is a working list, not a hero surface. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Pipeline
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Proposals</h1>
           <p className="text-sm text-muted-foreground">
             {isFiltered ? (
               <>
-                Showing {totalCount} of {grandTotal} proposals · {activePipeline.length} active
+                Showing{" "}
+                <span className="font-medium text-foreground tabular-nums">
+                  {totalCount}
+                </span>{" "}
+                of {grandTotal} proposals ·{" "}
+                <span className="tabular-nums">{activePipeline.length}</span> active
               </>
             ) : (
               <>
-                All proposals across all salespersons ({totalCount} total,{" "}
-                {activePipeline.length} active)
+                All proposals across all salespersons —{" "}
+                <span className="font-medium text-foreground tabular-nums">
+                  {totalCount}
+                </span>{" "}
+                total,{" "}
+                <span className="tabular-nums">{activePipeline.length}</span> active
               </>
             )}
           </p>
         </div>
+        <Button variant="outline" size="sm" asChild className="self-start">
+          <Link href="/super">
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            Back to dashboard
+          </Link>
+        </Button>
       </div>
 
       {/* Tag filter — URL-driven so super admin can bookmark / share a
@@ -230,42 +239,47 @@ export default async function SuperProposalsPage({
         tagCounts={tagCounts}
       />
 
-      {/* Stat cards with icons */}
+      {/* Stat tiles — one per status, with a tinted icon chip. Paid is the
+          only positive "good news" metric, so it gets the pink chip; every
+          operational stage stays violet. */}
       <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
         {STATUS_ORDER.map((status) => {
           const config = STATUS_CONFIG[status];
           const count = (grouped[status] || []).length;
+          const isPaid = status === "paid";
           return (
-            <div key={status} className="rounded-lg border bg-card p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className={`text-2xl font-bold ${count > 0 ? config.color : ""}`}>
-                    {count}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                    {config.label}
-                  </p>
-                </div>
-                <div className={`rounded-md p-1.5 shrink-0 ${config.iconBg}`}>
-                  {config.icon}
-                </div>
-              </div>
+            <div key={status} className="dash-card p-4">
+              <span
+                className={`${isPaid ? "dash-chip-pink" : "dash-chip"} inline-flex h-8 w-8 items-center justify-center rounded-lg`}
+              >
+                {config.icon}
+              </span>
+              <p className="mt-3 text-2xl font-bold tabular-nums leading-none">
+                {count}
+              </p>
+              <p className="mt-1.5 text-[11px] leading-tight text-muted-foreground">
+                {config.label}
+              </p>
             </div>
           );
         })}
       </div>
 
-      {/* Pipeline flow indicator */}
-      <div className="flex items-center gap-1 overflow-x-auto py-2">
+      {/* Pipeline flow indicator — the active stages read left-to-right so
+          you can scan where work is piling up. */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
         {ACTIVE_STATUSES.map((status, i) => {
           const config = STATUS_CONFIG[status];
           return (
-            <div key={status} className="flex items-center gap-1">
+            <div key={status} className="flex items-center gap-1.5">
               <Badge variant="outline" className={config.badgeClass}>
-                {config.label} ({(grouped[status] || []).length})
+                {config.label}
+                <span className="ml-1 tabular-nums opacity-70">
+                  {(grouped[status] || []).length}
+                </span>
               </Badge>
               {i < ACTIVE_STATUSES.length - 1 && (
-                <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                <ArrowRight className="h-3 w-3 text-muted-foreground/60 shrink-0" />
               )}
             </div>
           );
@@ -277,18 +291,21 @@ export default async function SuperProposalsPage({
         (s) => (grouped[s] || []).length > 0
       ).map((status) => {
         const config = STATUS_CONFIG[status];
+        const isPaid = status === "paid";
         return (
-          <div key={status} className="rounded-lg border bg-card overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b">
-              <div className={`rounded-md p-1.5 ${config.iconBg}`}>
+          <div key={status} className="dash-panel overflow-hidden">
+            <div className="dash-subhead dash-hairline flex items-center gap-2.5 border-b px-5 py-3">
+              <span
+                className={`${isPaid ? "dash-chip-pink" : "dash-chip"} inline-flex h-7 w-7 items-center justify-center rounded-lg`}
+              >
                 {config.icon}
-              </div>
+              </span>
               <span className="text-sm font-semibold">{config.label}</span>
-              <span className="ml-auto text-xs text-muted-foreground">
+              <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-[11px] font-semibold tabular-nums text-muted-foreground">
                 {(grouped[status] || []).length}
               </span>
             </div>
-            <div className="divide-y">
+            <div className="dash-hairline divide-y">
               {(grouped[status] || []).map((proposal) => {
                 const salesPerson = proposal.sales_person as unknown as {
                   full_name: string;
@@ -319,11 +336,11 @@ export default async function SuperProposalsPage({
                   <Link
                     key={proposal.id}
                     href={`/tech/proposals/${proposal.id}`}
-                    className="flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
+                    className="dash-row group flex items-center justify-between gap-4 px-5 py-3.5"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium truncate">
+                        <p className="text-sm font-semibold truncate">
                           {proposal.company_name}
                         </p>
                         {msgCount > 0 && (
@@ -356,17 +373,20 @@ export default async function SuperProposalsPage({
                           </span>
                         )}
                         {deployUrl && (
-                          <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                          <span className="dash-accent flex items-center gap-1 text-xs">
                             <Globe className="h-3 w-3" />
                             {deployment?.subdomain}.2dni.sk
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground ml-4 shrink-0 text-right">
-                      {formatDistanceToNow(new Date(proposal.updated_at), {
-                        addSuffix: true,
-                      })}
+                    <div className="flex shrink-0 items-center gap-2 text-right">
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {formatDistanceToNow(new Date(proposal.updated_at), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-(--dash-accent)" />
                     </div>
                   </Link>
                 );
@@ -378,10 +398,17 @@ export default async function SuperProposalsPage({
 
       {/* Empty state */}
       {totalCount === 0 && (
-        <div className="rounded-lg border bg-card px-6 py-16 text-center">
-          <FolderKanban className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-          <p className="text-muted-foreground">
-            No proposals in the system yet
+        <div className="dash-panel flex flex-col items-center px-6 py-16 text-center">
+          <span className="dash-chip mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full">
+            <FolderKanban className="h-6 w-6" />
+          </span>
+          <p className="text-sm font-medium">
+            {isFiltered ? "No proposals match this filter" : "No proposals yet"}
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {isFiltered
+              ? "Try clearing or changing the tag filter above."
+              : "New proposals will show up here as they move through the pipeline."}
           </p>
         </div>
       )}

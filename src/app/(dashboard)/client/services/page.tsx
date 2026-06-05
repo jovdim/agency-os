@@ -1,6 +1,5 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ShoppingBag,
@@ -47,7 +46,6 @@ export default async function ClientServicesPage() {
     services = data || [];
   }
 
-  const siteMap = Object.fromEntries((sites || []).map((s) => [s.id, s]));
   const now = new Date();
 
   const activeServices = services.filter((s) => s.is_active);
@@ -74,80 +72,120 @@ export default async function ClientServicesPage() {
     return `${days} days left`;
   }
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Services</h1>
+  // Stat tiles. Pink (good news) marks active/paying services; violet stays
+  // operational. Expired numbers borrow the destructive tone for urgency.
+  const stats: Array<{
+    label: string;
+    value: number;
+    sublabel?: string;
+    icon: typeof CheckCircle;
+    chip: string;
+    valueClass?: string;
+  }> = [
+    {
+      label: "Active Services",
+      value: activeServices.length,
+      icon: CheckCircle,
+      chip: "dash-chip-pink",
+    },
+    {
+      label: "Expiring Soon",
+      value: expiringSoon.length,
+      sublabel: "within 30 days",
+      icon: AlertTriangle,
+      chip: "dash-chip",
+    },
+    {
+      label: "Expired",
+      value: expired.length,
+      icon: AlertTriangle,
+      chip: "dash-chip",
+      valueClass: expired.length > 0 ? "text-destructive" : undefined,
+    },
+  ];
 
-      {/* Summary cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Services
-            </CardTitle>
-            <CheckCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeServices.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Expiring Soon</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">
-              {expiringSoon.length}
-            </div>
-            <p className="text-xs text-muted-foreground">within 30 days</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Expired</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">
-              {expired.length}
-            </div>
-          </CardContent>
-        </Card>
+  return (
+    <div className="dash-root max-w-5xl space-y-8">
+      {/* ── Page header — clean title + subtitle with a violet icon chip. No
+          gradient needed on this overview page. ── */}
+      <div className="flex items-center gap-3">
+        <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+          <ShoppingBag className="h-5 w-5" />
+        </span>
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Your subscriptions
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Services</h1>
+          <p className="text-sm text-muted-foreground">
+            Hosting, domains and add-ons across all of your sites.
+          </p>
+        </div>
       </div>
 
-      {/* Services by site */}
-      {(sites || []).length === 0 ? (
-        <Card>
-          <CardContent className="py-16 text-center">
-            <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-            <p className="text-muted-foreground">
-              No sites found. Services will appear here once you have an active
-              site.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        (sites || []).map((site) => {
-          const siteServices = services.filter((s) => s.site_id === site.id);
+      {/* ── Summary stat tiles ── */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
           return (
-            <Card key={site.id}>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  {site.name}
+            <div key={stat.label} className="dash-card p-5">
+              <div className="flex items-center justify-between">
+                <span
+                  className={`${stat.chip} inline-flex h-9 w-9 items-center justify-center rounded-lg`}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+              </div>
+              <p
+                className={`mt-4 text-3xl font-bold tabular-nums ${stat.valueClass ?? ""}`}
+              >
+                {stat.value}
+              </p>
+              <p className="mt-1 text-sm font-medium">{stat.label}</p>
+              {stat.sublabel && (
+                <p className="text-xs text-muted-foreground">{stat.sublabel}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Services by site ── */}
+      {(sites || []).length === 0 ? (
+        <div className="dash-panel flex flex-col items-center justify-center px-4 py-16 text-center">
+          <span className="dash-chip mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full">
+            <ShoppingBag className="h-6 w-6" />
+          </span>
+          <p className="text-sm font-medium">No sites yet</p>
+          <p className="mt-0.5 max-w-sm text-xs text-muted-foreground">
+            Services will appear here once you have an active site.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {(sites || []).map((site) => {
+            const siteServices = services.filter((s) => s.site_id === site.id);
+            return (
+              <div key={site.id} className="dash-panel overflow-hidden">
+                {/* Site header row */}
+                <div className="dash-hairline flex items-center gap-3 border-b px-5 py-3.5">
+                  <span className="dash-chip inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                    <Globe className="h-4 w-4" />
+                  </span>
+                  <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">
+                    {site.name}
+                  </h2>
                   <Badge variant="outline" className="text-xs capitalize">
                     {site.status}
                   </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </div>
+
                 {siteServices.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="px-5 py-6 text-sm text-muted-foreground">
                     No services for this site yet.
                   </p>
                 ) : (
-                  <div className="space-y-3">
+                  <ul className="dash-hairline divide-y">
                     {siteServices.map((service) => {
                       const isExpired =
                         service.expires_at &&
@@ -162,35 +200,35 @@ export default async function ClientServicesPage() {
                         ) <= 30;
 
                       return (
-                        <div
+                        <li
                           key={service.id}
-                          className="flex items-center justify-between rounded-lg border px-4 py-3"
+                          className="flex items-center gap-3 px-5 py-3.5"
                         >
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium">
+                            <p className="truncate text-sm font-semibold">
                               {service.name}
                             </p>
-                            <div className="flex items-center gap-2 mt-1">
+                            <div className="mt-1 flex items-center gap-2">
                               <Badge variant="secondary" className="text-xs">
                                 {service.type}
                               </Badge>
                               {service.price && (
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs tabular-nums text-muted-foreground">
                                   ${Number(service.price).toFixed(2)}
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 ml-4">
+                          <div className="ml-4 flex items-center gap-3">
                             <div className="text-right">
-                              <div className="flex items-center gap-1 text-xs">
+                              <div className="flex items-center justify-end gap-1 text-xs">
                                 <Calendar className="h-3 w-3 text-muted-foreground" />
                                 <span
                                   className={
                                     isExpired
-                                      ? "text-destructive font-medium"
+                                      ? "font-medium text-destructive"
                                       : isExpiringSoon
-                                        ? "text-yellow-600 font-medium"
+                                        ? "font-medium text-amber-600 dark:text-amber-400"
                                         : "text-muted-foreground"
                                   }
                                 >
@@ -198,7 +236,7 @@ export default async function ClientServicesPage() {
                                 </span>
                               </div>
                               {service.expires_at && (
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs tabular-nums text-muted-foreground">
                                   {new Date(
                                     service.expires_at,
                                   ).toLocaleDateString("en-GB")}
@@ -219,15 +257,15 @@ export default async function ClientServicesPage() {
                                   : "Inactive"}
                             </Badge>
                           </div>
-                        </div>
+                        </li>
                       );
                     })}
-                  </div>
+                  </ul>
                 )}
-              </CardContent>
-            </Card>
-          );
-        })
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

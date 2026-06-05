@@ -444,7 +444,7 @@ export function Sidebar({
               positioned with auto z-index → DOM order wins). */}
           <div
             aria-hidden="true"
-            className="absolute left-2 right-2 rounded-md bg-sidebar-accent transition-[top,height] duration-300 ease-out pointer-events-none"
+            className="absolute left-2 right-2 rounded-md bg-[color-mix(in_oklab,var(--brand)_14%,transparent)] transition-[top,height] duration-300 ease-out pointer-events-none"
             style={{
               top: pillStyle.top,
               height: pillStyle.height,
@@ -532,9 +532,9 @@ function renderNavLink(
         "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
         collapsed && "justify-center px-0",
         isActive
-          // Active: text gets the accent foreground. Background is provided
-          // by the sliding pill in the parent <nav>, not the link itself.
-          ? "text-sidebar-accent-foreground"
+          // Active: brand-tinted text + weight bump. The sliding pill behind it
+          // carries a faint brand wash; the link itself stays bg-transparent.
+          ? "text-(--dash-accent) font-semibold"
           : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
       )}
     >

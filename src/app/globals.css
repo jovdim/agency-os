@@ -69,14 +69,15 @@
 :root {
   --radius: 0.625rem;
 
-  /* Brand palette — violet (#8B5CF6) → pink (#E046A0). These drive --primary,
-     the focus ring, and the sidebar active state, so the whole app carries the
-     brand from one place. --brand-accent is reserved for sparing, SOLID
-     accents (never a gradient). Same hues in light and dark (defined once
-     here; .dark only re-points primary-foreground). */
-  --brand: #8B5CF6;
+  /* Brand palette — a calm, premium violet primary + a sparing pink secondary.
+     Refined DOWN from the original neon (#8B5CF6 / #E046A0) so buttons, rings,
+     badges and the brand mark read calm app-wide, matching the /super redesign.
+     These drive --primary, the focus ring, and the sidebar active state, so the
+     whole app carries the brand from one place. --brand-accent is reserved for
+     sparing, SOLID accents (never a gradient). Same hues in light and dark. */
+  --brand: oklch(0.62 0.15 287);
   --brand-foreground: oklch(0.985 0 0);
-  --brand-accent: #E046A0;
+  --brand-accent: oklch(0.6 0.18 350);
   --brand-accent-foreground: oklch(0.985 0 0);
 
   --background: oklch(1 0 0);
@@ -196,6 +197,99 @@
     linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
   background-size: 46px 46px;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Design system kit — premium, low-eye-strain surfaces (debuted on /super).
+   App-wide: the .dash-* classes work anywhere; their vars live on :root/.dark.
+   Principles (borrowed from Linear / Stripe / Vercel): ONE soft tonal gradient
+   on the hero only, hairline (not hard) borders, soft *blurred* elevation, a
+   calmer brand accent than the raw violet, and color used sparingly. No
+   hard-edged colored shadows, no near-white outlines, no neon — that combo is
+   what strained the eyes in the brutalist version.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --dash-accent: oklch(0.6 0.14 287);      /* refined violet, calmer than --brand */
+  --dash-accent-2: oklch(0.58 0.18 350);   /* refined magenta-pink — the second accent */
+  --dash-card: var(--card);
+  --dash-border: color-mix(in oklab, var(--foreground) 9%, transparent);
+  --dash-shadow: 0 1px 2px oklch(0 0 0 / 0.05), 0 10px 26px oklch(0 0 0 / 0.06);
+  --dash-subtle: color-mix(in oklab, var(--foreground) 3.5%, transparent);
+  /* the page's single gradient: a violet→plum wash anchored top-left that
+     melts back into the card surface. Analogous tones only (287°→320°) — a
+     rosy undertone, never a violet→pink rainbow blob. */
+  --dash-hero: radial-gradient(135% 135% at 0% 0%,
+    oklch(0.95 0.05 320) 0%, oklch(0.985 0.018 305) 50%, var(--card) 100%);
+  --dash-chip-bg: color-mix(in oklab, var(--dash-accent) 13%, var(--card));
+  --dash-chip-bg-2: color-mix(in oklab, var(--dash-accent-2) 13%, var(--card));
+}
+.dark {
+  --dash-accent: oklch(0.72 0.12 287);
+  --dash-accent-2: oklch(0.72 0.15 350);
+  --dash-card: oklch(0.185 0.004 285);
+  --dash-border: oklch(1 0 0 / 0.08);
+  --dash-shadow: 0 1px 2px oklch(0 0 0 / 0.35), 0 12px 32px oklch(0 0 0 / 0.30);
+  --dash-subtle: color-mix(in oklab, var(--foreground) 4.5%, transparent);
+  --dash-hero: radial-gradient(135% 135% at 0% 0%,
+    oklch(0.31 0.085 318) 0%, oklch(0.205 0.032 302) 50%, oklch(0.165 0.008 288) 100%);
+  --dash-chip-bg: color-mix(in oklab, var(--dash-accent) 22%, oklch(0.2 0.01 285));
+  --dash-chip-bg-2: color-mix(in oklab, var(--dash-accent-2) 22%, oklch(0.2 0.01 320));
+}
+
+.dash-hero {
+  background: var(--dash-hero);
+  border: 1px solid var(--dash-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--dash-shadow), inset 0 1px 0 oklch(1 0 0 / 0.05);
+}
+.dash-hero-metric {
+  background: color-mix(in oklab, var(--dash-card) 55%, transparent);
+  border: 1px solid var(--dash-border);
+  border-radius: 0.875rem;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.dash-hero-metric:hover {
+  border-color: color-mix(in oklab, var(--dash-accent) 40%, var(--dash-border));
+  transform: translateY(-1px);
+}
+
+.dash-card {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-radius: 0.875rem;
+  box-shadow: var(--dash-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.dash-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--dash-accent) 32%, var(--dash-border));
+  box-shadow: 0 2px 4px oklch(0 0 0 / 0.08), 0 16px 38px oklch(0 0 0 / 0.12);
+}
+.dark .dash-card:hover {
+  box-shadow: 0 2px 6px oklch(0 0 0 / 0.4), 0 18px 44px oklch(0 0 0 / 0.35);
+}
+
+.dash-panel {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-radius: 0.875rem;
+  box-shadow: var(--dash-shadow);
+}
+.dash-hairline { border-color: var(--dash-border); }
+.dash-subhead { background: var(--dash-subtle); }
+.dash-row { transition: background 0.15s ease; }
+.dash-row:hover { background: var(--dash-subtle); }
+.dash-chip {
+  background: var(--dash-chip-bg);
+  color: var(--dash-accent);
+  border: 1px solid color-mix(in oklab, var(--dash-accent) 28%, transparent);
+}
+.dash-chip-pink {
+  background: var(--dash-chip-bg-2);
+  color: var(--dash-accent-2);
+  border: 1px solid color-mix(in oklab, var(--dash-accent-2) 28%, transparent);
+}
+.dash-accent { color: var(--dash-accent); }
 
 /* ──────────────────────────────────────────────────────────────────────────
    Playful Alert System — bouncy spring animations

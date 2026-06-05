@@ -1,9 +1,8 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Eye, Copy, Palette } from "lucide-react";
+import { ArrowLeft, Eye, Copy, Palette, Building2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 
@@ -26,88 +25,113 @@ export default async function DesignLibraryPage() {
   const industries = [...new Set(allDesigns.map((d) => d.industry || "General"))].sort();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — eyebrow + title + one-line subtitle on the left,
+          the back link on the right. No gradient: this is a library page, not
+          a dashboard greeting. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Tech
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Design Library</h1>
+          <p className="text-sm text-muted-foreground">
+            All previously built websites. Clone any design as a starting point
+            for new proposals.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5 shrink-0" asChild>
           <Link href="/tech">
-            <ArrowLeft className="mr-1 h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">Design Library</h1>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        All previously built websites. Clone any design as a starting point for
-        new proposals.
-      </p>
-
-      {/* Stats */}
-      <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">{allDesigns.length} designs</Badge>
+      {/* Filter chips — total count first, then a per-industry breakdown for
+          quick scanning of what the library is made of. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="dash-chip inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold tabular-nums">
+          <Palette className="h-3.5 w-3.5" />
+          {allDesigns.length} designs
+        </span>
         {industries.map((ind) => (
-          <Badge key={ind} variant="outline" className="text-xs">
-            {ind} ({allDesigns.filter((d) => (d.industry || "General") === ind).length})
+          <Badge key={ind} variant="outline" className="text-xs font-medium">
+            {ind}
+            <span className="ml-1 tabular-nums text-muted-foreground">
+              {allDesigns.filter((d) => (d.industry || "General") === ind).length}
+            </span>
           </Badge>
         ))}
       </div>
 
-      {/* Design list */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Palette className="h-4 w-4" />
-            All Builds ({allDesigns.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allDesigns.length > 0 ? (
-            <div className="space-y-3">
-              {allDesigns.map((design) => (
-                <div
-                  key={design.id}
-                  className="flex items-center justify-between rounded-lg border px-4 py-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{design.company_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {design.industry || "General"} • {design.town || "—"} •{" "}
-                      {formatDistanceToNow(new Date(design.created_at), {
-                        addSuffix: true,
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <Badge variant="outline" className="text-xs capitalize">
-                      {design.status}
-                    </Badge>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                      <Link
-                        href={`/api/render/${design.id}`}
-                        target="_blank"
-                        title="Preview design"
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/tech/proposals/${design.id}`} className="gap-1">
-                        <Copy className="h-3.5 w-3.5" />
-                        Use
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              ))}
+      {/* Design grid — soft cards, one per build. Each shows company, industry,
+          location and age, with quick Preview + Use actions. */}
+      {allDesigns.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {allDesigns.map((design) => (
+            <div
+              key={design.id}
+              className="dash-card flex flex-col p-5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="dash-chip inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                  <Building2 className="h-4 w-4" />
+                </span>
+                <Badge variant="secondary" className="text-xs capitalize">
+                  {design.status}
+                </Badge>
+              </div>
+
+              <div className="mt-4 min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">
+                  {design.company_name}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="truncate">{design.industry || "General"}</span>
+                  <span aria-hidden>•</span>
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{design.town || "—"}</span>
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(design.created_at), {
+                    addSuffix: true,
+                  })}
+                </p>
+              </div>
+
+              <div className="dash-hairline mt-4 flex items-center gap-2 border-t pt-3">
+                <Button variant="outline" size="sm" className="flex-1 gap-1.5" asChild>
+                  <Link
+                    href={`/api/render/${design.id}`}
+                    target="_blank"
+                    title="Preview design"
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    Preview
+                  </Link>
+                </Button>
+                <Button size="sm" className="flex-1 gap-1.5" asChild>
+                  <Link href={`/tech/proposals/${design.id}`}>
+                    <Copy className="h-3.5 w-3.5" />
+                    Use
+                  </Link>
+                </Button>
+              </div>
             </div>
-          ) : (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              No completed builds yet. Build your first proposal to populate the
-              design library.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="dash-panel flex flex-col items-center justify-center px-4 py-16 text-center">
+          <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+            <Palette className="h-5 w-5" />
+          </span>
+          <p className="text-sm font-medium">No completed builds yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Build your first proposal to populate the design library.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

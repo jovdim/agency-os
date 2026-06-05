@@ -18,6 +18,7 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
+import { Building2 } from "lucide-react";
 import { ProposalTimeline } from "@/components/proposal-timeline/proposal-timeline";
 import { ClientDetailClient } from "@/components/live-clients/client-detail-client";
 import { loadClientDetail } from "@/components/live-clients/load-client-detail";
@@ -353,7 +354,20 @@ export default async function SalesProposalDetailPage({
       />
 
       {clientDetail && (
-        <div className="border-t mt-6 pt-6">
+        <div className="mt-8 pt-8 border-t dash-hairline">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="dash-chip">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+                Client zone
+              </p>
+              <h2 className="text-base font-semibold leading-tight">
+                Live client management
+              </h2>
+            </div>
+          </div>
           <ClientDetailClient
             data={clientDetail}
             composerPathPrefix="/sales"

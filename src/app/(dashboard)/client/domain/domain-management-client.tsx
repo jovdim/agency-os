@@ -321,16 +321,26 @@ export function DomainManagementClient({
   const webmailUrl = "https://webmail.hostinger.com/";
 
   return (
-    <div className="space-y-4 max-w-3xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Domain and business email
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Set up your web address and business email in two steps.
-          Once your mailbox is created, you will see your login details below.
-        </p>
+    <div className="dash-root max-w-3xl space-y-6">
+      {/* Page header — clean title + one-line subtitle with a violet icon
+          chip. No hero gradient: this is a focused setup task, not a
+          dashboard, so a calm header reads better here. */}
+      <div className="flex items-start gap-3">
+        <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+          <Globe className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Setup
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Domain and business email
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Set up your web address and business email in two steps. Once your
+            mailbox is created, you will see your login details below.
+          </p>
+        </div>
       </div>
 
       {/* ── Step 1: Domain ───────────────────────────────────────── */}
@@ -411,7 +421,9 @@ export function DomainManagementClient({
               </p>
             )}
 
-            {/* Option cards */}
+            {/* Option cards — soft surfaces with a hairline border; the
+                selected card lifts to the violet accent (a calm ring +
+                tinted chip), unselected ones stay quiet until hovered. */}
             <div className="grid gap-3 sm:grid-cols-2">
               <button
                 onClick={() => {
@@ -422,20 +434,20 @@ export function DomainManagementClient({
                 className={cn(
                   "flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
                   selected === "register_new"
-                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    ? "border-(--dash-accent)/40 bg-(--dash-accent)/5 ring-1 ring-(--dash-accent)/30"
                     : "hover:border-muted-foreground/30 hover:bg-muted/30",
                 )}
               >
-                <div
+                <span
                   className={cn(
-                    "rounded-lg p-2 shrink-0",
+                    "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
                     selected === "register_new"
-                      ? "bg-primary/10 text-primary"
+                      ? "dash-chip"
                       : "bg-muted text-muted-foreground",
                   )}
                 >
                   <Globe className="h-4 w-4" />
-                </div>
+                </span>
                 <div>
                   <p className="font-medium text-sm">Register a new one</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -453,20 +465,20 @@ export function DomainManagementClient({
                 className={cn(
                   "flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
                   selected === "transfer"
-                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    ? "border-(--dash-accent)/40 bg-(--dash-accent)/5 ring-1 ring-(--dash-accent)/30"
                     : "hover:border-muted-foreground/30 hover:bg-muted/30",
                 )}
               >
-                <div
+                <span
                   className={cn(
-                    "rounded-lg p-2 shrink-0",
+                    "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
                     selected === "transfer"
-                      ? "bg-primary/10 text-primary"
+                      ? "dash-chip"
                       : "bg-muted text-muted-foreground",
                   )}
                 >
                   <ArrowRightLeft className="h-4 w-4" />
-                </div>
+                </span>
                 <div>
                   <p className="font-medium text-sm">Transfer an existing one</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -727,7 +739,7 @@ export function DomainManagementClient({
               href={webmailUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              className="dash-accent inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
             >
               Open webmail
               <ExternalLink className="h-3.5 w-3.5" />
@@ -771,8 +783,8 @@ function PipelineStep({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border bg-card overflow-hidden">
-      <header className="flex items-center gap-3 px-4 py-3 border-b border-border/60">
+    <section className="dash-panel overflow-hidden">
+      <header className="dash-hairline flex items-center gap-3 px-4 py-3 border-b">
         <StepBadge number={number} state={state} />
         <h2 className="text-sm font-semibold leading-tight flex-1 min-w-0">
           {title}
@@ -799,7 +811,7 @@ function StepBadge({ number, state }: { number: number; state: StepState }) {
         state === "in_progress" &&
           "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 ring-1 ring-amber-300",
         state === "active" &&
-          "bg-primary text-primary-foreground ring-4 ring-primary/15",
+          "bg-(--dash-accent) text-white ring-4 ring-(--dash-accent)/15",
         state === "rejected" && "bg-red-500 text-white",
         state === "pending" &&
           "bg-muted/60 text-muted-foreground/80",
@@ -839,7 +851,7 @@ function StatePill({ state }: { state: StepState }) {
     },
     active: {
       label: "Your turn",
-      cls: "bg-primary/15 text-primary",
+      cls: "bg-(--dash-accent)/15 text-(--dash-accent)",
     },
     rejected: {
       label: "Rejected",

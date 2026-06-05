@@ -57,6 +57,7 @@ import {
   Info,
   Briefcase,
   Flame,
+  PhoneCall,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -153,6 +154,8 @@ interface InProgressMeta {
 }
 
 interface Props {
+  /** First name for the dashboard greeting band. */
+  firstName: string;
   handoverProposals: HandoverProposal[];
   reminders: Reminder[];
   newContacts: CallingContact[];
@@ -163,7 +166,8 @@ interface Props {
   totalCallbackCount: number;
   archiveContacts: CallingContact[];
   archiveOutcomes: Record<string, InProgressMeta>;
-  contactsWithProposals: Record<string, boolean>;
+  /** contact_id → proposal_id for contacts with an active proposal. */
+  contactsWithProposals: Record<string, string>;
   processedTodayCount: number;
   todayLogs: TodayLog[];
   noAnswerCounts: Record<string, number>;
@@ -248,6 +252,7 @@ const POSTPONE_OPTIONS = [
 
 
 export function SalesDashboardClient({
+  firstName,
   handoverProposals,
   reminders,
   newContacts: initialContacts,
@@ -630,24 +635,70 @@ export function SalesDashboardClient({
     <TooltipProvider>
       <div className="space-y-3 w-full flex flex-col" style={{ minHeight: "calc(100vh - 80px)" }}>
 
-        {/* ══════════ STAT CARDS ══════════
-            Trimmed to the two action-driving metrics:
-              • V procese    — proposals tech is currently building
-              • Na odovzdanie — proposals waiting on you to send
-            Kontakty (vanity roster count) and Klienti (cumulative
-            trophy) were removed — neither changed the salesperson's
-            next action and the Klienti list is still one click away
-            from the sidebar. */}
+        {/* ══════════ HERO GREETING BAND ══════════
+            The page's single gradient surface. Greeting on the left; the
+            focal "to hand over" metric in a frosted inset on the right so
+            the salesperson's next action is the first thing they see. An
+            urgent chip appears only when tagged-urgent proposals exist. */}
+        <section className="dash-hero relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Sales desk
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Hello, {firstName}</h1>
+            <p className="text-sm text-muted-foreground">
+              {processed > 0
+                ? `${processed} ${processed === 1 ? "call" : "calls"} logged today — keep the pipeline moving.`
+                : "Here's your pipeline and who's waiting on you today."}
+            </p>
+            {urgentCount > 0 && (
+              <Link
+                href="/sales/proposals"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-(--dash-accent-2) ring-1 ring-inset ring-(--dash-accent-2)/30 transition-colors hover:ring-(--dash-accent-2)/50"
+              >
+                <Flame className="h-3.5 w-3.5" />
+                {urgentCount} urgent {urgentCount === 1 ? "proposal" : "proposals"}
+              </Link>
+            )}
+          </div>
+
+          <Link href="/sales/proposals" className="group w-full shrink-0 sm:w-auto">
+            <div className="dash-hero-metric flex items-center gap-4 px-5 py-4">
+              <span className="dash-chip inline-flex h-12 w-12 items-center justify-center rounded-xl">
+                <Eye className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  To hand over
+                </p>
+                <p className="text-3xl font-bold leading-tight tabular-nums">
+                  {stats.reviewCount}
+                </p>
+                <p className="text-xs text-muted-foreground">waiting on you to send</p>
+              </div>
+              <ArrowRight className="dash-accent ml-2 hidden h-4 w-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 sm:block" />
+            </div>
+          </Link>
+        </section>
+
+        {/* ══════════ STAT TILES ══════════
+            Two action-driving metrics:
+              • In progress  — proposals tech is currently building
+              • To hand over — proposals waiting on you to send
+            Vanity roster + cumulative client counts were removed — neither
+            changed the salesperson's next action. */}
         <div className="grid gap-3 sm:grid-cols-2">
           <StatCard
             label="In progress"
             value={stats.inProgress}
+            sub="proposals being built"
             href="/sales/proposals"
             icon={Briefcase}
           />
           <StatCard
             label="To hand over"
             value={stats.reviewCount}
+            sub="ready to send to clients"
             href="/sales/proposals"
             icon={Eye}
             highlight={stats.reviewCount > 0}
@@ -662,15 +713,17 @@ export function SalesDashboardClient({
 
         {/* ══════════ SECTION 1: Handover Proposals (collapsible) ══════════ */}
         {totalHandover > 0 && (
-          <div className="rounded-lg border bg-card overflow-hidden flex flex-col min-h-0">
+          <div className="dash-panel overflow-hidden flex flex-col min-h-0">
             <button
               onClick={() => setHandoverCollapsed(!handoverCollapsed)}
-              className="w-full flex items-center justify-between px-3 py-1.5 hover:bg-muted/30 transition-colors shrink-0"
+              className="dash-row w-full flex items-center justify-between px-3 py-2 shrink-0"
             >
               <div className="flex items-center gap-2">
-                <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs font-medium">Ready to hand over</span>
-                <span className="text-[10px] text-muted-foreground">{totalHandover}</span>
+                <span className="dash-chip inline-flex h-6 w-6 items-center justify-center rounded-md">
+                  <Eye className="h-3.5 w-3.5" />
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider">Ready to hand over</span>
+                <span className="dash-chip inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold tabular-nums">{totalHandover}</span>
               </div>
               {handoverCollapsed ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />}
             </button>
@@ -738,7 +791,7 @@ export function SalesDashboardClient({
                           return (
                             <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-muted/20 text-[11px]">
                               <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                                <Link href={p.contact_id ? `/sales/contacts/${p.contact_id}` : `/sales/active`} className="font-medium truncate hover:underline">{p.company_name}</Link>
+                                <Link href={`/sales/proposals/${p.id}`} className="font-medium truncate hover:underline">{p.company_name}</Link>
                                 {phone && <PhoneQrPopover phone={phone}><Phone className="h-3.5 w-3.5 text-primary shrink-0" /></PhoneQrPopover>}
                                 {siteUrl && <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline shrink-0">web</a>}
                                 <span className="text-[10px] text-muted-foreground shrink-0 ml-auto">{formatDistanceToNow(new Date(p.updated_at), { addSuffix: true })}</span>
@@ -779,7 +832,7 @@ export function SalesDashboardClient({
                           return (
                             <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-muted/20 text-[11px]">
                               <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                                <Link href={p.contact_id ? `/sales/contacts/${p.contact_id}` : `/sales/active`} className="font-medium truncate hover:underline">{p.company_name}</Link>
+                                <Link href={`/sales/proposals/${p.id}`} className="font-medium truncate hover:underline">{p.company_name}</Link>
                                 {phone && <PhoneQrPopover phone={phone}><Phone className="h-3.5 w-3.5 text-primary shrink-0" /></PhoneQrPopover>}
                                 {siteUrl && <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline shrink-0">web</a>}
                                 {expiry ? (
@@ -825,7 +878,7 @@ export function SalesDashboardClient({
                         .map(r => (
                           <div key={r.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-muted/20 text-[11px]">
                             <Link
-                              href={r.proposals?.contact_id ? `/sales/contacts/${r.proposals.contact_id}` : "/sales/proposals"}
+                              href={`/sales/proposals/${r.proposal_id}`}
                               className="flex-1 min-w-0 font-medium truncate hover:underline"
                             >
                               {r.proposals?.company_name || "—"}
@@ -855,9 +908,9 @@ export function SalesDashboardClient({
         )}
 
         {/* ══════════ SECTION 2: Calling Database (main) ══════════ */}
-        <div className="rounded-lg border bg-card overflow-hidden flex flex-col min-h-0">
+        <div className="dash-panel overflow-hidden flex flex-col min-h-0">
           {/* Tabs + search */}
-          <div className="flex items-center justify-between px-3 border-b">
+          <div className="dash-hairline flex items-center justify-between px-3 border-b">
             <div className="flex items-center gap-0">
               {(() => {
                 const TAB_META: Record<typeof activeTab, { label: string; count: number; hint: string }> = {
@@ -911,7 +964,8 @@ export function SalesDashboardClient({
                   );
                 });
               })()}
-              <span className="ml-3 text-[11px] text-emerald-600 font-semibold whitespace-nowrap" title="Calls made today">
+              <span className="ml-3 inline-flex items-center gap-1 text-[11px] font-semibold whitespace-nowrap text-(--dash-accent-2)" title="Calls made today">
+                <PhoneCall className="h-3 w-3" />
                 Today: {processed} calls
               </span>
             </div>
@@ -966,7 +1020,7 @@ export function SalesDashboardClient({
                       isCurrent={currentContactId === c.id}
                       onMarkCurrent={markCurrent}
                       onSendEmail={openSharedEmail}
-                      hasProposal={contactsWithProposals[c.id]}
+                      proposalId={contactsWithProposals[c.id]}
                     />
                   ))}
                   {!search && contacts.length < totalNewCount && (
@@ -1004,7 +1058,7 @@ export function SalesDashboardClient({
                       onMarkCurrent={markCurrent}
                       onSendEmail={openSharedEmail}
                       hidePostpone
-                      hasProposal={contactsWithProposals[c.id]}
+                      proposalId={contactsWithProposals[c.id]}
                     />
                   ))}
                   {!search && callbacks.length < totalCallbackCount && (
@@ -1059,7 +1113,7 @@ export function SalesDashboardClient({
                         hidePostpone
                         stateBadge={label}
                         latestOutcome={meta?.outcome}
-                        hasProposal={contactsWithProposals[c.id]}
+                        proposalId={contactsWithProposals[c.id]}
                         showRestore
                       />
                     );
@@ -1147,7 +1201,7 @@ function LeadDescription({ text }: { text: string }) {
 // must be stable, which is why the parent now uses useCallback for
 // markCurrent / openSharedEmail and passes `markCurrent` directly instead
 // of `() => markCurrent(c.id)`.
-function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnswerCount, isCurrent, onMarkCurrent, onSendEmail, hidePostpone, stateBadge, latestOutcome, hasProposal, showRestore }: {
+function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnswerCount, isCurrent, onMarkCurrent, onSendEmail, hidePostpone, stateBadge, latestOutcome, proposalId, showRestore }: {
   contact: CallingContact;
   onOutcome: (id: string, outcome: CallOutcome, notes?: string, callbackAt?: string) => void;
   onCreateProposal: (contact: CallingContact, price?: string) => void;
@@ -1158,7 +1212,9 @@ function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnsw
   hidePostpone?: boolean;
   stateBadge?: string;
   latestOutcome?: string;
-  hasProposal?: boolean;
+  /** Proposal id for this contact's active proposal, if any. Drives the
+   *  "Proposal" deep-link button. */
+  proposalId?: string;
   showRestore?: boolean;
 }) {
   const [fading, setFading] = useState(false);
@@ -1421,10 +1477,13 @@ function CompactContactRowImpl({ contact: c, onOutcome, onCreateProposal, noAnsw
           </button>
         ) : (
           <>
-            {/* Proposal button — shown whenever an active proposal exists */}
-            {(hasProposal || latestOutcome === "send_proposal") && (
+            {/* Proposal button — shown whenever an active proposal exists.
+                Deep-links to the proposal page when we know its id; falls
+                back to the contact page otherwise (e.g. proposal already
+                paid/accepted so it's excluded from the active map). */}
+            {(proposalId || latestOutcome === "send_proposal") && (
               <Link
-                href={`/sales/contacts/${c.id}`}
+                href={proposalId ? `/sales/proposals/${proposalId}` : `/sales/contacts/${c.id}`}
                 className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-600 dark:text-sky-400 border border-sky-500/40 hover:border-sky-500 hover:bg-sky-500/10 rounded px-1.5 py-0.5 transition-colors"
                 title="Open proposal"
               >
@@ -1918,24 +1977,24 @@ function StatCard({ label, value, sub, highlight, href, icon: Icon }: {
   href?: string;
   icon: LucideIcon;
 }) {
+  // dash-card surface: soft hairline border + blurred shadow on hover. The
+  // icon chip is a quiet violet tint (operational); the hover ArrowRight
+  // echoes the reference /super stat tiles.
   const content = (
     <div
-      className={`group relative h-full rounded-xl bg-card px-4 py-3.5
-        border transition-colors duration-150
-        ${highlight
-          ? "border-foreground/30"
-          : "border-border hover:border-foreground/20"}`}
+      className={`dash-card group block h-full p-5 ${highlight ? "ring-1 ring-inset ring-(--dash-accent)/25" : ""}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-          <p className="text-[28px] leading-none font-semibold tabular-nums text-foreground">{value}</p>
-          {sub && <p className="pt-0.5 text-[11px] text-muted-foreground">{sub}</p>}
-        </div>
-        <span className="shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground transition-colors group-hover:bg-muted group-hover:text-foreground">
+      <div className="flex items-center justify-between">
+        <span className="dash-chip inline-flex h-9 w-9 items-center justify-center rounded-lg">
           <Icon className="h-4 w-4" strokeWidth={2} />
         </span>
+        {href && (
+          <ArrowRight className="dash-accent h-4 w-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+        )}
       </div>
+      <p className="mt-4 text-3xl font-bold tabular-nums text-foreground">{value}</p>
+      <p className="mt-1 text-sm font-medium">{label}</p>
+      {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
     </div>
   );
 

@@ -21,7 +21,7 @@ export default async function NewProposalPage({
     .order("company_name", { ascending: true });
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mx-auto w-full max-w-3xl px-1 py-2 sm:py-4">
       <ProposalWizard
         contacts={contacts || []}
         preSelectedContactId={contactId}

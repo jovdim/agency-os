@@ -191,29 +191,50 @@ export function ProposalsListClient({
   const visibleTags = allTags.filter(t => (tagCounts[t.id] || 0) > 0);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Proposals</h1>
-        <p className="text-sm text-muted-foreground">{proposals.length} total proposals</p>
-      </div>
+    <div className="dash-root max-w-6xl space-y-6">
+      {/* Clean page header — eyebrow + title + one-line subtitle. No hero
+          gradient on this operational list; a quiet violet chip carries the
+          identity instead. */}
+      <header className="flex items-center gap-3">
+        <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+          <Presentation className="h-5 w-5" />
+        </span>
+        <div className="space-y-0.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Sales pipeline
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Proposals</h1>
+          <p className="text-sm text-muted-foreground">
+            <span className="tabular-nums">{proposals.length}</span> total proposals
+          </p>
+        </div>
+      </header>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-border">
+      <div className="dash-hairline flex items-center gap-1 overflow-x-auto border-b">
         {STATUS_TABS.map(tab => {
           const count = tab.statuses
             ? proposals.filter(p => tab.statuses!.includes(p.status)).length
             : proposals.length;
+          const active = activeTab === tab.key;
           return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === tab.key
-                  ? "border-primary text-foreground"
+              className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                active
+                  ? "border-(--dash-accent) text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
-              {tab.label} ({count})
+              {tab.label}
+              <span
+                className={`rounded-full px-1.5 text-[10px] font-semibold tabular-nums ${
+                  active ? "dash-chip" : "bg-foreground/5 text-muted-foreground"
+                }`}
+              >
+                {count}
+              </span>
             </button>
           );
         })}
@@ -274,11 +295,16 @@ export function ProposalsListClient({
       )}
 
       {/* List */}
-      <div className="rounded-lg border bg-card overflow-hidden divide-y">
+      <div className="dash-panel dash-hairline divide-y overflow-hidden">
         {filtered.length === 0 && (
-          <div className="px-6 py-12 text-center">
-            <Presentation className="h-10 w-10 mx-auto text-muted-foreground/30 mb-2" />
-            <p className="text-sm text-muted-foreground">No proposals</p>
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+              <Presentation className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-medium">No proposals</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Nothing matches your current filters.
+            </p>
           </div>
         )}
         {filtered.map(proposal => {
@@ -293,11 +319,11 @@ export function ProposalsListClient({
 
           if (isCollapsed) {
             return (
-              <div key={proposal.id} className="flex items-center px-4 py-1.5 bg-muted/30">
+              <div key={proposal.id} className="dash-subhead flex items-center px-4 py-1.5">
                 <button onClick={() => toggleCollapse(proposal.id)} className="mr-2 text-muted-foreground hover:text-foreground">
                   <ChevronDown className="h-3.5 w-3.5" />
                 </button>
-                <Link href={`/sales/proposals/${proposal.id}`} className="flex-1 flex items-center gap-2 min-w-0 hover:text-primary transition-colors">
+                <Link href={`/sales/proposals/${proposal.id}`} className="flex-1 flex items-center gap-2 min-w-0 transition-colors hover:text-(--dash-accent)">
                   <span className="text-xs text-muted-foreground truncate">{proposal.company_name}</span>
                   <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${config.badgeClass}`}>
                     {config.label}
@@ -311,7 +337,7 @@ export function ProposalsListClient({
           }
 
           return (
-            <div key={proposal.id} className="flex items-center hover:bg-muted/40 transition-colors">
+            <div key={proposal.id} className="dash-row flex items-center">
               <button
                 onClick={() => toggleCollapse(proposal.id)}
                 className="px-2 py-4 text-muted-foreground/40 hover:text-muted-foreground self-stretch flex items-center"
@@ -319,16 +345,16 @@ export function ProposalsListClient({
               >
                 <ChevronUp className="h-3.5 w-3.5" />
               </button>
-              <Link href={`/sales/proposals/${proposal.id}`} className="flex-1 flex items-center justify-between py-3 pr-4 min-w-0">
+              <Link href={`/sales/proposals/${proposal.id}`} className="flex-1 flex items-center justify-between py-3.5 pr-4 min-w-0">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium truncate">{proposal.company_name}</p>
+                    <p className="text-sm font-semibold truncate">{proposal.company_name}</p>
                     <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${config.badgeClass}`}>
                       {config.icon}
                       <span className="ml-1">{config.label}</span>
                     </Badge>
                     {price && (
-                      <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                      <span className="text-xs font-semibold tabular-nums text-(--dash-accent-2)">
                         ${price}
                       </span>
                     )}
@@ -349,14 +375,14 @@ export function ProposalsListClient({
                       </span>
                     )}
                     {deployment?.subdomain && (
-                      <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                      <span className="flex items-center gap-1 text-xs text-(--dash-accent)">
                         <Globe className="h-3 w-3" />
                         {deployment.subdomain}.pages.dev
                       </span>
                     )}
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground ml-4 shrink-0">
+                <span className="text-xs text-muted-foreground ml-4 shrink-0 tabular-nums">
                   {formatDistanceToNow(new Date(proposal.updated_at), { addSuffix: true })}
                 </span>
               </Link>

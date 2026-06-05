@@ -95,16 +95,40 @@ export default async function TechClientsPage({
     };
   }
 
+  const clientCount = (clients || []).length;
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — no gradient needed here. Quiet back link above an
+          eyebrow + title + one-line subtitle, with a violet icon chip anchoring
+          the heading. */}
+      <div className="space-y-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="-ml-2 h-8 text-muted-foreground"
+        >
           <Link href="/tech">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">Client Management</h1>
+
+        <div className="flex items-center gap-3.5">
+          <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+            <Users className="h-5 w-5" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Operations
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight">Client Management</h1>
+            <p className="text-sm text-muted-foreground">
+              Create client accounts and link their deployed websites.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Create new client */}
@@ -112,13 +136,20 @@ export default async function TechClientsPage({
 
       {/* Client list */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Clients ({(clients || []).length})
-          </CardTitle>
+        <CardHeader className="dash-hairline border-b">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                <Users className="h-4 w-4" />
+              </span>
+              <CardTitle className="text-base">Clients</CardTitle>
+            </div>
+            <span className="dash-chip inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-xs font-bold tabular-nums">
+              {clientCount}
+            </span>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <ClientManagement
             clients={(clients || []) as { id: string; full_name: string | null; company_name: string | null; phone: string | null; is_active: boolean; created_at: string }[]}
             contactsByUserId={contactsByUserId}

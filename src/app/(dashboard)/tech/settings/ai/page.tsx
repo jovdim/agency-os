@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { Sparkles } from "lucide-react";
 import { AiSettingsClient } from "@/app/(dashboard)/super/settings/ai/ai-settings-client";
 
 export const dynamic = "force-dynamic";
@@ -85,17 +86,27 @@ export default async function TechAiSettingsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Page header — no Back button needed: the settings shell's
-          left sub-sidebar + the main app sidebar both stay visible,
-          so the user can navigate away without an inline link. */}
-      <div>
-        <h1 className="text-xl font-semibold">AI content generation</h1>
-        <p className="text-sm text-muted-foreground">
-          The Slovak copywriting guide every AI generation reads from.
-          Shared across all techs and super admins. One edit applies to
-          every site.
-        </p>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Clean page header — no gradient, no Back button: the settings shell's
+          left sub-sidebar + the main app sidebar both stay visible, so the user
+          can navigate away without an inline link. A violet icon chip anchors
+          the eyebrow + title, with a calm one-line subtitle underneath. */}
+      <div className="flex items-start gap-3.5">
+        <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+          <Sparkles className="h-5 w-5" />
+        </span>
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Settings
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            AI content generation
+          </h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            The Slovak copywriting guide every AI generation reads from. Shared
+            across all techs and super admins. One edit applies to every site.
+          </p>
+        </div>
       </div>
 
       <AiSettingsClient

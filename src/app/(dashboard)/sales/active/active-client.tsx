@@ -169,93 +169,118 @@ export function ActiveClient({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-3">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <h1 className="text-xl font-semibold">Active</h1>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="text-muted-foreground/60 hover:text-primary transition-colors"
-                    aria-label="Information"
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-sm text-xs">
-                  Contacts you've started working with — you sent an email,
-                  an invoice, a proposal, or left a note.
-                </TooltipContent>
-              </Tooltip>
+      <div className="dash-root max-w-6xl space-y-6">
+        {/* Clean page header — quiet violet icon chip carries the identity
+            (no hero gradient on this operational list), eyebrow + title +
+            one-line contact count. Search sits on the right on wider screens. */}
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+              <Activity className="h-5 w-5" />
+            </span>
+            <div className="space-y-0.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Sales pipeline
+              </p>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-2xl font-bold tracking-tight">Active</h1>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-muted-foreground/60 transition-colors hover:text-(--dash-accent)"
+                      aria-label="Information"
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-sm text-xs">
+                    Contacts you've started working with — you sent an email,
+                    an invoice, a proposal, or left a note.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                <span className="tabular-nums">{contacts.length}</span>{" "}
+                {contacts.length === 1 ? "contact" : "contacts"}
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {contacts.length}{" "}
-              {contacts.length === 1 ? "contact" : "contacts"}
-            </p>
           </div>
 
-          <div className="relative w-56">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
-              className="pl-8 h-8 text-sm"
+              placeholder="Search company, town, phone, email..."
+              className="pl-9"
             />
           </div>
-        </div>
+        </header>
 
-        {/* Table */}
-        <div className="rounded-lg border bg-card overflow-hidden">
-          <div className="flex items-center gap-3 px-3 py-1 border-b bg-muted/30 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            <span className="w-32 shrink-0 pr-2">Last activity</span>
-            <span className="w-48 shrink-0 pr-2">Company</span>
-            <span className="w-32 shrink-0 pr-2">Phone</span>
-            <span className="w-32 shrink-0 pr-2">Email</span>
-            <span className="w-24 shrink-0 pr-2">Published</span>
-            <span className="flex-1 text-right pr-1">Actions</span>
+        {/* List — soft panel with hairline border + quiet subhead row. The
+            original fixed column widths are preserved so every row stays in
+            alignment with the header. */}
+        {filtered.length === 0 ? (
+          <div className="dash-panel dash-hairline flex flex-col items-center justify-center px-6 py-16 text-center">
+            <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+              <Activity className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-medium">
+              {search ? "No matches" : "No active contacts"}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {search
+                ? "Nothing matches your current search."
+                : "Contacts you start working with will show up here."}
+            </p>
           </div>
+        ) : (
+          <div className="dash-panel dash-hairline overflow-hidden">
+            <div className="overflow-x-auto">
+              <div className="min-w-[760px]">
+                <div className="dash-subhead dash-hairline flex items-center gap-3 border-b px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="w-32 shrink-0 pr-2">Last activity</span>
+                  <span className="w-48 shrink-0 pr-2">Company</span>
+                  <span className="w-32 shrink-0 pr-2">Phone</span>
+                  <span className="w-32 shrink-0 pr-2">Email</span>
+                  <span className="w-24 shrink-0 pr-2">Published</span>
+                  <span className="flex-1 pr-1 text-right">Actions</span>
+                </div>
 
-          {filtered.length === 0 ? (
-            <div className="py-16 text-center text-sm text-muted-foreground">
-              {search ? "No results" : "No active contacts"}
+                <ul className="dash-hairline divide-y">
+                  {visible.map(c => (
+                    <ActiveRow
+                      key={c.id}
+                      contact={c}
+                      meta={outcomes[c.id]}
+                      hasProposal={contactsWithProposals[c.id]}
+                      proposalId={activeProposalIdByContact[c.id]}
+                      proposalStatus={proposalStatusByContact[c.id]}
+                      logged={loggedOutcomes[c.id] ?? []}
+                      tags={tagsForContact(c.id)}
+                      updateState={updateStateByContact[c.id] ?? null}
+                      lastPublishedAt={lastPublishedByContact[c.id] ?? null}
+                      onTagsChange={(next) => setTagOverrides(prev => ({ ...prev, [c.id]: next }))}
+                      onEmail={(template) => openEmail(c, template)}
+                    />
+                  ))}
+                  {hasMore && (
+                    <li className="flex justify-center py-3">
+                      <button
+                        type="button"
+                        onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                        className="rounded-md px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-(--dash-subtle) hover:text-foreground"
+                      >
+                        Load more ({filtered.length - visibleCount} remaining)
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
-          ) : (
-            <ul className="divide-y">
-              {visible.map(c => (
-                <ActiveRow
-                  key={c.id}
-                  contact={c}
-                  meta={outcomes[c.id]}
-                  hasProposal={contactsWithProposals[c.id]}
-                  proposalId={activeProposalIdByContact[c.id]}
-                  proposalStatus={proposalStatusByContact[c.id]}
-                  logged={loggedOutcomes[c.id] ?? []}
-                  tags={tagsForContact(c.id)}
-                  updateState={updateStateByContact[c.id] ?? null}
-                  lastPublishedAt={lastPublishedByContact[c.id] ?? null}
-                  onTagsChange={(next) => setTagOverrides(prev => ({ ...prev, [c.id]: next }))}
-                  onEmail={(template) => openEmail(c, template)}
-                />
-              ))}
-              {hasMore && (
-                <li className="py-3 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
-                    className="text-[11px] px-3 py-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                  >
-                    Load more ({filtered.length - visibleCount} remaining)
-                  </button>
-                </li>
-              )}
-            </ul>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Single shared email dialog for all rows */}
@@ -309,10 +334,8 @@ function ActiveRow({
 
   return (
     <li
-      className={`flex items-center gap-3 px-3 py-1.5 text-[11px] border-l-2 transition-[background-color,border-color] duration-200 ${
-        historyOpen
-          ? "bg-amber-500/10 border-l-amber-500"
-          : "border-l-transparent hover:border-l-primary/60 hover:bg-muted/20"
+      className={`dash-row flex items-center gap-3 px-4 py-2 text-[11px] transition-colors ${
+        historyOpen ? "bg-amber-500/10" : ""
       }`}
     >
       {/* Last activity */}
@@ -325,10 +348,10 @@ function ActiveRow({
           >
             <button
               type="button"
-              className="group inline-flex items-center gap-1 max-w-full text-left text-[10px] font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 transition-colors"
+              className="group inline-flex max-w-full items-center gap-1 text-left text-[10px] font-semibold text-amber-700 transition-colors hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
               title="View activity history"
             >
-              <GitCommitVertical className="h-3 w-3 text-amber-600/70 dark:text-amber-400/70 group-hover:text-amber-500 transition-colors shrink-0" />
+              <GitCommitVertical className="h-3 w-3 shrink-0 text-amber-600/70 transition-colors group-hover:text-amber-500 dark:text-amber-400/70" />
               <span className="truncate border-b border-dotted border-amber-600/50 group-hover:border-amber-500">
                 {outcomeLabel}
               </span>
@@ -351,7 +374,7 @@ function ActiveRow({
         <div className="flex items-center gap-1 min-w-0">
           {updateState === "new" && (
             <span
-              className="inline-flex items-center rounded-sm bg-purple-600 px-1 py-0 text-[8.5px] font-semibold uppercase tracking-wider text-white shrink-0"
+              className="inline-flex shrink-0 items-center rounded-sm bg-(--dash-accent) px-1 py-0 text-[8.5px] font-semibold uppercase tracking-wider text-white"
               title="New proposal — IT just published the website. Clicking the proposal clears the marker."
             >
               New
@@ -359,7 +382,7 @@ function ActiveRow({
           )}
           {updateState === "updated" && (
             <span
-              className="inline-flex items-center rounded-sm border border-muted-foreground/30 px-1 py-0 text-[8.5px] font-medium text-muted-foreground shrink-0"
+              className="inline-flex shrink-0 items-center rounded-sm border border-muted-foreground/30 px-1 py-0 text-[8.5px] font-medium text-muted-foreground"
               title="IT made a change to the published website. Clicking clears the marker."
             >
               Changed
@@ -367,7 +390,7 @@ function ActiveRow({
           )}
           <Link
             href={`/sales/volanie?contact=${c.id}`}
-            className="font-medium truncate hover:underline hover:text-primary transition-colors min-w-0"
+            className="min-w-0 truncate font-medium transition-colors hover:text-(--dash-accent) hover:underline"
             title={c.company_name}
           >
             {c.company_name}
@@ -483,7 +506,7 @@ function ActiveRow({
 
         <Link
           href={`/sales/volanie?contact=${c.id}`}
-          className="inline-flex items-center gap-1 text-[10px] font-medium text-primary border border-primary/40 hover:border-primary hover:bg-primary/10 rounded px-1.5 py-0.5 transition-colors"
+          className="inline-flex items-center gap-1 rounded border border-(--dash-accent)/40 px-1.5 py-0.5 text-[10px] font-medium text-(--dash-accent) transition-colors hover:border-(--dash-accent) hover:bg-(--dash-accent)/10"
         >
           <PhoneCall className="h-3 w-3" />
           Call

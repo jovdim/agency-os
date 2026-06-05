@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Hammer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TechProposalsClient } from "./proposals-client";
@@ -86,27 +86,59 @@ export default async function TechProposalsPage({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/tech">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-xl font-semibold">Build Queue</h1>
-          <p className="text-sm text-muted-foreground">
-            Proposals waiting on build. Paying customers live in{" "}
-            <Link
-              href="/tech/live-clients"
-              className="underline hover:text-foreground"
-            >
-              Live Clients
-            </Link>
-            .
-          </p>
+    <div className="dash-root max-w-6xl space-y-6">
+      {/* Quiet back link — sits above the header as a breadcrumb-style action
+          so the page title can stand on its own line. */}
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="-ml-2 h-8 text-muted-foreground hover:text-foreground"
+      >
+        <Link href="/tech">
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back
+        </Link>
+      </Button>
+
+      {/* Page header — clean title row: violet icon chip + eyebrow label +
+          title + one-line subtitle, with the live queue count on the right.
+          No gradient here; a calm header is enough for a list surface. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="dash-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
+            <Hammer className="h-5 w-5" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Tech
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight">Build Queue</h1>
+            <p className="text-sm text-muted-foreground">
+              Proposals waiting on build. Paying customers live in{" "}
+              <Link
+                href="/tech/live-clients"
+                className="dash-accent font-medium hover:underline"
+              >
+                Live Clients
+              </Link>
+              .
+            </p>
+          </div>
         </div>
+
+        {buildQueueTotal > 0 && (
+          <div className="dash-card flex shrink-0 items-center gap-3 px-4 py-3">
+            <span className="text-3xl font-bold tabular-nums leading-none">
+              {buildQueueTotal}
+            </span>
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              In
+              <br />
+              queue
+            </span>
+          </div>
+        )}
       </div>
 
       <TechProposalsClient

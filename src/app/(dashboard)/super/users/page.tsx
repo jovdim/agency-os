@@ -34,6 +34,7 @@ import {
   Eye,
   EyeOff,
   AtSign,
+  Phone,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ROLE_LABELS } from "@/lib/auth/roles";
@@ -301,36 +302,42 @@ export default function UsersPage() {
   for (const u of filtered) byRole[u.role].push(u);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Staff</h1>
+    <div className="dash-root max-w-5xl space-y-8">
+      {/* Clean page header — eyebrow + title + one-line subtitle on the left,
+          primary action on the right. No gradient: this is a management page,
+          not a dashboard greeting. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Team
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Staff</h1>
           <p className="text-sm text-muted-foreground">
-            Your team — grouped by role.
+            Your team, grouped by role.
           </p>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
-          <UserPlus className="h-3.5 w-3.5" /> Add Staff
+        <Button className="gap-1.5 shrink-0" onClick={() => setDialogOpen(true)}>
+          <UserPlus className="h-4 w-4" /> Add Staff
         </Button>
       </div>
 
       {/* Search bar — filters across all role groups. */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search staff by name, phone, or email..."
-          className="pl-8 h-9 text-sm"
+          className="pl-9 h-10 text-sm"
         />
       </div>
 
       {loading ? (
-        <div className="rounded-lg border bg-card p-8 text-center">
-          <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+        <div className="dash-panel flex items-center justify-center py-16">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {ROLE_ORDER.map((role) => {
             const meta = ROLE_DISPLAY[role];
             const Icon = meta.icon;
@@ -341,38 +348,38 @@ export default function UsersPage() {
             if (roster.length === 0) return null;
 
             return (
-              <div
-                key={role}
-                className="rounded-lg border bg-card overflow-hidden"
-              >
-                <div className="flex items-center gap-3 px-4 py-3 border-b">
-                  <div className="rounded-md p-1.5 shrink-0 bg-muted">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
-                  </div>
+              <section key={role} className="dash-panel overflow-hidden">
+                {/* Section header: violet icon chip + role label + a count
+                    chip on the right for instant scanning of team size. */}
+                <div className="dash-hairline flex items-center gap-3 border-b px-5 py-3.5">
+                  <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                    <Icon className="h-4 w-4" />
+                  </span>
                   <h3 className="text-sm font-semibold">{meta.label}</h3>
-                  <span className="text-xs text-muted-foreground">
-                    · {roster.length}
+                  <span className="dash-chip ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
+                    {roster.length}
                   </span>
                 </div>
 
-                <ul className="divide-y">
+                <ul className="dash-hairline divide-y">
                   {roster.map((user) => (
                     <li
                       key={user.id}
-                      className="group flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
+                      className="dash-row group flex items-center gap-3.5 px-5 py-3.5"
                     >
-                      {/* Initials chip — kept grayscale, just a clean
+                      {/* Initials avatar — quiet violet tint as a clean
                           visual anchor for the row. */}
-                      <div className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 bg-muted text-muted-foreground">
+                      <div className="dash-chip h-10 w-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
                         {getInitials(user.full_name)}
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium text-sm">
+                        <div className="font-semibold text-sm">
                           {user.full_name}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
-                          <span>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Phone className="h-3 w-3 shrink-0 text-muted-foreground/70" />
                             {user.phone || (
                               <span className="text-muted-foreground/60">
                                 No phone
@@ -380,10 +387,8 @@ export default function UsersPage() {
                             )}
                           </span>
                           {role === "sales" && (
-                            <>
-                              <span className="text-muted-foreground/40">
-                                ·
-                              </span>
+                            <span className="inline-flex items-center gap-1.5 min-w-0">
+                              <AtSign className="h-3 w-3 shrink-0 text-muted-foreground/70" />
                               <span className="truncate">
                                 {user.business_email || (
                                   <span className="text-muted-foreground/60">
@@ -391,7 +396,7 @@ export default function UsersPage() {
                                   </span>
                                 )}
                               </span>
-                            </>
+                            </span>
                           )}
                         </div>
                       </div>
@@ -399,35 +404,43 @@ export default function UsersPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 shrink-0"
+                        className="h-9 w-9 p-0 shrink-0 opacity-60 transition-opacity group-hover:opacity-100"
                         onClick={() => {
                           setEditingUser(user);
                           setEditOpen(true);
                         }}
                         title="Edit"
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </section>
             );
           })}
 
-          {/* Empty states: search-with-no-matches OR truly empty roster. */}
+          {/* Empty states: search-with-no-matches OR truly empty roster.
+              Centered icon chip + message, matching the reference empty
+              state on /super. */}
           {filtered.length === 0 && (
-            <div className="rounded-lg border bg-card p-8 text-center">
-              <p className="text-sm text-muted-foreground">
+            <div className="dash-panel flex flex-col items-center justify-center px-4 py-16 text-center">
+              <span className="dash-chip mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full">
+                <UsersIcon className="h-5 w-5" />
+              </span>
+              <p className="text-sm font-medium">
+                {search ? "No matching staff" : "No staff yet"}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {search ? (
                   <>
-                    No staff matching{" "}
+                    Nothing matches{" "}
                     <span className="font-medium text-foreground">
                       &ldquo;{search}&rdquo;
                     </span>
                   </>
                 ) : (
-                  "No staff yet — click Add Staff to get started."
+                  "Click Add Staff to get started."
                 )}
               </p>
             </div>

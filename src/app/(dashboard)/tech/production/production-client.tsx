@@ -12,6 +12,7 @@ import {
   Clock,
   ChevronDown,
   X,
+  Globe2,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -91,40 +92,52 @@ export function TechProductionClient({ sites }: TechProductionClientProps) {
   }, [sites]);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
+    <div className="dash-root max-w-6xl space-y-8">
+      {/* Page header — clean title block on the left (violet chip + title +
+          one-line subtitle), the Back action sitting to the right. No gradient
+          hero on this page: it's a working list, so a calm header reads best. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="dash-chip mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+            <Globe2 className="h-5 w-5" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Production
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Published Websites
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              <span className="tabular-nums">{unpaidSites.length}</span> awaiting
+              payment
+              <span className="mx-1.5 opacity-50">·</span>
+              Paying customers in{" "}
+              <Link
+                href="/tech/live-clients"
+                className="dash-accent font-medium hover:underline"
+              >
+                Live Clients
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        <Button variant="outline" size="sm" asChild className="shrink-0">
           <Link href="/tech">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back
           </Link>
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold">Published Websites</h1>
-          <p className="text-sm text-muted-foreground">
-            {unpaidSites.length} awaiting payment
-            <span className="mx-1.5 opacity-50">·</span>
-            Paying customers in{" "}
-            <Link
-              href="/tech/live-clients"
-              className="underline hover:text-foreground"
-            >
-              Live Clients
-            </Link>
-          </p>
-        </div>
       </div>
 
-      {/* Single card — Awaiting Payment only. The Paid lane was moved
+      {/* Single panel — Awaiting Payment only. The Paid lane was moved
           to /tech/live-clients so paying customers get the richer
           management surface (edit subdomain / domain / login / credits
           + send credentials + journey) instead of just a list row. */}
       <SiteCard
         title="Awaiting Payment"
         subtitle="Deployed but the client hasn't paid yet"
-        icon={<Clock className="h-4 w-4 text-amber-500" />}
-        accent="amber"
         sites={unpaidSites}
         baseEmptyText="No unpaid websites"
       />
@@ -137,8 +150,6 @@ export function TechProductionClient({ sites }: TechProductionClientProps) {
 interface SiteCardProps {
   title: string;
   subtitle: string;
-  icon: React.ReactNode;
-  accent: "amber" | "emerald";
   sites: Site[];
   baseEmptyText: string;
 }
@@ -146,8 +157,6 @@ interface SiteCardProps {
 function SiteCard({
   title,
   subtitle,
-  icon,
-  accent,
   sites,
   baseEmptyText,
 }: SiteCardProps) {
@@ -193,15 +202,6 @@ function SiteCard({
     });
   }, [sites, search, dateRange]);
 
-  const accentBorder =
-    accent === "amber"
-      ? "border-amber-200/60 dark:border-amber-900/40"
-      : "border-emerald-200/60 dark:border-emerald-900/40";
-  const accentBg =
-    accent === "amber"
-      ? "bg-amber-50/40 dark:bg-amber-950/10"
-      : "bg-emerald-50/40 dark:bg-emerald-950/10";
-
   const emptyText =
     search || dateRange ? "No matches" : baseEmptyText;
 
@@ -219,17 +219,20 @@ function SiteCard({
   }
 
   return (
-    <div className={`rounded-lg border ${accentBorder} overflow-hidden`}>
-      {/* Card header — title row + search row (original layout).
-          Date filter is a small dropdown sitting on the search row, to
-          the right of the search input. Custom range expands as a thin
-          row below it only when selected. */}
-      <div className={`border-b ${accentBorder} ${accentBg}`}>
-        <div className="flex items-center gap-2 px-4 pt-3">
-          {icon}
+    <div className="dash-panel overflow-hidden">
+      {/* Panel header — title row + search row. Date filter is a small dropdown
+          on the search row, to the right of the search input. Custom range
+          expands as a thin row below it only when selected. */}
+      <div className="dash-hairline border-b">
+        <div className="flex items-center gap-3 px-5 pt-4">
+          <span className="dash-chip inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+            <Clock className="h-4 w-4" />
+          </span>
           <div className="min-w-0">
             <p className="text-sm font-semibold leading-tight">{title}</p>
-            <p className="text-[11px] text-muted-foreground leading-tight">{subtitle}</p>
+            <p className="text-xs text-muted-foreground leading-tight">
+              {subtitle}
+            </p>
           </div>
           <span className="ml-auto text-xs text-muted-foreground tabular-nums">
             {filtered.length === 1 ? "1 website" : `${filtered.length} websites`}
@@ -239,21 +242,21 @@ function SiteCard({
         {/* Search + date filter on one row. The select is wrapped so the
             chevron icon shows on top of a native <select> — gives it a
             clear button look without losing the native dropdown. */}
-        <div className="flex items-center gap-2 px-4 py-2.5">
+        <div className="flex items-center gap-2 px-5 py-3">
           <div className="relative flex-1">
-            <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search company or phone…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 h-7 text-xs bg-background"
+              className="pl-8 h-8 text-xs bg-background"
             />
           </div>
           <div className="relative shrink-0">
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-              className="h-7 min-w-27.5 text-xs bg-background border border-input rounded-md pl-2 pr-7 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/50 appearance-none"
+              className="h-8 min-w-27.5 text-xs bg-background border border-input rounded-md pl-2.5 pr-7 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/50 appearance-none"
               aria-label="Date range"
             >
               <option value="all">All time</option>
@@ -267,7 +270,7 @@ function SiteCard({
             <button
               type="button"
               onClick={clearAll}
-              className="shrink-0 inline-flex items-center h-7 px-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="shrink-0 inline-flex items-center h-8 px-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-3 w-3 mr-1" />
               Clear
@@ -279,12 +282,12 @@ function SiteCard({
             radix-popover trap memory: this parent re-renders on every
             search/filter keystroke and a portaled popover crashes. */}
         {dateFilter === "custom" && (
-          <div className="flex items-center gap-2 px-4 pb-2.5 text-xs">
+          <div className="flex items-center gap-2 px-5 pb-3 text-xs">
             <input
               type="date"
               value={customFrom}
               onChange={(e) => setCustomFrom(e.target.value)}
-              className="h-7 flex-1 bg-background border border-input rounded-md px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              className="h-8 flex-1 bg-background border border-input rounded-md px-2.5 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               aria-label="From date"
             />
             <span className="text-muted-foreground">→</span>
@@ -292,7 +295,7 @@ function SiteCard({
               type="date"
               value={customTo}
               onChange={(e) => setCustomTo(e.target.value)}
-              className="h-7 flex-1 bg-background border border-input rounded-md px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              className="h-8 flex-1 bg-background border border-input rounded-md px-2.5 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               aria-label="To date"
             />
           </div>
@@ -303,20 +306,33 @@ function SiteCard({
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="py-2 px-3 text-right font-medium w-8">#</th>
-              <th className="py-2 px-3 text-left font-medium min-w-44">Company</th>
-              <th className="py-2 px-3 text-left font-medium min-w-28">Phone</th>
-              <th className="py-2 px-3 text-center font-medium w-24">Edit</th>
-              <th className="py-2 px-3 text-center font-medium w-24">Visit</th>
-              <th className="py-2 px-3 text-right font-medium min-w-28">Deployed</th>
+            <tr className="dash-subhead dash-hairline border-b text-[10px] uppercase tracking-wider text-muted-foreground">
+              <th className="py-2.5 px-3 text-right font-semibold w-8">#</th>
+              <th className="py-2.5 px-3 text-left font-semibold min-w-44">
+                Company
+              </th>
+              <th className="py-2.5 px-3 text-left font-semibold min-w-28">
+                Phone
+              </th>
+              <th className="py-2.5 px-3 text-center font-semibold w-24">Edit</th>
+              <th className="py-2.5 px-3 text-center font-semibold w-24">
+                Visit
+              </th>
+              <th className="py-2.5 px-3 text-right font-semibold min-w-28">
+                Deployed
+              </th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-xs text-muted-foreground">
-                  {emptyText}
+                <td colSpan={6} className="px-3 py-14 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="dash-chip inline-flex h-11 w-11 items-center justify-center rounded-full">
+                      <Globe2 className="h-5 w-5" />
+                    </span>
+                    <p className="text-sm font-medium">{emptyText}</p>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -335,19 +351,19 @@ function SiteCard({
                   <tr
                     key={s.id}
                     data-interactive="true"
-                    className="border-b last:border-0 hover:bg-muted/40 transition-colors group"
+                    className="dash-row dash-hairline border-b last:border-0 group"
                   >
                     {/* Row number */}
-                    <td className="py-1.5 px-3 text-right text-muted-foreground tabular-nums text-xs select-none">
+                    <td className="py-2 px-3 text-right text-muted-foreground tabular-nums text-xs select-none">
                       {idx + 1}
                     </td>
 
                     {/* Company name — links to proposal detail */}
-                    <td className="py-1.5 px-3 max-w-44">
+                    <td className="py-2 px-3 max-w-44">
                       {s.proposal_id ? (
                         <Link
                           href={`/tech/proposals/${s.proposal_id}`}
-                          className="font-medium text-foreground hover:text-primary transition-colors truncate block"
+                          className="font-medium text-foreground hover:text-(--dash-accent) transition-colors truncate block"
                           title={companyName}
                         >
                           {companyName}
@@ -363,7 +379,7 @@ function SiteCard({
                     </td>
 
                     {/* Phone — contact number for the client */}
-                    <td className="py-1.5 px-3">
+                    <td className="py-2 px-3">
                       <span
                         className="font-mono text-xs text-muted-foreground truncate max-w-28 block"
                         title={s.proposals?.contacts?.phone ?? undefined}
@@ -375,7 +391,7 @@ function SiteCard({
                     {/* Edit — composer for modern sites, legacy workspace
                         (the OLD upload-and-deploy UI at /tech/proposals/[id])
                         for legacy sites. */}
-                    <td className="py-1.5 px-3 text-center">
+                    <td className="py-2 px-3 text-center">
                       <Button
                         variant="outline"
                         size="sm"
@@ -401,7 +417,7 @@ function SiteCard({
                     </td>
 
                     {/* Visit — open the live URL in a new tab */}
-                    <td className="py-1.5 px-3 text-center">
+                    <td className="py-2 px-3 text-center">
                       {visitUrl ? (
                         <Button
                           variant="ghost"
@@ -424,8 +440,8 @@ function SiteCard({
                     </td>
 
                     {/* Deployed / last published date */}
-                    <td className="py-1.5 px-3 text-right">
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="py-2 px-3 text-right">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                         {s.last_published_at
                           ? format(new Date(s.last_published_at), "dd MMM yyyy")
                           : "—"}
