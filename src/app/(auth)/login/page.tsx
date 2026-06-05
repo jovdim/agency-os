@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Brand } from "@/components/brand";
-import { Loader2, LogIn, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function LoginPageWrapper() {
   return (
@@ -152,76 +152,77 @@ function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <Brand
-          markClassName="size-7 rounded-md text-sm"
-          wordmarkClassName="text-base"
-        />
+    <>
+      {/* Theme toggle pinned to the screen corner, off the card */}
+      <div className="absolute right-4 top-4">
         <ThemeToggle />
       </div>
-      <Card className="shadow-xl shadow-black/[0.04]">
-        <CardHeader className="space-y-3 pb-2">
-          <div className="dash-chip flex size-11 items-center justify-center rounded-xl">
-            <LogIn className="h-5 w-5" />
-          </div>
-          <div className="space-y-1">
-            <p className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+
+      <div className="w-full max-w-sm">
+        {/* Brand lockup, centered above the card */}
+        <div className="mb-6 flex justify-center">
+          <Brand
+            markClassName="size-8 rounded-lg text-base"
+            wordmarkClassName="text-lg"
+          />
+        </div>
+
+        <Card>
+          <CardHeader className="space-y-1.5 pb-2 text-center">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
               Welcome back
             </p>
-            <CardTitle className="text-xl">Sign in to your account</CardTitle>
-            <CardDescription>
-              Enter your credentials to continue.
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="identifier">Username or Email</Label>
-              <Input
-                id="identifier"
-                type="text"
-                placeholder="your-username  /  you@example.com"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                required
-                autoCapitalize="off"
-                autoCorrect="off"
-                spellCheck={false}
-                autoComplete="username"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-            {error && (
-              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>{error}</span>
+            <CardTitle className="text-2xl">Sign in to your account</CardTitle>
+            <CardDescription>Enter your credentials to continue.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="identifier">Username or Email</Label>
+                <Input
+                  id="identifier"
+                  type="text"
+                  placeholder="your-username  /  you@example.com"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  autoComplete="username"
+                />
               </div>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                "Sign In"
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+              {error && (
+                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
               )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }

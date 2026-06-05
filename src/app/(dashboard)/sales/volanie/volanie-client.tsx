@@ -337,7 +337,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
 
     // Undo toast
     const removedContact = current;
-    const toastId = toast(outcome === "no_answer" ? "Call tomorrow" : outcome === "not_exists" ? "Doesn't exist" : outcome === "send_proposal" ? "Proposal created" : outcome === "send_invoice" ? "Invoice sent" : outcome === "local_market" ? "Local market" : outcome === "send_email" ? "Email" : outcome === "never_contact" ? "Do not contact" : outcome, {
+    const toastId = toast(outcome === "no_answer" ? "Call tomorrow" : outcome === "not_exists" ? "Doesn't exist" : outcome === "send_proposal" ? "Proposal created" : outcome === "send_invoice" ? "Invoice sent" : outcome === "send_email" ? "Email" : outcome === "never_contact" ? "Do not contact" : outcome, {
       description: removedContact.company_name,
       duration: 12000,
       action: {
@@ -659,7 +659,7 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
         <div className="max-w-2xl mx-auto space-y-4">
 
           {/* ── PRIMARY ACTIONS — big, dominant ── */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Button className="h-14 gap-2 text-sm font-medium flex-col" onClick={() => {
               setPropServices(c.industry ? [c.industry, "", "", ""] : ["", "", "", ""]);
               setPropPrice("");
@@ -667,9 +667,6 @@ export function VolanieClient({ contacts: initialContacts, stats }: { contacts: 
               setProposalOpen(true);
             }}>
               <Send className="h-5 w-5" /> Proposal
-            </Button>
-            <Button variant="outline" className="h-14 gap-2 text-sm font-medium flex-col" onClick={() => handleAction("local_market" as CallOutcome)}>
-              <MapPin className="h-5 w-5" /> LM
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

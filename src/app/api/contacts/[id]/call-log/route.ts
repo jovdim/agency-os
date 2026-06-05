@@ -81,16 +81,9 @@ export async function POST(
   // Update contact status (if outcome maps to a status)
   const newStatus = OUTCOME_TO_STATUS[outcome];
   if (newStatus) {
-    const updateData: Record<string, unknown> = { status: newStatus };
-
-    // Set local market flag
-    if (outcome === "local_market") {
-      updateData.is_local_market = true;
-    }
-
     await supabase
       .from("contacts")
-      .update(updateData)
+      .update({ status: newStatus })
       .eq("id", contactId);
   }
 

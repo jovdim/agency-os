@@ -186,16 +186,26 @@
   }
 }
 
-/* Entry-surface backdrop — a faint hairline grid over the base background.
-   Adds quiet structure/depth to full-screen surfaces (login) without a flat
-   fill, and deliberately avoids any color gradient. The lines are a single
-   muted tone (theme-aware via color-mix into --foreground). */
+/* Entry-surface backdrop — NO grid. A tasteful violet→plum wash (the approved
+   "pro, not AI" style: analogous hues 318°→300°, low chroma, anchored at the
+   top, melting into the base background) pooled behind the brand + card.
+   Theme-aware: a faint tint in light, a richer pool in dark. */
 .auth-backdrop {
   background-color: var(--background);
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
-  background-size: 46px 46px;
+  background-image: radial-gradient(
+    75% 60% at 50% 0%,
+    oklch(0.93 0.05 320) 0%,
+    oklch(0.965 0.022 305) 42%,
+    var(--background) 75%
+  );
+}
+.dark .auth-backdrop {
+  background-image: radial-gradient(
+    75% 60% at 50% 0%,
+    oklch(0.30 0.08 318) 0%,
+    oklch(0.205 0.038 300) 40%,
+    var(--background) 76%
+  );
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
