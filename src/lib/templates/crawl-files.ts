@@ -177,6 +177,9 @@ export interface Build404Options {
   /** Theme tokens (primary + bg). Optional — falls back to neutral defaults
    *  so even untouched-theme sites get a clean error page. */
   theme?: SiteTheme;
+  /** Favicon URL (data: URL or hosted). Mirrors the favicon the main pages
+   *  use so the browser-tab icon stays consistent on this page too. */
+  faviconUrl?: string;
 }
 
 /**
@@ -206,6 +209,9 @@ export function buildNotFoundHtml(options: Build404Options): string {
   const primaryFg = readableTextOn(primary);
 
   const escapedSiteName = escapeHtml(options.siteName);
+  const faviconLink = options.faviconUrl
+    ? `\n  <link rel="icon" href="${escapeHtml(options.faviconUrl)}">`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -213,7 +219,7 @@ export function buildNotFoundHtml(options: Build404Options): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page not found — ${escapedSiteName}</title>
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex">${faviconLink}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -306,6 +312,9 @@ export interface BuildPrivacyOptions {
   /** Theme tokens (primary + bg). Optional — falls back to neutral
    *  defaults so untouched-theme sites get a clean privacy page. */
   theme?: SiteTheme;
+  /** Favicon URL (data: URL or hosted). Mirrors the favicon the main pages
+   *  use so the browser-tab icon stays consistent on this page too. */
+  faviconUrl?: string;
 }
 
 /**
@@ -363,6 +372,9 @@ export function buildPrivacyHtml(options: BuildPrivacyOptions): string {
     "December",
   ];
   const effectiveDate = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+  const faviconLink = options.faviconUrl
+    ? `\n  <link rel="icon" href="${escapeHtml(options.faviconUrl)}">`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -370,7 +382,7 @@ export function buildPrivacyHtml(options: BuildPrivacyOptions): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — ${escapedSiteName}</title>
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex">${faviconLink}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">

@@ -14,6 +14,7 @@ import {
 } from "@/lib/deployment/cloudflare-direct";
 import { ensureCustomDomain } from "@/lib/deployment/cloudflare";
 import { mergePageSeo } from "./seo";
+import { resolveBrand } from "@/lib/composer/brand";
 import { createHash } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
@@ -731,6 +732,18 @@ export async function publishSite(
   // the new lastmod for every page.
   const today = new Date().toISOString().slice(0, 10);
 
+  // Favicon for the auto-generated privacy/404 pages — same precedence as
+  // the rendered site pages (explicit SEO favicon, else the brand mark) so
+  // the browser-tab icon is consistent on EVERY page. These pages build
+  // their own <head> and would otherwise show no icon at all.
+  const auxFaviconUrl =
+    substitutedComposition.seo?.favicon_url?.trim() ||
+    resolveBrand(
+      substitutedComposition.brand,
+      substitutedComposition.theme,
+      site.name,
+    ).faviconUrl;
+
   const crawlFiles: DeploymentFile[] = [
     {
       path: "robots.txt",
@@ -745,6 +758,7 @@ export async function publishSite(
       content: buildNotFoundHtml({
         siteName: site.name,
         theme: substitutedComposition.theme,
+        faviconUrl: auxFaviconUrl,
       }),
       contentType: "text/html; charset=utf-8",
     },
@@ -754,6 +768,7 @@ export async function publishSite(
         siteName: site.name,
         siteUrl: canonicalSiteUrl,
         theme: substitutedComposition.theme,
+        faviconUrl: auxFaviconUrl,
       }),
       contentType: "text/html; charset=utf-8",
     },
