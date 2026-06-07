@@ -24,7 +24,7 @@
 
 import type { FieldValue, PlaceholderSchema } from "@/lib/templates/parser";
 import type { SiteComposition } from "@/lib/templates/render";
-import { ENGLISH_TO_SLOVAK_HREF } from "./slovak-anchor-map";
+import { SLOVAK_TO_ENGLISH_HREF } from "./slovak-anchor-map";
 
 type LinkValue = { label?: string; href?: string };
 type LinkItem = Record<string, FieldValue>;
@@ -72,11 +72,11 @@ export function migrateLegacyNavOverrides(
         | Record<string, FieldValue>
         | undefined;
       let migrated = maybeMigrate(overrides, tpl?.placeholder_schema);
-      // Slovak href rewrite — runs on EVERY section (not just nav)
-      // because CTAs / hero buttons / inline "contact us" anchors
+      // Slovak → English href rewrite — runs on EVERY section (not just
+      // nav) because CTAs / hero buttons / inline "contact us" anchors
       // all carry link values whose href might still point at the old
-      // English ids. Idempotent: only touches strings that match.
-      const afterHrefRewrite = rewriteEnglishHrefs(migrated ?? overrides);
+      // Slovak ids. Idempotent: only touches strings that match.
+      const afterHrefRewrite = rewriteSlovakHrefs(migrated ?? overrides);
       if (afterHrefRewrite !== (migrated ?? overrides)) {
         migrated = afterHrefRewrite as Record<string, FieldValue>;
       }
@@ -110,7 +110,7 @@ function migrateSharedSlot(
       shared.nav_overrides as Record<string, FieldValue>,
       tpl?.placeholder_schema,
     );
-    const afterHref = rewriteEnglishHrefs(migrated ?? shared.nav_overrides);
+    const afterHref = rewriteSlovakHrefs(migrated ?? shared.nav_overrides);
     if (afterHref !== (migrated ?? shared.nav_overrides)) {
       migrated = afterHref as Record<string, FieldValue>;
     }
@@ -126,7 +126,7 @@ function migrateSharedSlot(
   // simple footer-link card with `href="#contact"` gets fixed without
   // the user touching it. ──
   if (shared.footer_overrides) {
-    const after = rewriteEnglishHrefs(
+    const after = rewriteSlovakHrefs(
       shared.footer_overrides as Record<string, FieldValue>,
     );
     if (after !== shared.footer_overrides) {
@@ -407,7 +407,7 @@ function toMenuItem(legacy: LinkItem): LinkItem {
  */
 /**
  * Recursively walk a FieldValue tree and rewrite any link `href`
- * matching the English → Slovak map (`#contact` → `#kontakt`, etc.).
+ * matching the Slovak → English map (`#kontakt` → `#contact`, etc.).
  *
  * Returns the SAME reference when nothing matched so the caller can
  * use referential equality to detect a no-op. Crawls into:
@@ -416,17 +416,17 @@ function toMenuItem(legacy: LinkItem): LinkItem {
  *   - Arrays — covers repeater item lists.
  *   - LinkValue `{ label, href }` — the only place we actually mutate.
  *
- * Idempotent: an href already in Slovak is left alone.
+ * Idempotent: an href already in English is left alone.
  *
  * Why this lives in legacy-nav-overrides.ts: the migration is part of
  * the same "fix saved data at load time" pipeline. Splitting it would
  * mean two passes over the composition; this way it rides along.
  */
-function rewriteEnglishHrefs(value: unknown): unknown {
+function rewriteSlovakHrefs(value: unknown): unknown {
   if (Array.isArray(value)) {
     let touched = false;
     const next = value.map((v) => {
-      const rv = rewriteEnglishHrefs(v);
+      const rv = rewriteSlovakHrefs(v);
       if (rv !== v) touched = true;
       return rv;
     });
@@ -437,14 +437,14 @@ function rewriteEnglishHrefs(value: unknown): unknown {
     // LinkValue shape — `{ label, href }`. We only rewrite `href`; the
     // visible label stays whatever the user typed.
     const href = obj.href;
-    if (typeof href === "string" && href in ENGLISH_TO_SLOVAK_HREF) {
-      return { ...obj, href: ENGLISH_TO_SLOVAK_HREF[href] };
+    if (typeof href === "string" && href in SLOVAK_TO_ENGLISH_HREF) {
+      return { ...obj, href: SLOVAK_TO_ENGLISH_HREF[href] };
     }
     // Generic object — recurse into every key.
     let touched = false;
     const next: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(obj)) {
-      const rv = rewriteEnglishHrefs(v);
+      const rv = rewriteSlovakHrefs(v);
       if (rv !== v) touched = true;
       next[k] = rv;
     }

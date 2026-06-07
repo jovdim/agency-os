@@ -1,45 +1,40 @@
 /**
- * Canonical English → Slovak rewrites for section anchor ids.
+ * Canonical Slovak → English rewrites for section anchor ids.
  *
- * Slovak clients see anchor ids in the URL bar after clicking nav/footer
- * links (`mojweb.sk/#contact`). Templates used to ship with English
- * defaults, which looked unprofessional on Slovak sites. This map is the
- * single source of truth for the rewrite — consumed by:
+ * History: templates used to ship English anchor ids; a 2026-05 migration
+ * rewrote everything to Slovak (`#contact` → `#kontakt`) for Slovak-only
+ * clients. The product is now white-label / locale-agnostic, so the
+ * templates were reverted to English ids (`id="home"`, `id="services"`,
+ * …) and this map runs the OPPOSITE direction: it heals any saved site
+ * whose nav/footer/CTA hrefs still carry the old Slovak slugs, converting
+ * them back to the English id the template's section actually emits.
  *
- *   • the template-migration script (`scripts/slovakize-anchors.mjs`)
- *     that rewrote each template's section root id + default hrefs.
- *   • the composer migration shim (`legacy-nav-overrides.ts`) that
- *     rewrites already-saved nav/footer dropdown hrefs at load time so
- *     existing customer sites don't break.
+ * Single source of truth for the rewrite — consumed by
+ * `legacy-nav-overrides.ts`, which rewrites already-saved nav/footer/CTA
+ * hrefs at composition-load time so existing customer sites converge on
+ * English anchors (and the next autosave + publish persists them).
  *
- * Adding new mappings here is safe — both consumers re-read it on next
- * load. Removing one without coordinating is NOT — any site whose saved
- * nav still references the old English id would silently break.
+ * The English targets MUST match the real section root ids in the
+ * templates (see public/sample-templates/*.html): hero → `home`,
+ * services → `services`, how-it-works → `process`, etc. Mapping a Slovak
+ * slug to an id no template emits would leave a dangling nav link.
  */
-export const ENGLISH_TO_SLOVAK_ANCHOR: Record<string, string> = {
-  contact: "kontakt",
-  gallery: "galeria",
-  services: "sluzby",
-  hero: "domov",
-  home: "domov",
-  about: "o-nas",
-  faq: "otazky",
-  reviews: "recenzie",
-  testimonials: "referencie",
-  cta: "vyzva",
-  map: "mapa",
-  footer: "paticka",
-  // `how-it-works` collapses to `postup` (the process-page template
-  // owns this slug). Two services-category variants (services-06,
-  // services-07) historically shipped with `id="how-it-works"` and
-  // `id="equipment"` respectively — those are fixed in the templates
-  // themselves to `id="sluzby"` so they match their category. After
-  // the template migration, only `how-it-works-01` keeps emitting
-  // `#how-it-works` if any existing site still has it saved.
-  "how-it-works": "postup",
+export const SLOVAK_TO_ENGLISH_ANCHOR: Record<string, string> = {
+  domov: "home",
+  "o-nas": "about",
+  sluzby: "services",
+  galeria: "gallery",
+  kontakt: "contact",
+  otazky: "faq",
+  recenzie: "reviews",
+  referencie: "testimonials",
+  vyzva: "cta",
+  mapa: "map",
+  paticka: "footer",
+  postup: "process",
 };
 
 /** Convenience map keyed with leading `#` for href-rewriting passes. */
-export const ENGLISH_TO_SLOVAK_HREF: Record<string, string> = Object.fromEntries(
-  Object.entries(ENGLISH_TO_SLOVAK_ANCHOR).map(([en, sk]) => [`#${en}`, `#${sk}`]),
+export const SLOVAK_TO_ENGLISH_HREF: Record<string, string> = Object.fromEntries(
+  Object.entries(SLOVAK_TO_ENGLISH_ANCHOR).map(([sk, en]) => [`#${sk}`, `#${en}`]),
 );

@@ -139,7 +139,7 @@ export interface BuildHeadMetaOptions {
    *  duplicated across every subpage (Google flags repeated LocalBusiness
    *  schema). */
   emitLocalBusiness?: boolean;
-  /** Locale for og:locale. Defaults to "sk_SK" (Slovak). */
+  /** Locale for og:locale. Defaults to "en_US". */
   locale?: string;
   /** Brand record from `composition.brand`. Optional, but when present
    *  AND the brand has at least a name + one contact channel, a
@@ -187,7 +187,7 @@ export function buildHeadMeta(
   const ogImageRaw = (seo?.og_image_url ?? "").trim();
   const favicon = (seo?.favicon_url ?? "").trim();
   const noIndex = !!seo?.no_index;
-  const locale = options.locale || "sk_SK";
+  const locale = options.locale || "en_US";
 
   // Resolve og:image to an absolute URL. This is the core of the fix —
   // crawlers fetch the og:image URL from outside our domain, so a

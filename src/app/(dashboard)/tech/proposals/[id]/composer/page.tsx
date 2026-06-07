@@ -28,7 +28,7 @@ export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
 const EMPTY_COMPOSITION: SiteComposition = {
-  pages: [{ path: "index.html", label: "Domov", sections: [] }],
+  pages: [{ path: "index.html", label: "Home", sections: [] }],
 };
 
 export default async function ProposalComposerPage({

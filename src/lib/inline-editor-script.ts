@@ -1101,7 +1101,7 @@ export const INLINE_EDITOR_SCRIPT = `
         finalLabel = entry.path.split('.html')[0];
         finalLabel = finalLabel.split('-').join(' ').split('_').join(' ');
         finalLabel = finalLabel.split(' ').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
-        if (entry.path === 'index.html') finalLabel = 'Domov';
+        if (entry.path === 'index.html') finalLabel = 'Home';
       }
       pages.push({ path: entry.path, label: finalLabel });
     }

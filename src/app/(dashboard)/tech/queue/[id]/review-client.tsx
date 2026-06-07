@@ -463,7 +463,7 @@ export function ChangeRequestReviewClient({
                         : "bg-secondary text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {page === "index.html" ? "Domov" : page.replace(".html", "")}
+                    {page === "index.html" ? "Home" : page.replace(".html", "")}
                   </button>
                 ))}
               </div>
