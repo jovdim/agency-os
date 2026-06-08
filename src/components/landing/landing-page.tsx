@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "./reveal";
@@ -144,7 +143,7 @@ function Faq({ q, a }: { q: string; a: string }) {
         {q}
         <CaretDown className="h-4 w-4 shrink-0 text-[color:var(--brand-accent)] transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[color:var(--lp-muted)]">{a}</p>
+      <p className={`mt-3 max-w-2xl text-sm leading-relaxed text-[color:var(--lp-muted)] ${styles.faqA}`}>{a}</p>
     </details>
   );
 }
@@ -172,9 +171,14 @@ export default function LandingPage() {
         }`}
       >
         <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5">
-          <Link href="/" aria-label="Home">
+          <button
+            type="button"
+            aria-label="Back to top"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="flex cursor-pointer items-center"
+          >
             <Brand wordmarkClassName="h-11" />
-          </Link>
+          </button>
           <nav className="hidden items-center gap-7 text-sm font-medium text-[color:var(--lp-muted)] md:flex">
             <a href="#how" className="transition-colors hover:text-[color:var(--lp-text)]">How it works</a>
             <a href="#features" className="transition-colors hover:text-[color:var(--lp-text)]">What you get</a>
@@ -233,9 +237,10 @@ export default function LandingPage() {
             {/* orbit rings sit OUTSIDE the card, haloing around it (not clipped) */}
             <OrbitRings className="pointer-events-none absolute left-1/2 top-1/2 h-[125%] w-[125%] -translate-x-1/2 -translate-y-1/2 opacity-50" />
             <div className="relative overflow-hidden rounded-2xl border border-[color:var(--lp-line2)] bg-[color:var(--lp-card)] shadow-2xl">
-              {/* building-website SVG backdrop, clipped to the card */}
+              {/* building-website SVG backdrop, clipped to the card (faint so
+                  the form sits on a solid surface) */}
               <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-                <HeroVisual className={`${styles.drift} w-[140%] max-w-none opacity-30 blur-[1.5px]`} />
+                <HeroVisual className={`${styles.drift} w-[140%] max-w-none opacity-[0.12] blur-[1.5px]`} />
               </div>
               {/* form content on top */}
               <div className="relative z-10 p-6 sm:p-7">

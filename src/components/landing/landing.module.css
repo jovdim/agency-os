@@ -115,11 +115,18 @@
 }
 .sheen:hover::after { animation: lpSheen 1.1s ease forwards; }
 
+/* FAQ accordion — the native <details> snaps open, so animate the answer in. */
+@keyframes lpFaqOpen {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+details[open] .faqA { animation: lpFaqOpen 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   .frame, .block, .cursor, .pulse, .drift, .driftSlow, .spin, .spinRev, .spinSlow,
   .ripple, .glow, .glowPulse, .connDot, .aurora, .underline, .twinkle, .bar,
-  .progress, .caret, .node, .netLine, .floatY, .breath {
+  .progress, .caret, .node, .netLine, .floatY, .breath, .faqA {
     animation: none !important;
   }
   .frame, .underline { stroke-dashoffset: 0; }

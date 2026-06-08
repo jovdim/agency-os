@@ -12,7 +12,7 @@ import {
 type Status = "idle" | "loading" | "done" | "error";
 
 const FIELD =
-  "w-full rounded-lg border border-white/12 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white shadow-sm outline-none transition-colors placeholder:text-white/35 focus-visible:border-[color:var(--brand)] focus-visible:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--brand)_45%,transparent)]";
+  "w-full rounded-lg border border-white/15 bg-[color:var(--lp-bg)] px-3.5 py-2.5 text-sm text-white shadow-sm outline-none transition-colors placeholder:text-white/35 focus-visible:border-[color:var(--brand)] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--brand)_45%,transparent)]";
 const LABEL = "text-xs font-medium text-white/60";
 
 /** Required-field marker. */
