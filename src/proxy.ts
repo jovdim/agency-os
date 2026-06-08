@@ -17,9 +17,10 @@ export async function proxy(request: NextRequest) {
   // Refresh session and get user
   const { supabase, user, response } = await updateSession(request);
 
-  // "/" is the public marketing landing page for logged-out visitors.
-  // (Authenticated users fall through to the role-dashboard redirect below.)
-  if (pathname === "/" && !user) {
+  // "/" is the public marketing landing page, shown to EVERYONE (logged in or
+  // out) with NO redirect. Signed-in users reach their dashboard via the
+  // sidebar or a direct URL; the login flow routes them there explicitly.
+  if (pathname === "/") {
     return response;
   }
 
@@ -46,22 +47,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Root path - redirect to role-specific dashboard
-  if (pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = getDefaultRoute(role);
-
-    // Sales on mobile → go straight to dialer
-    if (role === "sales") {
-      const ua = request.headers.get("user-agent") || "";
-      const isMobile = /iPhone|iPad|iPod|Android|Mobile/i.test(ua);
-      if (isMobile) {
-        url.pathname = "/sales/dialer";
-      }
-    }
-
-    return NextResponse.redirect(url);
-  }
+  // (Root "/" is handled above — it always renders the public landing now,
+  // so there is no role-based redirect here anymore.)
 
   // Sales on mobile hitting /sales dashboard → redirect to dialer
   if (role === "sales" && pathname === "/sales") {

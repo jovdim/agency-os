@@ -15,6 +15,11 @@ const FIELD =
   "w-full rounded-lg border border-white/12 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white shadow-sm outline-none transition-colors placeholder:text-white/35 focus-visible:border-[color:var(--brand)] focus-visible:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--brand)_45%,transparent)]";
 const LABEL = "text-xs font-medium text-white/60";
 
+/** Required-field marker. */
+function Star() {
+  return <span className="ml-0.5 text-[color:var(--brand-accent)]">*</span>;
+}
+
 export function LeadForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -36,6 +41,7 @@ export function LeadForm() {
         body: JSON.stringify({
           name: fd.get("name"),
           email: fd.get("email"),
+          phone: fd.get("phone"),
           business: fd.get("business"),
           message: fd.get("message"),
           company_website: fd.get("company_website"),
@@ -79,27 +85,32 @@ export function LeadForm() {
 
       <div className="grid gap-3.5 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="lf-name" className={LABEL}>Your name</label>
+          <label htmlFor="lf-name" className={LABEL}>Your name<Star /></label>
           <input id="lf-name" name="name" required placeholder="Jane Doe" className={FIELD} />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="lf-business" className={LABEL}>Business name</label>
-          <input id="lf-business" name="business" placeholder="Doe &amp; Co." className={FIELD} />
+          <label htmlFor="lf-business" className={LABEL}>Business name<Star /></label>
+          <input id="lf-business" name="business" required placeholder="Doe &amp; Co." className={FIELD} />
+        </div>
+      </div>
+
+      <div className="grid gap-3.5 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <label htmlFor="lf-email" className={LABEL}>Email<Star /></label>
+          <input id="lf-email" name="email" type="email" required placeholder="jane@business.com" className={FIELD} />
+        </div>
+        <div className="space-y-1.5">
+          <label htmlFor="lf-phone" className={LABEL}>Phone<Star /></label>
+          <input id="lf-phone" name="phone" type="tel" required placeholder="+1 555 123 4567" className={FIELD} />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="lf-email" className={LABEL}>Email</label>
-        <input id="lf-email" name="email" type="email" required placeholder="jane@business.com" className={FIELD} />
-      </div>
-
-      <div className="space-y-1.5">
-        <label htmlFor="lf-message" className={LABEL}>
-          What do you need? <span className="text-white/35">(optional)</span>
-        </label>
+        <label htmlFor="lf-message" className={LABEL}>What do you need?<Star /></label>
         <textarea
           id="lf-message"
           name="message"
+          required
           rows={3}
           placeholder="A few lines about your business and what the site should do."
           className={`${FIELD} resize-none`}
@@ -127,7 +138,8 @@ export function LeadForm() {
         )}
       </Button>
       <p className="text-center text-[11px] text-white/45">
-        No obligation. No spam. We reply within one business day.
+        <span className="text-[color:var(--brand-accent)]">*</span> All fields
+        required. No obligation. No spam. We reply within one business day.
       </p>
     </form>
   );

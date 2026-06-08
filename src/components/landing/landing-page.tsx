@@ -12,13 +12,12 @@ import styles from "./landing.module.css";
 import {
   ArrowRight,
   CaretDown,
+  CaretUp,
   Check,
-  DeviceMobile,
   Envelope,
   GlobeHemisphereWest,
   Lightning,
   MagicWand,
-  PaperPlaneTilt,
   PencilSimple,
   Rocket,
   ShieldCheck,
@@ -39,6 +38,37 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
       <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-accent)]" />
       {children}
     </span>
+  );
+}
+
+/** Floating button that toggles between scroll-to-bottom (near top) and
+ *  scroll-to-top (once scrolled down). */
+function ScrollToggle() {
+  const [atTop, setAtTop] = useState(true);
+  useEffect(() => {
+    const onScroll = () => setAtTop(window.scrollY < 300);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <button
+      type="button"
+      aria-label={atTop ? "Scroll to bottom" : "Scroll to top"}
+      onClick={() =>
+        window.scrollTo({
+          top: atTop ? document.documentElement.scrollHeight : 0,
+          behavior: "smooth",
+        })
+      }
+      className="fixed bottom-6 right-6 z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--lp-line2)] bg-[color-mix(in_oklab,var(--lp-card)_88%,transparent)] text-[color:var(--lp-text)] shadow-xl backdrop-blur transition-all hover:scale-110 hover:border-[color:var(--brand)]"
+    >
+      {atTop ? (
+        <CaretDown className="h-5 w-5" weight="bold" />
+      ) : (
+        <CaretUp className="h-5 w-5" weight="bold" />
+      )}
+    </button>
   );
 }
 
@@ -141,9 +171,9 @@ export default function LandingPage() {
             : "border-b border-transparent"
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5">
           <Link href="/" aria-label="Home">
-            <Brand wordmarkClassName="text-[color:var(--lp-text)]" />
+            <Brand wordmarkClassName="h-11" />
           </Link>
           <nav className="hidden items-center gap-7 text-sm font-medium text-[color:var(--lp-muted)] md:flex">
             <a href="#how" className="transition-colors hover:text-[color:var(--lp-text)]">How it works</a>
@@ -160,59 +190,65 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden">
-        <div className={styles.aurora} style={{ width: 480, height: 480, top: -170, left: -120 }} />
-        <div className={styles.aurora} style={{ width: 420, height: 420, top: 30, right: -150, animationDelay: "3s", opacity: 0.38 }} />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-28">
-          <div>
-            <Reveal><Eyebrow>Websites for small businesses &amp; entrepreneurs</Eyebrow></Reveal>
-            <Reveal delay={80}>
-              <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-tight text-[color:var(--lp-text)] sm:text-5xl lg:text-6xl">
-                A website that works
-                <br className="hidden sm:block" /> as hard as{" "}
-                <span className="relative whitespace-nowrap text-[color:var(--brand-accent)]">
-                  you do
-                  <svg className="absolute -bottom-2 left-0 h-3 w-full" viewBox="0 0 200 12" fill="none" preserveAspectRatio="none" aria-hidden>
-                    <path className={styles.underline} d="M2 8C40 3 80 3 120 6s60 4 78 1" pathLength={320} stroke="var(--brand-accent)" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                </span>
-                .
-              </h1>
-            </Reveal>
-            <Reveal delay={160}>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-[color:var(--lp-muted)]">
-                We design, build, and launch a fast, modern website for your
-                business, on your own domain. Then we hand you a dead simple way
-                to edit it yourself. One service, done properly. No jargon, no
-                page builders, no monthly lock in.
-              </p>
-            </Reveal>
-            <Reveal delay={240}>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <button onClick={scrollToProposal} className={`${styles.sheen} relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-[color:var(--brand)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[color-mix(in_oklab,var(--brand)_45%,transparent)] transition-transform hover:scale-[1.02] active:scale-100`}>
-                  <PaperPlaneTilt className="h-4 w-4" weight="fill" />
-                  Get my free proposal
-                </button>
-                <a href="#how" className="inline-flex items-center justify-center gap-2 rounded-xl border border-[color:var(--lp-line2)] px-6 py-3.5 text-sm font-semibold text-[color:var(--lp-text)] transition-colors hover:bg-white/5">
-                  See how it works
-                  <CaretDown className="h-4 w-4" />
-                </a>
-              </div>
-            </Reveal>
-            <Reveal delay={320}>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[color:var(--lp-muted)]">
-                <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-[color:var(--brand-accent)]" weight="bold" /> Live in days</span>
-                <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-[color:var(--brand-accent)]" weight="bold" /> You own everything</span>
-                <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-[color:var(--brand-accent)]" weight="bold" /> Edit it yourself</span>
-              </div>
-            </Reveal>
-          </div>
+      {/* ── Hero: marketing pitch (left) + the form with the building-website
+          animation living behind it as a backdrop (right) ── */}
+      <section id="proposal" className="relative scroll-mt-24 overflow-hidden">
+        <div className={styles.aurora} style={{ width: 480, height: 480, top: -170, left: -140 }} />
+        <div className={styles.aurora} style={{ width: 420, height: 420, top: 60, right: -150, animationDelay: "3s", opacity: 0.4 }} />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+          {/* LEFT — the pitch */}
+          <Reveal>
+            <Eyebrow>Websites for small businesses &amp; entrepreneurs</Eyebrow>
+            <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-tight text-[color:var(--lp-text)] sm:text-5xl lg:text-6xl">
+              A website that works
+              <br className="hidden sm:block" /> as hard as{" "}
+              <span className="relative whitespace-nowrap text-[color:var(--brand-accent)]">
+                you do
+                <svg className="absolute -bottom-2 left-0 h-3 w-full" viewBox="0 0 200 12" fill="none" preserveAspectRatio="none" aria-hidden>
+                  <path className={styles.underline} d="M2 8C40 3 80 3 120 6s60 4 78 1" pathLength={320} stroke="var(--brand-accent)" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+              </span>
+              .
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-[color:var(--lp-muted)]">
+              We design, build, and launch a fast, modern website for your
+              business, on your own domain. Then we hand you a dead simple way to
+              edit it yourself. One service, done properly.
+            </p>
+            <ul className="mt-7 space-y-2.5">
+              {["Built around your brand", "Live in days", "Edit it yourself, no code"].map((b) => (
+                <li key={b} className="flex items-center gap-3 text-[15px] font-medium text-[color:var(--lp-text)]">
+                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--brand-accent)_22%,var(--lp-card))] text-[color:var(--brand-accent)]">
+                    <Check className="h-3.5 w-3.5" weight="bold" />
+                  </span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
 
-          <Reveal delay={180} className="relative">
-            <OrbitRings className="pointer-events-none absolute left-1/2 top-1/2 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 opacity-50" />
-            <div className={`relative ${styles.drift}`}>
-              <HeroVisual className="mx-auto w-full max-w-md drop-shadow-2xl" />
+          {/* RIGHT — the form card; the animation lives INSIDE it as a backdrop,
+              clipped to the card so it matches the card box exactly */}
+          <Reveal delay={160} className="relative">
+            {/* orbit rings sit OUTSIDE the card, haloing around it (not clipped) */}
+            <OrbitRings className="pointer-events-none absolute left-1/2 top-1/2 h-[125%] w-[125%] -translate-x-1/2 -translate-y-1/2 opacity-50" />
+            <div className="relative overflow-hidden rounded-2xl border border-[color:var(--lp-line2)] bg-[color:var(--lp-card)] shadow-2xl">
+              {/* building-website SVG backdrop, clipped to the card */}
+              <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+                <HeroVisual className={`${styles.drift} w-[140%] max-w-none opacity-30 blur-[1.5px]`} />
+              </div>
+              {/* form content on top */}
+              <div className="relative z-10 p-6 sm:p-7">
+                <div className="mb-5 text-center">
+                  <h2 className="text-xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-2xl">
+                    Get your free proposal
+                  </h2>
+                  <p className="mt-1 text-sm text-[color:var(--lp-muted)]">
+                    Fill out the form and we reply within one business day, with zero obligation.
+                  </p>
+                </div>
+                <LeadForm />
+              </div>
             </div>
           </Reveal>
         </div>
@@ -258,7 +294,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How it works ── */}
-      <section id="how" className="scroll-mt-20 border-y border-[color:var(--lp-line)] bg-[color:var(--lp-bg2)]">
+      <section id="how" className="scroll-mt-24 border-y border-[color:var(--lp-line)] bg-[color:var(--lp-bg2)]">
         <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
           <Reveal className="max-w-2xl">
             <Eyebrow>How it works</Eyebrow>
@@ -272,7 +308,6 @@ export default function LandingPage() {
           </Reveal>
 
           <div className="relative mt-12">
-            {/* connector with a glow that travels along it (desktop) */}
             <div className="pointer-events-none absolute inset-x-[8%] top-[58px] z-0 hidden lg:block">
               <div className="border-t border-dashed border-[color:var(--lp-line2)]" />
               <div
@@ -304,7 +339,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="relative scroll-mt-20 overflow-hidden">
+      <section id="features" className="relative scroll-mt-24 overflow-hidden">
         <OrbitRings className="pointer-events-none absolute -right-20 top-6 hidden h-80 w-80 opacity-40 lg:block" />
         <div className="relative mx-auto max-w-6xl px-5 py-20 lg:py-28">
           <Reveal className="max-w-2xl">
@@ -343,7 +378,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="scroll-mt-20 border-y border-[color:var(--lp-line)] bg-[color:var(--lp-bg2)]">
+      <section id="pricing" className="scroll-mt-24 border-y border-[color:var(--lp-line)] bg-[color:var(--lp-bg2)]">
         <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <Reveal>
@@ -390,7 +425,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" className="scroll-mt-20 mx-auto max-w-3xl px-5 py-20 lg:py-28">
+      <section id="faq" className="mx-auto max-w-3xl scroll-mt-24 px-5 py-20 lg:py-28">
         <Reveal className="text-center">
           <div className="flex justify-center"><Eyebrow>Questions</Eyebrow></div>
           <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
@@ -404,33 +439,12 @@ export default function LandingPage() {
           <Faq q="What does it cost?" a="One fixed, up front price tailored to what you need, quoted free before you commit. No hourly billing and no monthly lock in." />
           <Faq q="I already have a website. Can you help?" a="Often, yes. We rebuild it properly or move it onto something faster and easier to manage. Mention it in your request and we take a look." />
         </Reveal>
-      </section>
-
-      {/* ── Final CTA + lead form ── */}
-      <section id="proposal" className="scroll-mt-20 relative overflow-hidden bg-[color:var(--lp-bg2)]">
-        <div className={styles.aurora} style={{ width: 460, height: 460, bottom: -200, left: "32%", opacity: 0.4 }} />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:py-28">
-          <div>
-            <Eyebrow>Get started</Eyebrow>
-            <h2 className="mt-5 text-3xl font-black leading-tight tracking-tight text-[color:var(--lp-text)] sm:text-4xl lg:text-5xl">
-              Get your free proposal.
-            </h2>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-[color:var(--lp-muted)]">
-              Tell us a little about your business. We send back a tailored plan
-              and a fixed price for your website within one business day, with
-              zero obligation.
-            </p>
-            <div className="mt-8 flex items-center gap-3 text-sm text-[color:var(--lp-muted)]">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/8 text-[color:var(--brand-accent)]">
-                <DeviceMobile className="h-4 w-4" weight="duotone" />
-              </span>
-              Prefer to talk? Say so in your message and we call you.
-            </div>
-          </div>
-          <div className="rounded-2xl border border-[color:var(--lp-line)] bg-[color:var(--lp-card)] p-6 shadow-2xl sm:p-8">
-            <LeadForm />
-          </div>
-        </div>
+        <Reveal delay={200} className="mt-12 text-center">
+          <button onClick={scrollToProposal} className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--brand)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[color-mix(in_oklab,var(--brand)_35%,transparent)] transition-transform hover:scale-[1.02]">
+            Get your free proposal
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </Reveal>
       </section>
 
       {/* ── Footer ── */}
@@ -447,7 +461,6 @@ export default function LandingPage() {
             <a href="#features" className="transition-colors hover:text-[color:var(--lp-text)]">What you get</a>
             <a href="#pricing" className="transition-colors hover:text-[color:var(--lp-text)]">Pricing</a>
             <a href="#faq" className="transition-colors hover:text-[color:var(--lp-text)]">FAQ</a>
-            <Link href="/login" className="transition-colors hover:text-[color:var(--lp-text)]">Sign in</Link>
           </nav>
         </div>
         <div className="border-t border-[color:var(--lp-line)] py-5">
@@ -456,6 +469,8 @@ export default function LandingPage() {
           </p>
         </div>
       </footer>
+
+      <ScrollToggle />
     </div>
   );
 }

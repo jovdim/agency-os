@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Brand } from "@/components/brand";
+import { getDefaultRoute } from "@/lib/auth/roles";
+import type { UserRole } from "@/types/database";
 import { CircleNotch as Loader2, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 
 export default function LoginPageWrapper() {
@@ -115,10 +117,11 @@ function LoginPage() {
     }
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: emailToUse,
-      password,
-    });
+    const { data: signInData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email: emailToUse,
+        password,
+      });
 
     if (authError) {
       setError(authError.message);
@@ -126,8 +129,11 @@ function LoginPage() {
       return;
     }
 
-    // Middleware will handle role-based redirect
-    router.push("/");
+    // "/" is now the public landing for everyone, so route straight to this
+    // user's role dashboard instead of bouncing through "/". (The proxy still
+    // handles the sales-on-mobile → dialer hop when we land on /sales.)
+    const role = signInData.user?.app_metadata?.role as UserRole | undefined;
+    router.push(role ? getDefaultRoute(role) : "/");
     router.refresh();
   }
 
