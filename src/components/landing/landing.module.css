@@ -122,11 +122,17 @@
 }
 details[open] .faqA { animation: lpFaqOpen 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
 
+/* Industries marquee — slow, continuous, pauses on hover. The track holds two
+   identical groups; shifting by exactly one group (-50%) loops seamlessly. */
+@keyframes lpMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: lpMarquee 55s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   .frame, .block, .cursor, .pulse, .drift, .driftSlow, .spin, .spinRev, .spinSlow,
   .ripple, .glow, .glowPulse, .connDot, .aurora, .underline, .twinkle, .bar,
-  .progress, .caret, .node, .netLine, .floatY, .breath, .faqA {
+  .progress, .caret, .node, .netLine, .floatY, .breath, .faqA, .marquee {
     animation: none !important;
   }
   .frame, .underline { stroke-dashoffset: 0; }
