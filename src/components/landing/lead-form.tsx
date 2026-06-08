@@ -137,10 +137,6 @@ export function LeadForm() {
           </>
         )}
       </Button>
-      <p className="text-center text-[11px] text-white/45">
-        <span className="text-[color:var(--brand-accent)]">*</span> All fields
-        required. No obligation. No spam. We reply within one business day.
-      </p>
     </form>
   );
 }
