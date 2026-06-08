@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Agency OS",
-  description: "Web agency operating system",
+  title: "GoWebify",
+  description: "Websites for small businesses & entrepreneurs",
 };
 
 export default function RootLayout({

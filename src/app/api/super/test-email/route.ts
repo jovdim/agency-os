@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       from: email,
       to: email,
       subject: "Test — Business Email Working",
-      html: `<p>This is a test email from SK Agency OS.<br>Your business email <strong>${email}</strong> is configured correctly.</p>`,
+      html: `<p>This is a test email from GoWebify.<br>Your business email <strong>${email}</strong> is configured correctly.</p>`,
     });
 
     return NextResponse.json({ success: true, message: "Connection successful — test email sent" });

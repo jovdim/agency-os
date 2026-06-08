@@ -152,12 +152,6 @@ export default function LandingPage() {
             <a href="#faq" className="transition-colors hover:text-[color:var(--lp-text)]">FAQ</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="hidden rounded-lg px-3 py-2 text-sm font-medium text-[color:var(--lp-muted)] transition-colors hover:text-[color:var(--lp-text)] sm:inline-flex"
-            >
-              Sign in
-            </Link>
             <Button onClick={scrollToProposal} className="gap-1.5">
               Get a free proposal
               <ArrowRight className="h-4 w-4" />

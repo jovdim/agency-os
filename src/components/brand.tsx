@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * Deliberately country/locale-agnostic (no "SK"/Slovakia) and intentionally
  * NOT a gradient/sparkle "AI template" mark — a solid, confident lettermark.
  */
-export const BRAND_NAME = "Agency OS";
+export const BRAND_NAME = "GoWebify";
 
 /** Solid brand-color tile with the wordmark's initial. Placeholder until a
  *  real logo asset lands. */
