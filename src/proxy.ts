@@ -17,6 +17,12 @@ export async function proxy(request: NextRequest) {
   // Refresh session and get user
   const { supabase, user, response } = await updateSession(request);
 
+  // "/" is the public marketing landing page for logged-out visitors.
+  // (Authenticated users fall through to the role-dashboard redirect below.)
+  if (pathname === "/" && !user) {
+    return response;
+  }
+
   // Not authenticated - redirect to login
   if (!user) {
     const url = request.nextUrl.clone();
