@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { renderSitePage } from "@/lib/templates/render";
 import { resolveSiteByHost } from "@/lib/platform/resolve-site";
 import { isPlatformHost } from "@/lib/platform/hosts";
+import { getCachedTenantPage, type CachedRender } from "@/lib/platform/render-cache";
 
 /**
  * Tenant render endpoint — the public, DB-driven serving of a client website.
@@ -12,14 +12,13 @@ import { isPlatformHost } from "@/lib/platform/hosts";
  * document (not a React page) so the renderer's `<html>…</html>` output isn't
  * wrapped in Next's app shell.
  *
- * Phase 1: renders the live `composition` straight from the DB on every request
- * (force-dynamic, mirroring /api/sites/[id]/render). Phase 2 switches the
- * source to `published_composition`; Phase 3 adds per-site tag caching +
- * revalidate-on-publish so this isn't a cold render on every hit.
+ * Renders the site's LIVE `published_composition`. The expensive resolve +
+ * render is cached per (site, page, host) via the Data Cache (render-cache.ts)
+ * and invalidated when the site publishes (revalidateSite), so visitor traffic
+ * doesn't hit the DB/renderer on every request. The route stays dynamic only
+ * because it reads the request Host for the platform-host guard.
  */
 export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
 
 const HTML_HEADERS = {
   "Content-Type": "text/html; charset=utf-8",
@@ -66,21 +65,12 @@ export async function GET(
   }
 
   const requestedPage = toPagePath(path);
-  // Serve the LIVE (published) content. When a site has no published content
-  // yet (never published, or migration 00080 not applied), fall back to the
-  // draft composition so dev/test hosts still render. Once the platform serves
-  // real public traffic (Phase 8 cutover), a null published_composition should
-  // become a "coming soon"/404 instead of leaking the draft.
-  let result: Awaited<ReturnType<typeof renderSitePage>>;
+  // Serve the LIVE (published) content from the per-site cache. The cache
+  // fetches published_composition + renders once, then serves every visitor
+  // from cache until the site re-publishes (revalidateSite).
+  let result: CachedRender;
   try {
-    result = await renderSitePage(site.id, {
-      pagePath: requestedPage,
-      preview: false,
-      siteUrl: `https://${host}`,
-      ...(site.publishedComposition
-        ? { compositionOverride: site.publishedComposition }
-        : {}),
-    });
+    result = await getCachedTenantPage(site.id, requestedPage, host);
   } catch (e) {
     // renderSite() throws on some invalid compositions (e.g. a contact form
     // enabled without a recipient email). Degrade to a styled 503 instead of a
@@ -108,7 +98,10 @@ export async function GET(
     status: 200,
     headers: {
       ...HTML_HEADERS,
-      "Cache-Control": "public, max-age=0, must-revalidate",
+      // CDN-cacheable (Cloudflare in front). The Data Cache already serves the
+      // render; this lets the edge cache the HTTP response too. Short TTL bounds
+      // staleness until publish-time CDN purge is added.
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
     },
   });
 }

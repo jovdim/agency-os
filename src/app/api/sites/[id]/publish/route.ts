@@ -5,6 +5,7 @@ import { publishSite, type PendingFilesMap } from "@/lib/templates/publish";
 import { logAudit } from "@/lib/audit";
 import { ensureClientZone } from "@/lib/proposals/ensure-client-zone";
 import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
+import { revalidateSite } from "@/lib/platform/render-cache";
 
 // Disable Next.js's automatic fetch caching for THIS route. publishSite →
 // renderSite downloads every used section template's HTML + CSS from
@@ -97,6 +98,8 @@ export async function POST(
       if (upErr) {
         return NextResponse.json({ error: upErr.message }, { status: 500 });
       }
+      // Invalidate the public cache so the published change goes live instantly.
+      await revalidateSite(id);
       const reqHost = req.headers.get("host");
       const url = reqHost
         ? `${reqHost.includes("localhost") ? "http" : "https"}://${reqHost}`
