@@ -34,6 +34,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
 
 /** Per-kind size + bucket + mime configuration. Image cap (25 MB)
  *  mirrors the bucket from migration 00055; video cap (200 MB) mirrors
@@ -78,11 +79,6 @@ export async function POST(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const role = (user.app_metadata?.role as string | undefined) ?? "unknown";
 
   let body: {
     site_id?: unknown;
@@ -130,45 +126,50 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Ownership check — same matrix as the legacy upload route so any
-  // caller migrating from POST /upload to this route hits identical
-  // permission semantics. Keep these two routes in sync if the
-  // ownership rules ever change.
-  if (!["tech_admin", "super_admin"].includes(role)) {
-    if (role === "sales") {
-      const { data: siteRow } = await admin
-        .from("sites")
-        .select("proposal_id")
-        .eq("id", siteId)
-        .maybeSingle();
-      if (!siteRow?.proposal_id) {
-        return NextResponse.json({ error: "Site not found" }, { status: 404 });
-      }
-      const { data: linkedProposal } = await admin
-        .from("proposals")
-        .select("sales_person_id")
-        .eq("id", siteRow.proposal_id)
-        .maybeSingle();
-      if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+  // Auth + ownership. Per-site CMS admins (theirdomain.com/admin) have no
+  // Supabase session — authorize them for THEIR OWN site only (the guard binds
+  // the session to siteId). Everyone else goes through the same role matrix as
+  // the legacy upload route — keep these two routes in sync.
+  if (!user) {
+    const sa = await getSiteAdminForSite(siteId);
+    if (!sa) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  } else {
+    const role = (user.app_metadata?.role as string | undefined) ?? "unknown";
+    if (!["tech_admin", "super_admin"].includes(role)) {
+      if (role === "sales") {
+        const { data: siteRow } = await admin
+          .from("sites")
+          .select("proposal_id")
+          .eq("id", siteId)
+          .maybeSingle();
+        if (!siteRow?.proposal_id) {
+          return NextResponse.json({ error: "Site not found" }, { status: 404 });
+        }
+        const { data: linkedProposal } = await admin
+          .from("proposals")
+          .select("sales_person_id")
+          .eq("id", siteRow.proposal_id)
+          .maybeSingle();
+        if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } else if (role === "client") {
+        const { data: ownerRow, error: ownerErr } = await admin
+          .from("sites")
+          .select("owner_id")
+          .eq("id", siteId)
+          .maybeSingle();
+        if (ownerErr || !ownerRow) {
+          return NextResponse.json({ error: "Site not found" }, { status: 404 });
+        }
+        if (ownerRow.owner_id !== user.id) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+      } else {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-    } else if (role === "client") {
-      const { data: ownerRow, error: ownerErr } = await admin
-        .from("sites")
-        .select("owner_id")
-        .eq("id", siteId)
-        .maybeSingle();
-      if (ownerErr || !ownerRow) {
-        return NextResponse.json(
-          { error: "Site not found" },
-          { status: 404 },
-        );
-      }
-      if (ownerRow.owner_id !== user.id) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-    } else {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
 

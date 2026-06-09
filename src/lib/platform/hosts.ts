@@ -68,6 +68,28 @@ export function isPlatformHost(rawHost: string | null | undefined): boolean {
   // Dev convenience: `<label>.localhost` is a tenant site (resolved by subdomain).
   if (host.endsWith(".localhost")) return true;
 
+  // Public dev/test tunnels (localtunnel, cloudflared, ngrok). Lets you expose
+  // the local app to a REAL public URL and test a client site on the internet
+  // with no domain or deploy. Harmless in production — no real traffic uses
+  // these suffixes. Resolve the site by setting its `domain` to the tunnel host.
+  const TUNNEL_SUFFIXES = [
+    ".loca.lt",
+    ".trycloudflare.com",
+    ".ngrok-free.app",
+    ".ngrok.app",
+    ".ngrok.io",
+  ];
+  if (TUNNEL_SUFFIXES.some((s) => host.endsWith(s))) return true;
+
+  // Explicit allowlist of client-site hosts — set PLATFORM_HOSTS=host1,host2.
+  // Used for real custom domains until Phase 6 resolves them from the DB.
+  const explicit = (process.env.PLATFORM_HOSTS || "")
+    .toLowerCase()
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (explicit.includes(host)) return true;
+
   // `*.{PROPOSAL_DOMAIN}` fallback subdomains are tenant sites — but never the
   // apex itself or its `www.` sibling. Gated on a KNOWN CRM host: if
   // NEXT_PUBLIC_SITE_URL is unset (getCrmHost() === null) we fail safe to

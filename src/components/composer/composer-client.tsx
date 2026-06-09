@@ -23,6 +23,7 @@ import {
 import { SectionsRail } from "./sections-rail";
 import { SectionCard } from "./section-card";
 import { PublishMenu } from "./publish-menu";
+import { SiteAdminModeProvider } from "./site-admin-mode";
 import { type SectionTemplate } from "./variant-picker";
 import { PreviewPane } from "./preview-pane";
 import { PagesTabs } from "./pages-tabs";
@@ -128,6 +129,9 @@ interface Props {
    *  for asset resolution sidesteps that whole window — first publish,
    *  republish, subdomain rename, custom-domain attach. */
   pagesUrl?: string | null;
+  /** True when mounted inside a per-site CMS admin (theirdomain.com/admin) with
+   *  no Supabase session — hides/skips controls that 401 for a site admin. */
+  siteAdminMode?: boolean;
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -142,6 +146,7 @@ export function ComposerClient({
   backHref = "/tech/proposals",
   siteUrl = null,
   pagesUrl = null,
+  siteAdminMode = false,
 }: Props) {
   const router = useRouter();
 
@@ -227,6 +232,7 @@ export function ComposerClient({
   // Tech-admin's manual edits in the Brand panel are NEVER overwritten
   // — the empty-check gates the patch.
   useEffect(() => {
+    if (siteAdminMode) return; // no /api/composer/ai-inputs access for site admins
     const brand = composition.brand;
     if (brand?.phone && brand?.email) return; // both already set, nothing to fill
     let cancelled = false;
@@ -1031,6 +1037,7 @@ export function ComposerClient({
   // grace before another user can take over — handles a tab that gets
   // throttled/backgrounded for a few seconds without losing the lock.
   useEffect(() => {
+    if (siteAdminMode) return; // standalone site admins don't hold the edit lock
     // 30s heartbeat paired with the 90s TTL in site-lock.ts gives
     // ~3 missed heartbeats of slack before the lock auto-expires —
     // enough to survive a brief network blip without losing the lock,
@@ -1069,6 +1076,7 @@ export function ComposerClient({
   // I'm not the holder"), so a double-release on a real page navigation
   // away is harmless.
   useEffect(() => {
+    if (siteAdminMode) return; // standalone site admins don't hold the edit lock
     function releaseLock() {
       try {
         fetch(`/api/sites/${siteId}/lock`, {
@@ -3302,6 +3310,7 @@ export function ComposerClient({
 
   // ── Layout: 3 columns ──
   return (
+    <SiteAdminModeProvider value={siteAdminMode}>
     <UploadTrackerContext.Provider value={uploadTracker}>
     <SiteUrlContext.Provider value={effectiveSiteUrl ?? null}>
     <AnchorsProvider value={pageAnchors}>
@@ -3309,6 +3318,7 @@ export function ComposerClient({
       {/* Top bar */}
       <header className="h-12 border-b dash-hairline shrink-0 flex items-center justify-between px-4 bg-card">
         <div className="flex items-center gap-3">
+          {!siteAdminMode && (
           <Button
             variant="ghost"
             size="sm"
@@ -3318,6 +3328,7 @@ export function ComposerClient({
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
+          )}
           <h1 className="text-sm font-semibold tracking-tight">{siteName}</h1>
           <SaveIndicator status={saveStatus} />
         </div>
@@ -3329,6 +3340,7 @@ export function ComposerClient({
               /api/composer/ai-generate and applies the returned
               overrides through the normal field-update path (no special
               render, no flicker). */}
+          {!siteAdminMode && (
           <Button
             variant="outline"
             size="sm"
@@ -3339,6 +3351,7 @@ export function ComposerClient({
             <Sparkles className="h-4 w-4 dash-accent" />
             Generate content
           </Button>
+          )}
 
           {/* JSON workflow — bring-your-own-AI alternative to the paid
               Generate content button. Export the site's editable text
@@ -3346,6 +3359,7 @@ export function ComposerClient({
               result. Same field-update path as the paid AI Fill
               (applyAiOverrides) so behaviour is identical once the
               JSON is back. */}
+          {!siteAdminMode && (
           <Button
             variant="outline"
             size="sm"
@@ -3356,6 +3370,7 @@ export function ComposerClient({
             <FileJson className="h-4 w-4 dash-accent" />
             JSON workflow
           </Button>
+          )}
 
           {/* Preview site — renders the CURRENT in-memory composition into a
               Blob URL and opens it in a new tab. No server round-trip, no DB
@@ -3726,7 +3741,7 @@ export function ComposerClient({
                       onFieldHiddenChange={(rawKey, hidden) =>
                         updateSectionFieldHidden(section.id, rawKey, hidden)
                       }
-                      onAiRegenerate={applyAiOverrides}
+                      onAiRegenerate={siteAdminMode ? undefined : applyAiOverrides}
                       brand={composition.brand}
                     />
                   ))}
@@ -3788,12 +3803,14 @@ export function ComposerClient({
         portal handles z-index). Generated overrides flow back through
         applyAiOverrides → updateSectionContent → SK_PATCH_FIELD per
         field, so the iframe updates live as each section is filled. */}
+    {!siteAdminMode && (
     <AiGenerateModal
       open={aiModalOpen}
       onOpenChange={setAiModalOpen}
       siteId={siteId}
       onGenerate={applyAiOverrides}
     />
+    )}
 
     {/* JSON round-trip modal — twin of AiGenerateModal but free
         (uses chatgpt.com instead of paid API). Wires to
@@ -3802,6 +3819,7 @@ export function ComposerClient({
         dropdown linkage — replacing a whole repeater array bypasses
         the linkage code that mirrors service-title changes into the
         navbar's Services dropdown rows. */}
+    {!siteAdminMode && (
     <JsonRoundtripModal
       open={jsonModalOpen}
       onOpenChange={setJsonModalOpen}
@@ -3813,6 +3831,7 @@ export function ComposerClient({
       targetPagePath={activePagePath}
       pageContext={jsonPageContext ?? undefined}
     />
+    )}
 
     {/* Translate-mode round-trip modal — opened per locale from the
         Languages tab. Same export/validate machinery as the fill modal,
@@ -3843,6 +3862,7 @@ export function ComposerClient({
     </AnchorsProvider>
     </SiteUrlContext.Provider>
     </UploadTrackerContext.Provider>
+    </SiteAdminModeProvider>
   );
 }
 

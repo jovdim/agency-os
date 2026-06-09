@@ -11,6 +11,7 @@ import { ComposerClient } from "@/components/composer/composer-client";
 import { loadTemplateBodies, loadBaseCss } from "@/lib/templates/load-bodies";
 import type { SiteComposition } from "@/lib/templates/render";
 import { LoginForm } from "./login-form";
+import { LogoutButton } from "./logout-button";
 
 // Force-dynamic + no-store: the composer must always load the freshest
 // templates/composition (mirrors the CRM composer page directives).
@@ -114,16 +115,23 @@ export default async function SiteAdminPage({
   const siteUrl = `${proto}://${hostHeader}`;
 
   return (
-    <ComposerClient
-      siteId={site.id}
-      siteName={siteFull.name}
-      initialComposition={composition}
-      templates={clientTemplates}
-      templateBodies={templateBodies}
-      baseCss={baseCss}
-      siteUrl={siteUrl}
-      pagesUrl={siteUrl}
-      backHref="/admin"
-    />
+    <>
+      <ComposerClient
+        siteId={site.id}
+        siteName={siteFull.name}
+        initialComposition={composition}
+        templates={clientTemplates}
+        templateBodies={templateBodies}
+        baseCss={baseCss}
+        siteUrl={siteUrl}
+        pagesUrl={siteUrl}
+        backHref="/admin"
+        siteAdminMode
+      />
+      {/* Sign-out — the composer has no exit for a standalone site admin. */}
+      <div className="fixed bottom-3 left-3 z-100">
+        <LogoutButton />
+      </div>
+    </>
   );
 }

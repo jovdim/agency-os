@@ -66,6 +66,15 @@ export async function PUT(
     const sa = await getSiteAdminForSite(id);
     if (!sa)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const adminCheck = createAdminClient();
+    const { data: legacyRow } = await adminCheck
+      .from("sites")
+      .select("is_legacy")
+      .eq("id", id)
+      .maybeSingle();
+    if (legacyRow?.is_legacy) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     isClientOwner = true;
   } else {
     const role = user.app_metadata?.role as string;

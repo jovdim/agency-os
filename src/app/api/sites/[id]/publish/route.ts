@@ -63,11 +63,29 @@ export async function POST(
       const admin = createAdminClient();
       const { data: siteRow } = await admin
         .from("sites")
-        .select("composition")
+        .select("composition, is_legacy")
         .eq("id", id)
         .maybeSingle();
       if (!siteRow) {
         return NextResponse.json({ error: "Site not found" }, { status: 404 });
+      }
+      if (siteRow.is_legacy) {
+        return NextResponse.json(
+          { error: "This website isn't editable in the new editor." },
+          { status: 403 },
+        );
+      }
+      // Guard against publishing an unresolved image marker. The site-admin
+      // path doesn't run the staff pending→hosted pipeline, so a leftover
+      // `pending:{uuid}` would render as a broken <img> on the live site.
+      if (JSON.stringify(siteRow.composition ?? null).includes("pending:")) {
+        return NextResponse.json(
+          {
+            error:
+              "Some images are still being added. Please re-add them, then publish again.",
+          },
+          { status: 400 },
+        );
       }
       const { error: upErr } = await admin
         .from("sites")

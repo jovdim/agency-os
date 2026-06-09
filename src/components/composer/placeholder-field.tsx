@@ -23,6 +23,7 @@ import {
   useDisplayUrl,
 } from "@/lib/composer/image-store";
 import { useUploadTracker } from "@/lib/composer/upload-tracker";
+import { useSiteAdminMode } from "./site-admin-mode";
 import { buildImagePrompt } from "@/lib/ai/image-prompt-builder";
 import { HrefAutocomplete } from "./href-autocomplete";
 
@@ -786,6 +787,7 @@ export function PlaceholderField({
   // upload path uses — extracting it would just route the same prop
   // through one more level of indirection.
   const [aiOpen, setAiOpen] = useState(false);
+  const siteAdminMode = useSiteAdminMode();
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiGenerating, setAiGenerating] = useState(false);
   // Tracks whether we've already pre-filled the prompt textarea this
@@ -1162,6 +1164,7 @@ export function PlaceholderField({
                 interleave with ComposerClient's iframe re-render in a
                 way that crashes on the second generation in a session.
                 Inline = no portal = no race. */}
+            {!siteAdminMode && (
             <Button
               variant={aiOpen ? "secondary" : "ghost"}
               size="icon"
@@ -1177,6 +1180,7 @@ export function PlaceholderField({
             >
               <Sparkles className="h-3.5 w-3.5" />
             </Button>
+            )}
             {value !== undefined && (
               <Button
                 variant="ghost"

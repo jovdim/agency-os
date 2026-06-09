@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Rocket, CaretDown as ChevronDown, CaretRight as ChevronRight, ArrowSquareOut as ExternalLink, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2, Globe, Check, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
+import { useSiteAdminMode } from "./site-admin-mode";
 
 interface VersionRow {
   id: string;
@@ -107,6 +108,7 @@ export function PublishMenu({
   // expanded so opening the popover stays instant.
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const siteAdminMode = useSiteAdminMode();
 
   // Top version is the currently-live one (most recent).
   const liveVersion = versions[0] ?? null;
@@ -139,12 +141,12 @@ export function PublishMenu({
       .finally(() => setLoading(false));
   }
   useEffect(() => {
-    if (open && !hasFetched) reload();
+    if (open && !hasFetched && !siteAdminMode) reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, siteId]);
   // After a parent-driven publish completes (publishing flips false), refresh.
   useEffect(() => {
-    if (!publishing && hasFetched) reload();
+    if (!publishing && hasFetched && !siteAdminMode) reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publishing]);
 
@@ -257,11 +259,13 @@ export function PublishMenu({
               swaps the Cloudflare custom domain mapping atomically and
               updates site_url. Format + uniqueness are checked live as
               the user types so the Save button is only enabled when valid. */}
+          {!siteAdminMode && (
           <SubdomainEditor
             siteId={siteId}
             onSaved={reload}
             onBeforeReload={flushPendingComposition}
           />
+          )}
 
           {/* ── Primary action — direct publish (free). ── */}
           <div className="px-3 py-3 border-b">
@@ -293,6 +297,8 @@ export function PublishMenu({
             </p>
           </div>
 
+          {!siteAdminMode && (
+          <>
           {/* ── History (collapsed by default — click header to expand) ──
               Read-mostly list of past publishes: click a URL to preview,
               or Revert to re-publish an older snapshot. */}
@@ -393,6 +399,8 @@ export function PublishMenu({
                 ))}
               </ul>
             ))}
+          </>
+          )}
         </PopoverContent>
       </Popover>
 
