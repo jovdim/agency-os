@@ -14,6 +14,7 @@ import {
 import { House as Home, Plus, X } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
 import type { CompositionPage } from "@/lib/templates/render";
+import { useSiteAdminMode } from "./site-admin-mode";
 
 /**
  * Page basenames (path minus ".html") the system reserves. A user page
@@ -87,6 +88,9 @@ export function PagesTabs({
   availableServices = [],
   linkedServiceIdsInUse,
 }: Props) {
+  // Site-admin (client) mode: clients edit content on pages their IT team
+  // built, but never add/remove pages — that's structural, IT-only.
+  const siteAdminMode = useSiteAdminMode();
   const [adding, setAdding] = useState(false);
   const [newPath, setNewPath] = useState("");
   const [newLabel, setNewLabel] = useState("");
@@ -184,7 +188,7 @@ export function PagesTabs({
           {pages.map((p, i) => {
             const isActive = p.path === activePagePath;
             const isHome = p.path === HOME_PATH;
-            const showRemove = !isHome && pages.length > 1;
+            const showRemove = !isHome && pages.length > 1 && !siteAdminMode;
             // Thin vertical rule BETWEEN tabs (after every tab except the
             // last) so each page reads as its own item — Home stays distinct
             // from the subpages, and a long list of subpages doesn't blur
@@ -278,19 +282,21 @@ export function PagesTabs({
           })}
         </div>
 
-        {/* Add page */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer text-muted-foreground hover:text-(--dash-accent) hover:bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
-          onClick={() => {
-            resetAddState();
-            setAdding(true);
-          }}
-        >
-          <Plus className="h-3.5 w-3.5" />
-          Add page
-        </Button>
+        {/* Add page — IT-only (hidden in client/site-admin mode). */}
+        {!siteAdminMode && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer text-muted-foreground hover:text-(--dash-accent) hover:bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
+            onClick={() => {
+              resetAddState();
+              setAdding(true);
+            }}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add page
+          </Button>
+        )}
       </div>
 
       <Dialog

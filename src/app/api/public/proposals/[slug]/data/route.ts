@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import QRCode from "qrcode";
 import { getActivePrice, isDiscountActive } from "@/lib/payments/proposal-utils";
 
 function corsHeaders() {
@@ -82,24 +81,12 @@ export async function GET(
     discount_expires_at: proposal.discount_expires_at,
   });
 
-  // Scan-to-pay QR. It encodes the STABLE pay endpoint (which never
-  // expires); the short-lived Stripe Checkout session is minted only when
-  // the link is actually opened. So a phone scan lands straight on the
-  // Stripe-hosted card page for the current price.
+  // Stable pay URL — the banner's "Buy this website" button points here.
+  // It never expires; the short-lived Stripe Checkout session is minted
+  // only when the link is opened (see /api/public/proposals/[slug]/pay).
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
   const payUrl = `${origin}/api/public/proposals/${slug}/pay`;
-  let qrImageDataUrl: string | null = null;
-  try {
-    qrImageDataUrl = await QRCode.toDataURL(payUrl, {
-      margin: 1,
-      width: 320,
-      errorCorrectionLevel: "M",
-      color: { dark: "#0f1117", light: "#ffffff" },
-    });
-  } catch (err) {
-    console.error("[ProposalData] QR generation failed:", err);
-  }
 
   // Generate auto-login link (never expires — uses encrypted email:password)
   // Falls back to Supabase one-time magic link if temp password not stored.
@@ -146,7 +133,6 @@ export async function GET(
     contactPerson,
     companyName: proposal.company_name,
     town,
-    qrImageDataUrl,
     payUrl,
     magicLoginUrl,
   });

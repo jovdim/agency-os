@@ -3452,12 +3452,16 @@ export function ComposerClient({
           path to introduce a new section template. The preview + composition
           columns flex to fill the freed space. */}
       <div className="flex flex-1 overflow-hidden">
-        <SectionsRail
-          templates={templates}
-          templateBodies={templateBodies}
-          baseCss={baseCss}
-          onPick={handleRailPick}
-        />
+        {/* Section palette (add new sections) — IT-only. Clients edit the
+            sections their IT team built; they don't introduce new structure. */}
+        {!siteAdminMode && (
+          <SectionsRail
+            templates={templates}
+            templateBodies={templateBodies}
+            baseCss={baseCss}
+            onPick={handleRailPick}
+          />
+        )}
 
         {/* Preview — when the site is empty (no body sections + no shared
             slots set), skip the iframe entirely and show the scaffold card
@@ -3474,12 +3478,20 @@ export function ComposerClient({
           {activePage.sections.length === 0 &&
           !composition.shared?.nav_template_id &&
           !composition.shared?.footer_template_id ? (
-            <EmptyStateCard
-              templateCount={templates.length}
-              categoryCount={new Set(templates.map((t) => t.category)).size}
-              onGenerateBasic={() => scaffoldFullSite("basic")}
-              onGeneratePremium={() => scaffoldFullSite("premium")}
-            />
+            // Empty site. IT gets the scaffold call-to-action; a client never
+            // scaffolds/regenerates, so they see a plain message instead.
+            siteAdminMode ? (
+              <div className="flex h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
+                This page has no content yet.
+              </div>
+            ) : (
+              <EmptyStateCard
+                templateCount={templates.length}
+                categoryCount={new Set(templates.map((t) => t.category)).size}
+                onGenerateBasic={() => scaffoldFullSite("basic")}
+                onGeneratePremium={() => scaffoldFullSite("premium")}
+              />
+            )
           ) : (
             <PreviewPane srcDoc={previewHtml} iframeRef={iframeRef} />
           )}
@@ -3543,16 +3555,19 @@ export function ComposerClient({
               label="SEO"
               hint={hasSeoContent(composition.seo) ? "Set up" : "Defaults only"}
             />
-            <TabButton
-              active={rightTab === "languages"}
-              onClick={() => setRightTab("languages")}
-              label="Languages"
-              hint={
-                (composition.i18n?.enabled_locales?.length ?? 1) > 1
-                  ? `${composition.i18n!.enabled_locales.length} languages`
-                  : "1 language"
-              }
-            />
+            {/* Languages — IT-only; hidden for clients (Peter). */}
+            {!siteAdminMode && (
+              <TabButton
+                active={rightTab === "languages"}
+                onClick={() => setRightTab("languages")}
+                label="Languages"
+                hint={
+                  (composition.i18n?.enabled_locales?.length ?? 1) > 1
+                    ? `${composition.i18n!.enabled_locales.length} languages`
+                    : "1 language"
+                }
+              />
+            )}
           </div>
 
           {/* SEO tab body */}
@@ -3615,7 +3630,8 @@ export function ComposerClient({
                 Premium (every category). Discreet outline styling +
                 destructive hover state so this doesn't compete with
                 the section editing UI. */}
-            {(activePage.sections.length > 0 ||
+            {!siteAdminMode &&
+              (activePage.sections.length > 0 ||
               composition.shared?.nav_template_id ||
               composition.shared?.footer_template_id) && (
               <div className="grid grid-cols-2 gap-2">
