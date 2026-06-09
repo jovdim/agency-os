@@ -212,6 +212,59 @@ function formatDuration(seconds: number): string {
   return `${m}m ${s}s`;
 }
 
+/** The upload target the server issued — one of two storage providers. */
+interface UploadTarget {
+  provider?: "r2" | "supabase";
+  upload_url?: string; // r2: presigned S3 PUT URL
+  signed_url?: string; // supabase: (unused here; the SDK uses path+token)
+  token?: string; // supabase: signed-upload token
+  path: string;
+}
+
+/**
+ * PUT the file bytes to whichever backend the server issued a target for.
+ * Bytes go straight to storage — never through our Vercel function:
+ *   - r2: raw `fetch` PUT to the presigned S3 URL.
+ *   - supabase: the SDK's signed-upload token handshake.
+ * Shared by uploadImage + uploadVideo so both providers stay in lockstep.
+ */
+async function putToStorage(
+  issued: UploadTarget,
+  file: File,
+  supabaseBucket: string,
+  signal?: AbortSignal,
+): Promise<void> {
+  if (issued.provider === "r2") {
+    if (!issued.upload_url) throw new Error("Upload URL missing from server");
+    const res = await fetch(issued.upload_url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      signal,
+    });
+    if (!res.ok) {
+      if (signal?.aborted) throw new DOMException("Upload aborted", "AbortError");
+      throw new Error(`Upload failed (${res.status})`);
+    }
+    return;
+  }
+  // Supabase signed-upload (default + fallback when R2 isn't configured).
+  if (!issued.token) throw new Error("Upload token missing from server");
+  const supabase = createBrowserSupabase();
+  const { error: uploadErr } = await supabase.storage
+    .from(supabaseBucket)
+    .uploadToSignedUrl(issued.path, issued.token, file, {
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+    });
+  if (uploadErr) {
+    // Supabase wraps AbortError as a plain Error — re-throw the canonical
+    // DOMException shape so callers' `name === "AbortError"` guards match.
+    if (signal?.aborted) throw new DOMException("Upload aborted", "AbortError");
+    throw new Error(`Upload failed: ${uploadErr.message}`);
+  }
+}
+
 /**
  * Upload a File to the composer-staging bucket and return a real
  * public URL we can drop straight into composition fields.
@@ -268,12 +321,7 @@ export async function uploadImage(
     const data = await urlRes.json().catch(() => ({}));
     throw new Error(data.error || `Could not get upload URL (${urlRes.status})`);
   }
-  const issued = (await urlRes.json()) as {
-    signed_url: string;
-    token: string;
-    path: string;
-    public_url: string;
-  };
+  const issued = (await urlRes.json()) as UploadTarget & { public_url: string };
 
   // Bail if the caller aborted between the URL response and starting
   // the actual upload. Avoids burning the signed URL slot for a file
@@ -282,29 +330,8 @@ export async function uploadImage(
     throw new DOMException("Upload aborted", "AbortError");
   }
 
-  // ── Step 2: PUT the file bytes straight to Supabase ──
-  // Using the Supabase JS client's `uploadToSignedUrl` so the request
-  // is shaped exactly the way Supabase Storage expects, including the
-  // correct headers + the special token handshake. Raw fetch PUT also
-  // works but the SDK handles the next-storage-version migration if
-  // Supabase ever changes the protocol. We forward the AbortSignal
-  // via the underlying fetch options.
-  const supabase = createBrowserSupabase();
-  const { error: uploadErr } = await supabase.storage
-    .from("composer-staging")
-    .uploadToSignedUrl(issued.path, issued.token, file, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
-  if (uploadErr) {
-    // Supabase wraps AbortError as a regular Error — re-throw with the
-    // canonical DOMException shape so the caller's `name === "AbortError"`
-    // guards in placeholder-field / brand-section still match.
-    if (signal?.aborted) {
-      throw new DOMException("Upload aborted", "AbortError");
-    }
-    throw new Error(`Upload failed: ${uploadErr.message}`);
-  }
+  // ── Step 2: PUT the file bytes straight to storage (R2 or Supabase) ──
+  await putToStorage(issued, file, "composer-staging", signal);
 
   return issued.public_url;
 }
@@ -361,40 +388,35 @@ export async function uploadVideo(
     const data = await urlRes.json().catch(() => ({}));
     throw new Error(data.error || `Could not get upload URL (${urlRes.status})`);
   }
-  const issued = (await urlRes.json()) as {
-    signed_url: string;
-    token: string;
-    path: string;
+  const issued = (await urlRes.json()) as UploadTarget & {
     public_url: string;
-    bucket: string;
+    bucket?: string;
   };
   if (signal?.aborted) {
     throw new DOMException("Upload aborted", "AbortError");
   }
-  const supabase = createBrowserSupabase();
-  const { error: uploadErr } = await supabase.storage
-    .from(issued.bucket || "composer-video")
-    .uploadToSignedUrl(issued.path, issued.token, file, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
-  if (uploadErr) {
-    if (signal?.aborted) {
-      throw new DOMException("Upload aborted", "AbortError");
-    }
-    throw new Error(`Upload failed: ${uploadErr.message}`);
-  }
+  await putToStorage(issued, file, issued.bucket || "composer-video", signal);
   return issued.public_url;
 }
 
+/** Public base URL R2 assets are served from (inlined at build time via the
+ *  NEXT_PUBLIC_ prefix). Empty when R2 isn't configured — then only the
+ *  Supabase storage markers match below. */
+function r2PublicBase(): string {
+  return (process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "").replace(/\/+$/, "");
+}
+
 /**
- * True iff `url` points at the composer-video bucket. Used by publish.ts
- * to skip video URLs when collecting bytes to migrate to Cloudflare —
- * videos stay on Supabase as their permanent home.
+ * True iff `url` points at a staged video — the Supabase composer-video bucket
+ * OR an R2 `/videos/` object. Used by publish.ts to skip video URLs when
+ * collecting bytes to migrate to Cloudflare (videos stay at their permanent
+ * home), and to gate delete-on-replace cleanup to assets we own.
  */
 export function isStagedVideoUrl(url: string | null | undefined): boolean {
   if (typeof url !== "string") return false;
-  return /\/storage\/v1\/object\/public\/composer-video\//.test(url);
+  if (/\/storage\/v1\/object\/public\/composer-video\//.test(url)) return true;
+  const base = r2PublicBase();
+  return Boolean(base) && url.startsWith(`${base}/videos/`);
 }
 
 /**
@@ -437,7 +459,9 @@ export async function deleteStagedVideo(
  */
 export function isStagedImageUrl(url: string | null | undefined): boolean {
   if (typeof url !== "string") return false;
-  return /\/storage\/v1\/object\/public\/composer-staging\//.test(url);
+  if (/\/storage\/v1\/object\/public\/composer-staging\//.test(url)) return true;
+  const base = r2PublicBase();
+  return Boolean(base) && url.startsWith(`${base}/images/`);
 }
 
 /**

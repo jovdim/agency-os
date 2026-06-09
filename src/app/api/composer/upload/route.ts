@@ -27,6 +27,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isR2PublicUrl, deleteR2Object, r2ObjectPathFromUrl } from "@/lib/platform/r2";
+import { canAccessSiteMedia } from "@/lib/platform/upload-auth";
 
 /** Mirror the bucket-level cap so we fail fast with a friendly message
  *  before the storage layer rejects with a generic 413. Bumped from
@@ -202,46 +204,70 @@ export async function DELETE(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // NOTE: a missing Supabase session is NOT an automatic 401 here — per-site
+  // CMS admins (theirdomain.com/admin) have no Supabase user and must be able
+  // to clean up their own replaced media. Authorization happens below, per
+  // site, via canAccessSiteMedia (which handles both auth models).
 
   const url = req.nextUrl.searchParams.get("url");
   if (!url) {
     return NextResponse.json({ error: "Missing url" }, { status: 400 });
   }
 
-  // Pull the bucket-relative path out of the public URL. Supabase
-  // public URLs look like:
-  //   https://<project>.supabase.co/storage/v1/object/public/<bucket>/<site_id>/<uuid>.<ext>
-  // Anything that doesn't match composer-staging OR composer-video is
-  // silently rejected — we don't want this endpoint becoming a generic
-  // file-delete primitive that could nuke arbitrary buckets.
+  // Resolve which backend + object the URL points at, and the site_id embedded
+  // in the key, so we can authorize on that site_id BEFORE deleting anything.
+  // Keys: R2 = images|videos/{siteId}/{uuid}.ext ; Supabase = {siteId}/{uuid}.ext.
+  let backend: "r2" | "supabase" | null = null;
   let bucket: "composer-staging" | "composer-video" | null = null;
   let objectPath: string | null = null;
-  const stagingMatch = url.match(
-    /\/storage\/v1\/object\/public\/composer-staging\/(.+)$/,
-  );
-  const videoMatch = url.match(
-    /\/storage\/v1\/object\/public\/composer-video\/(.+)$/,
-  );
-  if (stagingMatch && stagingMatch[1]) {
-    bucket = "composer-staging";
-    objectPath = stagingMatch[1];
-  } else if (videoMatch && videoMatch[1]) {
-    bucket = "composer-video";
-    objectPath = videoMatch[1];
+  let siteId = "";
+
+  if (isR2PublicUrl(url)) {
+    backend = "r2";
+    const key = r2ObjectPathFromUrl(url) ?? "";
+    siteId = key.split("/")[1] ?? ""; // images|videos / <siteId> / <uuid>.ext
+  } else {
+    const stagingMatch = url.match(
+      /\/storage\/v1\/object\/public\/composer-staging\/(.+)$/,
+    );
+    const videoMatch = url.match(
+      /\/storage\/v1\/object\/public\/composer-video\/(.+)$/,
+    );
+    if (stagingMatch?.[1]) {
+      backend = "supabase";
+      bucket = "composer-staging";
+      objectPath = stagingMatch[1];
+    } else if (videoMatch?.[1]) {
+      backend = "supabase";
+      bucket = "composer-video";
+      objectPath = videoMatch[1];
+    }
+    siteId = objectPath?.split("/")[0] ?? ""; // <siteId> / <uuid>.ext
   }
-  if (!bucket || !objectPath) {
+
+  // Unrecognized URL (not one of our buckets / not an R2 public asset) — reject
+  // rather than letting this become a generic file-delete primitive.
+  if (!backend || !siteId) {
     return NextResponse.json(
-      { error: "URL is not a composer-staging or composer-video file" },
+      { error: "URL is not a recognized composer media file" },
       { status: 400 },
     );
   }
 
+  // Per-site ownership gate — the caller must own / administer THIS site. Without
+  // it, any authenticated user could delete another tenant's live media just by
+  // passing its (publicly visible) URL.
+  if (!(await canAccessSiteMedia(siteId, user))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Best-effort delete — an already-gone object is the same post-condition the
+  // caller wants, so we don't surface remove errors.
+  if (backend === "r2") {
+    const ok = await deleteR2Object(url);
+    return NextResponse.json({ ok });
+  }
   const admin = createAdminClient();
-  await admin.storage.from(bucket).remove([objectPath]);
-  // We don't surface remove errors — an already-gone file is the same
-  // post-condition the caller wants. Logged in the dashboard if needed.
+  await admin.storage.from(bucket!).remove([objectPath!]);
   return NextResponse.json({ ok: true });
 }

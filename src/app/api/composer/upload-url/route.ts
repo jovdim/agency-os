@@ -35,6 +35,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
+import { r2Configured, presignR2Url, r2PublicUrl } from "@/lib/platform/r2";
 
 /** Per-kind size + bucket + mime configuration. Image cap (25 MB)
  *  mirrors the bucket from migration 00055; video cap (200 MB) mirrors
@@ -182,6 +183,33 @@ export async function POST(req: NextRequest) {
       : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const objectPath = `${siteId}/${uuid}.${ext}`;
 
+  // ── Preferred path: Cloudflare R2 (zero egress, CDN-served) ──
+  // When R2 is configured, hand the browser a presigned PUT straight to R2 and
+  // skip Supabase entirely. The object key is prefixed by kind so the delete +
+  // video helpers can distinguish images from videos by URL. Env-gated: with R2
+  // unset we fall through to the Supabase signed-upload path below, unchanged.
+  if (r2Configured()) {
+    const r2Key = `${kind === "video" ? "videos" : "images"}/${siteId}/${uuid}.${ext}`;
+    const uploadUrl = presignR2Url({
+      method: "PUT",
+      objectPath: r2Key,
+      expiresSeconds: 120,
+      // Bind size + MIME into the signature so the caps validated above are
+      // actually enforced by R2 (a presigned PUT can't otherwise constrain
+      // body size, and an unsigned Content-Type lets script-bearing content be
+      // served from our CDN domain). `size` + `mimeType` were validated above.
+      contentLength: size,
+      contentType: mimeType,
+    });
+    return NextResponse.json({
+      provider: "r2",
+      upload_url: uploadUrl,
+      path: r2Key,
+      public_url: r2PublicUrl(r2Key),
+      bucket: config.bucket,
+    });
+  }
+
   const { data: signed, error: signedErr } = await admin.storage
     .from(config.bucket)
     .createSignedUploadUrl(objectPath);
@@ -201,6 +229,7 @@ export async function POST(req: NextRequest) {
     .getPublicUrl(objectPath);
 
   return NextResponse.json({
+    provider: "supabase",
     signed_url: signed.signedUrl,
     token: signed.token,
     path: signed.path,

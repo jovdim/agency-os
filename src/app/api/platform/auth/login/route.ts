@@ -10,26 +10,9 @@ import {
   SITE_SESSION_COOKIE,
   SITE_SESSION_TTL_SECONDS,
 } from "@/lib/platform/site-session";
+import { rateLimit } from "@/lib/platform/rate-limit";
 
 export const dynamic = "force-dynamic";
-
-// Best-effort in-memory throttle (per serverless instance). scrypt is already
-// slow, but this blunts rapid-fire guessing. Not a substitute for a shared
-// store at scale — fine for now.
-const attempts = new Map<string, { count: number; resetAt: number }>();
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_ATTEMPTS = 10;
-
-function throttled(key: string): boolean {
-  const now = Date.now();
-  const rec = attempts.get(key);
-  if (!rec || rec.resetAt < now) {
-    attempts.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  rec.count += 1;
-  return rec.count > MAX_ATTEMPTS;
-}
 
 export async function POST(req: NextRequest) {
   const host = req.headers.get("host");
@@ -43,7 +26,14 @@ export async function POST(req: NextRequest) {
 
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (throttled(`${ip}:${site.id}`)) {
+  // Shared, DB-backed throttle (migration 00081): 10 attempts per IP+site per
+  // 10 minutes, counted across ALL serverless instances — not per-instance.
+  const { blocked } = await rateLimit({
+    key: `site-login:${ip}:${site.id}`,
+    windowSeconds: 600,
+    max: 10,
+  });
+  if (blocked) {
     return NextResponse.json(
       { error: "Too many attempts. Please wait a few minutes and try again." },
       { status: 429 },
