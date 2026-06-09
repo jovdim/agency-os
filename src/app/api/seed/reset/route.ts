@@ -43,15 +43,12 @@ export async function POST(req: NextRequest) {
     "invoices",
     "payments",
     "credit_balances",
-    "change_requests",
-    "sections",
     "deployments",
     "services",
     "sites",
     "proposals",
     "call_logs",
     "contacts",
-    "templates",
     // profiles last — but skip the current super admin user
   ];
 
@@ -76,7 +73,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Clear storage buckets
-  const buckets = ["templates", "proposals"];
+  const buckets = ["proposals"];
   for (const bucket of buckets) {
     try {
       const { data: files } = await admin.storage.from(bucket).list("", {

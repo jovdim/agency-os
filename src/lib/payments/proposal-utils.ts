@@ -70,3 +70,22 @@ function addDays(date: Date, days: number): Date {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+/**
+ * Stable numeric reference for a proposal, derived from its id.
+ *
+ * Originally the bank-transfer "variable symbol" (VS); kept after BySquare
+ * was retired (2026-06-09) because it's still stored on
+ * `proposals.variable_symbol` and embedded in payment descriptions /
+ * invoices as a human-readable reference number. Numeric, max 10 digits.
+ */
+export function generateVariableSymbol(identifier: string): string {
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    const char = identifier.charCodeAt(i);
+    hash = ((hash << 5) - hash + char) | 0;
+  }
+  // Make positive and limit to 10 digits.
+  const positive = Math.abs(hash) % 10000000000;
+  return String(positive).padStart(4, "0");
+}

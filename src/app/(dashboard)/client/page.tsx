@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import { Globe, PencilSimple as Pencil, Envelope as Mail, ArrowSquareOut as ExternalLink, ListChecks, ArrowRight, ChatText as MessageSquare, Clock, CalendarCheck, Warning as AlertTriangle } from "@phosphor-icons/react/ssr";
+import { Globe, Envelope as Mail, ArrowSquareOut as ExternalLink, Clock, CalendarCheck, Warning as AlertTriangle } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { UnpaidDomainEmailCard } from "./unpaid-domain-email-card";
 
@@ -53,29 +53,11 @@ export default async function ClientDashboard() {
           </span>
           <p className="text-lg font-semibold">Your website is being prepared</p>
           <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
-            Once your site is ready, it will appear here. You will be able to edit content,
-            send change requests, and manage your website.
+            Once your site is ready, it will appear here.
           </p>
         </div>
       </div>
     );
-  }
-
-  // Change-requests UI only shows for legacy sites. Composer-based sites
-  // publish edits directly with no review queue, so the "My changes" tile,
-  // pending-changes stat, and bottom-row "Requests" link are all hidden.
-  const isLegacy = site.is_legacy === true;
-
-  // Skip the count query entirely for non-legacy sites — saves a round-trip.
-  let pendingCount: number | null = 0;
-  if (isLegacy) {
-    const { count } = await supabase
-      .from("change_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("site_id", site.id)
-      .eq("user_id", profile.id)
-      .eq("status", "pending");
-    pendingCount = count;
   }
 
   const isPaid = site.is_paid === true;
@@ -253,61 +235,9 @@ export default async function ClientDashboard() {
           Balance is reachable via the "Credits and payments" link at the
           bottom, where the full context lives. */}
 
-      {/* Hero Edit CTA — shown to ALL clients (paid + unpaid). The primary
-          action on the dashboard: get the client into the editor. The
-          actual paywall lives at publish-time, not at editor access, so
-          there's no value in pretending unpaid clients have a different
-          editor experience than paid ones. Same copy for everyone. A
-          violet (operational) icon chip leads it. */}
-      <Link href="/client/edit" className="dash-card group block p-5">
-        <div className="flex items-center gap-5">
-          <span className="dash-chip inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105">
-            <Pencil className="h-5 w-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-base font-semibold">Edit your website</p>
-            <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              Click on any text or image directly on the page and customize
-              it to match your vision.
-            </p>
-          </div>
-          <ArrowRight className="dash-accent h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
-        </div>
-      </Link>
-
-      {/* Secondary action cards. The "Edit website" tile that used
-          to live here has been promoted to the hero CTA above (one entry
-          point, no duplication). What's left:
-            - Business email — clickable for unpaid, read-only for paid
-            - My changes — legacy clients only
-          Grid collapses to a single column on mobile and when there's
-          only one card to show. */}
+      {/* Secondary action cards. Currently just the domain + business
+          email tile. Grid collapses to a single column on mobile. */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
-        {/* My Changes — legacy-only. Modern composer-based clients publish
-            edits directly, so there's no review queue to show. */}
-        {isLegacy && (
-          <Link href="/client/requests" className="dash-card group block p-5">
-            <div className="flex items-start gap-4">
-              <span className="dash-chip inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                <ListChecks className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold">My changes</p>
-                  {(pendingCount ?? 0) > 0 && (
-                    <span className="dash-chip inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums">
-                      {pendingCount}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                  Here you will find an overview of all your edits and their current status.
-                </p>
-              </div>
-            </div>
-          </Link>
-        )}
 
         {/* Domain + business email — single tile that bundles both setup
             actions (domain logically comes first, email is `name@domain`).
@@ -361,35 +291,6 @@ export default async function ClientDashboard() {
           </a>
         </div>
       )}
-
-      {/* Slim secondary nav row at the bottom. Dropped "Credits and payments"
-          and "Domain" since those duplicated the sidebar + the
-          "Domain and business email" tile above. Kept "Need help?"
-          as the discoverable entry point to messaging (the sidebar
-          footer link is small / collapses when sidebar collapses, so
-          this is the always-visible fallback). "Requests" stays for
-          legacy clients only. */}
-      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-        <Link
-          href="/client/messages"
-          className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-        >
-          <MessageSquare className="h-3.5 w-3.5" />
-          Need help?
-        </Link>
-        {isLegacy && (
-          <>
-            <span className="text-border">|</span>
-            <Link
-              href="/client/requests"
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-            >
-              <Clock className="h-3.5 w-3.5" />
-              Requests
-            </Link>
-          </>
-        )}
-      </div>
 
     </div>
   );

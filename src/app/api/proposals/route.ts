@@ -119,7 +119,6 @@ export async function POST(req: NextRequest) {
       contact_id: contact_id || null,
       sales_person_id: salesPersonId,
       built_by: role === "tech_admin" ? user.id : null,
-      template_id: null,
       company_name,
       industry: industry || null,
       town: town || null,

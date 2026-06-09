@@ -35,9 +35,10 @@ interface Payment {
   currency: string;
   status: string;
   description: string | null;
-  /** "bysquare_credit" for client credit topups, "bank_transfer" or
-   *  "stripe" for proposal payments. Used to gate the Invoice button —
-   *  credit topups intentionally have no invoice. */
+  /** Credit top-ups: "stripe" (current) or "bysquare_credit" (legacy).
+   *  Website/proposal payments: "card" (Stripe) or "bank_transfer"/"cash"/
+   *  etc (manual). Used to gate the Invoice button — credit topups
+   *  intentionally have no invoice. */
   payment_method: string | null;
   created_at: string;
   sites: { name: string } | null;
@@ -263,11 +264,12 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
               <ul className="dash-hairline divide-y">
                 {payments.map((p) => {
                   // Credit topups don't get an invoice (Peter 2026-05-30 —
-                  // intentional, not a Slovak-law-requiring transaction).
-                  // Explicit gate so the Invoice button can't surface on
-                  // these rows even if someone later wires invoice creation
-                  // into confirmCreditPurchase by mistake.
-                  const isCreditTopup = p.payment_method === "bysquare_credit";
+                  // intentional). Explicit gate so the Invoice button can't
+                  // surface on these rows. Stripe credit topups use
+                  // payment_method "stripe"; website payments use "card".
+                  const isCreditTopup =
+                    p.payment_method === "bysquare_credit" ||
+                    p.payment_method === "stripe";
                   const invoice =
                     !isCreditTopup &&
                     (Array.isArray(p.invoices) ? p.invoices[0] : null);

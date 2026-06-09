@@ -10,15 +10,11 @@ export function DashboardShell({
   children,
   userName,
   role,
-  hasLegacySite = false,
   salesNewCount = 0,
 }: {
   children: React.ReactNode;
   userName: string;
   role: UserRole;
-  /** True if the current client owns at least one legacy site — gates the
-   *  change-requests sidebar entry. Always false for non-client roles. */
-  hasLegacySite?: boolean;
   /** Unread NEW-proposal count for the sales role's sidebar badge. Always
    *  0 for non-sales roles. Computed in layout.tsx via
    *  countNewProposalsForSalesperson(). */
@@ -39,7 +35,7 @@ export function DashboardShell({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar role={role} hasLegacySite={hasLegacySite} salesNewCount={salesNewCount} />
+      <Sidebar role={role} salesNewCount={salesNewCount} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar userName={userName} role={role} />
         <main className="flex-1 overflow-auto p-6 bg-background">

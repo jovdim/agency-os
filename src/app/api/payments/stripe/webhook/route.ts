@@ -30,8 +30,16 @@ import type Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { getStripe } from "@/lib/payments/stripe";
+import { confirmProposalPayment } from "@/lib/payments/confirm-proposal-payment";
 
 export const runtime = "nodejs"; // Stripe SDK + raw body need Node runtime, not edge.
+
+// confirmProposalPayment -> publishSite -> renderSite downloads section
+// templates from Supabase Storage. Without these, Next.js caches those
+// fetches and the silent banner-removal republish serves stale HTML.
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 export async function POST(req: NextRequest) {
   const stripe = getStripe();
@@ -77,6 +85,142 @@ export async function POST(req: NextRequest) {
     const paymentId = metadata.payment_id;
     const profileIdFromMeta = metadata.profile_id;
 
+    // ── Proposal (website) payment ──────────────────────────
+    // The proposal pay endpoint stamps metadata.kind = "proposal".
+    // Everything proposal-specific lives in the shared helper so this
+    // path produces byte-for-byte the same records as a manual
+    // /api/proposals/[id]/mark-paid.
+    if (metadata.kind === "proposal") {
+      const proposalId = metadata.proposal_id;
+      if (!proposalId || !paymentId) {
+        console.error(
+          "[Stripe webhook] proposal session missing proposal_id/payment_id",
+          { sessionId: session.id },
+        );
+        return NextResponse.json({
+          received: true,
+          warning: "Missing proposal metadata",
+        });
+      }
+
+      const admin = createAdminClient();
+
+      // Idempotency is handled inside confirmProposalPayment via an atomic
+      // proposal status flip — it returns code "already_paid" for a benign
+      // redelivery and "duplicate_charge" for a genuine second charge — so
+      // there's no SELECT-then-act pre-check race to get wrong here.
+
+      // Stripe is the source of truth for what the customer actually paid.
+      const paidAmountEur =
+        typeof session.amount_total === "number"
+          ? session.amount_total / 100
+          : Number(metadata.amount_eur || 0);
+
+      const result = await confirmProposalPayment(admin, {
+        proposalId,
+        amount: paidAmountEur,
+        paymentMethod: "card",
+        paidOnIso: new Date().toISOString(),
+        note: `Stripe Checkout · session ${session.id}`,
+        existingPaymentId: paymentId,
+        republish: true,
+        // Unattended handover — hand the client their login automatically
+        // using the contact email + stored temp password.
+        welcomeEmail: { send: true },
+      });
+
+      if (!result.ok) {
+        // Benign redelivery, or a manual mark beat us — ack so Stripe stops.
+        if (result.code === "already_paid") {
+          return NextResponse.json({ received: true, already_confirmed: true });
+        }
+        // A genuinely DIFFERENT second charge landed on an already-paid
+        // proposal (customer paid twice). The helper flagged the payment
+        // row; alert an operator to refund. Ack so Stripe stops retrying.
+        if (result.code === "duplicate_charge") {
+          await logAudit({
+            userId: "system",
+            action: "stripe_duplicate_charge_needs_refund",
+            entityType: "proposal",
+            entityId: proposalId,
+            details: {
+              payment_id: result.paymentId,
+              stripe_session_id: session.id,
+              paid_amount_eur: paidAmountEur,
+              customer_email: session.customer_email,
+            },
+          });
+          console.error(
+            `[Stripe webhook] DUPLICATE CHARGE on proposal ${proposalId} (session ${session.id}) — refund needed`,
+          );
+          return NextResponse.json({ received: true, duplicate_charge: true });
+        }
+        // Transient DB failure — return non-2xx so Stripe RETRIES. The
+        // confirm is idempotent (atomic flip), so the retry recovers a
+        // paid-but-unrecorded order instead of dropping it forever.
+        if (result.code === "db_error") {
+          console.error(
+            `[Stripe webhook] proposal confirm transient failure: ${result.error}`,
+            { sessionId: session.id, proposalId },
+          );
+          return NextResponse.json(
+            { received: false, error: result.error },
+            { status: 500 },
+          );
+        }
+        // Terminal (not_found / no_site) — ack so Stripe stops retrying;
+        // the pending row + Stripe dashboard record let us reconcile.
+        console.error(
+          `[Stripe webhook] proposal confirm failed (${result.status}): ${result.error}`,
+          { sessionId: session.id, proposalId },
+        );
+        return NextResponse.json({ received: true, warning: result.error });
+      }
+
+      await logAudit({
+        userId: result.siteOwnerId || "system",
+        action: "stripe_proposal_payment_confirmed",
+        entityType: "proposal",
+        entityId: proposalId,
+        details: {
+          payment_id: result.paymentId,
+          stripe_session_id: session.id,
+          paid_amount_eur: paidAmountEur,
+          invoice_number: result.invoiceNumber,
+          welcome_email_sent: result.welcomeEmailSent,
+          welcome_email_error: result.welcomeEmailError,
+          customer_email: session.customer_email,
+        },
+      });
+
+      // Paid, but the unattended welcome email couldn't go out (no contact
+      // email / no stored password / SMTP error) — the customer has no way
+      // to log in. Surface it as its own alert so an operator follows up,
+      // rather than burying it in the success detail.
+      if (result.welcomeEmailError) {
+        await logAudit({
+          userId: "system",
+          action: "stripe_proposal_paid_no_welcome_email",
+          entityType: "proposal",
+          entityId: proposalId,
+          details: {
+            payment_id: result.paymentId,
+            welcome_email_error: result.welcomeEmailError,
+            customer_email: session.customer_email,
+          },
+        });
+        console.error(
+          `[Stripe webhook] Proposal ${proposalId} paid but welcome email failed: ${result.welcomeEmailError}`,
+        );
+      }
+
+      console.log(
+        `[Stripe webhook] ✓ Proposal ${proposalId} marked paid ($${paidAmountEur}) via session ${session.id}`,
+      );
+      return NextResponse.json({ received: true, confirmed: true, kind: "proposal" });
+    }
+
+    // ── Credit top-up payment (default / metadata.kind = "credits") ──
     if (!paymentId) {
       console.error("[Stripe webhook] Missing payment_id in session metadata", {
         sessionId: session.id,

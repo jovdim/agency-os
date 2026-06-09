@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
 
 /**
- * GET /api/sites/[id] — Get a site with sections and credit balance
+ * GET /api/sites/[id] — Get a site with credit balance
  */
 export async function GET(
   _req: NextRequest,
@@ -26,14 +27,7 @@ export async function GET(
   if (error || !site)
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
 
-  // Fetch sections
-  const { data: sections } = await supabase
-    .from("sections")
-    .select("*")
-    .eq("site_id", id)
-    .order("order", { ascending: true });
-
-  return NextResponse.json({ site, sections: sections || [] });
+  return NextResponse.json({ site });
 }
 
 /**
@@ -56,59 +50,69 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
-
-  const role = user.app_metadata?.role as string;
   let isClientOwner = false;
-  if (!["tech_admin", "super_admin"].includes(role)) {
-    if (role === "sales") {
-      // Sales: must own the linked proposal. Same lookup pattern as
-      // /api/sites/[id]/domain — the proposal-level page guard already
-      // prevents most navigations to a non-owned site, but a stray
-      // request from devtools or a stale tab can still hit this route,
-      // so we re-verify here.
-      const admin = createAdminClient();
-      const { data: siteRow, error: sErr } = await admin
-        .from("sites")
-        .select("proposal_id")
-        .eq("id", id)
-        .maybeSingle();
-      if (sErr || !siteRow?.proposal_id) {
-        return NextResponse.json({ error: "Site not found" }, { status: 404 });
-      }
-      const { data: linkedProposal } = await admin
-        .from("proposals")
-        .select("sales_person_id")
-        .eq("id", siteRow.proposal_id)
-        .maybeSingle();
-      if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+  let effectiveRole = "client";
+
+  if (!user) {
+    // Per-site CMS admin (theirdomain.com/admin) — no Supabase session, just
+    // the host-scoped site-admin cookie. Authorize ONLY for that exact site and
+    // restrict to composition edits, exactly like a client owner.
+    const sa = await getSiteAdminForSite(id);
+    if (!sa)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    isClientOwner = true;
+  } else {
+    const role = user.app_metadata?.role as string;
+    effectiveRole = role;
+    if (!["tech_admin", "super_admin"].includes(role)) {
+      if (role === "sales") {
+        // Sales: must own the linked proposal. Same lookup pattern as
+        // /api/sites/[id]/domain — the proposal-level page guard already
+        // prevents most navigations to a non-owned site, but a stray
+        // request from devtools or a stale tab can still hit this route,
+        // so we re-verify here.
+        const admin = createAdminClient();
+        const { data: siteRow, error: sErr } = await admin
+          .from("sites")
+          .select("proposal_id")
+          .eq("id", id)
+          .maybeSingle();
+        if (sErr || !siteRow?.proposal_id) {
+          return NextResponse.json({ error: "Site not found" }, { status: 404 });
+        }
+        const { data: linkedProposal } = await admin
+          .from("proposals")
+          .select("sales_person_id")
+          .eq("id", siteRow.proposal_id)
+          .maybeSingle();
+        if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+        // Fall through — sales is treated as full staff for the field
+        // allowlist below (composition, status, name, domain, …).
+      } else if (role === "client") {
+        const admin = createAdminClient();
+        const { data: ownerRow, error: ownerErr } = await admin
+          .from("sites")
+          .select("owner_id")
+          .eq("id", id)
+          .maybeSingle();
+        if (ownerErr || !ownerRow) {
+          return NextResponse.json({ error: "Site not found" }, { status: 404 });
+        }
+        if (ownerRow.owner_id !== user.id) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+        isClientOwner = true;
+      } else {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-      // Fall through — sales is treated as full staff for the field
-      // allowlist below (composition, status, name, domain, …).
-    } else if (role === "client") {
-      const admin = createAdminClient();
-      const { data: ownerRow, error: ownerErr } = await admin
-        .from("sites")
-        .select("owner_id")
-        .eq("id", id)
-        .maybeSingle();
-      if (ownerErr || !ownerRow) {
-        return NextResponse.json({ error: "Site not found" }, { status: 404 });
-      }
-      if (ownerRow.owner_id !== user.id) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-      isClientOwner = true;
-    } else {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
   const body = await req.json();
@@ -182,7 +186,7 @@ export async function PUT(
   // MUST NOT silently fail just because the staleness-detection column
   // isn't in the schema yet.
   if (body.composition !== undefined) {
-    updates.updated_by_role = role;
+    updates.updated_by_role = effectiveRole;
   }
 
   const admin = createAdminClient();

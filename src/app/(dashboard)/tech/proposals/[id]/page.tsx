@@ -2,7 +2,6 @@ import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import { UserGear as UserCog } from "@phosphor-icons/react/ssr";
-import { LegacyWorkspace } from "./legacy-workspace";
 import { ProposalTimeline } from "@/components/proposal-timeline/proposal-timeline";
 import { ClientDetailClient } from "@/components/live-clients/client-detail-client";
 import { loadClientDetail } from "@/components/live-clients/load-client-detail";
@@ -21,14 +20,8 @@ import {
   type TimelineSite,
 } from "@/components/proposal-timeline/timeline-steps";
 import { MarkAsPaidLauncher } from "@/components/proposal-timeline/mark-as-paid-launcher";
-import { PublishRequestCard } from "@/components/proposal-timeline/publish-request-card";
 
 export const dynamic = "force-dynamic";
-
-// Per-publish charge in $. Source of truth is PUBLISH_COST_EUR in
-// src/app/api/sites/[id]/credit-balance/route.ts; mirrored here for the
-// approval card's "will charge X $" line.
-const PUBLISH_COST_EUR = 12.5;
 
 export default async function ProposalBuildPage({
   params,
@@ -90,18 +83,6 @@ export default async function ProposalBuildPage({
       .eq("id", id)
       .single(),
   ]);
-
-  // Soft branch: proposals whose site is flagged legacy keep using the old
-  // upload-and-deploy workspace (preserved verbatim in legacy-workspace.tsx).
-  if (siteRow?.is_legacy === true) {
-    return (
-      <LegacyWorkspace
-        proposalId={id}
-        currentUserId={profile.id}
-        composerAvailable={false}
-      />
-    );
-  }
 
   if (error || !proposalRow) {
     notFound();
@@ -284,21 +265,6 @@ export default async function ProposalBuildPage({
   // safety net.
   const clientDetail = await loadClientDetail(id);
 
-  // ── Pending client publish request ──
-  // Surfaces the approval card in the timeline's banner slot. Only the
-  // single open ('pending') request matters — approve/reject/cancel move
-  // it off 'pending' (one-pending-per-site index). Null = no card shown.
-  let pendingPublishRequest: { created_at: string } | null = null;
-  if (siteRow?.id) {
-    const { data: pr } = await admin
-      .from("publish_requests")
-      .select("created_at")
-      .eq("site_id", siteRow.id)
-      .eq("status", "pending")
-      .maybeSingle();
-    pendingPublishRequest = pr ?? null;
-  }
-
   return (
     <>
       <ProposalTimeline
@@ -307,16 +273,6 @@ export default async function ProposalBuildPage({
         steps={steps}
         currentUserId={profile.id}
         role="tech_admin"
-        banner={
-          pendingPublishRequest && siteRow ? (
-            <PublishRequestCard
-              siteId={siteRow.id}
-              createdAt={pendingPublishRequest.created_at}
-              balance={extractCreditBalance(siteRow)}
-              publishCost={PUBLISH_COST_EUR}
-            />
-          ) : undefined
-        }
         headerActions={
           <MarkAsPaidLauncher
             proposalId={proposalRow.id}

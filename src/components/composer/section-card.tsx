@@ -59,17 +59,11 @@ interface Props {
    *  fires with the real Supabase URL and the iframe transitions
    *  invisibly from blob to real. */
   onPreviewImage?: (fieldKey: string, url: string) => void;
-  /** "client" hides the structural buttons (drag handle, variant swap,
-   *  remove) so clients can edit content but not change the page layout.
-   *  Field editing inside the expanded panel always works. */
-  mode?: "tech" | "client";
   /**
    * AI re-generate callback. When provided, a small ✨ button shows
    * up in the card header next to variant-swap. Clicking opens a
    * popover with an optional custom prompt; the resulting overrides
    * are passed up via this callback for the composer to apply.
-   * Tech-only — clients don't get bulk AI regen on individual
-   * sections (kept consistent with the global Generate button).
    */
   onAiRegenerate?: (overrides: import("./ai-generate-modal").AiOverrides) => void;
   /** Fires when a field's font-size is adjusted. Pass a pixel value
@@ -126,7 +120,6 @@ export function SectionCard({
   onItemFieldChange,
   onFieldFocus,
   onPreviewImage,
-  mode = "tech",
   onAiRegenerate,
   onFieldSizeChange,
   measureFieldSize,
@@ -136,12 +129,6 @@ export function SectionCard({
   onFieldHiddenChange,
   brand,
 }: Props) {
-  // Client mode hides the variant-swap button + picker AND the Remove
-  // button (Peter 2026-05-08: clients can't add a section back once
-  // removed because the SectionsRail is hidden too — so Remove would be
-  // a one-way trap). Clients keep drag-reorder + content editing only.
-  // Tech retains everything.
-  const isClientMode = mode === "client";
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [variantPickerOpen, setVariantPickerOpen] = useState(false);
   // Expansion is driven by selection — only one card open at a time.
@@ -277,54 +264,45 @@ export function SectionCard({
           })()}
         </div>
         <div className="ml-auto flex items-center gap-0.5">
-          {/* AI re-generate button — tech-only, opens a popover with
-              optional custom instructions, then re-rolls all text in
-              this section. Lives left of variant-swap so the order
-              reads "edit content (✨), change layout (Replace),
-              remove (Trash)". */}
-          {!isClientMode && onAiRegenerate && (
+          {/* AI re-generate button — opens a popover with optional
+              custom instructions, then re-rolls all text in this
+              section. Lives left of variant-swap so the order reads
+              "edit content (✨), change layout (Replace), remove
+              (Trash)". */}
+          {onAiRegenerate && (
             <AiSectionButton
               siteId={siteId}
               sectionId={section.id}
               onApply={onAiRegenerate}
             />
           )}
-          {/* Variant-swap button — hidden in client mode (Peter 2026-05-08).
-              Clients edit content of an existing section, but can't pick
-              a different template variant. Tech retains full swap power. */}
-          {!isClientMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              onClick={(e) => {
-                e.stopPropagation();
-                setVariantPickerOpen(true);
-              }}
-              title="Change variant"
-              aria-label="Change variant"
-            >
-              <Replace className="h-3.5 w-3.5" />
-            </Button>
-          )}
-          {/* Remove — also hidden in client mode. Without the SectionsRail
-              (also hidden), removal would be irreversible from the client
-              side: they couldn't pick the same template back. Tech keeps
-              the button. */}
-          {!isClientMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove();
-              }}
-              title="Remove"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          )}
+          {/* Variant-swap button — pick a different template variant. */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              setVariantPickerOpen(true);
+            }}
+            title="Change variant"
+            aria-label="Change variant"
+          >
+            <Replace className="h-3.5 w-3.5" />
+          </Button>
+          {/* Remove this section. */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            title="Remove"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -404,19 +382,7 @@ export function SectionCard({
                 onFieldFillChange={onFieldFillChange}
                 hiddenFields={section.hidden_fields ?? []}
                 onFieldHiddenChange={onFieldHiddenChange}
-                /* Role-aware items cap. Tech-admin/super-admin composer
-                   gets no extra cap (template's data-max wins, which is
-                   999 = effectively unlimited for galleries). Client
-                   composer gets a 40-photo safety net on galleries —
-                   covers any reasonable small-business gallery and
-                   prevents accidental 500-photo dumps that would tank
-                   the page weight + publish time. If a client legitimately
-                   needs more, tech admin can bump it on request. */
-                maxItemsCap={
-                  isClientMode && template.category === "gallery"
-                    ? 40
-                    : undefined
-                }
+                maxItemsCap={undefined}
                 brand={brand}
               />
             )}
@@ -424,24 +390,20 @@ export function SectionCard({
         </div>
       </div>
 
-      {/* VariantPicker overlay — never mounted in client mode so even a
-          stray ref to setVariantPickerOpen can't surface it (the trigger
-          button above is also gated, so this is belt-and-suspenders). */}
-      {!isClientMode && (
-        <VariantPicker
-          open={variantPickerOpen}
-          onOpenChange={setVariantPickerOpen}
-          category={template.category}
-          templates={allTemplates}
-          templateBodies={templateBodies}
-          baseCss={baseCss}
-          currentTemplateId={template.id}
-          onPick={(newId) => {
-            onChangeVariant(newId);
-            setVariantPickerOpen(false);
-          }}
-        />
-      )}
+      {/* VariantPicker overlay — pick a different template variant. */}
+      <VariantPicker
+        open={variantPickerOpen}
+        onOpenChange={setVariantPickerOpen}
+        category={template.category}
+        templates={allTemplates}
+        templateBodies={templateBodies}
+        baseCss={baseCss}
+        currentTemplateId={template.id}
+        onPick={(newId) => {
+          onChangeVariant(newId);
+          setVariantPickerOpen(false);
+        }}
+      />
     </div>
   );
 }

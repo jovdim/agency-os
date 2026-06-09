@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Tray as Inbox, ClockCounterClockwise as History, ArrowRight, Hammer, CheckCircle as CheckCircle2 } from "@phosphor-icons/react/ssr";
+import { Tray as Inbox, ArrowRight, Hammer, CheckCircle as CheckCircle2 } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ProposalTagChips } from "@/components/proposal-tags/proposal-tag-chips";
@@ -14,10 +14,7 @@ export default async function TechDashboard() {
 
   const firstName = profile.full_name?.trim().split(/\s+/)[0] || "there";
 
-  // Dashboard surfaces the active work (proposals waiting to build) prominently
-  // and the legacy change-request queue as a deprioritized strip — modern
-  // composer clients publish their own edits, so the change-request queue only
-  // matters for legacy sites still on that workflow.
+  // Dashboard surfaces the active work (proposals waiting to build).
   //
   // Rule (Peter 2026-05-11, "publish is the pivot"): "new" = NOT yet published.
   // Status enum is ignored — a proposal stays on this stat card until its
@@ -52,16 +49,10 @@ export default async function TechDashboard() {
     if (r.proposal_id) publishedProposalIds.add(r.proposal_id as string);
   }
 
-  const [{ data: allProposalsData }, { data: pendingCRs }] = await Promise.all([
-    admin
-      .from("proposals")
-      .select("id, company_name, updated_at, contacts(contact_person)")
-      .order("updated_at", { ascending: false }),
-    admin
-      .from("change_requests")
-      .select("site_id")
-      .eq("status", "pending"),
-  ]);
+  const { data: allProposalsData } = await admin
+    .from("proposals")
+    .select("id, company_name, updated_at, contacts(contact_person)")
+    .order("updated_at", { ascending: false });
 
   const allProposals = (allProposalsData || []) as unknown as {
     id: string;
@@ -76,14 +67,6 @@ export default async function TechDashboard() {
   const totalNewProposals = unpublished.length;
   const newProposals = unpublished.slice(0, NEW_PROPOSALS_DASHBOARD_LIMIT);
   const isProposalsListTruncated = totalNewProposals > newProposals.length;
-
-  // Headline number for client edits = unique clients with pending requests,
-  // not raw request rows. A single client can submit many change_request rows
-  // over time; what matters operationally is "how many clients am I behind on."
-  const totalPendingCRs = pendingCRs?.length ?? 0;
-  const clientsWithPendingCRs = new Set(
-    (pendingCRs ?? []).map((r) => r.site_id),
-  ).size;
 
   function name(p: typeof newProposals[number]) {
     return p.company_name || p.contacts?.contact_person || "Unnamed";
@@ -216,40 +199,6 @@ export default async function TechDashboard() {
         )}
       </section>
 
-      {/* Legacy: client change requests ──
-          Only legacy sites still submit change requests — modern composer
-          clients publish their own edits. This block is intentionally muted
-          and pushed to the bottom; it's not part of the active workflow. */}
-      <Link href="/tech/queue" className="group block">
-        <div className="dash-card flex items-center justify-between gap-3 border-dashed bg-muted/20 px-5 py-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-              <History className="h-4 w-4" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Legacy · Client edit requests
-              </p>
-              <p className="mt-0.5 text-sm">
-                <span className="font-semibold tabular-nums">
-                  {clientsWithPendingCRs}
-                </span>{" "}
-                <span className="text-muted-foreground">
-                  {clientsWithPendingCRs === 1 ? "client waiting" : "clients waiting"}
-                  {totalPendingCRs > 0 && (
-                    <>
-                      <span className="mx-1.5 opacity-50">·</span>
-                      <span className="tabular-nums">{totalPendingCRs}</span>{" "}
-                      pending {totalPendingCRs === 1 ? "request" : "requests"}
-                    </>
-                  )}
-                </span>
-              </p>
-            </div>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-        </div>
-      </Link>
     </div>
   );
 }

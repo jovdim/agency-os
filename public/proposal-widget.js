@@ -1,8 +1,14 @@
 /**
- * Proposal Widget — PAY by square (BySquare) QR Code
+ * Proposal Widget — Stripe scan-to-pay payment banner.
  * Injected into deployed proposal websites.
  * Top banner with smooth slide-in animation.
- * QR image from official bsqr.co API.
+ *
+ * The QR code, the "Order website" CTA and the "Pay securely by card"
+ * link all point at the same stable pay endpoint
+ * (/api/public/proposals/<slug>/pay). Opening it (scan or click) mints a
+ * fresh Stripe Checkout session for the current price and redirects to
+ * Stripe's hosted card page. On success Stripe's webhook marks the
+ * proposal paid automatically — no manual confirmation needed.
  *
  * Verbose console logs (prefixed [SK-Widget]) at every decision
  * point. To debug a missing banner: open the live site, open
@@ -174,11 +180,6 @@
     return line || "your company";
   }
 
-  function formatIban(iban) {
-    if (!iban) return "";
-    return iban.replace(/(.{4})/g, "$1 ").trim();
-  }
-
   function renderWidget(data) {
     var container = document.createElement("div");
     container.id = "sk-proposal-widget";
@@ -189,6 +190,7 @@
     var basePrice = data.basePrice;
     var expiresAt = data.discountExpiresAt;
     var qrImageDataUrl = data.qrImageDataUrl;
+    var payUrl = data.payUrl || "#";
     var companyName = data.companyName || "";
 
     var nameLine = buildNameLine(data.contactPerson, companyName, data.town);
@@ -215,7 +217,7 @@
           ' is final and valid until <span style="color:rgb(253,224,71);">' + expiryDateStr + "</span>" +
         "</div>" +
         '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:400;">' +
-          "If you would like to launch your website, scan the QR code with your banking app." +
+          "If you would like to launch your website, scan the QR code to pay securely by card." +
         "</div>" +
         '<div style="font-size:11px;color:#e67e22;margin-top:1px;font-weight:500;">' +
           '<svg style="display:inline;vertical-align:-2px;margin-right:3px;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
@@ -230,13 +232,13 @@
           " is final." +
         "</div>" +
         '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;font-weight:400;">' +
-          "If you would like to launch your website, scan the QR code with your banking app." +
+          "If you would like to launch your website, scan the QR code to pay securely by card." +
         "</div>";
     }
 
     // QR image
     var qrHtml = qrImageDataUrl
-      ? '<img src="' + qrImageDataUrl + '" alt="PAY by square QR" style="width:110px;height:110px;border-radius:4px;" />'
+      ? '<img src="' + qrImageDataUrl + '" alt="Pay by card QR" style="width:110px;height:110px;border-radius:4px;display:block;" />'
       : '<div style="width:110px;height:110px;background:rgba(255,255,255,0.08);border-radius:6px;display:flex;align-items:center;justify-content:center;animation:sk-pulse 2s ease-in-out infinite;">' +
         '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="4" height="4"/><line x1="21" y1="14" x2="21" y2="21"/><line x1="14" y1="21" x2="21" y2="21"/></svg>' +
         '</div>';
@@ -277,7 +279,7 @@
             '<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">Website proposal for: <span style="color:rgb(253,224,71);">' + nameLine + '</span></div>' +
             priceHtml +
             '<div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-top:0px;line-height:1;">' +
-              '<a href="#" id="sk-cta-order" style="font-size:11px;font-weight:600;color:rgb(253,224,71);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">Order website</a>' +
+              '<a href="' + payUrl + '" target="_top" id="sk-cta-order" style="font-size:11px;font-weight:600;color:rgb(253,224,71);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">Order website</a>' +
               '<span style="color:rgba(255,255,255,0.15);">|</span>' +
               '<a href="' + (magicLoginUrl || 'https://your-app.vercel.app/login') + '" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:opacity .2s;" onmouseenter="this.style.opacity=\'0.7\'" onmouseleave="this.style.opacity=\'1\'">I need changes</a>' +
             "</div>" +
@@ -288,20 +290,14 @@
             "</div>" +
           "</div>" +
 
-          // Right side — QR + bank details toggle
+          // Right side — QR (scan to pay by card) + "can't scan?" card link
           '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;">' +
-            '<div style="background:#fff;padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25);">' +
+            '<a href="' + payUrl + '" target="_top" style="display:block;background:#fff;padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25);">' +
               qrHtml +
-            "</div>" +
-            '<button id="sk-bank-toggle" style="background:none;border:none;font-size:10px;font-weight:500;color:rgba(255,255,255,0.75);cursor:pointer;margin-top:3px;padding:0;text-decoration:underline;">' +
-              'Cannot scan?' +
-            '</button>' +
-            '<div id="sk-bank-details" style="max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .3s ease,margin .3s ease;font-size:11px;color:rgba(255,255,255,0.85);text-align:left;line-height:1.6;">' +
-              '<div style="margin-bottom:3px;font-weight:500;color:#fff;">' + (data.beneficiary || '') + '</div>' +
-              '<div><span style="color:rgba(255,255,255,0.45);">IBAN:</span> ' + formatIban(data.iban) + '</div>' +
-              '<div><span style="color:rgba(255,255,255,0.45);">VS:</span> ' + data.variableSymbol + '</div>' +
-              '<div><span style="color:rgba(255,255,255,0.45);">Amount:</span> $' + activePrice + '</div>' +
-            '</div>' +
+            "</a>" +
+            '<a id="sk-card-pay" href="' + payUrl + '" target="_top" style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.85);cursor:pointer;margin-top:4px;text-decoration:underline;">' +
+              'Pay securely by card' +
+            '</a>' +
           "</div>" +
 
         "</div>" +
@@ -340,26 +336,10 @@
       }
     }
 
-    // Toggle details with smooth animation
+    // Toggle details with smooth animation. "Order website", the QR, and
+    // "Pay securely by card" are now plain links to the Stripe pay
+    // endpoint (payUrl) — no JS needed, they navigate on click/scan.
     var toggle = document.getElementById("sk-widget-toggle");
-    // "Objednať webstránku" — shake QR code to draw attention
-    var orderBtn = document.getElementById("sk-cta-order");
-    if (orderBtn) {
-      orderBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        var qrWrap = container.querySelector("img[alt='PAY by square QR']");
-        if (!qrWrap) return;
-        var parent = qrWrap.parentElement;
-        parent.style.transition = "transform .1s";
-        var shakes = ["-4px","4px","-3px","3px","-2px","2px","0"];
-        shakes.forEach(function(x, i) {
-          setTimeout(function() { parent.style.transform = "translateX(" + x + ")"; }, i * 60);
-        });
-        qrWrap.style.transition = "box-shadow .3s";
-        qrWrap.style.boxShadow = "0 0 16px rgba(253,224,71,0.6)";
-        setTimeout(function() { qrWrap.style.boxShadow = "none"; }, 2000);
-      });
-    }
 
     var details = document.getElementById(detailsId);
     if (toggle && details) {
@@ -377,29 +357,14 @@
       });
     }
 
-    // Bank details toggle
-    var bankToggle = document.getElementById("sk-bank-toggle");
-    var bankDetails = document.getElementById("sk-bank-details");
-    if (bankToggle && bankDetails) {
-      var bankOpen = false;
-      bankToggle.addEventListener("click", function() {
-        bankOpen = !bankOpen;
-        if (bankOpen) {
-          bankDetails.style.maxHeight = bankDetails.scrollHeight + 16 + "px";
-          bankDetails.style.opacity = "1";
-          bankDetails.style.marginTop = "6px";
-        } else {
-          bankDetails.style.maxHeight = "0";
-          bankDetails.style.opacity = "0";
-          bankDetails.style.marginTop = "0";
-        }
-        bankToggle.textContent = bankOpen ? "Skry\u0165 \u00fadaje" : "Nem\u00f4\u017eete naskenova\u0165?";
+    // Hover affordance on the "Pay securely by card" link.
+    var cardPay = document.getElementById("sk-card-pay");
+    if (cardPay) {
+      cardPay.addEventListener("mouseenter", function () {
+        cardPay.style.color = "#fff";
       });
-      bankToggle.addEventListener("mouseenter", function() {
-        bankToggle.style.color = "#fff";
-      });
-      bankToggle.addEventListener("mouseleave", function() {
-        bankToggle.style.color = "rgba(255,255,255,0.75)";
+      cardPay.addEventListener("mouseleave", function () {
+        cardPay.style.color = "rgba(255,255,255,0.85)";
       });
     }
   }

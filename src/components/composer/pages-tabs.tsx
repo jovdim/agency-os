@@ -46,12 +46,6 @@ interface Props {
   onSwitch: (path: string) => void;
   onAdd: (page: CompositionPage) => void;
   onRemove: (path: string) => void;
-  /** When true, the structural controls (Add page button, per-tab ×
-   *  remove button) are hidden — clients can navigate between pages
-   *  but can't change the page set. Without this prop the whole
-   *  strip used to be hidden in client mode, which made subpages
-   *  invisible + unreachable from the client zone (Peter 2026-05-30). */
-  isClientMode?: boolean;
   /** Services available on the home page (Peter 2026-05-30). When the
    *  tech-admin picks one, the new subpage is auto-named after that
    *  service AND stores the service's id in `linked_service_id` so the
@@ -90,7 +84,6 @@ export function PagesTabs({
   onSwitch,
   onAdd,
   onRemove,
-  isClientMode = false,
   availableServices = [],
   linkedServiceIdsInUse,
 }: Props) {
@@ -181,11 +174,6 @@ export function PagesTabs({
     setAdding(false);
   }
 
-  // A client with a single-page site has nothing to navigate — hide the
-  // whole strip so it doesn't show a lone, pointless tab. Tech always
-  // sees it (they need the "Add page" button to start adding subpages).
-  if (isClientMode && pages.length <= 1) return null;
-
   return (
     <>
       <div className="flex items-center gap-2 border-b dash-hairline bg-card px-3 py-2 overflow-x-auto">
@@ -196,7 +184,7 @@ export function PagesTabs({
           {pages.map((p, i) => {
             const isActive = p.path === activePagePath;
             const isHome = p.path === HOME_PATH;
-            const showRemove = !isHome && pages.length > 1 && !isClientMode;
+            const showRemove = !isHome && pages.length > 1;
             // Thin vertical rule BETWEEN tabs (after every tab except the
             // last) so each page reads as its own item — Home stays distinct
             // from the subpages, and a long list of subpages doesn't blur
@@ -239,7 +227,7 @@ export function PagesTabs({
                       </span>
                     )}
 
-                    {/* Remove × — non-home tabs, tech only. role=button (not a
+                    {/* Remove × — non-home tabs. role=button (not a
                         nested <button>, which is invalid) so the click can
                         stopPropagation and not also fire the tab switch. */}
                     {showRemove && (
@@ -290,21 +278,19 @@ export function PagesTabs({
           })}
         </div>
 
-        {/* Add page — tech only */}
-        {!isClientMode && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer text-muted-foreground hover:text-(--dash-accent) hover:bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
-            onClick={() => {
-              resetAddState();
-              setAdding(true);
-            }}
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add page
-          </Button>
-        )}
+        {/* Add page */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 gap-1 text-xs shrink-0 rounded-full cursor-pointer text-muted-foreground hover:text-(--dash-accent) hover:bg-[color-mix(in_oklab,var(--dash-accent)_10%,transparent)]"
+          onClick={() => {
+            resetAddState();
+            setAdding(true);
+          }}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add page
+        </Button>
       </div>
 
       <Dialog

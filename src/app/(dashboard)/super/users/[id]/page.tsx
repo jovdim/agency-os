@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Buildings as Building2, Envelope as Mail, Phone, GlobeHemisphereWest as Globe2, ArrowSquareOut as ExternalLink, CalendarBlank as Calendar, CreditCard, FileText, Coins, Clock, CheckCircle, XCircle, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
+import { ArrowLeft, User, Buildings as Building2, Envelope as Mail, Phone, GlobeHemisphereWest as Globe2, ArrowSquareOut as ExternalLink, CalendarBlank as Calendar, CreditCard, FileText, Coins, Clock, CheckCircle, XCircle } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 
@@ -64,24 +64,16 @@ export default async function UserDetailPage({
   const email = authUser?.user?.email || null;
   const siteIds = (sites || []).map(s => s.id);
 
-  // ── Wave 2: three parallel lookups, all scoped by siteIds ──
+  // ── Wave 2: two parallel lookups, all scoped by siteIds ──
   const [
-    { data: changeRequests },
     { data: creditBalances },
     { data: deployments },
   ] = siteIds.length > 0
     ? await Promise.all([
-        admin
-          .from("change_requests")
-          .select("id, status, admin_note, created_at, site_id")
-          .in("site_id", siteIds)
-          .order("created_at", { ascending: false })
-          .limit(10),
         admin.from("credit_balances").select("site_id, balance").in("site_id", siteIds),
         admin.from("deployments").select("id, subdomain, deploy_status, deployed_at, site_id").in("site_id", siteIds),
       ])
     : [
-        { data: [] as { id: string; status: string; admin_note: string | null; created_at: string; site_id: string }[] },
         { data: [] as { site_id: string; balance: number }[] },
         { data: [] as { id: string; subdomain: string; deploy_status: string; deployed_at: string | null; site_id: string }[] },
       ];
@@ -98,7 +90,6 @@ export default async function UserDetailPage({
 
   const allPayments = payments || [];
   const allInvoices = invoices || [];
-  const allChangeRequests = changeRequests || [];
   const allSites = sites || [];
 
   const totalPaid = allPayments
@@ -446,49 +437,6 @@ export default async function UserDetailPage({
         </Card>
       </div>
 
-      {/* Change Requests */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <span className="dash-chip inline-flex h-7 w-7 items-center justify-center rounded-md">
-              <AlertCircle className="h-3.5 w-3.5" />
-            </span>
-            Change Requests ({allChangeRequests.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allChangeRequests.length === 0 ? (
-            <p className="py-6 text-center text-xs text-muted-foreground">No change requests</p>
-          ) : (
-            <div className="dash-hairline divide-y">
-              {allChangeRequests.map((cr) => {
-                const statusColors: Record<string, string> = {
-                  pending: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
-                  approved: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
-                  rejected: "bg-red-500/15 text-red-600 border-red-500/30",
-                };
-                return (
-                  <div key={cr.id} className="dash-row flex items-center justify-between rounded-md px-1 text-xs py-2">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-xs h-5 ${statusColors[cr.status] || ""}`}>
-                        {cr.status}
-                      </Badge>
-                      {cr.admin_note && (
-                        <span className="text-muted-foreground italic truncate max-w-60">
-                          {cr.admin_note}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(cr.created_at), { addSuffix: true })}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

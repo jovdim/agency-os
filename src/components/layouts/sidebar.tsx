@@ -12,7 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { SquaresFour as LayoutDashboard, Globe, CreditCard, Users, Presentation, CurrencyDollar as DollarSign, PhoneCall, ListChecks, Hammer, ChartBar as BarChart3, Buildings as Building2, Shield, UserGear as UserCog, GlobeHemisphereWest as Globe2, Receipt, GearSix as Settings, PencilSimple as Pencil, UserPlus, Rocket, ClipboardText as ClipboardList, SidebarSimple as PanelLeftClose, Sidebar as PanelLeftOpen, ChatText as MessageSquare, CheckCircle, StackSimple as Layers, Pulse as Activity } from "@phosphor-icons/react/ssr";
+import { SquaresFour as LayoutDashboard, Globe, CreditCard, Users, Presentation, CurrencyDollar as DollarSign, PhoneCall, Hammer, ChartBar as BarChart3, Buildings as Building2, Shield, UserGear as UserCog, GlobeHemisphereWest as Globe2, Receipt, GearSix as Settings, Rocket, ClipboardText as ClipboardList, SidebarSimple as PanelLeftClose, Sidebar as PanelLeftOpen, CheckCircle, StackSimple as Layers, Pulse as Activity } from "@phosphor-icons/react/ssr";
 import { Brand } from "@/components/brand";
 
 interface NavItem {
@@ -43,16 +43,6 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
           label: "Overview",
           href: "/client",
           icon: <LayoutDashboard className="h-4 w-4" />,
-        },
-        {
-          label: "Edit website",
-          href: "/client/edit",
-          icon: <Pencil className="h-4 w-4" />,
-        },
-        {
-          label: "My changes",
-          href: "/client/requests",
-          icon: <ListChecks className="h-4 w-4" />,
         },
         {
           label: "Balance",
@@ -133,11 +123,6 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
           label: "Live Clients",
           href: "/tech/live-clients",
           icon: <CheckCircle className="h-4 w-4" />,
-        },
-        {
-          label: "Clients (legacy)",
-          href: "/tech/clients",
-          icon: <UserPlus className="h-4 w-4" />,
         },
         {
           label: "Section Templates",
@@ -259,54 +244,27 @@ const NAV_ITEMS: Record<UserRole, NavGroup[]> = {
 
 /**
  * Footer-pinned nav items — rendered below the main list with a divider
- * above. Use for low-frequency support entries that shouldn't compete for
- * attention with primary navigation. Currently only the client role has
- * one: "Need help? Write to us" sits at the bottom so the day-to-day
- * actions (edit, balance) stay near the top.
+ * above. Use for low-frequency entries that shouldn't compete for
+ * attention with primary navigation. Currently empty.
  */
-const NAV_FOOTER_ITEMS: Partial<Record<UserRole, NavItem[]>> = {
-  client: [
-    {
-      label: "Need help?",
-      href: "/client/messages",
-      icon: <MessageSquare className="h-4 w-4" />,
-    },
-  ],
-};
+const NAV_FOOTER_ITEMS: Partial<Record<UserRole, NavItem[]>> = {};
 
 const SIDEBAR_LS_KEY = "sk_sidebar_collapsed";
 
 export function Sidebar({
   role,
-  hasLegacySite = false,
   salesNewCount = 0,
 }: {
   role: UserRole;
-  hasLegacySite?: boolean;
   /** Unread NEW-proposal count for the sales role. Rendered as a small
    *  pill on the "Active" entry when > 0. Hidden when 0 so the sidebar
    *  stays clean once the rep has caught up. */
   salesNewCount?: number;
 }) {
   const pathname = usePathname();
-  // Filter the change-requests entry out for fully-modern clients
-  // (those with no legacy sites). Composer-based sites publish edits
-  // directly so "My changes" has nothing to show.
-  const groups = (NAV_ITEMS[role] || [])
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => {
-        if (
-          role === "client" &&
-          item.href === "/client/requests" &&
-          !hasLegacySite
-        ) {
-          return false;
-        }
-        return true;
-      }),
-    }))
-    .filter((group) => group.items.length > 0);
+  const groups = (NAV_ITEMS[role] || []).filter(
+    (group) => group.items.length > 0,
+  );
 
   const footerItems = NAV_FOOTER_ITEMS[role] ?? [];
 
@@ -381,7 +339,7 @@ export function Sidebar({
       height: active.offsetHeight,
       visible: true,
     });
-  }, [pathname, collapsed, role, hasLegacySite]);
+  }, [pathname, collapsed, role]);
 
   return (
     <TooltipProvider delayDuration={0}>

@@ -26,9 +26,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Rocket, CaretDown as ChevronDown, CaretRight as ChevronRight, ArrowSquareOut as ExternalLink, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2, Globe, Check, Clock, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
+import { Rocket, CaretDown as ChevronDown, CaretRight as ChevronRight, ArrowSquareOut as ExternalLink, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2, Globe, Check, WarningCircle as AlertCircle } from "@phosphor-icons/react/ssr";
 import { toast } from "sonner";
-import { SiteActivationDialog } from "@/components/payments/site-activation-dialog";
 
 interface VersionRow {
   id: string;
@@ -90,38 +89,6 @@ interface Props {
    *  protection handlePublish already gets. Optional so this component
    *  still works in older callsites that haven't wired it through. */
   flushPendingComposition?: () => Promise<void>;
-  /** "tech" (default) shows the full menu — subdomain editor + publish +
-   *  history with revert. "client" hides structural pieces (subdomain
-   *  editor + history list) but keeps the primary Publish button and the
-   *  "Live at" URL display. Clients publish their content edits directly
-   *  in v1; admin retains revert ability via tech mode. */
-  mode?: "tech" | "client";
-}
-
-interface CreditInfo {
-  balance: number;
-  publishCost: number;
-  canPublish: boolean;
-  isPaid: boolean;
-  /** Which gate is blocking publish (when canPublish=false). null when good. */
-  paywallReason: "site_not_paid" | "insufficient_credits" | null;
-}
-
-/**
- * Latest actionable publish request for the site (client mode only).
- *   - pending  → client is waiting for IT review. The request button
- *                stays ENABLED but relabeled "Update request";
- *                clicking re-submits with the latest composition,
- *                overrides the prior pending row, and charges another
- *                $12.50 (the first charge is forfeit).
- *   - rejected → IT declined; show the reason + $12.50 was refunded
- *                + let the client re-request.
- * approved / cancelled / overridden requests are historical and
- * reported as null by the credit-balance endpoint.
- */
-interface PublishRequestState {
-  status: "pending" | "rejected";
-  reviewNote: string | null;
 }
 
 export function PublishMenu({
@@ -130,9 +97,7 @@ export function PublishMenu({
   onPublish,
   siteUrl,
   flushPendingComposition,
-  mode = "tech",
 }: Props) {
-  const isClientMode = mode === "client";
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [versions, setVersions] = useState<VersionRow[]>([]);
@@ -142,73 +107,6 @@ export function PublishMenu({
   // expanded so opening the popover stays instant.
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
-  // Credit balance shown above the Publish button in client mode. Fetched
-  // once on mount and after every publish (since the post-charge balance
-  // changes). Tech / sales / admin modes leave this null and skip the
-  // gating UI entirely — they don't pay per publish.
-  const [credit, setCredit] = useState<CreditInfo | null>(null);
-  // Latest pending/rejected publish request (client mode). Drives the
-  // request button's "waiting for review" / "rejected" states. Loaded
-  // alongside the balance from the same credit-balance response.
-  const [publishRequest, setPublishRequest] =
-    useState<PublishRequestState | null>(null);
-
-  // Activation dialog visibility — the dialog's internal state (stage 1
-  // intro vs stage 2 QR reveal, fetch, etc.) lives inside the shared
-  // <SiteActivationDialog> component. Same dialog opens from the dashboard
-  // "set up domain + email" card so the paywall message is identical
-  // across surfaces.
-  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-
-  /** Open the activation dialog and close the publish popover behind it
-   *  so the modal sits on top cleanly. */
-  function openPaymentDialog() {
-    setPaymentDialogOpen(true);
-    setOpen(false);
-  }
-
-  /**
-   * Refetch the site's credit balance + per-publish cost. No-op outside
-   * client mode (only clients are charged, so only the client UI needs
-   * the gating display). Errors swallow silently — we'd rather render
-   * the publish button "unsure" than break the menu over a balance fetch.
-   */
-  const reloadCredit = useCallback(async () => {
-    if (!isClientMode) return;
-    try {
-      const res = await fetch(`/api/sites/${siteId}/credit-balance`);
-      if (!res.ok) return;
-      const data = await res.json();
-      setCredit({
-        balance: Number(data.balance ?? 0),
-        publishCost: Number(data.publish_cost ?? 12.5),
-        canPublish: Boolean(data.can_publish),
-        isPaid: Boolean(data.is_paid),
-        paywallReason:
-          data.paywall_reason === "site_not_paid" ||
-          data.paywall_reason === "insufficient_credits"
-            ? data.paywall_reason
-            : null,
-      });
-      const pr = data.publish_request;
-      setPublishRequest(
-        pr && (pr.status === "pending" || pr.status === "rejected")
-          ? { status: pr.status, reviewNote: pr.review_note ?? null }
-          : null,
-      );
-    } catch {
-      // Network blip — leave previous value (or null) in place.
-    }
-  }, [isClientMode, siteId]);
-
-  useEffect(() => {
-    void reloadCredit();
-  }, [reloadCredit]);
-  // Refresh after a publish settles — captures the post-charge balance.
-  useEffect(() => {
-    if (!publishing) void reloadCredit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publishing]);
 
   // Top version is the currently-live one (most recent).
   const liveVersion = versions[0] ?? null;
@@ -354,80 +252,50 @@ export function PublishMenu({
           )}
 
           {/* ── Subdomain editor ──
-              Sales/tech can pick the *.{PROPOSAL_DOMAIN} subdomain. Loads
-              the current value lazily on popover open (cheap GET). On save,
-              the API swaps the Cloudflare custom domain mapping atomically
-              and updates site_url. Format + uniqueness are checked live as
-              the user types so the Save button is only enabled when valid.
-              Hidden in client mode — clients can't change their subdomain. */}
-          {!isClientMode && (
-            <SubdomainEditor
-              siteId={siteId}
-              onSaved={reload}
-              onBeforeReload={flushPendingComposition}
-            />
-          )}
+              Pick the *.{PROPOSAL_DOMAIN} subdomain. Loads the current
+              value lazily on popover open (cheap GET). On save, the API
+              swaps the Cloudflare custom domain mapping atomically and
+              updates site_url. Format + uniqueness are checked live as
+              the user types so the Save button is only enabled when valid. */}
+          <SubdomainEditor
+            siteId={siteId}
+            onSaved={reload}
+            onBeforeReload={flushPendingComposition}
+          />
 
-          {/* ── Primary action ──
-              Two completely different flows:
-
-              CLIENT mode → "Request publish". The client can't push live
-              directly anymore (Peter 2026-05-29): clicking submits a
-              request that an IT/tech admin approves on the proposal
-              pipeline page, and the $12.50 is charged there at go-live.
-              The button has three states (request / waiting / rejected),
-              all handled inside ClientRequestAction.
-
-              TECH / sales / super mode → the original direct-publish
-              button (onPublish), unchanged + free. */}
-          {isClientMode ? (
-            <ClientRequestAction
-              siteId={siteId}
-              credit={credit}
-              publishRequest={publishRequest}
-              flushPendingComposition={flushPendingComposition}
-              onChanged={reloadCredit}
-              openPaymentDialog={openPaymentDialog}
-            />
-          ) : (
-            <div className="px-3 py-3 border-b">
-              <Button
-                className="w-full gap-1.5"
-                onClick={async () => {
-                  await onPublish();
-                  // The parent toggles `publishing`; the effect above
-                  // reloads versions when it flips back to false.
-                }}
-                disabled={publishing}
-              >
-                {publishing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="h-4 w-4" />
-                    <span>{stableUrl ? "Publish update" : "Publish"}</span>
-                  </>
-                )}
-              </Button>
-              <p className="text-[10px] text-muted-foreground text-center mt-1.5">
-                {stableUrl
-                  ? "Updates the live site with current composition"
-                  : "Pushes the site live for the first time"}
-              </p>
-            </div>
-          )}
+          {/* ── Primary action — direct publish (free). ── */}
+          <div className="px-3 py-3 border-b">
+            <Button
+              className="w-full gap-1.5"
+              onClick={async () => {
+                await onPublish();
+                // The parent toggles `publishing`; the effect above
+                // reloads versions when it flips back to false.
+              }}
+              disabled={publishing}
+            >
+              {publishing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <Rocket className="h-4 w-4" />
+                  <span>{stableUrl ? "Publish update" : "Publish"}</span>
+                </>
+              )}
+            </Button>
+            <p className="text-[10px] text-muted-foreground text-center mt-1.5">
+              {stableUrl
+                ? "Updates the live site with current composition"
+                : "Pushes the site live for the first time"}
+            </p>
+          </div>
 
           {/* ── History (collapsed by default — click header to expand) ──
-              Visible in BOTH tech and client modes (Peter 2026-05-08): the
-              client zone should mirror what the IT side sees, including
-              Revert — the only thing held back from clients is the
-              SubdomainEditor above. The history list is read-mostly anyway
-              (look at past publishes, click to preview), and Revert simply
-              re-publishes an older snapshot which clients are already
-              allowed to do via the Publish button. */}
+              Read-mostly list of past publishes: click a URL to preview,
+              or Revert to re-publish an older snapshot. */}
           <button
             type="button"
             onClick={() => setHistoryExpanded((e) => !e)}
@@ -528,15 +396,6 @@ export function PublishMenu({
         </PopoverContent>
       </Popover>
 
-      {/* Shared site-activation dialog (used in both publish flow and
-          dashboard's "set up domain + email" card). Stage 1 intro,
-          stage 2 reveals the QR + bank info on demand. */}
-      <SiteActivationDialog
-        siteId={siteId}
-        open={paymentDialogOpen}
-        onOpenChange={setPaymentDialogOpen}
-      />
-
       {/* Revert confirmation dialog */}
       <Dialog
         open={!!confirmTarget}
@@ -599,206 +458,6 @@ export function PublishMenu({
         </DialogContent>
       </Dialog>
     </>
-  );
-}
-
-/**
- * Client-mode primary action — "Request publish".
- *
- * Clients can't push live directly anymore. This submits a publish
- * request that an IT/tech admin approves on the proposal pipeline
- * page. The $12.50 is charged AT SUBMIT time (Peter 2026-05-30) —
- * approve does not re-charge, reject refunds.
- *
- * Three states:
- *   - pending  → button STAYS ENABLED, relabeled "Update request
- *                · $12.50". Clicking overrides the prior pending row
- *                (first charge forfeit) and submits the latest
- *                composition as a fresh request with its own $12.50.
- *                A warning above the button spells this out so the
- *                client knows what re-clicking costs.
- *   - rejected → reason banner + refund confirmation + a fresh
- *                "Request publish" button.
- *   - normal   → "Request publish · $12.50".
- *
- * Paywalls mirror the old direct-publish UI: site_not_paid opens the
- * activation dialog; insufficient_credits disables with a top-up link.
- */
-function ClientRequestAction({
-  siteId,
-  credit,
-  publishRequest,
-  flushPendingComposition,
-  onChanged,
-  openPaymentDialog,
-}: {
-  siteId: string;
-  credit: CreditInfo | null;
-  publishRequest: PublishRequestState | null;
-  flushPendingComposition?: () => Promise<void>;
-  /** Refetch balance + request state after a successful request. */
-  onChanged: () => void | Promise<void>;
-  openPaymentDialog: () => void;
-}) {
-  const [requesting, setRequesting] = useState(false);
-
-  const isPending = publishRequest?.status === "pending";
-  const wasRejected = publishRequest?.status === "rejected";
-  const insufficient = credit?.paywallReason === "insufficient_credits";
-  const notPaid = credit?.paywallReason === "site_not_paid";
-
-  async function doRequest() {
-    if (requesting) return;
-    // Unpaid gate — explain via the activation modal instead of firing
-    // a request the server would 402 anyway.
-    if (notPaid) {
-      openPaymentDialog();
-      return;
-    }
-    setRequesting(true);
-    try {
-      // Flush any pending autosave so IT reviews/publishes the latest
-      // composition. Best-effort — a failure shouldn't block the request
-      // (the 250ms autosave fires on its own regardless).
-      if (flushPendingComposition) {
-        try {
-          await flushPendingComposition();
-        } catch {
-          /* non-fatal */
-        }
-      }
-      const res = await fetch(`/api/sites/${siteId}/publish-request`, {
-        method: "POST",
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        if (data.code === "SITE_NOT_PAID") {
-          openPaymentDialog();
-        } else {
-          toast.error(data.error || "The request could not be sent.");
-        }
-        return;
-      }
-      // Different success toast depending on whether this submit
-      // replaced an earlier pending request (overrode_id non-null)
-      // or was a fresh first request. The override toast reminds the
-      // client they were just charged again — they should see that
-      // immediately, not just notice it next time they open balance.
-      if (data.overrode_id) {
-        toast.success(
-          "Your previous request was replaced. $12.50 was deducted from your balance.",
-          { duration: 7000 },
-        );
-      } else {
-        toast.success("Request sent. We'll publish your changes within 24 hours.", {
-          duration: 6000,
-        });
-      }
-      await onChanged();
-    } catch {
-      toast.error("Network error. Please try again.");
-    } finally {
-      setRequesting(false);
-    }
-  }
-
-  // Single render path covers all three states — pending, rejected,
-  // and normal. The only differences are the banner above the button
-  // (rejected only), the button label (Update vs Request), and
-  // the helper line under the button (override warning vs 24h note).
-  // Keeping them in one branch means the credit row + insufficient
-  // gate stay identical across states.
-  const buttonLabel = isPending
-    ? "Update request"
-    : "Request publish";
-
-  return (
-    <div className="px-3 py-3 border-b">
-      {wasRejected && (
-        <div className="mb-2.5 rounded-md border border-destructive/30 bg-destructive/5 px-2.5 py-2 text-[11px] leading-snug">
-          <p className="font-medium text-destructive flex items-center gap-1">
-            <AlertCircle className="h-3 w-3" />
-            Changes were not approved
-          </p>
-          {publishRequest?.reviewNote && (
-            <p className="text-muted-foreground mt-0.5">
-              {publishRequest.reviewNote}
-            </p>
-          )}
-          <p className="text-muted-foreground mt-0.5">
-            $12.50 has been refunded to your balance. Edit as needed and
-            send again.
-          </p>
-        </div>
-      )}
-
-      {isPending && (
-        <div className="mb-2.5 rounded-md border border-amber-300/60 bg-amber-50 dark:border-amber-400/30 dark:bg-amber-950/30 px-2.5 py-2 text-[11px] leading-snug">
-          <p className="font-medium text-amber-900 dark:text-amber-200 flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            You have a request awaiting approval
-          </p>
-          <p className="text-amber-800/80 dark:text-amber-200/80 mt-0.5">
-            Clicking replaces it with your latest changes ($12.50 fee).
-            The previous fee is not refunded.
-          </p>
-        </div>
-      )}
-
-      {credit && (
-        <div className="flex items-center justify-between text-[11px] mb-2 px-0.5">
-          <span className="text-muted-foreground">Balance</span>
-          <span
-            className={`font-semibold tabular-nums ${
-              insufficient ? "text-destructive" : ""
-            }`}
-          >
-            ${credit.balance.toFixed(2)}
-          </span>
-        </div>
-      )}
-
-      <Button
-        className="w-full gap-1.5"
-        onClick={doRequest}
-        disabled={requesting || insufficient}
-        variant={isPending ? "secondary" : "default"}
-      >
-        {requesting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Sending…
-          </>
-        ) : (
-          <>
-            <Rocket className="h-4 w-4" />
-            <span>{buttonLabel}</span>
-            {credit && (
-              <span className="opacity-80 tabular-nums">
-                · ${credit.publishCost.toFixed(2)}
-              </span>
-            )}
-          </>
-        )}
-      </Button>
-
-      {insufficient ? (
-        <p className="text-[11px] text-destructive text-center mt-1.5 leading-snug">
-          Not enough credits —{" "}
-          <a
-            href="/client/balance"
-            className="underline underline-offset-2 hover:text-destructive/80 font-medium"
-          >
-            top up credits
-          </a>
-          .
-        </p>
-      ) : (
-        <p className="text-[10px] text-muted-foreground text-center mt-1.5">
-          We'll publish your changes within 24 hours.
-        </p>
-      )}
-    </div>
   );
 }
 

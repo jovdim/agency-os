@@ -42,8 +42,9 @@ export default async function SiteComposerPage({
 
   if (!site) notFound();
   if (site.is_legacy) {
-    // Legacy site — composer can't handle it
-    redirect(`/tech/sites/${id}`);
+    // Legacy sites have no composer representation and the old section
+    // editor is gone — send the user back to the published-sites list.
+    redirect("/tech/production");
   }
 
   let composition =
@@ -106,7 +107,7 @@ export default async function SiteComposerPage({
         <SiteLockedScreen
           team={roleToTeam(lockResult.team)}
           since={lockResult.since}
-          backHref={`/tech/sites/${site.id}`}
+          backHref="/tech/production"
         />
       );
     }
@@ -120,7 +121,7 @@ export default async function SiteComposerPage({
       templates={clientTemplates}
       templateBodies={templateBodies}
       baseCss={baseCss}
-      backHref={`/tech/sites/${site.id}`}
+      backHref="/tech/production"
       siteUrl={site.site_url ?? null}
       pagesUrl={pagesUrl}
     />

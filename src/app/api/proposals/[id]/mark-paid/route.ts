@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
-import { sendEmail, buildClientWelcomeEmailHtml } from "@/lib/email";
-import { generateVariableSymbol } from "@/lib/payments/bysquare";
-import { publishSite } from "@/lib/templates/publish";
+import {
+  confirmProposalPayment,
+  type WelcomeEmailInput,
+} from "@/lib/payments/confirm-proposal-payment";
 
-// publishSite -> renderSite downloads section templates from Supabase
-// Storage. Without these directives Next.js caches those fetches and
-// publishes serve stale template HTML/CSS. Same convention as
-// /api/admin/payments/confirm and /api/sites/[id]/publish.
+// confirmProposalPayment -> publishSite -> renderSite downloads section
+// templates from Supabase Storage. Without these directives Next.js caches
+// those fetches and publishes serve stale template HTML/CSS. Same
+// convention as /api/sites/[id]/publish.
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
@@ -17,38 +18,30 @@ export const revalidate = 0;
 /**
  * POST /api/proposals/[id]/mark-paid
  *
- * Manual payment confirmation for proposals paid OUTSIDE the QR
- * banner flow — invoice paid by bank transfer, cash on a handshake,
- * card-on-file, etc. Mirrors /api/admin/payments/confirm in what it
- * actually does (creates payment + invoice, flips proposal to paid,
- * sets site.is_paid, dismisses reminders, auto-commissions, sends
- * welcome email) but:
+ * MANUAL payment confirmation, for proposals paid OUTSIDE the Stripe
+ * card flow — cash on a handshake, an off-channel bank transfer, etc.
+ * The normal path is now automatic: the client pays by card on their
+ * live site, Stripe fires checkout.session.completed, and the webhook
+ * (/api/payments/stripe/webhook) confirms the payment with no human in
+ * the loop. This route is the operator override for everything else.
  *
- *   1. Auth allows tech_admin + super_admin + sales (their own
- *      proposals only). The original confirm route is super-only
- *      because it was designed for boss-confirms-VS-match. This
- *      route is the day-to-day handover action.
- *   2. Status check is permissive — any non-paid status can transition
- *      to paid (submitted / building / review / revision / sent /
- *      viewed). The confirm route only accepts sent/viewed because
- *      it assumes the QR was hit; here the QR may never have been
- *      involved.
- *   3. Caller picks the `payment_method` (bank_transfer / invoice /
- *      cash / card). confirm-route hardcodes bank_transfer because
- *      it's wired to the bank-notification flow.
- *   4. `send_welcome_email` defaults to true (this IS the handover
- *      moment in the manual flow), but caller can flip it off when
- *      they want to mark paid first and email credentials later.
+ * Both surfaces call the SAME `confirmProposalPayment` helper, so manual
+ * and automatic payments produce identical records (payment row, invoice,
+ * paid status, banner-off republish, reminders, commission, welcome
+ * email). The only differences here are:
  *
- * Behaviours kept identical to confirm-route on purpose so revenue
- * reporting + commission accrual + invoice numbering + audit log
- * formatting all stay consistent across the two surfaces. If you
- * change the payment side effects here, update confirm-route too.
+ *   1. Auth — tech_admin + super_admin + sales (their own proposals only).
+ *   2. The caller picks the `payment_method` + `amount` (the webhook
+ *      reads the amount Stripe actually charged).
+ *   3. Optional handover-time site updates (main_domain, starting_credits)
+ *      that only make sense in the manual wizard.
+ *   4. `send_welcome_email` defaults to true (this IS the handover moment
+ *      in the manual flow), but the caller can flip it off.
  *
  * Body: {
  *   amount: number (required, > 0, EUR),
  *   paid_on?: string (ISO date, default today),
- *   payment_method?: "bank_transfer" | "invoice" | "cash" | "card",
+ *   payment_method?: "bank_transfer" | "invoice" | "cash" | "card" | "other",
  *   note?: string,
  *   // Optional handover-time updates applied in the same transaction
  *   main_domain?: string | null  // sets sites.domain (and domain_status='active' when non-empty)
@@ -177,13 +170,6 @@ export async function POST(
   // when the wizard isn't in play, old callers can still pass the
   // bare `send_welcome_email` boolean and we fall back to contact
   // email + stored temp password.
-  type WelcomeEmailInput = {
-    send: boolean;
-    to?: string;
-    login_email?: string;
-    login_password?: string;
-    custom_message?: string;
-  };
   const welcomeEmailInput: WelcomeEmailInput | null = (() => {
     if (body.welcome_email && typeof body.welcome_email === "object") {
       const w = body.welcome_email as Record<string, unknown>;
@@ -211,398 +197,42 @@ export async function POST(
 
   const admin = createAdminClient();
 
-  // ── Fetch proposal + linked site + contact ──
-  const { data: proposal } = await admin
+  // ── Sales scope check — own proposals only ──
+  // confirmProposalPayment re-fetches the proposal internally, but the
+  // sales own-only rule must run BEFORE we mutate anything, so do a cheap
+  // ownership lookup up front.
+  const { data: scope } = await admin
     .from("proposals")
-    .select(
-      `
-        id,
-        slug,
-        company_name,
-        status,
-        sales_person_id,
-        contact_id,
-        variable_symbol,
-        client_temp_password,
-        contacts(contact_person, email, company_name)
-      `,
-    )
+    .select("sales_person_id")
     .eq("id", proposalId)
     .maybeSingle();
-
-  if (!proposal) {
-    return NextResponse.json(
-      { error: "Proposal not found" },
-      { status: 404 },
-    );
+  if (!scope) {
+    return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
   }
-
-  // Sales scope check — same own-only rule as elsewhere.
-  if (role === "sales" && proposal.sales_person_id !== user.id) {
+  if (role === "sales" && scope.sales_person_id !== user.id) {
     return NextResponse.json(
       { error: "You can only mark your own proposals as paid" },
       { status: 403 },
     );
   }
 
-  // Idempotency — already-paid proposals can't be paid twice.
-  if (proposal.status === "paid") {
-    return NextResponse.json(
-      { error: "This proposal is already marked as paid" },
-      { status: 409 },
-    );
-  }
-
-  // ── Find linked site (must exist) ──
-  const { data: site } = await admin
-    .from("sites")
-    .select("id, owner_id")
-    .eq("proposal_id", proposalId)
-    .maybeSingle();
-
-  if (!site) {
-    return NextResponse.json(
-      {
-        error:
-          "No site linked to this proposal yet. Build the site (or send the proposal so the client zone gets created) before marking paid.",
-      },
-      { status: 400 },
-    );
-  }
-
-  // Defensive: don't allow two confirmed payments on the same
-  // proposal even if status somehow drifted. Mirrors confirm-route.
-  const { data: existingPayment } = await admin
-    .from("payments")
-    .select("id")
-    .eq("proposal_id", proposalId)
-    .eq("status", "confirmed")
-    .maybeSingle();
-  if (existingPayment) {
-    return NextResponse.json(
-      { error: "A confirmed payment already exists for this proposal" },
-      { status: 409 },
-    );
-  }
-
-  const variableSymbol =
-    proposal.variable_symbol || generateVariableSymbol(proposal.id);
-
-  // ── Payment row ──
-  const methodLabel: Record<string, string> = {
-    bank_transfer: "Bank transfer payment",
-    invoice: "Invoice payment",
-    cash: "Cash payment",
-    card: "Card payment",
-    // "Other" deliberately keeps the generic "Payment" so the
-    // description on the invoice stays neutral; the operator's
-    // note carries the actual channel for bookkeeping.
-    other: "Payment",
-  };
-  const description = `${methodLabel[paymentMethod] ?? "Payment"} - VS: ${variableSymbol}${note ? ` · ${note}` : ""}`;
-
-  const { data: payment, error: paymentErr } = await admin
-    .from("payments")
-    .insert({
-      profile_id: site.owner_id,
-      site_id: site.id,
-      proposal_id: proposal.id,
-      amount,
-      currency: "USD",
-      payment_method: paymentMethod,
-      status: "confirmed",
-      description,
-    })
-    .select("id")
-    .single();
-
-  if (paymentErr || !payment) {
-    return NextResponse.json(
-      { error: paymentErr?.message || "Failed to create payment row" },
-      { status: 500 },
-    );
-  }
-
-  // ── Update proposal: paid + banner off ──
-  const { error: proposalErr } = await admin
-    .from("proposals")
-    .update({
-      status: "paid",
-      paid_at: paidOnIso,
-      show_banner: false,
-    })
-    .eq("id", proposal.id);
-  if (proposalErr) {
-    return NextResponse.json(
-      { error: proposalErr.message },
-      { status: 500 },
-    );
-  }
-
-  // ── Silent republish so the deployed HTML loses the QR widget ──
-  // Fire-and-forget; same pattern as confirm-route. A republish hiccup
-  // doesn't invalidate the payment.
-  publishSite(site.id, user.id, "auto_banner_toggle", new Map(), {
-    silent: true,
-  }).catch((err) => {
-    console.error(
-      "[MarkPaid] Banner republish failed (non-fatal):",
-      err instanceof Error ? err.message : err,
-    );
-  });
-
-  // ── Dismiss all open reminders for this proposal ──
-  await admin
-    .from("proposal_reminders")
-    .update({ is_dismissed: true })
-    .eq("proposal_id", proposal.id)
-    .eq("is_dismissed", false);
-
-  // ── Invoice generation (FV-YYYYMMDD-NNN) ──
-  // Numbered against the paid date — not today — so an invoice issued
-  // for a payment that landed last month carries last month's date in
-  // the prefix (mirrors confirm-route logic on this point).
-  const dateBase = new Date(paidOnIso);
-  const dateStr =
-    dateBase.getFullYear().toString() +
-    String(dateBase.getMonth() + 1).padStart(2, "0") +
-    String(dateBase.getDate()).padStart(2, "0");
-  const prefix = `FV-${dateStr}-`;
-
-  const { data: lastInvoice } = await admin
-    .from("invoices")
-    .select("invoice_number")
-    .like("invoice_number", `${prefix}%`)
-    .order("invoice_number", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  let seq = 1;
-  if (lastInvoice?.invoice_number) {
-    const lastSeq = parseInt(
-      lastInvoice.invoice_number.replace(prefix, ""),
-      10,
-    );
-    if (!isNaN(lastSeq)) seq = lastSeq + 1;
-  }
-  const invoiceNumber = `${prefix}${String(seq).padStart(3, "0")}`;
-
-  const { error: invoiceErr } = await admin.from("invoices").insert({
-    invoice_number: invoiceNumber,
-    type: "invoice",
-    profile_id: site.owner_id,
-    site_id: site.id,
-    payment_id: payment.id,
+  // ── Run the shared payment-confirmation side-effects ──
+  // Identical code path to the Stripe webhook, so manual + automatic
+  // payments produce the same records.
+  const result = await confirmProposalPayment(admin, {
+    proposalId,
     amount,
-    vat_amount: 0,
-    line_items: [
-      {
-        description: `Website creation - ${proposal.company_name}`,
-        quantity: 1,
-        unit_price: amount,
-        vat_rate: 0,
-        total: amount,
-      },
-    ],
-    issued_at: paidOnIso,
-    paid_at: paidOnIso,
+    paymentMethod,
+    paidOnIso,
+    note,
+    actorUserId: user.id,
+    mainDomain,
+    startingCredits,
+    welcomeEmail: welcomeEmailInput ?? undefined,
   });
-  if (invoiceErr) {
-    console.error("[MarkPaid] Invoice creation failed:", invoiceErr);
-    // Non-blocking — payment already confirmed
-  }
 
-  // ── Set site as paid + billing cycle dates (+ optional main domain) ──
-  const liveDate = new Date(paidOnIso);
-  const nextBilling = new Date(paidOnIso);
-  nextBilling.setFullYear(nextBilling.getFullYear() + 1);
-
-  const siteUpdate: Record<string, unknown> = {
-    is_paid: true,
-    website_live_date: liveDate.toISOString().split("T")[0],
-    next_billing_date: nextBilling.toISOString().split("T")[0],
-    billing_cycle_months: 12,
-  };
-  // Wizard captures the customer-facing main domain at handover. Flip
-  // domain_status to 'active' so the domain card on the client zone
-  // stops nagging them to choose one. Null = explicit clear, undefined
-  // = no change.
-  if (mainDomain !== undefined) {
-    siteUpdate.domain = mainDomain;
-    if (mainDomain) {
-      siteUpdate.domain_status = "active";
-      siteUpdate.domain_decided_at = new Date().toISOString();
-    }
-  }
-  await admin.from("sites").update(siteUpdate).eq("id", site.id);
-
-  // ── Starting credits override (wizard) ──
-  // Upsert keyed on site_id so a freshly-created balance row OR an
-  // existing row both end up at the requested amount. Skipped when
-  // the wizard didn't pass it so the row is left alone for callers
-  // that don't care about credits at this step.
-  if (startingCredits !== undefined) {
-    await admin
-      .from("credit_balances")
-      .upsert(
-        { site_id: site.id, balance: startingCredits },
-        { onConflict: "site_id" },
-      );
-  }
-
-  // ── Promote draft change_requests to pending (legacy path) ──
-  await admin
-    .from("change_requests")
-    .update({ status: "pending" })
-    .eq("site_id", site.id)
-    .eq("status", "draft");
-
-  // ── Mark contact as client + converted ──
-  if (proposal.contact_id) {
-    await admin
-      .from("contacts")
-      .update({ client_status: "client", status: "converted" })
-      .eq("id", proposal.contact_id);
-  }
-
-  // ── Auto-create commission for the salesperson ──
-  if (proposal.sales_person_id) {
-    const { data: rateData } = await admin
-      .from("commission_rates")
-      .select("rate")
-      .eq("sales_person_id", proposal.sales_person_id)
-      .maybeSingle();
-    const rate = rateData?.rate || 0.1;
-    const commissionAmount = Math.round(amount * rate * 100) / 100;
-    if (commissionAmount > 0) {
-      await admin.from("commissions").insert({
-        sales_person_id: proposal.sales_person_id,
-        proposal_id: proposal.id,
-        payment_id: payment.id,
-        amount: commissionAmount,
-        is_paid: false,
-      });
-    }
-  }
-
-  // ── Welcome email ──
-  // The manual-mark flow IS the handover moment, so emailing
-  // credentials is the natural next step. Wizard passes operator-
-  // edited recipient + login + password + custom message so the email
-  // matches the preview byte-for-byte. Legacy callers (boolean flag,
-  // no payload) still work via the fallback inside welcomeEmailInput.
-  //
-  // Non-blocking on failure: payment is already confirmed, the wizard
-  // surfaces a "Retry email" CTA in the success view based on the
-  // `welcome_email_sent` flag in the response.
-  let welcomeEmailSent = false;
-  let welcomeEmailError: string | null = null;
-  if (welcomeEmailInput?.send) {
-    try {
-      const contact = Array.isArray(proposal.contacts)
-        ? proposal.contacts[0]
-        : proposal.contacts;
-      const fallbackRecipient = contact?.email ?? null;
-      const recipientEmail =
-        welcomeEmailInput.to || fallbackRecipient || null;
-      const loginEmail =
-        welcomeEmailInput.login_email ||
-        recipientEmail ||
-        fallbackRecipient ||
-        null;
-      const loginPassword =
-        welcomeEmailInput.login_password || proposal.client_temp_password || null;
-      const fullName =
-        contact?.contact_person ||
-        contact?.company_name ||
-        recipientEmail ||
-        proposal.company_name;
-
-      if (!recipientEmail) {
-        welcomeEmailError = "No recipient email on file";
-      } else if (!loginPassword) {
-        welcomeEmailError = "No login password to share";
-      } else {
-        const dashboardUrl =
-          process.env.NEXT_PUBLIC_CLIENT_URL ||
-          process.env.NEXT_PUBLIC_SITE_URL ||
-          "https://client.pages.dev";
-        const loginUrl = `${dashboardUrl}/login`;
-
-        const { data: siteRow } = await admin
-          .from("sites")
-          .select("site_url, name")
-          .eq("id", site.id)
-          .single();
-
-        const html = buildClientWelcomeEmailHtml({
-          fullName,
-          companyName: proposal.company_name || undefined,
-          loginEmail,
-          loginPassword,
-          siteUrl: siteRow?.site_url || undefined,
-          loginUrl,
-          customMessage: welcomeEmailInput.custom_message || undefined,
-        });
-
-        const subject = `Your client zone — ${proposal.company_name || siteRow?.name || "Your Agency"}`;
-        const result = await sendEmail({
-          to: recipientEmail,
-          subject,
-          html,
-          type: "client",
-        });
-
-        if (result.success) {
-          welcomeEmailSent = true;
-          await admin.from("proposal_emails").insert({
-            proposal_id: proposal.id,
-            sent_by: user.id,
-            email_type: "welcome",
-            subject,
-            body_html: html,
-            recipient_email: recipientEmail,
-          });
-
-          // Sync the operator-chosen login/password to the auth user
-          // so the client can actually log in with what the email shows.
-          // Mirrors /api/admin/clients/send-welcome behaviour. Best
-          // effort — auth user might not exist yet for proposals that
-          // never minted a client zone.
-          if (loginEmail && loginPassword) {
-            try {
-              const normalizedEmail = loginEmail.toLowerCase();
-              const { data: usersList } =
-                await admin.auth.admin.listUsers({ perPage: 1000 });
-              const match = usersList?.users?.find(
-                (u) => u.email?.toLowerCase() === normalizedEmail,
-              );
-              if (match) {
-                await admin.auth.admin.updateUserById(match.id, {
-                  password: loginPassword,
-                });
-              }
-              await admin
-                .from("proposals")
-                .update({ client_temp_password: loginPassword })
-                .eq("id", proposal.id);
-            } catch (syncErr) {
-              console.error(
-                "[MarkPaid] Welcome email password sync failed (non-fatal):",
-                syncErr,
-              );
-            }
-          }
-        } else {
-          welcomeEmailError = result.error || "SMTP send failed";
-        }
-      }
-    } catch (err) {
-      welcomeEmailError =
-        err instanceof Error ? err.message : "Unknown email send error";
-      console.error("[MarkPaid] Welcome email send failed:", err);
-      // Non-blocking — payment is already confirmed.
-    }
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
   }
 
   // ── Audit log ──
@@ -610,30 +240,30 @@ export async function POST(
     userId: user.id,
     action: "mark_proposal_paid",
     entityType: "payment",
-    entityId: payment.id,
+    entityId: result.paymentId,
     details: {
-      proposal_id: proposal.id,
-      company_name: proposal.company_name,
-      variable_symbol: variableSymbol,
+      proposal_id: proposalId,
+      company_name: result.companyName,
+      variable_symbol: result.variableSymbol,
       amount,
       paid_on: paidOnIso,
       payment_method: paymentMethod,
       note: note || null,
-      invoice_number: invoiceNumber,
-      welcome_email_sent: welcomeEmailSent,
-      welcome_email_error: welcomeEmailError,
+      invoice_number: result.invoiceNumber,
+      welcome_email_sent: result.welcomeEmailSent,
+      welcome_email_error: result.welcomeEmailError,
       main_domain: mainDomain ?? null,
       starting_credits: startingCredits ?? null,
-      from_status: proposal.status,
+      from_status: result.fromStatus,
     },
   });
 
   return NextResponse.json({
     success: true,
-    payment_id: payment.id,
-    invoice_number: invoiceNumber,
-    welcome_email_sent: welcomeEmailSent,
-    welcome_email_error: welcomeEmailError,
+    payment_id: result.paymentId,
+    invoice_number: result.invoiceNumber,
+    welcome_email_sent: result.welcomeEmailSent,
+    welcome_email_error: result.welcomeEmailError,
     main_domain: mainDomain ?? null,
     starting_credits: startingCredits ?? null,
   });

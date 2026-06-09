@@ -156,7 +156,6 @@ export interface Proposal {
   contact_id: string | null;
   sales_person_id: string;
   built_by: string | null;
-  template_id: string | null;
   company_name: string;
   industry: string | null;
   town: string | null;
@@ -189,7 +188,6 @@ export interface Site {
   status: WebsiteStatus;
   owner_id: string;
   proposal_id: string | null;
-  template_id: string | null;
   domain_expiry_date: string | null;
   domain_registrar: string | null;
   domain_renewal_status: string | null;
@@ -197,6 +195,23 @@ export interface Site {
   billing_cycle_months: number | null;
   website_live_date: string | null;
   client_temp_password: string | null;
+  /** Live content served to the public (draft lives in `composition`). 00080. */
+  published_composition: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Per-site CMS login for `theirdomain.com/admin` (separate from staff profiles). 00080. */
+export interface SiteAdmin {
+  id: string;
+  site_id: string;
+  email: string;
+  password_hash: string;
+  display_name: string | null;
+  is_active: boolean;
+  reset_token_hash: string | null;
+  reset_expires_at: string | null;
+  last_login_at: string | null;
   created_at: string;
   updated_at: string;
 }

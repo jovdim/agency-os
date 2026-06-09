@@ -5,9 +5,9 @@ import { logAudit } from "@/lib/audit";
 import {
   MIN_DISCOUNT_PRICE,
   getReminderSchedule,
+  generateVariableSymbol,
 } from "@/lib/payments/proposal-utils";
 import { sendEmail, buildProposalEmailHtml, parseCcInput } from "@/lib/email";
-import { generateVariableSymbol } from "@/lib/payments/bysquare";
 
 /**
  * GET /api/proposals/[id] — Get a single proposal with template + contact data
@@ -78,7 +78,7 @@ export async function PUT(
   const { data: existing } = await admin
     .from("proposals")
     .select(
-      "sales_person_id, is_migrated, status, slug, company_name, contact_id, template_id, content_overrides, discount_price, base_price, discount_expires_at, client_temp_password, variable_symbol",
+      "sales_person_id, is_migrated, status, slug, company_name, contact_id, content_overrides, discount_price, base_price, discount_expires_at, client_temp_password, variable_symbol",
     )
     .eq("id", id)
     .single();

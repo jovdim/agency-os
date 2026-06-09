@@ -91,13 +91,10 @@ interface Props {
   /** Toggle a single repeater-item sub-field's visibility. Called with
    *  the composite key ("repeaterKey[index].subKey") + the new state. */
   onItemFieldHiddenChange?: (compositeKey: string, hidden: boolean) => void;
-  /** Hard cap on the items count, layered ON TOP of the template's
-   *  schema.max. The effective max becomes min(schema.max, maxItemsCap).
-   *  Today: section-card.tsx passes 40 when the composer is in client
-   *  mode AND the section category is "gallery" — a safety net so
-   *  clients can't accidentally upload 500 photos and tank the page.
-   *  Tech-admin mode skips the cap (passes undefined) and stays at
-   *  whatever the template's data-max says (now 999 for galleries =
+  /** Optional hard cap on the items count, layered ON TOP of the
+   *  template's schema.max — the effective max becomes
+   *  min(schema.max, maxItemsCap). undefined = no extra cap (the
+   *  template's data-max wins, which is 999 for galleries =
    *  effectively unlimited). */
   maxItemsCap?: number;
 }

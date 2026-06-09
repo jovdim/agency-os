@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isDiscountActive } from "@/lib/payments/proposal-utils";
-import { getOrRefreshProposalQr } from "@/lib/payments/bysquare";
+import QRCode from "qrcode";
+import { getActivePrice, isDiscountActive } from "@/lib/payments/proposal-utils";
 
 function corsHeaders() {
   return {
@@ -34,7 +34,7 @@ export async function GET(
   const { data: proposal, error } = await admin
     .from("proposals")
     .select(
-      "id, status, show_banner, discount_price, base_price, discount_expires_at, company_name, slug, contact_id, sales_person_id, qr_image_cache, qr_cached_amount, client_temp_password",
+      "id, status, show_banner, discount_price, base_price, discount_expires_at, company_name, slug, contact_id, sales_person_id, client_temp_password",
     )
     .eq("slug", slug)
     .single();
@@ -74,15 +74,32 @@ export async function GET(
     town = contact?.town || null;
   }
 
-  // Compute active price + get-or-refresh the cached QR. Logic lives in
-  // getOrRefreshProposalQr so the composer publish dialog reads from the
-  // exact same cache-or-refresh path — no two-source drift.
+  // Compute the active price (discount-window aware).
   const discountActive = isDiscountActive(proposal);
-  const {
-    qrImageDataUrl,
-    variableSymbol,
-    activePrice,
-  } = await getOrRefreshProposalQr(admin, proposal);
+  const activePrice = getActivePrice({
+    base_price: proposal.base_price,
+    discount_price: proposal.discount_price,
+    discount_expires_at: proposal.discount_expires_at,
+  });
+
+  // Scan-to-pay QR. It encodes the STABLE pay endpoint (which never
+  // expires); the short-lived Stripe Checkout session is minted only when
+  // the link is actually opened. So a phone scan lands straight on the
+  // Stripe-hosted card page for the current price.
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
+  const payUrl = `${origin}/api/public/proposals/${slug}/pay`;
+  let qrImageDataUrl: string | null = null;
+  try {
+    qrImageDataUrl = await QRCode.toDataURL(payUrl, {
+      margin: 1,
+      width: 320,
+      errorCorrectionLevel: "M",
+      color: { dark: "#0f1117", light: "#ffffff" },
+    });
+  } catch (err) {
+    console.error("[ProposalData] QR generation failed:", err);
+  }
 
   // Generate auto-login link (never expires — uses encrypted email:password)
   // Falls back to Supabase one-time magic link if temp password not stored.
@@ -130,9 +147,7 @@ export async function GET(
     companyName: proposal.company_name,
     town,
     qrImageDataUrl,
-    variableSymbol,
-    iban: process.env.BYSQUARE_IBAN || "SK1309000000005221380177",
-    beneficiary: process.env.BYSQUARE_BENEFICIARY || "Your Agency",
+    payUrl,
     magicLoginUrl,
   });
 }

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { sendEmail, buildClientWelcomeEmailHtml } from "@/lib/email";
-import { generateVariableSymbol } from "@/lib/payments/bysquare";
+import { generateVariableSymbol } from "@/lib/payments/proposal-utils";
 import crypto from "crypto";
 
 /**
@@ -307,7 +307,6 @@ export async function POST(req: NextRequest) {
         contact_id: createdContactId,
         sales_person_id: user.id,
         built_by: user.id,
-        template_id: null,
         company_name,
         industry: industry || null,
         town: town || null,

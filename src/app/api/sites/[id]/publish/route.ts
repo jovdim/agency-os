@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { publishSite, type PendingFilesMap } from "@/lib/templates/publish";
 import { logAudit } from "@/lib/audit";
 import { ensureClientZone } from "@/lib/proposals/ensure-client-zone";
+import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
 
 // Disable Next.js's automatic fetch caching for THIS route. publishSite →
 // renderSite downloads every used section template's HTML + CSS from
@@ -43,15 +44,48 @@ export async function POST(
     // whenever the trigger left profiles.role stale relative to the JWT
     // (autosave worked, publish didn't — mismatched role source). Keeping
     // both endpoints on the same source eliminates that asymmetry.
+    const { id } = await params;
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      // Per-site CMS admin publish (theirdomain.com/admin): no Supabase session.
+      // DYNAMIC publish = copy the draft composition into the live
+      // `published_composition` column. The public tenant renderer reads that
+      // column fresh on every request, so the change goes live immediately with
+      // no Cloudflare deploy. (Uploading brand-new images at publish time is a
+      // follow-up; sites whose images are already hosted URLs publish cleanly.)
+      const sa = await getSiteAdminForSite(id);
+      if (!sa) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const admin = createAdminClient();
+      const { data: siteRow } = await admin
+        .from("sites")
+        .select("composition")
+        .eq("id", id)
+        .maybeSingle();
+      if (!siteRow) {
+        return NextResponse.json({ error: "Site not found" }, { status: 404 });
+      }
+      const { error: upErr } = await admin
+        .from("sites")
+        .update({
+          published_composition: siteRow.composition,
+          last_published_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+      if (upErr) {
+        return NextResponse.json({ error: upErr.message }, { status: 500 });
+      }
+      const reqHost = req.headers.get("host");
+      const url = reqHost
+        ? `${reqHost.includes("localhost") ? "http" : "https"}://${reqHost}`
+        : null;
+      return NextResponse.json({ success: true, url });
     }
 
-    const { id } = await params;
     const role = user.app_metadata?.role as string | undefined;
 
     // Diagnostic log so a future 403 surfaces what we actually saw. Cheap.

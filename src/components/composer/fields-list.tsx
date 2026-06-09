@@ -123,9 +123,8 @@ function renderField(args: {
   /** Toggle a single repeater-item field's visibility. The RepeaterField
    *  builds the composite key ("rawKey[i].subKey") and forwards it here. */
   onItemFieldHiddenChange?: (compositeKey: string, hidden: boolean) => void;
-  /** Optional role-aware items cap forwarded to RepeaterField. Section-
-   *  card.tsx sets this to 40 when the composer is in client mode AND
-   *  the section is a gallery; undefined otherwise. */
+  /** Optional hard cap on item count, forwarded to RepeaterField.
+   *  undefined = no extra cap (the template's schema.max wins). */
   maxItemsCap?: number;
   /** Alt-text override for an IMAGE field. Pulled from
    *  `effectiveOverrides[<rawKey>_alt]` by the caller. Only meaningful
@@ -265,9 +264,8 @@ interface Props {
    *  ("services_items[2].service_cta"). */
   onFieldHiddenChange?: (rawKey: string, hidden: boolean) => void;
   /** Optional hard cap on items count for repeater fields in this
-   *  section (forwarded straight to RepeaterField). Section-card.tsx
-   *  computes this from `isClientMode && category === "gallery"` so
-   *  clients have a 40-photo safety net. undefined = no extra cap. */
+   *  section (forwarded straight to RepeaterField). undefined = no
+   *  extra cap. */
   maxItemsCap?: number;
   /** Site-wide brand record. When present, the brand-contact fall-back
    *  layer is applied to overrides BEFORE rendering — phone / email /

@@ -1,41 +1,52 @@
 /**
  * GET /api/sites/[id]/site-payment-info
  *
- * Returns the data needed to render the BySquare initial-site-payment
- * dialog when an unpaid client clicks Publish in the composer. Same DB
- * source-of-truth as the deployed-site banner widget
- * (public/proposal-widget.js):
+ * Returns the data the in-dashboard "pay for your website" paywall needs
+ * (site-activation-dialog) when an unpaid client tries to publish or set
+ * up their domain/email. Same money path as the deployed-site banner:
+ * Stripe Checkout via the public pay endpoint.
  *
- *   - proposals.base_price / discount_price / discount_expires_at
- *   - proposals.variable_symbol
- *   - proposals.qr_image_cache (base64 PNG data URL)
- *   - env BYSQUARE_IBAN / BYSQUARE_BENEFICIARY
+ *   - proposals.base_price / discount_price / discount_expires_at (pricing)
+ *   - pay_url  → /api/public/proposals/<slug>/pay (Stripe Checkout entry)
+ *   - qr_image_data_url → a QR of pay_url (scan-to-pay-by-card)
  *
- * Lazy-fetched (publish-menu only calls this when the user actually
- * clicks Publish on an unpaid site), so it doesn't add latency to the
- * normal flow.
+ * Lazy-fetched (only when the user clicks "Show payment details").
  *
- * Auth: owner-only for clients. (Tech / sales / admin don't hit this
- * because they aren't gated by the unpaid state, but we still allow
- * them through so the dialog can be previewed for QA.)
+ * Auth: owner-only for clients; tech/sales/super/admin allowed for QA.
  *
  * Response: { is_paid, base_price, discount_price, discount_expires_at,
- *             variable_symbol, qr_image_data_url, iban, beneficiary }
- *
- *   - is_paid: boolean — clients with is_paid=true shouldn't be hitting
- *     this in the first place, but we return the flag so the caller can
- *     bail out gracefully if the state changed between the credit-balance
- *     read and this fetch.
- *   - Everything else: as on the dashboard card. iban/beneficiary read
- *     from env vars server-side; never leaks the password.
+ *             active_price, pay_url, qr_image_data_url }
  */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getOrRefreshProposalQr } from "@/lib/payments/bysquare";
+import QRCode from "qrcode";
+import { getActivePrice } from "@/lib/payments/proposal-utils";
+
+interface PaymentInfoResponse {
+  is_paid: boolean;
+  base_price: number | null;
+  discount_price: number | null;
+  discount_expires_at: string | null;
+  active_price: number | null;
+  pay_url: string | null;
+  qr_image_data_url: string | null;
+}
+
+function emptyResponse(isPaid: boolean): PaymentInfoResponse {
+  return {
+    is_paid: isPaid,
+    base_price: null,
+    discount_price: null,
+    discount_expires_at: null,
+    active_price: null,
+    pay_url: null,
+    qr_image_data_url: null,
+  };
+}
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const supabase = await createClient();
@@ -70,8 +81,6 @@ export async function GET(
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     } else if (role === "sales") {
-      // Sales sees the QR / bank info for proposals they own, useful for
-      // the timeline preview. Mirrors the publish-route auth matrix.
       if (!site.proposal_id) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
@@ -88,60 +97,53 @@ export async function GET(
     }
   }
 
-  // Pull the proposal pricing/QR columns the shared helper needs.
   if (!site.proposal_id) {
-    // No linked proposal → no pricing data. Return what we have so the
-    // caller can gracefully render the "no payment info" fallback.
-    return NextResponse.json({
-      is_paid: site.is_paid === true,
-      base_price: null,
-      discount_price: null,
-      discount_expires_at: null,
-      variable_symbol: null,
-      qr_image_data_url: null,
-      iban: process.env.BYSQUARE_IBAN ?? null,
-      beneficiary: process.env.BYSQUARE_BENEFICIARY ?? null,
-    });
+    // No linked proposal → no pricing / pay link.
+    return NextResponse.json(emptyResponse(site.is_paid === true));
   }
 
   const { data: proposalRow } = await admin
     .from("proposals")
-    .select(
-      "id, company_name, base_price, discount_price, discount_expires_at, qr_image_cache, qr_cached_amount",
-    )
+    .select("id, slug, base_price, discount_price, discount_expires_at")
     .eq("id", site.proposal_id)
     .maybeSingle();
 
-  if (!proposalRow) {
-    return NextResponse.json({
-      is_paid: site.is_paid === true,
-      base_price: null,
-      discount_price: null,
-      discount_expires_at: null,
-      variable_symbol: null,
-      qr_image_data_url: null,
-      iban: process.env.BYSQUARE_IBAN ?? null,
-      beneficiary: process.env.BYSQUARE_BENEFICIARY ?? null,
-    });
+  if (!proposalRow?.slug) {
+    return NextResponse.json(emptyResponse(site.is_paid === true));
   }
 
-  // Shared cache-or-refresh — same path the deployed-site banner widget
-  // takes via /api/public/proposals/[slug]/data. If the price changed
-  // since the last QR generation, this regenerates and writes the cache
-  // back so the next call (from either surface) is the fast path.
-  const { qrImageDataUrl, variableSymbol } = await getOrRefreshProposalQr(
-    admin,
-    proposalRow,
-  );
+  const activePrice = getActivePrice({
+    base_price: proposalRow.base_price,
+    discount_price: proposalRow.discount_price,
+    discount_expires_at: proposalRow.discount_expires_at,
+  });
+
+  // The pay URL is the SAME public Stripe entry point the deployed-site
+  // banner uses — one money path for every surface. It's stable (never
+  // expires); the short-lived Stripe session is minted only on click/scan.
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
+  const payUrl = `${origin}/api/public/proposals/${proposalRow.slug}/pay`;
+
+  let qrImageDataUrl: string | null = null;
+  try {
+    qrImageDataUrl = await QRCode.toDataURL(payUrl, {
+      margin: 1,
+      width: 320,
+      errorCorrectionLevel: "M",
+      color: { dark: "#0f1117", light: "#ffffff" },
+    });
+  } catch (err) {
+    console.error("[SitePaymentInfo] QR generation failed:", err);
+  }
 
   return NextResponse.json({
     is_paid: site.is_paid === true,
     base_price: proposalRow.base_price,
     discount_price: proposalRow.discount_price,
     discount_expires_at: proposalRow.discount_expires_at,
-    variable_symbol: variableSymbol,
+    active_price: activePrice,
+    pay_url: payUrl,
     qr_image_data_url: qrImageDataUrl,
-    iban: process.env.BYSQUARE_IBAN ?? null,
-    beneficiary: process.env.BYSQUARE_BENEFICIARY ?? null,
-  });
+  } satisfies PaymentInfoResponse);
 }

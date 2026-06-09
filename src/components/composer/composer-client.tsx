@@ -100,23 +100,6 @@ import { AnchorsProvider } from "./anchors-context";
 const HOME_PATH = "index.html";
 const HOME_LABEL = "Home";
 
-/**
- * Map an app role to the team label shown in the stale-data banner.
- */
-/**
- * "tech" = full IT-side composer (default). Has the section rail, empty-
- * state generator, regenerate button, section remove + variant-swap, the
- * subdomain editor, and the publish-history/revert list.
- *
- * "client" = locked-down client-side composer. Same engine, same field
- * editors, same publish path — but structural changes are gated. Clients
- * can edit content (text, images, links, theme, SEO) and publish their
- * edits live, but cannot add/remove sections, swap templates, change the
- * subdomain, or revert to old versions. Tech admin still owns the
- * structure of a client site.
- */
-export type ComposerMode = "tech" | "client";
-
 interface Props {
   siteId: string;
   siteName: string;
@@ -145,9 +128,6 @@ interface Props {
    *  for asset resolution sidesteps that whole window — first publish,
    *  republish, subdomain rename, custom-domain attach. */
   pagesUrl?: string | null;
-  /** Which audience is using the composer right now. Defaults to "tech"
-   *  so the existing tech-admin path is unchanged when the prop is omitted. */
-  mode?: ComposerMode;
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -162,13 +142,8 @@ export function ComposerClient({
   backHref = "/tech/proposals",
   siteUrl = null,
   pagesUrl = null,
-  mode = "tech",
 }: Props) {
   const router = useRouter();
-  // Stable boolean for the conditional renders below. Cuts down on
-  // `mode === "client"` repetition and makes the gates self-documenting
-  // ("if not client mode, render…") at the call sites.
-  const isClientMode = mode === "client";
 
   // Track whether the initial composition needed a legacy-nav rewrite.
   // Set inside the useState initializer below; persisted on mount via
@@ -3349,44 +3324,38 @@ export function ComposerClient({
 
         <div className="flex items-center gap-2">
           {/* AI Generate — top of the action group so it's the first
-              thing a tech sees on a fresh scaffold. Opens the modal
-              that pre-fills from the proposal, lets the tech tweak,
-              then fires /api/composer/ai-generate and applies the
-              returned overrides through the normal field-update path
-              (no special render, no flicker). Hidden in client mode
-              because clients aren't expected to invoke AI bulk-fill —
-              IT runs it before handover, clients edit by hand. */}
-          {!isClientMode && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setAiModalOpen(true)}
-              title="Generate content with AI for every empty field"
-            >
-              <Sparkles className="h-4 w-4 dash-accent" />
-              Generate content
-            </Button>
-          )}
+              thing you see on a fresh scaffold. Opens the modal that
+              pre-fills from the proposal, lets you tweak, then fires
+              /api/composer/ai-generate and applies the returned
+              overrides through the normal field-update path (no special
+              render, no flicker). */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setAiModalOpen(true)}
+            title="Generate content with AI for every empty field"
+          >
+            <Sparkles className="h-4 w-4 dash-accent" />
+            Generate content
+          </Button>
 
           {/* JSON workflow — bring-your-own-AI alternative to the paid
               Generate content button. Export the site's editable text
               fields as JSON, fill via chatgpt.com (free), import the
               result. Same field-update path as the paid AI Fill
               (applyAiOverrides) so behaviour is identical once the
-              JSON is back. Tech-only — same gate as Generate content. */}
-          {!isClientMode && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setJsonModalOpen(true)}
-              title="Export content as JSON → fill in ChatGPT → import back (free)"
-            >
-              <FileJson className="h-4 w-4 dash-accent" />
-              JSON workflow
-            </Button>
-          )}
+              JSON is back. */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setJsonModalOpen(true)}
+            title="Export content as JSON → fill in ChatGPT → import back (free)"
+          >
+            <FileJson className="h-4 w-4 dash-accent" />
+            JSON workflow
+          </Button>
 
           {/* Preview site — renders the CURRENT in-memory composition into a
               Blob URL and opens it in a new tab. No server round-trip, no DB
@@ -3444,25 +3413,18 @@ export function ComposerClient({
             onPublish={handlePublish}
             siteUrl={siteUrl ?? undefined}
             flushPendingComposition={flushPendingComposition}
-            mode={mode}
           />
         </div>
       </header>
 
       {/* Pages strip — full-width row between the header and the work
-          columns. Clients see the tabs (so they can navigate to
-          subpages and edit content on each), but the structural
-          controls — Add page + per-tab × remove — are hidden in
-          client mode via the isClientMode prop on PagesTabs.
-          Pre-2026-05-30 the whole strip was hidden for clients, which
-          made subpages invisible + unreachable from the client zone. */}
+          columns: page tabs plus Add page + per-tab × remove controls. */}
       <PagesTabs
         pages={composition.pages}
         activePagePath={activePagePath}
         onSwitch={handlePageSwitch}
         onAdd={handlePageAdd}
         onRemove={handlePageRemove}
-        isClientMode={isClientMode}
         availableServices={homeServiceItems}
         linkedServiceIdsInUse={linkedServiceIdsInUse}
       />
@@ -3475,14 +3437,12 @@ export function ComposerClient({
           path to introduce a new section template. The preview + composition
           columns flex to fill the freed space. */}
       <div className="flex flex-1 overflow-hidden">
-        {!isClientMode && (
-          <SectionsRail
-            templates={templates}
-            templateBodies={templateBodies}
-            baseCss={baseCss}
-            onPick={handleRailPick}
-          />
-        )}
+        <SectionsRail
+          templates={templates}
+          templateBodies={templateBodies}
+          baseCss={baseCss}
+          onPick={handleRailPick}
+        />
 
         {/* Preview — when the site is empty (no body sections + no shared
             slots set), skip the iframe entirely and show the scaffold card
@@ -3492,13 +3452,11 @@ export function ComposerClient({
             looks broken. The card itself fully replaces the iframe in
             that state — no overlay-over-blank-iframe trickery. */}
         <div className="flex-1 min-w-0 border-r dash-hairline relative bg-muted/40">
-          {/* Empty-state scaffold card is tech-only — clients should never
-              land in the composer with zero sections (the IT person built
-              the site for them already). If they somehow do (data bug or
-              IT mid-build), they see the iframe's empty state without the
-              big Generate button. */}
-          {!isClientMode &&
-          activePage.sections.length === 0 &&
+          {/* Empty-state scaffold card — shown when the site has no body
+              sections and no shared nav/footer slot set, so a fresh site
+              opens with the big Generate/scaffold call-to-action instead
+              of a blank iframe. */}
+          {activePage.sections.length === 0 &&
           !composition.shared?.nav_template_id &&
           !composition.shared?.footer_template_id ? (
             <EmptyStateCard
@@ -3637,16 +3595,14 @@ export function ComposerClient({
             {/* Regenerate site — destructive re-roll. Hidden when the
                 site is empty (the empty-state card handles that case
                 with the same scaffoldFullSite call, no confirm needed).
-                Tech-only — clients can't structurally re-roll their own
-                site. Two side-by-side buttons mirror the empty-state
-                card: Basic (lean preset, skips how-it-works/faq/cta)
-                vs Premium (every category). Discreet outline styling +
+                Two side-by-side buttons mirror the empty-state card:
+                Basic (lean preset, skips how-it-works/faq/cta) vs
+                Premium (every category). Discreet outline styling +
                 destructive hover state so this doesn't compete with
                 the section editing UI. */}
-            {!isClientMode &&
-              (activePage.sections.length > 0 ||
-                composition.shared?.nav_template_id ||
-                composition.shared?.footer_template_id) && (
+            {(activePage.sections.length > 0 ||
+              composition.shared?.nav_template_id ||
+              composition.shared?.footer_template_id) && (
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   type="button"
@@ -3706,7 +3662,6 @@ export function ComposerClient({
               themePrimary={composition.theme?.primary}
               onBrandChange={updateBrand}
               onPreviewBrandLogo={previewBrandLogo}
-              mode={mode}
             />
 
             <DndContext
@@ -3771,7 +3726,6 @@ export function ComposerClient({
                       onFieldHiddenChange={(rawKey, hidden) =>
                         updateSectionFieldHidden(section.id, rawKey, hidden)
                       }
-                      mode={mode}
                       onAiRegenerate={applyAiOverrides}
                       brand={composition.brand}
                     />
@@ -3780,11 +3734,9 @@ export function ComposerClient({
               </SortableContext>
             </DndContext>
 
-            {/* Empty-state hint references the left rail, which is hidden
-                from clients — only show this hint in tech mode. Clients
-                shouldn't ever land in empty state (IT builds the site
-                first), so they see nothing here either way. */}
-            {activePage.sections.length === 0 && !isClientMode && (
+            {/* Empty-state hint — points at the left rail when the active
+                page has no sections yet. */}
+            {activePage.sections.length === 0 && (
               <div className="rounded-xl border border-dashed dash-hairline bg-muted/20 px-4 py-12 text-center">
                 <p className="text-sm text-muted-foreground">
                   Click a section in the left rail to add it here.
@@ -3824,7 +3776,6 @@ export function ComposerClient({
               // 2026-05-15: footer phone/email shows template defaults
               // instead of brand values, while nav shows brand correctly.
               brand={composition.brand}
-              mode={mode}
             />
           </div>
           )}
@@ -3837,14 +3788,12 @@ export function ComposerClient({
         portal handles z-index). Generated overrides flow back through
         applyAiOverrides → updateSectionContent → SK_PATCH_FIELD per
         field, so the iframe updates live as each section is filled. */}
-    {!isClientMode && (
-      <AiGenerateModal
-        open={aiModalOpen}
-        onOpenChange={setAiModalOpen}
-        siteId={siteId}
-        onGenerate={applyAiOverrides}
-      />
-    )}
+    <AiGenerateModal
+      open={aiModalOpen}
+      onOpenChange={setAiModalOpen}
+      siteId={siteId}
+      onGenerate={applyAiOverrides}
+    />
 
     {/* JSON round-trip modal — twin of AiGenerateModal but free
         (uses chatgpt.com instead of paid API). Wires to
@@ -3853,26 +3802,24 @@ export function ComposerClient({
         dropdown linkage — replacing a whole repeater array bypasses
         the linkage code that mirrors service-title changes into the
         navbar's Services dropdown rows. */}
-    {!isClientMode && (
-      <JsonRoundtripModal
-        open={jsonModalOpen}
-        onOpenChange={setJsonModalOpen}
-        composition={composition}
-        templates={jsonRoundtripTemplateMap}
-        brandCompanyName={composition.brand?.company_text ?? ""}
-        siteId={siteId}
-        onApply={(overrides) => applyJsonImport(overrides as AiOverrides)}
-        targetPagePath={activePagePath}
-        pageContext={jsonPageContext ?? undefined}
-      />
-    )}
+    <JsonRoundtripModal
+      open={jsonModalOpen}
+      onOpenChange={setJsonModalOpen}
+      composition={composition}
+      templates={jsonRoundtripTemplateMap}
+      brandCompanyName={composition.brand?.company_text ?? ""}
+      siteId={siteId}
+      onApply={(overrides) => applyJsonImport(overrides as AiOverrides)}
+      targetPagePath={activePagePath}
+      pageContext={jsonPageContext ?? undefined}
+    />
 
     {/* Translate-mode round-trip modal — opened per locale from the
         Languages tab. Same export/validate machinery as the fill modal,
         but the prompt translates into the target language and the import
         is stored on composition.i18n.translations[locale] instead of the
         base composition (so the default-language content is untouched). */}
-    {!isClientMode && translateLocale && (
+    {translateLocale && (
       <JsonRoundtripModal
         open={translateLocale !== null}
         onOpenChange={(open) => {
@@ -3945,7 +3892,6 @@ function SharedSlot({
   themePrimary,
   onBrandChange,
   onPreviewBrandLogo,
-  mode = "tech",
 }: {
   slot: "nav" | "footer";
   template: SectionTemplate | undefined;
@@ -3989,12 +3935,7 @@ function SharedSlot({
    *  the iframe shows the new logo instantly while the Supabase upload
    *  runs in the background. */
   onPreviewBrandLogo?: (logoUrl: string) => void;
-  /** "client" hides the empty-slot pick CTA (which references the section
-   *  rail clients can't see). Edit + remove on a populated slot still work
-   *  for clients. */
-  mode?: ComposerMode;
 }) {
-  const isClientMode = mode === "client";
   const cardRef = useRef<HTMLDivElement>(null);
   // Expansion is driven by selection — only one card open at a time.
   const expanded = !!selected;
@@ -4006,10 +3947,6 @@ function SharedSlot({
   }, [selected]);
 
   if (!template) {
-    // Empty-slot CTA references the sections rail on the left, which is
-    // hidden for clients (Peter 2026-05-08). Render nothing for clients
-    // rather than telling them about a UI they can't see.
-    if (isClientMode) return null;
     return (
       <div className="rounded-xl border border-dashed dash-hairline bg-muted/20 px-3 py-3 text-xs text-muted-foreground flex items-center gap-2">
         <Plus className="h-3 w-3" />
@@ -4066,22 +4003,18 @@ function SharedSlot({
         <span className="text-[10px] text-muted-foreground">
           {fieldKeys.length} field{fieldKeys.length === 1 ? "" : "s"}
         </span>
-        {/* Remove (X) — hidden in client mode (Peter 2026-05-08). Without
-            the SectionsRail (also hidden), removing the nav/footer would
-            be a one-way trap for clients. Tech keeps the button. */}
-        {!isClientMode && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm(`Remove the ${slot}?`)) onRemove();
-            }}
-            title="Remove"
-            className="ml-auto p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
+        {/* Remove (X) the nav/footer slot. */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (confirm(`Remove the ${slot}?`)) onRemove();
+          }}
+          title="Remove"
+          className="ml-auto p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
 
       {/* Brand mark + fields — both stop propagation so typing/clicking

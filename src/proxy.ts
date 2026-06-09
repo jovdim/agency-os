@@ -1,12 +1,35 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { canAccessRoute, getDefaultRoute } from "@/lib/auth/roles";
+import { isPlatformHost, stripPort, TENANT_ROUTE_PREFIX, TENANT_ADMIN_PREFIX } from "@/lib/platform/hosts";
 import type { UserRole } from "@/types/database";
 
 const PUBLIC_ROUTES = ["/login", "/proposal"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ── Multi-tenant platform hosts ─────────────────────────────────────────
+  // A client website served on its own host (`*.{PROPOSAL_DOMAIN}`, a custom
+  // domain, or `<label>.localhost` in dev). Internally rewrite to the tenant
+  // render route, keeping the visitor's URL intact. No Supabase session, no
+  // role routing — these requests have nothing to do with the CRM.
+  const host = request.headers.get("host");
+  if (isPlatformHost(host)) {
+    const url = request.nextUrl.clone();
+    const cleanHost = stripPort(host!);
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+      // Per-site CMS admin -> separate route subtree (pages), so it never
+      // collides with the public-site catch-all route handler.
+      const sub = pathname.slice("/admin".length); // "" | "/..."
+      url.pathname = `/${TENANT_ADMIN_PREFIX}/${encodeURIComponent(cleanHost)}${sub}`;
+    } else {
+      // Everything else -> the public website renderer.
+      const rest = pathname === "/" ? "" : pathname;
+      url.pathname = `/${TENANT_ROUTE_PREFIX}/${encodeURIComponent(cleanHost)}${rest}`;
+    }
+    return NextResponse.rewrite(url);
+  }
 
   // Allow public routes
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
