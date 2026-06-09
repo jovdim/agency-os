@@ -389,29 +389,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Value / discovery radar ── */}
-      <section className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
-        <div className="grid items-center gap-14 lg:grid-cols-2">
-          <Reveal>
-            <Eyebrow>Why it matters</Eyebrow>
-            <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
-              Customers check you out online{" "}
-              <span className="text-[color:var(--brand)]">before</span> they ever call.
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-[color:var(--lp-muted)]">
-              If they cannot find you, or they land on something slow and dated,
-              they quietly move on to the next name on the list. A sharp, fast
-              website is the difference between looking established and getting
-              skipped. It is the one thing we make, and we make it properly.
-            </p>
-          </Reveal>
-          <Reveal delay={140} className="relative flex justify-center">
-            <div className={styles.aurora} style={{ width: 300, height: 300, top: "50%", left: "50%", transform: "translate(-50%,-50%)", opacity: 0.3 }} />
-            <DiscoveryVisual className="relative w-full max-w-sm" />
-          </Reveal>
-        </div>
-      </section>
-
       {/* ── How it works ── */}
       <section id="how" className="scroll-mt-24 border-y border-[color:var(--lp-line)] bg-[color:var(--lp-bg2)]">
         <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
@@ -468,7 +445,8 @@ export default function LandingPage() {
             <p className="mt-5 text-lg leading-relaxed text-[color:var(--lp-muted)]">
               Once your site is live, you are in control. Click any text or image
               right on your own website and change it in seconds. New prices, new
-              hours, a fresh photo, all without touching code or paying for an edit.
+              hours, a fresh photo, all without touching code or wrestling with a
+              dashboard.
             </p>
           </Reveal>
 
@@ -504,42 +482,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section id="features" className="relative scroll-mt-24 overflow-hidden">
-        <OrbitRings className="pointer-events-none absolute -right-20 top-6 hidden h-80 w-80 opacity-40 lg:block" />
-        <div className="relative mx-auto max-w-6xl px-5 py-20 lg:py-28">
-          <Reveal className="max-w-2xl">
-            <Eyebrow>What you get</Eyebrow>
+      {/* ── Value / discovery radar ── */}
+      <section className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
+          <Reveal>
+            <Eyebrow>Why it matters</Eyebrow>
             <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
-              One website. Everything it needs to pull its weight.
+              Customers check you out online{" "}
+              <span className="text-[color:var(--brand)]">before</span> they ever call.
             </h2>
+            <p className="mt-5 text-lg leading-relaxed text-[color:var(--lp-muted)]">
+              If they cannot find you, or they land on something slow and dated,
+              they quietly move on to the next name on the list. A sharp, fast
+              website is the difference between looking established and getting
+              skipped. It is the one thing we make, and we make it properly.
+            </p>
           </Reveal>
-          <div className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2">
-            <Feature title="Designed around your brand" icon={Sparkle} delay={0}>
-              We start from proven, high converting layouts and tailor them to
-              your business, so it looks the part from day one.
-            </Feature>
-            <Feature title="Your own domain, hosting and SSL" icon={GlobeHemisphereWest} pink delay={80}>
-              Launched on your domain with secure hosting included. It is your
-              site, your address, your asset, for good.
-            </Feature>
-            <Feature title="Leads land in your inbox" icon={Envelope} delay={160}>
-              A built in contact form sends every enquiry straight to your
-              business email, so you never miss a customer.
-            </Feature>
-            <Feature title="Edit it yourself, no code" icon={PencilSimple} pink delay={240}>
-              Click any text or image to change it. Update prices, hours, or
-              photos in seconds, whenever you like.
-            </Feature>
-            <Feature title="Fast and mobile ready" icon={Lightning} delay={320}>
-              Built to load fast and look sharp on every phone, where most of
-              your customers will actually see it.
-            </Feature>
-            <Feature title="Yours to keep" icon={ShieldCheck} pink delay={400}>
-              No monthly lock in and no platform that holds your site hostage.
-              What we build belongs to you.
-            </Feature>
-          </div>
+          <Reveal delay={140} className="relative flex justify-center">
+            <div className={styles.aurora} style={{ width: 300, height: 300, top: "50%", left: "50%", transform: "translate(-50%,-50%)", opacity: 0.3 }} />
+            <DiscoveryVisual className="relative w-full max-w-sm" />
+          </Reveal>
         </div>
       </section>
 
@@ -587,6 +549,93 @@ export default function LandingPage() {
                 <MagnifyingGlass className="h-4 w-4 text-[color:var(--brand-accent)]" weight="bold" />
                 Built to climb local search
               </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section id="features" className="relative scroll-mt-24 overflow-hidden">
+        <OrbitRings className="pointer-events-none absolute -right-20 top-6 hidden h-80 w-80 opacity-40 lg:block" />
+        <div className="relative mx-auto max-w-6xl px-5 py-20 lg:py-28">
+          <Reveal className="max-w-2xl">
+            <Eyebrow>What you get</Eyebrow>
+            <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
+              One website. Everything it needs to pull its weight.
+            </h2>
+          </Reveal>
+          <div className="mt-12 grid gap-x-10 gap-y-9 sm:grid-cols-2">
+            <Feature title="Designed around your brand" icon={Sparkle} delay={0}>
+              We start from proven, high converting layouts and tailor them to
+              your business, so it looks the part from day one.
+            </Feature>
+            <Feature title="Your own domain, hosting and SSL" icon={GlobeHemisphereWest} pink delay={80}>
+              Launched on your domain with secure hosting included. It is your
+              site, your address, your asset, for good.
+            </Feature>
+            <Feature title="Leads land in your inbox" icon={Envelope} delay={160}>
+              A built in contact form sends every enquiry straight to your
+              business email, so you never miss a customer.
+            </Feature>
+            <Feature title="Edit it yourself, no code" icon={PencilSimple} pink delay={240}>
+              Click any text or image to change it. Update prices, hours, or
+              photos in seconds, whenever you like.
+            </Feature>
+            <Feature title="Fast and mobile ready" icon={Lightning} delay={320}>
+              Built to load fast and look sharp on every phone, where most of
+              your customers will actually see it.
+            </Feature>
+            <Feature title="Yours to keep" icon={ShieldCheck} pink delay={400}>
+              No monthly lock in and no platform that holds your site hostage.
+              What we build belongs to you.
+            </Feature>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Why us / advantages (brand overview video) ── */}
+      <section className="relative scroll-mt-24 overflow-hidden">
+        <div className={styles.aurora} style={{ width: 420, height: 420, bottom: -170, left: -150, opacity: 0.24 }} />
+        <div className="relative mx-auto max-w-6xl px-5 py-20 lg:py-28">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* brand overview video */}
+            <Reveal className="relative">
+              <OrbitRings className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 opacity-40 lg:block" />
+              <div className="relative aspect-video overflow-hidden rounded-2xl border border-[color:var(--lp-line2)] bg-[color:var(--lp-card2)] shadow-2xl">
+                <Screen
+                  kind="video"
+                  title="Who you are working with"
+                  hint="Short brand overview"
+                  tip="A short, upbeat overview of working with us: who we are, a few seconds of real builds, and the big advantages (fast turnaround, one fair fixed price, you own everything, edit it yourself). 30 to 60 seconds, 16:9, voiceover or captions. Keep it about us and the value, not a single client."
+                />
+              </div>
+            </Reveal>
+            {/* copy */}
+            <Reveal delay={120}>
+              <Eyebrow>Why work with us</Eyebrow>
+              <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
+                A professional team, without the heavy price tag.
+              </h2>
+              <p className="mt-5 text-lg leading-relaxed text-[color:var(--lp-muted)]">
+                You get the polish of a proper studio with none of the runaround.
+                One point of contact, a fast turnaround, and a website you fully
+                own at the end.
+              </p>
+              <ul className="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+                {[
+                  "One fair, fixed price",
+                  "Live in days, not months",
+                  "You own it, domain and all",
+                  "Edit it yourself, anytime",
+                ].map((b) => (
+                  <li key={b} className="flex items-center gap-3 text-[15px] font-medium text-[color:var(--lp-text)]">
+                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--brand-accent)_22%,var(--lp-card))] text-[color:var(--brand-accent)]">
+                      <Check className="h-3.5 w-3.5" weight="bold" />
+                    </span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
           </div>
         </div>
@@ -659,54 +708,6 @@ export default function LandingPage() {
               </div>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* ── Why us / advantages (brand overview video) ── */}
-      <section className="relative scroll-mt-24 overflow-hidden">
-        <div className={styles.aurora} style={{ width: 420, height: 420, bottom: -170, left: -150, opacity: 0.24 }} />
-        <div className="relative mx-auto max-w-6xl px-5 py-20 lg:py-28">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            {/* brand overview video */}
-            <Reveal className="relative">
-              <OrbitRings className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 opacity-40 lg:block" />
-              <div className="relative aspect-video overflow-hidden rounded-2xl border border-[color:var(--lp-line2)] bg-[color:var(--lp-card2)] shadow-2xl">
-                <Screen
-                  kind="video"
-                  title="Who you are working with"
-                  hint="Short brand overview"
-                  tip="A short, upbeat overview of working with us: who we are, a few seconds of real builds, and the big advantages (fast turnaround, one fair fixed price, you own everything, edit it yourself). 30 to 60 seconds, 16:9, voiceover or captions. Keep it about us and the value, not a single client."
-                />
-              </div>
-            </Reveal>
-            {/* copy */}
-            <Reveal delay={120}>
-              <Eyebrow>Why work with us</Eyebrow>
-              <h2 className="mt-5 text-3xl font-black tracking-tight text-[color:var(--lp-text)] sm:text-4xl">
-                A professional team, without the heavy price tag.
-              </h2>
-              <p className="mt-5 text-lg leading-relaxed text-[color:var(--lp-muted)]">
-                You get the polish of a proper studio with none of the runaround.
-                One point of contact, a fast turnaround, and a website you fully
-                own at the end.
-              </p>
-              <ul className="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-                {[
-                  "One fair, fixed price",
-                  "Live in days, not months",
-                  "You own it, domain and all",
-                  "Edit it yourself, anytime",
-                ].map((b) => (
-                  <li key={b} className="flex items-center gap-3 text-[15px] font-medium text-[color:var(--lp-text)]">
-                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--brand-accent)_22%,var(--lp-card))] text-[color:var(--brand-accent)]">
-                      <Check className="h-3.5 w-3.5" weight="bold" />
-                    </span>
-                    {b}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
         </div>
       </section>
 
