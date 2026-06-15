@@ -19,6 +19,7 @@ import { loadEnvConfig } from "@next/env";
 loadEnvConfig(process.cwd());
 
 import { createClient } from "@supabase/supabase-js";
+import type { SiteComposition } from "../src/lib/templates/render";
 
 type RenderResult = { html: string; pagePath: string } | { error: string };
 
@@ -55,7 +56,7 @@ async function main() {
     console.error("No published, non-legacy site found to test against.");
     process.exit(1);
   }
-  const published = site.published_composition as Record<string, unknown>;
+  const published = site.published_composition as SiteComposition;
   console.log(`Testing against: "${site.name}" (${site.slug})\n`);
 
   const renderOnce = async (): Promise<{ ms: number; ok: boolean; bytes: number }> => {

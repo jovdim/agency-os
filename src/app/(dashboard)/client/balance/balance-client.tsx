@@ -49,10 +49,13 @@ interface Props {
   sites: Site[];
   transactions: Transaction[];
   payments: Payment[];
-  /** Resolve a payment's printable-invoice href. Return null to hide the
-   *  Invoice button — the per-site /admin surface has no invoice route yet and
-   *  the CRM /client path is unreachable there. Defaults to the CRM route. */
-  invoiceHref?: (paymentId: string) => string | null;
+  /** Base path for the printable-invoice link; the button links to
+   *  `${invoiceBasePath}/${paymentId}/invoice`. Pass `null` to HIDE the Invoice
+   *  button (the per-site /admin surface has no invoice route yet, and the CRM
+   *  /client path is unreachable there). Defaults to the CRM client route.
+   *  A plain string/null — NOT a function, since Server Components can't pass
+   *  functions to Client Components. */
+  invoiceBasePath?: string | null;
   /** Whether the Top-up CTA is shown. False for unpaid sites (credit can't be
    *  spent until the site fee is paid). Defaults to true (CRM behaviour). */
   canTopUp?: boolean;
@@ -96,7 +99,7 @@ export function BalanceClient({
   sites,
   transactions,
   payments,
-  invoiceHref = (id) => `/client/payments/${id}/invoice`,
+  invoiceBasePath = "/client/payments",
   canTopUp = true,
 }: Props) {
   const router = useRouter();
@@ -286,7 +289,10 @@ export function BalanceClient({
                   const invoice =
                     !isCreditTopup &&
                     (Array.isArray(p.invoices) ? p.invoices[0] : null);
-                  const invoiceUrl = invoice ? invoiceHref(p.id) : null;
+                  const invoiceUrl =
+                    invoice && invoiceBasePath
+                      ? `${invoiceBasePath}/${p.id}/invoice`
+                      : null;
                   const isPending = p.status === "pending";
                   return (
                     <li

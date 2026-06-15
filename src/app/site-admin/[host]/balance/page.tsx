@@ -77,7 +77,7 @@ export default async function SiteAdminBalancePage({
             }
             payments={(payments ?? []) as unknown as BalanceProps["payments"]}
             // No tenant invoice route yet — hide the (CRM-only) Invoice button.
-            invoiceHref={() => null}
+            invoiceBasePath={null}
             // Don't offer top-up on an unpaid site (credit would be unspendable).
             canTopUp={isPaid}
           />
