@@ -64,7 +64,7 @@ export async function POST(
       const admin = createAdminClient();
       const { data: siteRow } = await admin
         .from("sites")
-        .select("composition, is_legacy")
+        .select("composition, is_legacy, owner_id")
         .eq("id", id)
         .maybeSingle();
       if (!siteRow) {
@@ -88,15 +88,57 @@ export async function POST(
           { status: 400 },
         );
       }
-      const { error: upErr } = await admin
-        .from("sites")
-        .update({
-          published_composition: siteRow.composition,
-          last_published_at: new Date().toISOString(),
-        })
-        .eq("id", id);
-      if (upErr) {
-        return NextResponse.json({ error: upErr.message }, { status: 500 });
+      // Charge the per-publish credit AND copy draft → live, atomically.
+      // platform_publish_charge (migration 00082) mirrors the old client
+      // publish charge (create_publish_request): gate on is_paid + sufficient
+      // balance, deduct PUBLISH_COST, log a `publish_charge` transaction — then
+      // copy composition → published_composition in the same transaction so a
+      // client is never charged without the publish landing.
+      const PUBLISH_COST = 12.5;
+      const { data: charge, error: chargeErr } = await admin.rpc(
+        "platform_publish_charge",
+        {
+          p_site_id: id,
+          p_user_id: siteRow.owner_id ?? null,
+          p_publish_cost: PUBLISH_COST,
+        },
+      );
+      if (chargeErr) {
+        const msg = chargeErr.message || "";
+        if (msg.includes("SITE_NOT_PAID")) {
+          return NextResponse.json(
+            { error: "Your website isn't active yet.", code: "SITE_NOT_PAID" },
+            { status: 402 },
+          );
+        }
+        if (msg.includes("INSUFFICIENT_CREDITS")) {
+          return NextResponse.json(
+            {
+              error: "Not enough credit to publish. Please top up and try again.",
+              code: "INSUFFICIENT_CREDITS",
+            },
+            { status: 402 },
+          );
+        }
+        // Migration 00082 not applied yet — the RPC doesn't exist. Surface a
+        // friendly "try later" instead of leaking the raw Postgres message
+        // (the composer toasts data.error verbatim). No charge happened.
+        if (
+          (chargeErr as { code?: string }).code === "PGRST202" ||
+          /could not find the function|does not exist/i.test(msg)
+        ) {
+          return NextResponse.json(
+            {
+              error: "Publishing is temporarily unavailable. Please try again shortly.",
+              code: "PUBLISH_UNAVAILABLE",
+            },
+            { status: 503 },
+          );
+        }
+        return NextResponse.json(
+          { error: msg || "Publish failed" },
+          { status: 500 },
+        );
       }
       // Invalidate the public cache so the published change goes live instantly.
       await revalidateSite(id);
@@ -104,7 +146,9 @@ export async function POST(
       const url = reqHost
         ? `${reqHost.includes("localhost") ? "http" : "https"}://${reqHost}`
         : null;
-      return NextResponse.json({ success: true, url });
+      const newBalance =
+        (charge as { new_balance?: number } | null)?.new_balance ?? null;
+      return NextResponse.json({ success: true, url, new_balance: newBalance });
     }
 
     const role = user.app_metadata?.role as string | undefined;

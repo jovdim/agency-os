@@ -49,6 +49,13 @@ interface Props {
   sites: Site[];
   transactions: Transaction[];
   payments: Payment[];
+  /** Resolve a payment's printable-invoice href. Return null to hide the
+   *  Invoice button — the per-site /admin surface has no invoice route yet and
+   *  the CRM /client path is unreachable there. Defaults to the CRM route. */
+  invoiceHref?: (paymentId: string) => string | null;
+  /** Whether the Top-up CTA is shown. False for unpaid sites (credit can't be
+   *  spent until the site fee is paid). Defaults to true (CRM behaviour). */
+  canTopUp?: boolean;
 }
 
 const TX_TYPE_LABEL: Record<string, string> = {
@@ -85,7 +92,13 @@ function toEur(credits: number): string {
   return (credits * CREDIT_PRICE).toFixed(2) + " $";
 }
 
-export function BalanceClient({ sites, transactions, payments }: Props) {
+export function BalanceClient({
+  sites,
+  transactions,
+  payments,
+  invoiceHref = (id) => `/client/payments/${id}/invoice`,
+  canTopUp = true,
+}: Props) {
   const router = useRouter();
   const [buyDialog, setBuyDialog] = useState<{ siteId: string; siteName: string } | null>(null);
   // Sum of all per-site balances, in euros.
@@ -139,7 +152,7 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
               {publishesAvailable} {publishesAvailable === 1 ? "publish" : "publishes"} available
             </p>
           </div>
-          {onlySite && (
+          {onlySite && canTopUp && (
             <Button
               size="sm"
               className="h-8 shrink-0 gap-1.5 text-xs"
@@ -273,6 +286,7 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
                   const invoice =
                     !isCreditTopup &&
                     (Array.isArray(p.invoices) ? p.invoices[0] : null);
+                  const invoiceUrl = invoice ? invoiceHref(p.id) : null;
                   const isPending = p.status === "pending";
                   return (
                     <li
@@ -307,8 +321,8 @@ export function BalanceClient({ sites, transactions, payments }: Props) {
                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${PAYMENT_STATUS_STYLE[p.status] ?? "bg-muted text-muted-foreground"}`}>
                           {PAYMENT_STATUS_LABEL[p.status] ?? p.status}
                         </span>
-                        {invoice && (
-                          <Link href={`/client/payments/${p.id}/invoice`} target="_blank">
+                        {invoiceUrl && (
+                          <Link href={invoiceUrl} target="_blank">
                             <Button variant="outline" size="sm" className="h-7 gap-1 text-xs">
                               <Receipt className="h-3 w-3" />
                               Invoice

@@ -1,62 +1,32 @@
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { Brand } from "@/components/brand";
+import Link from "next/link";
 import {
-  PencilSimple,
   Globe,
-  CreditCard,
-  At,
-  CheckCircle,
-  Warning,
-  ArrowRight,
+  Envelope as Mail,
+  ArrowSquareOut as ExternalLink,
+  Clock,
+  CalendarCheck,
+  Warning as AlertTriangle,
+  PencilSimple,
 } from "@phosphor-icons/react/ssr";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { UnpaidDomainEmailCard } from "@/app/(dashboard)/client/unpaid-domain-email-card";
 import { resolveSiteAdminContext } from "./auth";
 import { LoginForm } from "./login-form";
-import { LogoutButton } from "./logout-button";
+import { SiteAdminHeader } from "./header";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
-/** Days until renewal: next_billing_date if set, else live date + 1 year. */
-function daysLeft(
-  nextBilling: string | null,
-  liveDate: string | null,
-): number | null {
-  const base = nextBilling
-    ? new Date(nextBilling)
-    : liveDate
-      ? new Date(new Date(liveDate).getTime() + 365 * 86_400_000)
-      : null;
-  if (!base || Number.isNaN(base.getTime())) return null;
-  return Math.ceil((base.getTime() - Date.now()) / 86_400_000);
-}
-
-const DOMAIN_STATUS_LABEL: Record<string, string> = {
-  active: "Active",
-  register_new: "Registration requested",
-  transfer: "Transfer requested",
-  decided_later: "Pending your choice",
-  none: "Not set up yet",
-};
-
-interface OverviewSite {
-  name: string;
-  status: string | null;
-  site_url: string | null;
-  is_paid: boolean | null;
-  domain: string | null;
-  domain_status: string | null;
-  next_billing_date: string | null;
-  website_live_date: string | null;
-  credit_balances: { balance: number | null }[] | { balance: number | null } | null;
-}
-
 /**
- * Per-site /admin OVERVIEW — the landing a client sees after signing in (the
- * editor lives behind the "Edit my website" button at /admin/edit). Mirrors the
- * old in-CRM client dashboard: greeting, paid/expiry state, live-site link,
- * credit balance, and domain status.
+ * Per-site /admin OVERVIEW — a faithful port of the old in-CRM client dashboard
+ * (src/app/(dashboard)/client/page.tsx): same hero band, greeting, "Service
+ * active" metric, expiry banners, domain/email tile, and live-site link. Only
+ * the plumbing differs — auth is the per-site cookie (resolveSiteAdminContext)
+ * and the site is fetched by id, not by owner_id. A standalone top bar
+ * (Brand + sign-out) replaces the CRM dashboard shell, and an "Edit your
+ * website" tile opens the editor at /admin/edit.
  */
 export default async function SiteAdminOverviewPage({
   params,
@@ -69,140 +39,245 @@ export default async function SiteAdminOverviewPage({
   if (!ctx.authed) return <LoginForm />;
 
   const admin = createAdminClient();
-  const { data } = await admin
+  const { data: site } = await admin
     .from("sites")
-    .select(
-      "name, status, site_url, is_paid, domain, domain_status, next_billing_date, website_live_date, credit_balances(balance)",
-    )
+    .select("*")
     .eq("id", ctx.siteId)
     .single();
-  if (!data) notFound();
-  const site = data as unknown as OverviewSite;
+  if (!site) notFound();
+
+  // Legacy (GitHub/static) sites aren't editable in the new editor — keep the
+  // overview consistent with the editor + publish guards instead of offering
+  // an Edit tile / top-up that dead-ends.
+  if (site.is_legacy) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteAdminHeader active="dashboard" />
+        <div className="flex items-center justify-center px-4 py-20 text-center text-sm text-muted-foreground">
+          This website isn&apos;t available in the new editor.
+        </div>
+      </div>
+    );
+  }
 
   const isPaid = site.is_paid === true;
-  const cb = site.credit_balances;
-  const balance =
-    (Array.isArray(cb) ? cb[0]?.balance : cb?.balance) ?? 0;
-  const days = daysLeft(site.next_billing_date, site.website_live_date);
-  const isLive = site.status === "live" && !!site.site_url;
-  const domainLabel = site.domain || null;
-  const domainStatus =
-    DOMAIN_STATUS_LABEL[site.domain_status ?? "none"] ?? "Not set up yet";
+
+  // Days remaining from next_billing_date (set on payment), else live date + 1y.
+  let daysRemaining = 365;
+  let expiryDateStr = "";
+  let isExpired = false;
+  if (site.next_billing_date) {
+    const expiryDate = new Date(site.next_billing_date);
+    daysRemaining = Math.ceil(
+      (expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    );
+    expiryDateStr = expiryDate.toLocaleDateString("en-GB");
+    isExpired = daysRemaining <= 0;
+    daysRemaining = Math.max(0, daysRemaining);
+  } else if (site.website_live_date) {
+    const startDate = new Date(site.website_live_date);
+    const expiryDate = new Date(startDate);
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    daysRemaining = Math.max(
+      0,
+      Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+    );
+    expiryDateStr = expiryDate.toLocaleDateString("en-GB");
+    isExpired = daysRemaining <= 0;
+  }
+
+  // Time-based greeting (server local hour — white-label, no fixed locale).
+  const hour = new Date().getHours();
+  const greeting =
+    hour >= 5 && hour < 10
+      ? "Good morning"
+      : hour >= 10 && hour < 17
+        ? "Good day"
+        : hour >= 17 && hour < 22
+          ? "Good evening"
+          : "Welcome back";
+
+  // Company-facing name — the site/business name (the standalone /admin has no
+  // staff profile). Falls back to a generic tail so the greeting reads complete.
+  const displayName = site.name?.trim() || "welcome";
+
+  const subtitle = !isPaid
+    ? "Your website is ready and waiting to be activated."
+    : site.status === "live" && (site.domain || site.site_url)
+      ? `Your website is live at ${(site.domain || site.site_url || "").replace(/^https?:\/\//, "")}.`
+      : site.status === "live"
+        ? "Your website is live."
+        : "Manage your website.";
+
+  const showHeroMetric = isPaid && !isExpired && daysRemaining > 30;
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="flex items-center justify-between border-b dash-hairline bg-card px-5 py-3">
-        <Brand wordmarkClassName="h-8" />
-        <LogoutButton />
-      </header>
+    <div className="min-h-screen bg-background">
+      {/* Standalone top bar — replaces the CRM dashboard shell's chrome. */}
+      <SiteAdminHeader active="dashboard" />
 
-      <main className="mx-auto w-full max-w-3xl space-y-6 px-5 py-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">{site.name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage your website, domain, and billing.
-          </p>
-        </div>
-
-        {/* Paid / expiry state banner */}
-        {!isPaid ? (
-          <div className="flex items-start gap-3 rounded-xl border border-amber-400/40 bg-amber-50/70 px-4 py-3 dark:bg-amber-500/10">
-            <Warning className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" weight="fill" />
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Your website isn&apos;t active yet
+      <div className="px-4 py-8 sm:px-6">
+        <div className="dash-root mx-auto max-w-4xl space-y-6">
+          {/* Hero band — time-based greeting + business name + contextual subtitle. */}
+          <section className="dash-hero relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Your website
               </p>
-              <p className="text-sm text-muted-foreground">
-                Complete payment to publish your site and set up your domain &amp;
-                business email.
-              </p>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {greeting}, {displayName}
+              </h1>
+              <p className="text-sm text-muted-foreground">{subtitle}</p>
             </div>
-          </div>
-        ) : days !== null && days <= 30 ? (
-          <div className="flex items-start gap-3 rounded-xl border border-amber-400/40 bg-amber-50/70 px-4 py-3 dark:bg-amber-500/10">
-            <Warning className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" weight="fill" />
-            <p className="text-sm text-foreground">
-              {days <= 0
-                ? "Your service has expired — renew to keep your site online."
-                : `Your service renews in ${days} day${days === 1 ? "" : "s"}.`}
-            </p>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3 rounded-xl border border-emerald-400/40 bg-emerald-50/70 px-4 py-3 dark:bg-emerald-500/10">
-            <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" weight="fill" />
-            <p className="text-sm text-foreground">
-              Your website is active
-              {days !== null ? ` — ${days} days remaining` : ""}.
-            </p>
-          </div>
-        )}
 
-        {/* Primary action — open the editor */}
-        <a
-          href="/admin/edit"
-          className="group flex items-center justify-between rounded-2xl border dash-hairline bg-card px-5 py-4 shadow-(--dash-shadow) transition-colors hover:border-[color-mix(in_oklab,var(--dash-accent)_40%,transparent)]"
-        >
-          <div className="flex items-center gap-3">
-            <div className="dash-chip grid size-10 place-items-center rounded-xl">
-              <PencilSimple className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">
-                Edit my website
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Change text, images, and content — then publish.
-              </p>
-            </div>
-          </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-        </a>
-
-        {/* Info tiles */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          {isLive && (
-            <a
-              href={site.site_url!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-2xl border dash-hairline bg-card p-4 transition-colors hover:border-[color-mix(in_oklab,var(--dash-accent)_40%,transparent)]"
-            >
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Globe className="h-4 w-4" />
-                <span className="text-xs font-medium">Live website</span>
+            {showHeroMetric && (
+              <div className="dash-hero-metric flex items-center gap-4 px-5 py-4">
+                <span className="dash-chip-pink inline-flex h-12 w-12 items-center justify-center rounded-xl">
+                  <CalendarCheck className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Service active
+                  </p>
+                  <p className="text-3xl font-bold leading-tight tabular-nums">
+                    {daysRemaining}
+                    <span className="ml-1 text-base font-semibold text-muted-foreground">
+                      days left
+                    </span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {expiryDateStr ? `Valid until ${expiryDateStr}` : "Website is live"}
+                  </p>
+                </div>
               </div>
-              <p className="mt-2 truncate text-sm font-medium text-foreground">
-                {domainLabel ?? "Open your site"}
-              </p>
-              <p className="text-xs text-(--dash-accent)">Open ↗</p>
-            </a>
+            )}
+          </section>
+
+          {/* Expired banner */}
+          {isPaid && isExpired && (
+            <div className="flex items-start gap-3 rounded-xl border border-red-300/70 bg-red-50/70 px-4 py-3.5 dark:border-red-900/60 dark:bg-red-950/30">
+              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
+                <AlertTriangle className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+                  Your services expired{expiryDateStr ? ` on ${expiryDateStr}` : ""}
+                </p>
+                <p className="mt-1 text-xs text-red-600/80 dark:text-red-400/80">
+                  Contact us to restore your website and services. The price to
+                  renew for another year is $49.
+                </p>
+              </div>
+            </div>
           )}
 
-          <div className="rounded-2xl border dash-hairline bg-card p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <CreditCard className="h-4 w-4" />
-              <span className="text-xs font-medium">Balance</span>
+          {/* Expiry warning banner (≤30 days) */}
+          {isPaid && !isExpired && daysRemaining <= 30 && (
+            <div
+              className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 ${
+                daysRemaining <= 7
+                  ? "border-red-300/70 bg-red-50/70 dark:border-red-900/60 dark:bg-red-950/30"
+                  : "border-amber-300/70 bg-amber-50/70 dark:border-amber-900/60 dark:bg-amber-950/30"
+              }`}
+            >
+              <span
+                className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                  daysRemaining <= 7
+                    ? "bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400"
+                    : "bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
+                }`}
+              >
+                <Clock className="h-4 w-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`text-sm font-semibold ${daysRemaining <= 7 ? "text-red-700 dark:text-red-300" : "text-amber-700 dark:text-amber-300"}`}
+                >
+                  {daysRemaining <= 7
+                    ? `Your services expire in ${daysRemaining} days!`
+                    : `${daysRemaining} days left until expiration`}
+                </p>
+                <p
+                  className={`mt-1 text-xs ${daysRemaining <= 7 ? "text-red-600/80 dark:text-red-400/80" : "text-amber-600/80 dark:text-amber-400/80"}`}
+                >
+                  {expiryDateStr ? `Expiration date: ${expiryDateStr}. ` : ""}
+                  Renewal for another year costs just $49.
+                </p>
+              </div>
+              <span
+                className={`shrink-0 text-lg font-bold tabular-nums ${daysRemaining <= 7 ? "text-red-600" : "text-amber-600"}`}
+              >
+                {daysRemaining}d
+              </span>
             </div>
-            <p className="mt-2 text-2xl font-semibold tabular-nums text-foreground">
-              ${balance.toFixed(2)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Used when you publish changes.
-            </p>
+          )}
+
+          {/* Action tiles — Edit website + Domain/email. */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Edit your website — opens the per-site editor. */}
+            <Link href="/admin/edit" className="dash-card group block p-5">
+              <div className="flex items-start gap-4">
+                <span className="dash-chip inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                  <PencilSimple className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">Edit your website</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                    Change text, images, and content — then publish.
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Domain + business email — paid: link to setup; unpaid: gated card. */}
+            {isPaid ? (
+              <Link href="/admin/domain" className="dash-card group block p-5">
+                <div className="flex items-start gap-4">
+                  <span className="dash-chip inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                    <Mail className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold">Domain and business email</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      Manage your domain and business email address.
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <UnpaidDomainEmailCard siteId={site.id} />
+            )}
           </div>
 
-          <div className="rounded-2xl border dash-hairline bg-card p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <At className="h-4 w-4" />
-              <span className="text-xs font-medium">Domain &amp; email</span>
+          {/* Live site link */}
+          {site.status === "live" && site.site_url && (
+            <div className="dash-panel flex items-center justify-between px-4 py-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span className="dash-chip inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                  <Globe className="h-4 w-4" />
+                </span>
+                <a
+                  href={site.site_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dash-accent truncate text-sm font-medium hover:underline"
+                >
+                  {site.site_url.replace(/^https?:\/\//, "")}
+                </a>
+              </div>
+              <a
+                href={site.site_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open
+              </a>
             </div>
-            <p className="mt-2 truncate text-sm font-medium text-foreground">
-              {domainLabel ?? "Not set up yet"}
-            </p>
-            <p className="text-xs text-muted-foreground">{domainStatus}</p>
-          </div>
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

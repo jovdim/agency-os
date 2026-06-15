@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
+import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
 
 /**
  * GET /api/sites/[id]/domain — Get domain status for a site
@@ -15,15 +16,10 @@ export async function GET(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const { id } = await params;
   const admin = createAdminClient();
 
-  // proposal_id pulled in too — needed for the sales-role ownership
-  // narrowing below ("only the owning salesperson can act on a site
-  // tied to their proposal").
+  // proposal_id + owner_id pulled in for the access checks below.
   const { data: site, error } = await admin
     .from("sites")
     .select(
@@ -36,29 +32,36 @@ export async function GET(
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
 
   // Access matrix:
+  //   per-site CMS admin (no Supabase user) → cookie bound to this exact site
   //   tech_admin / super_admin / administrator → always allowed
-  //   sales       → allowed iff they own the linked proposal
-  //                 (added 2026-05-10 so shared timeline UI works)
-  //   client      → allowed iff site.owner_id === user.id
+  //   sales  → allowed iff they own the linked proposal
+  //   client → allowed iff site.owner_id === user.id
   //   anything else → 403
-  const role = user.app_metadata?.role as string;
-  if (["administrator", "super_admin", "tech_admin"].includes(role)) {
-    // Allowed — fall through.
-  } else if (role === "sales") {
-    if (!site.proposal_id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-    const { data: linkedProposal } = await admin
-      .from("proposals")
-      .select("sales_person_id")
-      .eq("id", site.proposal_id)
-      .maybeSingle();
-    if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  if (!user) {
+    const sa = await getSiteAdminForSite(id);
+    if (!sa) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
-    if (site.owner_id !== user.id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    const role = user.app_metadata?.role as string;
+    if (["administrator", "super_admin", "tech_admin"].includes(role)) {
+      // Allowed — fall through.
+    } else if (role === "sales") {
+      if (!site.proposal_id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      }
+      const { data: linkedProposal } = await admin
+        .from("proposals")
+        .select("sales_person_id")
+        .eq("id", site.proposal_id)
+        .maybeSingle();
+      if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      }
+    } else {
+      if (site.owner_id !== user.id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      }
     }
   }
 
@@ -81,8 +84,7 @@ export async function PUT(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const role = user?.app_metadata?.role as string | undefined;
 
   const { id } = await params;
   const body = await req.json();
@@ -103,36 +105,45 @@ export async function PUT(
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
 
   // Access matrix mirrors the GET handler:
+  //   per-site CMS admin (no Supabase user) → client-equivalent: own site only,
+  //                  NOT admin (can't set the admin-only statuses below)
   //   tech_admin / super_admin / administrator → admin-equivalent
-  //   sales       → admin-equivalent for the proposal they own (so the
-  //                  shared timeline UI on /sales/proposals/[id] can
-  //                  flip domain_status to "active" the same way IT
-  //                  does — added 2026-05-10)
-  //   client      → can request register_new / transfer / decided_later
-  //                  on their OWN site only
-  const role = user.app_metadata?.role as string;
-  let isAdmin = ["administrator", "super_admin", "tech_admin"].includes(role);
-
-  if (role === "sales") {
-    if (!site.proposal_id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  //   sales  → admin-equivalent for the proposal they own
+  //   client → can request register_new / transfer / decided_later on their
+  //            OWN site only
+  let isAdmin = false;
+  if (!user) {
+    const sa = await getSiteAdminForSite(id);
+    if (!sa) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { data: linkedProposal } = await admin
-      .from("proposals")
-      .select("sales_person_id")
-      .eq("id", site.proposal_id)
-      .maybeSingle();
-    if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    // client-equivalent — isAdmin stays false.
+  } else {
+    isAdmin = ["administrator", "super_admin", "tech_admin"].includes(role ?? "");
+    if (role === "sales") {
+      if (!site.proposal_id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      }
+      const { data: linkedProposal } = await admin
+        .from("proposals")
+        .select("sales_person_id")
+        .eq("id", site.proposal_id)
+        .maybeSingle();
+      if (!linkedProposal || linkedProposal.sales_person_id !== user.id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      }
+      // Treat the owning salesperson as admin for the rest of the checks.
+      isAdmin = true;
+    } else if (!isAdmin) {
+      // Client (or any other non-staff role): own-site only.
+      if (site.owner_id !== user.id)
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
-    // Treat the owning salesperson as admin for the rest of the
-    // checks (admin-only statuses, notes, etc.).
-    isAdmin = true;
-  } else if (!isAdmin) {
-    // Client (or any other non-staff role): own-site only.
-    if (site.owner_id !== user.id)
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
+
+  // Actor for audit + attribution: the Supabase user, else the site owner
+  // (the per-site CMS admin acts on behalf of the owner profile).
+  const actorId = user?.id ?? site.owner_id ?? null;
 
   const {
     domain_status,
@@ -189,7 +200,7 @@ export async function PUT(
     if (prefixValue === null) {
       prefixUpdate.email_requested_by = null;
     } else if (isStaffSubmitter) {
-      prefixUpdate.email_requested_by = user.id;
+      prefixUpdate.email_requested_by = actorId;
     }
 
     const { data, error } = await admin
@@ -204,7 +215,7 @@ export async function PUT(
     }
 
     await logAudit({
-      userId: user.id,
+      userId: actorId ?? "",
       action: "update_email_prefix",
       entityType: "site",
       entityId: id,
@@ -331,7 +342,7 @@ export async function PUT(
   // future request gets fresh attribution.
   const newRequestStatuses = ["register_new", "transfer", "decided_later"];
   if (newRequestStatuses.includes(domain_status)) {
-    updates.domain_requested_by = isAdmin ? user.id : null;
+    updates.domain_requested_by = isAdmin ? actorId : null;
   }
 
   const { data, error } = await admin
@@ -345,7 +356,7 @@ export async function PUT(
     return NextResponse.json({ error: error.message }, { status: 500 });
 
   await logAudit({
-    userId: user.id,
+    userId: actorId ?? "",
     action: "update_domain",
     entityType: "site",
     entityId: id,
@@ -369,7 +380,7 @@ export async function PUT(
     site.domain_status !== "active"
   ) {
     const recipientId = site.domain_requested_by ?? site.owner_id ?? null;
-    if (recipientId && recipientId !== user.id) {
+    if (recipientId && recipientId !== actorId) {
       const domainLabel =
         (updates.domain as string | undefined) ??
         (requested_domain ? requested_domain.trim().toLowerCase() : null);
@@ -435,9 +446,9 @@ export async function PUT(
         const { data: actorProfile } = await admin
           .from("profiles")
           .select("full_name")
-          .eq("id", user.id)
+          .eq("id", actorId ?? "")
           .single();
-        submitterName = actorProfile?.full_name || user.email || "(unknown)";
+        submitterName = actorProfile?.full_name || user?.email || "(unknown)";
         submitterRoleLabel =
           role === "super_admin"
             ? "Administrator"

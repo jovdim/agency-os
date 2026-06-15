@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteAdminForSite } from "@/lib/platform/site-admin-guard";
 
 const HOSTCREATORS_API = "https://www.hostcreators.sk/api/v1/host/domain/check";
 
@@ -16,10 +17,14 @@ export async function GET(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  await params;
+  const { id } = await params;
+  if (!user) {
+    // Per-site CMS admin (theirdomain.com/admin) — cookie bound to this site.
+    const sa = await getSiteAdminForSite(id);
+    if (!sa) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
 
   const domain = req.nextUrl.searchParams.get("domain")?.trim().toLowerCase();
   if (!domain) {
