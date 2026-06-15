@@ -109,6 +109,22 @@ async function main() {
   }
   console.log(`GET   ok  (${get.status})  content verified`);
 
+  // 2b) PUBLIC URL serve check — now that R2_PUBLIC_URL is set, confirm the
+  // object is reachable on the public dev URL the app embeds in <img src>.
+  if (r2Configured()) {
+    const pubUrl = r2PublicUrl(key);
+    const pub = await fetch(pubUrl);
+    const pubBody = pub.ok ? await pub.text() : "";
+    if (pub.ok && pubBody === body) {
+      console.log(`PUBLIC ok (${pub.status})  served from ${pubUrl}`);
+    } else {
+      console.error(
+        `PUBLIC fail (${pub.status})  public URL not serving — confirm the Public Development URL is enabled on the bucket`,
+      );
+      process.exit(1);
+    }
+  }
+
   // 3) Delete it via presigned DELETE.
   const delUrl = presignR2Url({ method: "DELETE", objectPath: key, expiresSeconds: 120 });
   const del = await fetch(delUrl, { method: "DELETE" });
